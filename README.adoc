@@ -9,9 +9,9 @@ endif::[]
 = Jenkins Enhancement Proposals
 
 [NOTE]
-----
+====
 This repository is a work in progress.
-----
+====
 
 
 == License
