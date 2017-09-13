@@ -37,6 +37,7 @@ endif::[]
 |===
 
 
+[[abstract]]
 == What is a JEP?
 
 JEP stands for Jenkins Enhancement Proposal. A JEP is a design
@@ -44,6 +45,9 @@ document providing information to the Jenkins community, or describing
 a new feature for Jenkins or its processes or environment. The JEP
 should provide a concise technical specification of the feature and a
 rationale for the feature.
+
+[[specification]]
+== Specification
 
 We intend JEPs to be the primary mechanisms for proposing major new
 features, for collecting community input on an issue, and for
@@ -56,7 +60,7 @@ repository, their revision history is the historical record of the
 feature proposal footnoteref:[repo, https://github.com/jenkinsci/jep].
 
 
-== JEP Types
+=== JEP Types
 
 There are three kinds of JEP:
 
@@ -82,34 +86,59 @@ There are three kinds of JEP:
  improvement of the Jenkins Enhancement Proposal process) is also considered a
  Process JEP.
 
+=== JEP Terminology
 
-== JEP Workflow
-
-=== Jenkins's BDFL
+==== BDFL
 
 There are several references in this JEP to the "BDFL". This acronym stands for
-"Benevolent Dictator for Life", and refers to Kohsuke Kawaguchi, original
-creator of Jenkins.
+"Benevolent Dictator for Life", and refers to
+link:https://github.com/kohsuke[Kohsuke Kawaguchi],
+original creator of Jenkins.
 
-=== JEP Editors
+==== Editors
 
 The JEP editors are individuals responsible for managing the administrative
 and editorial aspects of the JEP workflow (e.g. assigning JEP numbers and
 changing their status). See <<JEP Editor Responsibilities & Workflow>> for
 details. The current editors are:
 
-* R. Tyler Croy
-* Oleg Nenashev
-* Liam Newman
-* Owen Mehegan
-* Christopher Orr
+* link:https://github.com/rtyler[R. Tyler Croy]
+* link:https://github.com/oleg-nenashev[Oleg Nenashev]
+* link:https://github.com/bitwiseman[Liam Newman]
+* link:https://github.com/omehegan[Owen Mehegan]
+* link:https://github.com/orrc[Christopher Orr]
 
 JEP editorship is by invitation of the current editors. All of the JEP workflow
 can be conducted via the GitHub JEP Repository footnoteref:[repo] and pull
 requests.
 
 
-=== Start with an idea for Jenkins
+==== Must/Should/May
+
+JEP documents _must_ follow link:https://tools.ietf.org/html/rfc2119[RFC 2119]
+which defines key words to "indicate requirement levels". These are listed
+below:
+
+. **MUST** This word, or the terms "REQUIRED" or "SHALL", mean that the
+   definition is an absolute requirement of the specification.
+. **MUST NOT** This phrase, or the phrase "SHALL NOT", mean that the
+   definition is an absolute prohibition of the specification.
+. **SHOULD** This word, or the adjective "RECOMMENDED", mean that there
+   may exist valid reasons in particular circumstances to ignore a
+   particular item, but the full implications must be understood and
+   carefully weighed before choosing a different course.
+. **SHOULD NOT** This phrase, or the phrase "NOT RECOMMENDED" mean that
+   there may exist valid reasons in particular circumstances when the
+   particular behavior is acceptable or even useful, but the full
+   implications should be understood and the case carefully weighed
+   before implementing any behavior described with this label.
+. **MAY** This word, or the adjective "OPTIONAL", mean that an item is
+   truly optional.
+
+
+=== JEP Workflow
+
+==== Start with an idea for Jenkins
 
 The JEP process begins with a new idea for Jenkins. It is highly recommended
 that a single JEP contain a single key proposal or new idea. Small enhancements
@@ -117,7 +146,7 @@ or patches often don't need a JEP and can be injected into the Jenkins
 development workflow with a pull request to the appropriate repository. The
 more focused the JEP, the more successful it tends to be. The JEP editors
 reserve the right to reject JEP proposals if they appear too unfocused or too
-broad. If in doubt, split your JEP into several well-focused ones.
+broad. If in doubt, authors should split their JEP into several well-focused ones.
 
 Each JEP must have a champion -- someone who writes the JEP using the style and
 format described below, shepherds the discussions in the appropriate forums,
@@ -144,7 +173,7 @@ properly formatted, of high quality, and to address initial concerns about the
 proposal.
 
 
-=== Submitting a JEP
+==== Submitting a JEP
 
 Following a discussion on jenkinsci-dev@, the proposal should be submitted as a
 draft JEP via a GitHub pull request to this repository footnoteref:[repo]. The
@@ -153,12 +182,12 @@ review immediately (although minor errors may be corrected by the editors).
 
 The standard JEP workflow is:
 
-* You, the JEP author, fork the JEP repository footnoteref:[repo], and create a
-  file named `jep/9999/README.adoc` that contains your new JEP. Use "9999" as
-  your draft JEP number.
-* Push this to your GitHub fork and submit a pull request.
-* The JEP editors review your PR for structure, formatting, and other errors.
-* Once approved, they will assign your JEP a number, and label it as Standards
+* The JEP author forks the JEP repository footnoteref:[repo], and creates a
+  file named `jep/9999/README.adoc` that contains the new JEP. Use "9999" as
+  the draft JEP number.
+* The JEP author pushes this to their fork and submits a pull request.
+* The JEP editors review the pull request for structure, formatting, and other errors.
+* Once approved, they will assign the JEP a number, and label it as Standards
  Track, Informational, or Process, and give it the status "Draft."
 .
 Once the review process is complete, and the JEP editors approve it (note that
@@ -208,7 +237,7 @@ Strategies to keep the discussions efficient include:
 JEP authors should use their discretion here.
 
 
-=== JEP Review & Resolution
+==== JEP Review & Resolution
 
 Once the authors have completed a JEP, they may request a review for
 style and consistency from the JEP editors. However, the content and
@@ -281,9 +310,9 @@ Some Informational and Process JEPs may also have a status of "Active" if they
 are never meant to be completed. E.g. JEP 1 (this JEP).
 
 
-=== JEP Maintenance
+==== JEP Maintenance
 
-In general, Standards track JEPs are no longer modified after they have
+In general, Standards track JEPs are not modified after they have
 reached the Final state. Once a JEP has been completed, Jenkins developer
 documentation must become the formal documentation of the expected behavior.
 
@@ -292,7 +321,7 @@ to development practices and other details. The precise process followed in
 these cases will depend on the nature and purpose of the JEP being updated.
 
 
-== What belongs in a successful JEP?
+=== What belongs in a successful JEP?
 
 Each JEP should have the following parts:
 
@@ -342,7 +371,7 @@ The final implementation must include test code and documentation
 appropriate for either the Jenkins user or developer documentation.
 
 
-=== JEP Formats and Templates
+==== JEP Formats and Templates
 
 JEPs are UTF-8 encoded text files using the
 link:https://asciidoctor.org[AsciiDoc] format.  AsciiDoc allows for rich markup
@@ -350,7 +379,7 @@ that is still quite easy to read, but also results in good-looking and
 functional HTML.
 
 
-=== JEP Header Preamble
+==== JEP Header Preamble
 
 Each JEP must begin with an AsciiDoc table containing metadata relevant to the
 JEP:
@@ -409,14 +438,14 @@ replaces the current document. The newer JEP must have a **Replaces** row
 containing the number of the JEP that it rendered obsolete.
 
 
-=== Auxiliary Files
+==== Auxiliary Files
 
 JEPs may include auxiliary files such as diagrams. Such files must be
 named appropriately, with lowercase letters and no spaces, and be included in
 the directory with the `README.adoc` describing the JEP.
 
 
-=== Reporting JEP Bugs, or Submitting JEP Updates
+==== Reporting JEP Bugs, or Submitting JEP Updates
 
 How you report a bug or submit a JEP update depends on several factors, such
 as the maturity of the JEP, the preferences of the JEP author, and the nature
@@ -435,7 +464,7 @@ JEP authors with git push privileges for the JEP repository can update the
 JEPs themselves by using "git push" to submit their changes.
 
 
-=== Transferring JEP Ownership
+==== Transferring JEP Ownership
 
 It occasionally becomes necessary to transfer ownership of JEPs to a
 new champion. In general, it is preferable to retain the original author as
@@ -458,7 +487,7 @@ manner, the JEP editors will make a unilateral decision (it's not like such
 decisions can't be reversed :).
 
 
-=== JEP Editor Responsibilities & Workflow
+==== JEP Editor Responsibilities & Workflow
 
 A JEP editor must subscribe to the jenkinsci-dev@googlegroups.com list and must
 watch the JEP repository footnoteref:[repo]. Most correspondence regarding JEP
@@ -493,7 +522,7 @@ JEP editors don't pass judgment on JEPs. They merely do the
 administrative & editorial part (which is generally a low volume task).
 
 
-== Rationale
+== Motivation
 
 Jenkins has classically been driven by "you-had-to-be-there" development. With
 specific changes largely being driven by smaller independent groups of
@@ -533,10 +562,32 @@ upon, a new idea they have for Jenkins.
 
 Overall, less chaos and more productivity is the rationale for JEP.
 
+== Rationale
 
-=== References
+The Python community, whose process JEP is modeled after, have successfully
+navigated several large-scale reworkings of Python and it's related tools and
+processes over the past decade. This includes most notably the multi-year
+project of Python 3 (formerly Python 3000).
+
+Their Python Enhancement Proposals are largely consensus driven, which is
+_mostly_ how work is done presently in the Jenkins project,
+footnote:[https://groups.google.com/d/msgid/jenkinsci-dev/824CAC89-7A49-478A-9904-5C77D8FF5A80%40beckweb.net]
+footnote:[https://groups.google.com/d/msgid/jenkinsci-dev/CAPbPdObKcXxZ2rgGdx6Z2HVKwH9mE_gkVbB1GOeCEhmZ7JkfwQ%40mail.gmail.com]
+footnote:[https://groups.google.com/d/msgid/jenkinsci-dev/CA%2BnPnMz-m49TK7Em%2BxBNb%2BV98dBCz9CrrPXg3uW6%2B_x3KX5gOQ%40mail.gmail.com]
+ making the PEP model relatively straightforward to graft onto our existing
+ processes for making proposals and deciding upon changes.
+
+
+The process by which a number of link:https://apache.org[Apache] projects are
+operated was also considered, but the Python Enhancement Proposal process was
+by far the most well-documented and obviously successful approach considered to
+project improvement (technical and otherwise) over time.
+
+
+== References
 
 === Related Processes
 
 * link:https://www.python.org/dev/peps/[Python Enhancement Proposals]
 * link:https://github.com/jenkins-infra/iep[Infrastructure Enhancement Proposal]
+* link:http://www.ietf.org/rfc.html[IETF RFC]
