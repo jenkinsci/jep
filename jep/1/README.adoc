@@ -38,21 +38,34 @@ endif::[]
 
 
 [[abstract]]
-== What is a JEP?
+== Abstract
 
-JEP stands for Jenkins Enhancement Proposal. A JEP is a design
-document providing information to the Jenkins community, or describing
-a new feature for Jenkins or its processes or environment. The JEP
-should provide a concise technical specification of the feature and a
-rationale for the feature.
+A Jenkins Enhancement Proposal (JEP) is a design document that 
+describes a new feature or aspect of Jenkins itself, 
+or the Jenkins Project processes or environment.
+This JEP describes the structure of JEP documents 
+and details the process by which JEPs are 
+created, submitted, reviewed, finalized, and maintained. 
 
 [[specification]]
 == Specification
 
-We intend JEPs to be the primary mechanisms for proposing major new
+=== What is a JEP?
+
+JEP stands for Jenkins Enhancement Proposal. 
+A JEP is a design document that 
+describes a new feature or aspect of Jenkins itself, or Jenkin Project processes or environment. 
+A JEP provides a concise technical specification of the feature, 
+describes the motivation for the change,
+and discusses the rationale behind the design.
+
+JEPs are the primary mechanisms for proposing major new
 features, for collecting community input on an issue, and for
-documenting the design decisions that have gone into Jenkins. The JEP
-author is responsible for building consensus within the community and
+documenting the design decisions that have gone into Jenkins. 
+Each JEP has an **Author**. 
+The author of a JEP may or may not actually write the text of the JEP. 
+Regardless, the JEP Author is responsible for building 
+consensus for that JEP within the community and
 documenting dissenting opinions.
 
 Because the JEPs are maintained as text files in a versioned
@@ -138,6 +151,17 @@ below:
 
 === JEP Workflow
 
+==== Overview 
+
+The JEP process has a number of stages
+
+. **Preparation** - one or two sentences about this
+. **Submission - one or two sentences about this  
+. **Draft Status** - one or two sentences about this
+. **Review and Resolution** - one or two sentences about this
+. **Maintainance** - one or two sentences about this
+
+
 ==== Start with an idea for Jenkins
 
 The JEP process begins with a new idea for Jenkins. It is highly recommended
@@ -191,8 +215,8 @@ The standard JEP workflow is:
  Track, Informational, or Process, and give it the status "Draft."
 .
 Once the review process is complete, and the JEP editors approve it (note that
-this is *not* the same as accepting your JEP!), they will squash commit your
-pull request into a branch with the numbered proposal.
+this is *not* the same as accepting the JEP!), they will squash commit the
+pull request into a feature branch with the number proposal.
 
 The JEP editors will not unreasonably deny a JEP. Reasons for denying JEP
 status include duplication of effort, being technically unsound, not providing
@@ -205,15 +229,14 @@ may claim JEP numbers directly by creating and committing a new JEP. When doing
 so, the developer must handle the tasks that would normally be taken care of by
 the JEP editors (see <<JEP Editor Responsibilities & Workflow>>). This includes
 ensuring the initial version meets the expected standards for submitting a JEP.
-Alternately, even developers may choose to submit JEPs via pull request.  When
-doing so, let the JEP editors know you have git push privileges and they can
-guide you through the process of updating the JEP repository directly.
-
+Alternately, even developers may choose to submit JEPs via pull request.  
+In this case, the deloper should let the JEP editors know they have git push privileges 
+and an editor will guide them through the process of updating the JEP repository directly.
 
 As updates are necessary, the JEP author can check in new versions if they
 (or a collaborating developer) have git push privileges.
 
-After a JEP number has been assigned, a draft JEP may be discussed further on
+After the JEP has been assigned a number, a draft JEP may be discussed further on
 jenkinsci-dev@ (getting a JEP number assigned early can be useful for ease of
 reference, especially when multiple draft JEPs are being considered at the
 same time).
@@ -294,9 +317,9 @@ themselves has decided that the JEP is actually a bad idea, or has
 accepted that a competing proposal is a better alternative.
 
 When a JEP is Accepted, Rejected or Withdrawn, the JEP should be updated
-accordingly. In addition to updating the status field, at the very least
+accordingly. In addition to updating the status field,
 the Resolution header should be added with a link to the relevant post
-in the jenkinsci-dev@ mailing list archives.
+in the jenkinsci-dev@ mailing list archives. 
 
 JEPs can also be superseded by a different JEP, rendering the original
 obsolete. This is intended for Informational JEPs, where version 2 of
@@ -311,6 +334,8 @@ are never meant to be completed. E.g. JEP 1 (this JEP).
 
 
 ==== JEP Maintenance
+
+After a JEP reaches Approved it may or may not require 
 
 In general, Standards track JEPs are not modified after they have
 reached the Final state. Once a JEP has been completed, Jenkins developer
@@ -447,17 +472,17 @@ the directory with the `README.adoc` describing the JEP.
 
 ==== Reporting JEP Bugs, or Submitting JEP Updates
 
-How you report a bug or submit a JEP update depends on several factors, such
+The process for reporting a bug or submiting a JEP update depends on several factors, such
 as the maturity of the JEP, the preferences of the JEP author, and the nature
-of your comments. For the early draft stages of the JEP, it's probably best to
-send your comments and changes directly to the JEP author. For more mature, or
-finished JEPs you may want to submit corrections to the JEP repository
+of the comments. For the early draft stages of the JEP, it's probably best to
+send  comments and changes directly to the JEP author. For more mature, or
+finished JEPs consider submitting corrections to the JEP repository
 footnoteref:[repo] or the Jenkins issue tracker
 footnoteref:[issues,https://issues.jenkins-ci.org].  If the JEP author is a
 Jenkins developer, assign the bug/patch to them, otherwise assign it to a JEP
 editor.
 
-When in doubt about where to send your changes, please check first
+When in doubt about where to send changes, please check first
 with the JEP author and/or a JEP editor.
 
 JEP authors with git push privileges for the JEP repository can update the
@@ -478,9 +503,9 @@ direction of the JEP. One aim of the JEP process is to try to build
 consensus around a JEP, but if that's not possible, an author can always
 submit a competing JEP.
 
-If you are interested in assuming ownership of a JEP, you can also do this via
-pull request. Fork the JEP repository, footnoteref:[repo] make your ownership
-modification, and submit a pull request. You should also send a message asking
+Ownership of a JEP may also be assumed via pull request.
+Fork the JEP repository, footnoteref:[repo] make the ownership
+modification, and submit a pull request. At the same time, send a message asking
 to take over, addressed to both the original author and the JEP editors via
 jenkinsci-dev@.  If the original author doesn't respond to email in a timely
 manner, the JEP editors will make a unilateral decision (it's not like such
