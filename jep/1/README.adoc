@@ -30,6 +30,10 @@ endif::[]
 
 | Created
 | 2017-09-12
+
+| Discussion-To
+| link:https://groups.google.com/d/msg/jenkinsci-dev/spDAr8EJm3c/T9Nmhn-fAQAJ[jenkinsci-dev@]
+
 |===
 
 
