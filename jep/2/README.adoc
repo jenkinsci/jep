@@ -42,13 +42,9 @@ have been submitted as a Draft for as a **Standard** type proposal.
 
 == Abstract
 
-Jenkins 2.0 will include a setup dialog that pops up when Jenkins starts for
-the first time. It intends to help people new to Jenkins to get started
-quickly, and present them with a reasonably sized set of plugins to choose from
-for customizing their instance, of they so choose. To this end, not every
-plugin will be presented here. While the extensibility of Jenkins is one of its
-strengths, exposing new users to the 1200+ available plugins before they've
-even started using Jenkins isn't a reasonable approach.
+The JEP outlines the criteria to be used for determining which plugins are
+included in the Jenkins 2.0 Setup dialog's list of plugins 
+and which subset of those will be "Suggested Plugins" to be installed by default.
 
 == Specification
 
@@ -90,7 +86,21 @@ high-level view of plugin functionality in Jenkins:
 
 Any of these categories will be present as necessary for the plugin selection.
 
-== Rationale
+== Motivation
+
+Jenkins 2.0 will include a setup dialog that pops up when Jenkins starts for
+the first time. It intends to help people new to Jenkins to get started
+quickly, and present them with a reasonably sized set of plugins to choose from
+for customizing their instance, of they so choose. To this end, not every
+plugin will be presented here. While the extensibility of Jenkins is one of its
+strengths, exposing new users to the 1200+ available plugins before they've
+even started using Jenkins isn't a reasonable approach.  
+
+We need to establish criteria for which plugins are shown, 
+which plugins are "suggested" (installed by default), 
+and who these list will be changed over time.
+
+== Reasoning
 
 While it is a much desired feature to have an initial setup experience that
 includes the ability to choose plugins, it's better not to overwhelm
