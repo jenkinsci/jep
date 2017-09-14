@@ -100,7 +100,7 @@ We need to establish criteria for which plugins are shown,
 which plugins are "suggested" (installed by default), 
 and who these list will be changed over time.
 
-== Rationale
+== Reasoning
 
 While it is a much desired feature to have an initial setup experience that
 includes the ability to choose plugins, it's better not to overwhelm
