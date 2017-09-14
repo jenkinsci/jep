@@ -153,13 +153,43 @@ below:
 
 ==== Overview 
 
-The JEP process has a number of stages
 
-. **Preparation** - one or two sentences about this
-. **Submission - one or two sentences about this  
-. **Draft Status** - one or two sentences about this
-. **Review and Resolution** - one or two sentences about this
-. **Maintainance** - one or two sentences about this
+Before delving into the details of the JEP workflow, let's take a high-level look at what an ideal JEP. 
+
+. **Preparation** - Andrea has an idea for new feature emails jenkinsci-dev@googlegroups.com. 
+She discusses the idea with the group, determining that the idea is worth pursuing.
+She gathers inital feedback from the community, adjusts her design as needed, 
+recording the reasons for design choices, and keeping track of differing views.
+
+. **Submission** - once she has addressed any inital concerns and sufficiently fleshed out design, 
+she writes up the proposal using the JEP document template as a guide, 
+including a "reference implmentation" as needed.
+She then follows the steps outlined for submiting a JEP via GitHub Pull Request.  
+The editors review the submission.  Once they determine it is ready to considered as a JEP, 
+thet "approve" the submission, assign a JEP number to it, and it becomes a 'Draft' JEP." 
+
+. **Draft Status** - Once her submission becomes a Draft, Andrea may continue to gather
+feedback, change the proposal, and record the reasoning and differing views.
+When she believes the design is complete and represents the consensus of the community,
+she submits the JEP for review by the BDFL. 
+
+. **Review** - The BFDL reivews the JEP and decides whether make it an "Accepted" JEP. 
+Other possible resolutions are "Rejected", "Deferred", "Withdrawn".
+
+. **Accepted Status** -  After a JEP has been "Accepted", Andrea and/or other contributors
+complete any remaining implementation (code, documentation, or other changes) related to the JEP.
+
+. **Final Status** - When the implementation is complete and all changes have been published 
+or otherwise incorporated into the appropriate code repositories,
+the JEP status is changed to "Final".  The JEP is done.
+
+. **Maintenance** - At some later date, the JEP may need to be updated.  
+As "Author" of the JEP, Andrea makes changes as needed or hands off authorship to someone else.
+Updates follow the same basic JEP workflow. 
+
+IMPORTANT: The above is only a high-level overview of the JEP workflow.
+The full and complete description of the JEP workflow is provided below. 
+Read the full description below before starting a JEP.
 
 
 ==== Start with an idea for Jenkins
@@ -335,16 +365,15 @@ are never meant to be completed. E.g. JEP 1 (this JEP).
 
 ==== JEP Maintenance
 
-After a JEP reaches Approved it may or may not require 
+Even after a JEP reaches "Final" status, it may need to be updated. 
 
 In general, Standards track JEPs are not modified after they have
-reached the Final state. Once a JEP has been completed, Jenkins developer
+reached the Final state. Once a Standards JEP has been completed, Jenkins developer
 documentation must become the formal documentation of the expected behavior.
 
 Informational and Process JEPs may be updated over time to reflect changes
 to development practices and other details. The precise process followed in
 these cases will depend on the nature and purpose of the JEP being updated.
-
 
 === What belongs in a successful JEP?
 
@@ -364,13 +393,12 @@ Each JEP should have the following parts:
   existing code base is inadequate to address the
   problem that the JEP solves. JEP submissions without sufficient
   motivation may be rejected outright.
-. **Rationale** - The rationale fleshes out the specification by
-  describing what motivated the design and why particular design
+. **Reasoning** - The reasoning describes why particular design
   decisions were made. It should describe alternate designs that
   were considered and related work, e.g. how the feature is supported
   in other languages.
 +
-The rationale should provide evidence of consensus within the
+The reasoning should provide evidence of consensus within the
 community and discuss important objections or concerns raised
 during discussion.
 
