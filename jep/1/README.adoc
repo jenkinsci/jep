@@ -38,21 +38,34 @@ endif::[]
 
 
 [[abstract]]
-== What is a JEP?
+== Abstract
 
-JEP stands for Jenkins Enhancement Proposal. A JEP is a design
-document providing information to the Jenkins community, or describing
-a new feature for Jenkins or its processes or environment. The JEP
-should provide a concise technical specification of the feature and a
-rationale for the feature.
+A Jenkins Enhancement Proposal (JEP) is a design document that 
+describes a new feature or aspect of Jenkins itself, 
+or the Jenkins Project processes or environment.
+This JEP describes the structure of JEP documents 
+and details the process by which JEPs are 
+created, submitted, reviewed, finalized, and maintained.
 
 [[specification]]
 == Specification
 
-We intend JEPs to be the primary mechanisms for proposing major new
+=== What is a JEP?
+
+JEP stands for Jenkins Enhancement Proposal.
+A JEP is a design document that 
+describes a new feature or aspect of Jenkins itself, or Jenkin Project processes or environment.
+A JEP provides a concise technical specification of the feature, 
+describes the motivation for the change,
+and discusses the rationale behind the design.
+
+JEPs are the primary mechanisms for proposing major new
 features, for collecting community input on an issue, and for
-documenting the design decisions that have gone into Jenkins. The JEP
-author is responsible for building consensus within the community and
+documenting the design decisions that have gone into Jenkins.
+Each JEP has an <<Author>>.
+The author of a JEP may or may not actually write the text of the JEP.
+Regardless, the JEP Author is responsible for building 
+consensus for that JEP within the community and
 documenting dissenting opinions.
 
 Because the JEPs are maintained as text files in a versioned
@@ -112,6 +125,20 @@ JEP editorship is by invitation of the current editors. All of the JEP workflow
 can be conducted via the GitHub JEP Repository footnoteref:[repo] and pull
 requests.
 
+==== Author
+
+Each JEP has at an "Author".  The JEP author may also be refered to as 
+"Owner" or "Champion" of a JEP.
+The author of a JEP may or may not actually write the text of the JEP.
+Regardless, the JEP Author is responsible for building 
+consensus for that JEP within the community and
+documenting dissenting opinions.
+
+A JEP may more than one Author, especially once it is finalized and.
+For simplicity, this document uses the singular  
+("JEP Author", "author", "owner", or "champion") 
+when refering the one or more people in the role of "Author" of a JEP.
+
 
 ==== Must/Should/May
 
@@ -135,23 +162,64 @@ below:
 . **MAY** This word, or the adjective "OPTIONAL", mean that an item is
    truly optional.
 
-
 === JEP Workflow
+
+==== Overview 
+
+Before delving into the details of the JEP workflow, 
+let's take a high-level look at how JEP might go.
+
+. **Inital Discussion** - Andrea has an idea for new feature emails jenkinsci-dev@googlegroups.com.
+  She discusses the idea with the group, determining that the idea is worth pursuing.
+  She choose to be the "<<Author>>" for this potential JEP.
+  She gathers inital feedback from the community, adjusts her design as needed, 
+  records the reasons for design choices, and keeps track of differing views.
+
+. **Submission** - Andrea writes up the proposal using the JEP document template as a guide, 
+  including a supporting documentation and a reference implmentation if needed.
+  She then submits the JEP to the JEP editors for approval.
+  An editor reviews the submission and determines it is ready to considered as a JEP.
+  They "approve" the submission, assigning the JEP a number, and the submission becomes a "Draft" JEP.
+
+. **Draft Status** - While the JEP is a "Draft", Andrea may continue to gather
+  feedback, change the proposal, and record the reasoning and differing views.
+  When she believes the design is complete and represents the consensus of the community,
+  she submits the JEP for review by the <<BDFL>>.
+
+. **Review** - The <<BFDL>> reviews the JEP and decides whether to accept it, making it an "Accepted" JEP.
+  Other possible resolutions are "Rejected", "Deferred", "Withdrawn".
+
+. **Accepted Status** -  Andrea and other contributors
+  complete all remaining implementation related to the "Accepted" JEP (code, documentation, or other changes).
+
+. **Final Status** - When the implementation is complete and all changes have been published 
+  or otherwise incorporated into the appropriate code repositories,
+  the JEP status is changed to "Final".  The JEP is done.
+
+. **Maintenance** - At some later date, the JEP may need to be updated.
+  As "Author" of the JEP, Andrea makes changes as needed or hands off authorship to someone else.
+  Updates follow the same basic JEP workflow.
+
+IMPORTANT: The above is only a high-level overview of the JEP workflow.
+The full and complete description of the JEP workflow is provided below.
+Read the full description below before starting a JEP.
 
 ==== Start with an idea for Jenkins
 
-The JEP process begins with a new idea for Jenkins. It is highly recommended
-that a single JEP contain a single key proposal or new idea. Small enhancements
-or patches often don't need a JEP and can be injected into the Jenkins
-development workflow with a pull request to the appropriate repository. The
-more focused the JEP, the more successful it tends to be. The JEP editors
-reserve the right to reject JEP proposals if they appear too unfocused or too
-broad. If in doubt, authors should split their JEP into several well-focused ones.
+The JEP process begins with a new idea for Jenkins.
+A single JEP should contain a single key proposal or new idea.
+The more focused the JEP, the more successful it tends to be.
+The JEP editors reserve the right to reject potential JEPs 
+if they appear too unfocused or too broad.
+If in doubt, authors should split their JEP into several well-focused ones.
+
+NOTE: Small enhancements or patches often don't need a JEP can be handle via the Jenkins 
+development workflow with a JIRA item and/or pull request to the appropriate repository.
 
 Each JEP must have a champion -- someone who writes the JEP using the style and
 format described below, shepherds the discussions in the appropriate forums,
 and attempts to build community consensus around the idea. The JEP champion
-(a.k.a. Author) should first attempt to ascertain whether the idea is JEP-able.
+(a.k.a. <<Author>>) should first attempt to ascertain whether the idea is JEP-able.
 Posting to the jenkinsci-dev@googlegroups.com mailing list is the best way to
 go about this.
 
@@ -191,8 +259,8 @@ The standard JEP workflow is:
  Track, Informational, or Process, and give it the status "Draft."
 .
 Once the review process is complete, and the JEP editors approve it (note that
-this is *not* the same as accepting your JEP!), they will squash commit your
-pull request into a branch with the numbered proposal.
+this is *not* the same as accepting the JEP!), they will squash commit the
+pull request into a feature branch with the number proposal.
 
 The JEP editors will not unreasonably deny a JEP. Reasons for denying JEP
 status include duplication of effort, being technically unsound, not providing
@@ -205,15 +273,14 @@ may claim JEP numbers directly by creating and committing a new JEP. When doing
 so, the developer must handle the tasks that would normally be taken care of by
 the JEP editors (see <<JEP Editor Responsibilities & Workflow>>). This includes
 ensuring the initial version meets the expected standards for submitting a JEP.
-Alternately, even developers may choose to submit JEPs via pull request.  When
-doing so, let the JEP editors know you have git push privileges and they can
-guide you through the process of updating the JEP repository directly.
-
+Alternately, even developers may choose to submit JEPs via pull request.
+In this case, the deloper should let the JEP editors know they have git push privileges 
+and an editor will guide them through the process of updating the JEP repository directly.
 
 As updates are necessary, the JEP author can check in new versions if they
 (or a collaborating developer) have git push privileges.
 
-After a JEP number has been assigned, a draft JEP may be discussed further on
+After the JEP has been assigned a number, a draft JEP may be discussed further on
 jenkinsci-dev@ (getting a JEP number assigned early can be useful for ease of
 reference, especially when multiple draft JEPs are being considered at the
 same time).
@@ -294,7 +361,7 @@ themselves has decided that the JEP is actually a bad idea, or has
 accepted that a competing proposal is a better alternative.
 
 When a JEP is Accepted, Rejected or Withdrawn, the JEP should be updated
-accordingly. In addition to updating the status field, at the very least
+accordingly. In addition to updating the status field,
 the Resolution header should be added with a link to the relevant post
 in the jenkinsci-dev@ mailing list archives.
 
@@ -312,14 +379,15 @@ are never meant to be completed. E.g. JEP 1 (this JEP).
 
 ==== JEP Maintenance
 
+Even after a JEP reaches "Final" status, it may need to be updated.
+
 In general, Standards track JEPs are not modified after they have
-reached the Final state. Once a JEP has been completed, Jenkins developer
+reached the Final state. Once a Standards JEP has been completed, Jenkins developer
 documentation must become the formal documentation of the expected behavior.
 
 Informational and Process JEPs may be updated over time to reflect changes
 to development practices and other details. The precise process followed in
 these cases will depend on the nature and purpose of the JEP being updated.
-
 
 === What belongs in a successful JEP?
 
@@ -339,13 +407,12 @@ Each JEP should have the following parts:
   existing code base is inadequate to address the
   problem that the JEP solves. JEP submissions without sufficient
   motivation may be rejected outright.
-. **Rationale** - The rationale fleshes out the specification by
-  describing what motivated the design and why particular design
+. **Reasoning** - The reasoning describes why particular design
   decisions were made. It should describe alternate designs that
   were considered and related work, e.g. how the feature is supported
   in other languages.
 +
-The rationale should provide evidence of consensus within the
+The reasoning should provide evidence of consensus within the
 community and discuss important objections or concerns raised
 during discussion.
 
@@ -445,26 +512,28 @@ named appropriately, with lowercase letters and no spaces, and be included in
 the directory with the `README.adoc` describing the JEP.
 
 
-==== Reporting JEP Bugs, or Submitting JEP Updates
+=== Reporting JEP Bugs, or Submitting JEP Updates
 
-How you report a bug or submit a JEP update depends on several factors, such
+The process for reporting a bug or submiting a JEP update depends on several factors, such
 as the maturity of the JEP, the preferences of the JEP author, and the nature
-of your comments. For the early draft stages of the JEP, it's probably best to
-send your comments and changes directly to the JEP author. For more mature, or
-finished JEPs you may want to submit corrections to the JEP repository
+of the comments. For the early draft stages of the JEP, it's probably best to
+send  comments and changes directly to the JEP author. For more mature, or
+finished JEPs consider submitting corrections to the JEP repository
 footnoteref:[repo] or the Jenkins issue tracker
 footnoteref:[issues,https://issues.jenkins-ci.org].  If the JEP author is a
 Jenkins developer, assign the bug/patch to them, otherwise assign it to a JEP
 editor.
 
-When in doubt about where to send your changes, please check first
+When in doubt about where to send changes, please check first
 with the JEP author and/or a JEP editor.
 
-JEP authors with git push privileges for the JEP repository can update the
+
+Even JEP authors with git push privileges for the JEP repository should submit
+via Pull Ruquest.  It may update the
 JEPs themselves by using "git push" to submit their changes.
 
-
-==== Transferring JEP Ownership
+[[transferring]]
+=== Transferring JEP Ownership (Changing JEP Author)
 
 It occasionally becomes necessary to transfer ownership of JEPs to a
 new champion. In general, it is preferable to retain the original author as
@@ -478,22 +547,30 @@ direction of the JEP. One aim of the JEP process is to try to build
 consensus around a JEP, but if that's not possible, an author can always
 submit a competing JEP.
 
-If you are interested in assuming ownership of a JEP, you can also do this via
-pull request. Fork the JEP repository, footnoteref:[repo] make your ownership
-modification, and submit a pull request. You should also send a message asking
+Ownership of a JEP may also be assumed via pull request.
+Fork the JEP repository, footnoteref:[repo] make the ownership
+modification, and submit a pull request. At the same time, send a message asking
 to take over, addressed to both the original author and the JEP editors via
 jenkinsci-dev@.  If the original author doesn't respond to email in a timely
 manner, the JEP editors will make a unilateral decision (it's not like such
 decisions can't be reversed :).
 
-
-==== JEP Editor Responsibilities & Workflow
+[[editor-responsibilities]]
+=== JEP Editor Responsibilities & Workflow
 
 A JEP editor must subscribe to the jenkinsci-dev@googlegroups.com list and must
 watch the JEP repository footnoteref:[repo]. Most correspondence regarding JEP
 administration can be handled through GitHub issues and pull requests.
 
-For each new JEP that comes in an editor does the following:
+Aside from the editorial cases outlined below, editors should submit all changes 
+as GitHub pull requests (the same as any other contributor).
+
+IMPORTANT: JEP editors don't pass judgment on JEPs. They merely do the
+administrative & editorial part (which is generally a low volume task).
+
+==== Review
+
+For each new JEP that is submitted an editor does the following:
 
 * Read the JEP to check if it is ready, sound, and complete. The ideas
  must make technical sense, even if they don't seem likely to be
@@ -501,25 +578,28 @@ For each new JEP that comes in an editor does the following:
 
 * The title should accurately describe the content.
 
-* Edit the JEP for language (spelling, grammar, sentence structure,
- etc.), markup, code style.
+* Edit the JEP for minor non-controversial language 
+(spelling, grammar, sentence structure, etc.), markup, code style changes.
+For significant or time consuming changes, 
+the editor may choose to provide feedback instead.
+
+==== Request Changes
 
 If the JEP isn't ready, an editor will send it back to the author for
 revision, with specific instructions.
 
+==== Approve as Draft
+
 Once the JEP is ready for the repository, a JEP editor will:
 
 . Assign a JEP number (almost always just the next available number, but
-  sometimes it's a special/joke number, like 666 or 3141).
-. Create a new branch for the JEP, i.e. `jep-1`.
-. Retarget the original author's pull request to the new branch
+  may also be a special/joke number, like 666 or 3141).
+. Create a new branch in jenkinsci/jep for the JEP, i.e. `jep-1`.
+. Retarget the original author's pull request to the new branch 
+  (see https://help.github.com/articles/changing-the-base-branch-of-a-pull-request/)
 . Squash the commit(s) into the branch.
+. Update the folder number to match the JEP number
 . Update the JEP number in the document.
-
-Updates to existing JEPs should be submitted as a GitHub pull request.
-
-JEP editors don't pass judgment on JEPs. They merely do the
-administrative & editorial part (which is generally a low volume task).
 
 
 == Motivation
@@ -559,10 +639,9 @@ explain various subsections of Jenkins. JEPs also make it clearer how an
 ambitious new developer to the Jenkins project can propose, and make progress
 upon, a new idea they have for Jenkins.
 
-
 Overall, less chaos and more productivity is the rationale for JEP.
 
-== Rationale
+== Reasoning
 
 The Python community, whose process JEP is modeled after, have successfully
 navigated several large-scale reworkings of Python and it's related tools and
@@ -583,6 +662,9 @@ operated was also considered, but the Python Enhancement Proposal process was
 by far the most well-documented and obviously successful approach considered to
 project improvement (technical and otherwise) over time.
 
+The Python process uses "Rationale" as the heading for the section for describing design decisions.
+However the meaning of "Rationale" is similar to "Motivation" in some contexts.
+We decided to use "Reasoning" instead to avoid confusion.
 
 == References
 
