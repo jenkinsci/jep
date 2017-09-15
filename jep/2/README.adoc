@@ -43,7 +43,7 @@ have been submitted as a Draft for as a **Standard** type proposal.
 == Abstract
 
 The JEP outlines the criteria to be used for determining which plugins are
-included in the Jenkins 2.0 Setup dialog's list of plugins 
+included in the Jenkins 2.0 Setup dialog's list of plugins
 and which subset of those will be "Suggested Plugins" to be installed by default.
 
 == Specification
@@ -94,10 +94,10 @@ quickly, and present them with a reasonably sized set of plugins to choose from
 for customizing their instance, of they so choose. To this end, not every
 plugin will be presented here. While the extensibility of Jenkins is one of its
 strengths, exposing new users to the 1200+ available plugins before they've
-even started using Jenkins isn't a reasonable approach.  
+even started using Jenkins isn't a reasonable approach.
 
-We need to establish criteria for which plugins are shown, 
-which plugins are "suggested" (installed by default), 
+We need to establish criteria for which plugins are shown,
+which plugins are "suggested" (installed by default),
 and who these list will be changed over time.
 
 == Reasoning
