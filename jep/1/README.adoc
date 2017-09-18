@@ -264,15 +264,16 @@ The submission must be written in JEP style as described below,
 otherwise, it will fail review immediately
 (although minor errors may be corrected by the editors).
 
-To submit a JEP for approval as Draft:
+To submit a JEP for approval as Draft, the JEP author should:
 
-. The JEP author forks the JEP repository footnoteref:[repo].
-. The JEP author checks out the `jep-submission` branch from their fork.
-  This branch contains a template JEP named `jep/0000/README.adoc`.
-. The JEP author modifies the template JEP per the instructions in this JEP.
-. The JEP author commits and pushes the modifications to their fork
-  and submits a pull request targeting the `jenkinsci/jep-submission` branch.
-
+. Fork the JEP repository footnoteref:[repo].
+. Create a new branch called `jep-submission` their fork
+  (`git checkout -b jep-submission`).
+. Copy the folder `jep-template\0000` to `jep\0000`.
+. Modify the template JEP in `jep\0000`
+  per the instructions in this JEP (which are also outlined in the template).
+. Commit and push the changes to their fork
+  and submit a pull request targeting the `jenkinsci/master` branch.
 
 A JEP editor will check the submission for conformance with
 JEP structure and formatting guidelines.
