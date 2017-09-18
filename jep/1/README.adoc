@@ -301,14 +301,14 @@ and is the final arbiter of a submission's approvability as a Draft JEP.
 ==== Approval as Draft JEP
 
 Once JEP meets requirements for structure and formatting,
-the editors will approve the submission as a draft JEP:
-
-. Assign the JEP a number
-. Label the JEP as Standards Track, Informational, or Process
-. Give the JEP the status "Draft."
-. Re-target the Pull Request
-. "Squash commit" all changes in the pull request to
-into a "jep" feature branch with the JEP's number.
+the editors will approve the submission as a draft JEP
+by following the steps outlined in the
+<<approve-as-draft, editors' "Approve as Draft" section>>.
+When they are done, the Draft JEP will have an official JEP number and
+the sumbmission PR will have been merged to a matching folder and feature branch
+(i.e the
+`link:https://github.com/jenkinsci/jep/tree/jep-1/jep/1[jep/1]` folder in the
+`https://github.com/jenkinsci/jep/tree/jep-1/[jep-1]` branch).
 
 IMPORTANT: "Approval as Draft" is *not* the same as accepting the JEP.
 
@@ -672,10 +672,10 @@ Once the JEP is ready for the repository, a JEP editor will:
 
 . Assign a JEP number (almost always just the next available number, but
   may also be a special/joke number, like 666 or 3141).
-. Create a new branch in jenkinsci/jep for the JEP, i.e. `jep-1`.
-. Re-target the original author's pull request to the new branch
+. Create a new feature branch in jenkinsci/jep for the JEP, i.e. `jep-1`.
+. Re-target the original author's pull request to the feature branch
   (see https://help.github.com/articles/changing-the-base-branch-of-a-pull-request/)
-. Squash the commit(s) into the branch.
+. Squash the commit(s) into that JEP's feature branch.
 . Update the folder number to match the JEP number
 . Update the JEP number in the document.
 
