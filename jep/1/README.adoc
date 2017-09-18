@@ -269,8 +269,8 @@ To submit a JEP for approval as Draft, the JEP author should:
 . Fork the JEP repository footnoteref:[repo].
 . Create a new branch called `jep-submission` their fork
   (`git checkout -b jep-submission`).
-. Copy the folder `jep-template\0000` to `jep\0000`.
-. Modify the template JEP in `jep\0000`
+. Copy the folder `jep-template/0000` to `jep/0000`.
+. Modify the template JEP in `jep/0000`
   per the instructions in this JEP (which are also outlined in the template).
 . Commit and push the changes to their fork
   and submit a pull request targeting the `jenkinsci/master` branch.
