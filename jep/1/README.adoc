@@ -70,7 +70,14 @@ documenting dissenting opinions.
 
 Because the JEPs are maintained as text files in a versioned
 repository, their revision history is the historical record of the
-feature proposal footnoteref:[repo, https://github.com/jenkinsci/jep].
+feature proposal footnoteref:[repo, https://github.com/jenkinsci/jep].o
+
+[NOTE]
+====
+For non-text files added to the repository, such as images, the files must be
+readable with free and open source tools, and should ideally be editable by
+other contributors. For example, use SVG rather than PSD for vector graphics.
+====
 
 
 === JEP Types
@@ -134,7 +141,7 @@ Regardless, the JEP Author is responsible for building
 consensus for that JEP within the community and
 documenting dissenting opinions.
 
-A JEP may more than one Author, especially once it is finalized and.
+A JEP may have more than one Author, especially once it is finalized and.
 For simplicity, this document uses the singular
 ("JEP Author", "author", "owner", or "champion")
 when referring the one or more people in the role of "Author" of a JEP.
@@ -222,8 +229,12 @@ The JEP editors reserve the right to reject potential JEPs
 if they appear too unfocused or too broad.
 If in doubt, authors should split their JEP into several well-focused ones.
 
-NOTE: Small enhancements or patches often don't need a JEP can be handle via the Jenkins
-development workflow with a JIRA item and/or pull request to the appropriate repository.
+[NOTE]
+====
+Enhancements or patches which have a smaller impact often don't need a
+JEP can be handle via the Jenkins development workflow with a JIRA item and/or
+pull request to the appropriate repository.
+====
 
 ==== Find a champion
 
@@ -293,7 +304,7 @@ Reasons for denying JEP "Draft" status include:
 * being technically unsound
 * not providing enough information in the
   "Motivation" or "Backwards Compatibility" sections
-* not in keeping with the Jenkins philosophy.
+* not in keeping with the link:https://jenkins.io/project/governance/[Jenkins philosophy].
 
 The BDFL may be consulted during the approval phase,
 and is the final arbiter of a submission's approvability as a Draft JEP.
@@ -398,7 +409,9 @@ For a JEP to be "Accepted" it must meet certain minimum criteria:
 
 * It must be a clear and complete description of the proposed enhancement.
 * The enhancement must represent a net improvement.
-* The proposed implementation, if applicable, must be solid and must not complicate Jenkins unduly.
+* The proposed implementation, if applicable, must be solid, must not
+  complicate Jenkins unduly, and must be the same license as the component the
+  proposal is meant to added to (or MIT licensed by default).
 
 Once a JEP has been accepted, the implementation must be completed.
 The Jenkins project values contribution over "talk"
@@ -489,7 +502,7 @@ Each JEP should have the following parts:
 . **Reasoning** - The reasoning describes why particular design
   decisions were made. It should describe alternate designs that
   were considered and related work, e.g. how the feature is supported
-  in other languages.
+  in other systems.
 +
 The reasoning should provide evidence of consensus within the
 community and discuss important objections or concerns raised
@@ -501,7 +514,7 @@ during discussion.
   author proposes to deal with these incompatibilities. JEP submissions that do
   not adequately discuss backwards compatibility, when such discussion is
   required, may be rejected outright.
-. **Reference Implementation** -- The reference implementation must be
+. **Reference Implementation** -- The open source reference implementation must be
   completed before any JEP is given status "Final", but it need not
   be completed before the JEP is accepted. While there is merit
   to the approach of reaching consensus on the specification and
