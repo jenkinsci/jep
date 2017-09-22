@@ -160,6 +160,7 @@ For simplicity, this document uses the singular
 ("JEP Sponsor", "sponsor")
 when referring the one or more people in the role of "Sponsor" of a JEP.
 
+[[requirement-levels]]
 ==== Must/Should/May
 
 JEP documents _must_ follow link:https://tools.ietf.org/html/rfc2119[RFC 2119]
@@ -769,6 +770,10 @@ project improvement (technical and otherwise) over time.
 The Python process uses "Rationale" as the heading for the section for describing design decisions.
 However the meaning of "Rationale" is similar to "Motivation" in some contexts.
 We decided to use "Reasoning" instead to avoid confusion.
+
+Some non-native english speakers commented on the
+<<requirement-levels, Must/Should/May>> mentioned that "should" is a synonym of "must",
+but that existing RFC was a good justification for keeping the terms.
 
 == References
 
