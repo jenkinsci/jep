@@ -19,7 +19,7 @@ endif::[]
 | Title
 | Jenkins Enhancement Proposal Format
 
-| Author
+| Sponsor
 | link:https://github.com/rtyler[R Tyler Croy]
 
 | Status
@@ -62,15 +62,19 @@ and discusses the rationale behind the design.
 JEPs are the primary mechanisms for proposing major new
 features, for collecting community input on an issue, and for
 documenting the design decisions that have gone into Jenkins.
-Each JEP has an <<Author>>.
-The author of a JEP may or may not actually write the text of the JEP.
-Regardless, the JEP Author is responsible for building
-consensus for that JEP within the community and
-documenting dissenting opinions.
+Each JEP must have at least one <<Sponsor>>.
+The JEP Sponsor is responsible for the JEP overall - building
+consensus for that JEP within the community, documenting dissenting opinions,
+coordinating contributors work, and generally ensuring the JEP
+meets the style, format, and quality guidelines described below.
+A JEP may also have any number of <<Contributor, Contributors>> who
+help write, implement, discussion, or offer feedback about the JEP.
+One contributor might do only one or any combination of these
+of these things during any part of the life of a JEP.
 
 Because the JEPs are maintained as text files in a versioned
 repository, their revision history is the historical record of the
-feature proposal footnoteref:[repo, https://github.com/jenkinsci/jep].o
+feature proposal footnoteref:[repo, https://github.com/jenkinsci/jep].
 
 [NOTE]
 ====
@@ -132,20 +136,29 @@ JEP editorship is by invitation of the current editors. All of the JEP workflow
 can be conducted via the GitHub JEP Repository footnoteref:[repo] and pull
 requests.
 
-==== Author
+==== Conributor
 
-Each JEP has at an "Author".  The JEP author may also be refered to as
-"Owner" or "Champion" of a JEP.
-The author of a JEP may or may not actually write the text of the JEP.
-Regardless, the JEP Author is responsible for building
-consensus for that JEP within the community and
-documenting dissenting opinions.
+A JEP may have any number of "Contributors" who
+help write, implement, discuss, or offer feedback about that JEP.
+One contributor might do only one or any combination of these
+of these things during any part of the life of a JEP.
 
-A JEP may have more than one Author, especially once it is finalized and.
+==== Sponsor
+
+Each JEP has at least one "Sponsor".
+
+The JEP Sponsor is a contributor who is responsible for the JEP overall -
+building consensus for that JEP within the community,
+documenting dissenting opinions, coordinating contributors work,
+and generally ensuring the JEP meets the style, format,
+and quality guidelines described below.
+A Sponsor is also responsible for maintaining the JEP after it is finalized.
+
+A JEP may have more than one Sponsor, especially after it has been finalized
+and is being maintained over time.
 For simplicity, this document uses the singular
-("JEP Author", "author", "owner", or "champion")
-when referring the one or more people in the role of "Author" of a JEP.
-
+("JEP Sponsor", "sponsor")
+when referring the one or more people in the role of "Sponsor" of a JEP.
 
 ==== Must/Should/May
 
@@ -182,7 +195,7 @@ let's take a high-level look at how JEP might go.
 
 . **<<start, Inital Discussion>>** - Andrea has an idea for new feature emails jenkinsci-dev@googlegroups.com.
   She discusses the idea with the group, determining that the idea is worth pursuing.
-  She chooses to be the "<<Author>>" for this potential JEP.
+  She chooses to be the "<<Sponsor>>" for this potential JEP.
   She <<discussion, gathers initial feedback>> from the community, adjusts her design as needed,
   records the reasons for design choices, and keeps track of differing views.
 
@@ -212,7 +225,7 @@ let's take a high-level look at how JEP might go.
   the JEP status is changed to "<<final, Final>>".  The JEP is done.
 
 . **<<maintenance, Maintenance>>** - At some later date, the JEP may need to be updated.
-  As "Author" of the JEP, Andrea makes changes as needed or hands off authorship to someone else.
+  As "Sponsor" of the JEP, Andrea makes changes as needed or hands off sponsorship to someone else.
   Updates follow the same basic JEP workflow.
 
 IMPORTANT: The above is only a high-level overview of the JEP workflow.
@@ -227,7 +240,7 @@ A single JEP should contain a single key proposal or new idea.
 The more focused the JEP, the more successful it tends to be.
 The JEP editors reserve the right to reject potential JEPs
 if they appear too unfocused or too broad.
-If in doubt, authors should split their JEP into several well-focused ones.
+If in doubt, sponsors should split their JEP into several well-focused ones.
 
 [NOTE]
 ====
@@ -236,12 +249,11 @@ JEP can be handle via the Jenkins development workflow with a JIRA item and/or
 pull request to the appropriate repository.
 ====
 
-==== Find a champion
+==== Find a Sponsor
 
-Each JEP must have a champion -- someone who writes the JEP using the style and
+Each JEP must have a "<<Sponsor>>" -- someone who writes the JEP using the style and
 format described below, shepherds the discussions in the appropriate forums,
-and attempts to build community consensus around the idea. The JEP champion
-(a.k.a. <<Author>>) should first attempt to ascertain whether the idea is JEP-able.
+and attempts to build community consensus around the idea. The JEP Sponsor should first attempt to ascertain whether the idea is JEP-able.
 Posting to the jenkinsci-dev@googlegroups.com mailing list is the best way to
 go about this.
 
@@ -249,19 +261,19 @@ go about this.
 ==== Discuss the idea with the community
 
 Vetting an idea publicly before going as far as writing a JEP is meant
-to save the potential author time. Many ideas have been brought
+to save the potential sponsor time. Many ideas have been brought
 forward for changing Jenkins that have been rejected for various
 reasons. Asking the Jenkins community first if an idea is original
 helps prevent too much time being spent on something that is
 guaranteed to be rejected based on prior discussions (searching
 the internet does not always do the trick). It also helps to make sure
-the idea is applicable to the entire community and not just the author. Just
-because an idea sounds good to the author does not mean it will work for most
+the idea is applicable to the entire community and not just the sponsor. Just
+because an idea sounds good to the sponsor does not mean it will work for most
 people in most areas where Jenkins is used.
 
-Once the champion has asked the Jenkins community as to whether an idea has any
+Once the sponsor has asked the Jenkins community as to whether an idea has any
 chance of acceptance, a draft JEP should be presented to jenkinsci-dev@. This
-gives the author a chance to flesh out the draft JEP to make sure it is
+gives the sponsor a chance to flesh out the draft JEP to make sure it is
 properly formatted, of high quality, and to address initial concerns about the
 proposal.
 
@@ -275,7 +287,7 @@ The submission must be written in JEP style as described below,
 otherwise, it will fail review immediately
 (although minor errors may be corrected by the editors).
 
-To submit a JEP for approval as Draft, the JEP author should:
+To submit a JEP for approval as Draft, the JEP sponsor should:
 
 . Fork the JEP repository footnoteref:[repo].
 . Create a new branch called `jep-submission` their fork
@@ -291,7 +303,7 @@ JEP structure and formatting guidelines.
 Editors may make minor changes to make the submission meets
 the requirements for approval as a Draft JEP.
 If a JEP requires major changes, editors will add specific feedback
-and send the submission back to the author for revision.
+and send the submission back to the sponsor for revision.
 
 IMPORTANT: All submissions must go through pull request,
 even those by editors or contributors with "git push" privileges
@@ -347,7 +359,7 @@ At minimum, prototype implementation should be co-developed with the JEP,
 as ideas that sound good in principle sometimes turn out to be impractical
 when subjected to the test of implementation.
 
-A JEP's author is responsible for collecting community feedback on a JEP
+A JEP's sponsor is responsible for collecting community feedback on a JEP
 before submitting it for review.
 Potential changes to a draft JEP may be discussed further on jenkinsci-dev@.
 However, long open-ended discussions are not recommended on mailing lists.
@@ -355,33 +367,33 @@ Strategies to keep the discussion efficient include:
 
 * setting up a series of in-person, or video-conferencing sessions to
   discuss the JEP with necessary stakeholders.
-* having the JEP author accept private comments in the early design phases
+* having the JEP sponsor accept private comments in the early design phases
 * setting up a wiki page, etc.
 * committing and reviewing small concrete changes via Pull Requests
   rather than large sweeping changes
 
-JEP authors should use their discretion here.
+JEP sponsors should use their discretion here.
 
-The JEP author may also ask JEP editors for further feedback regarding the
+The JEP sponsor may also ask JEP editors for further feedback regarding the
 style and consistency of a JEP and its readiness for review by the BDFL.
 
-As updates are necessary, the JEP author and other contributors
+As updates are necessary, the JEP sponsor and other contributors
 should push commits to their fork of the JEP repository footnoteref:[repo],
 and submit pull requests targeting the JEP's feature branch.
 
 [[review]]
 ==== JEP Review
 
-Once the author believes a JEP is complete,
+Once the sponsor believes a JEP is complete,
 they request the BDFL review the JEP for acceptance, usually via
 an email to the jenkinsci-dev@ mailing list.
 For a JEP that is predetermined to be acceptable
 (e.g., it is an obvious win as-is and/or its implementation has already been checked in)
-the BDFL may also initiate a JEP review, first notifying the JEP author and
+the BDFL may also initiate a JEP review, first notifying the JEP sponsor and
 giving them a chance to make revisions beforehand.
 The BDFL and their chosen consultants then review the JEP.
 They will resolve the JEP as "Accepted" or "Rejected",
-or keep it as "Draft" sending it back to the JEP author for revision.
+or keep it as "Draft" sending it back to the JEP sponsor for revision.
 
 The final authority for JEP resolution is the BDFL. However, whenever a new
 JEP is put forward, any core developer that believes they are suitably
@@ -422,7 +434,7 @@ Process) forward.
 [[final]]
 ==== Finalizing a JEP
 When the implementation is complete and incorporated into the
-appropriate "main" code repository, the JEP author will change
+appropriate "main" code repository, the JEP sponsor will change
 the JEP's status changed to "Final".
 
 [[maintenance]]
@@ -453,12 +465,12 @@ was not a good idea. It is still important to have a record of this
 fact.
 
 Rejected::  [[withdrawn]]
-The "Withdrawn" status is similar to "Rejected" - it means that the JEP author
+The "Withdrawn" status is similar to "Rejected" - it means that the JEP sponsor
 themselves has decided that the JEP is actually a bad idea,
 or agrees that a competing proposal is a better alternative.
 
 Deferred:: [[deferred]]
-A JEP can also be assigned a status of "Deferred". The JEP author or an
+A JEP can also be assigned a status of "Deferred". The JEP sponsor or an
 editor can assign the JEP this status when no progress is being made
 on the JEP. Once a JEP is deferred, a JEP editor can re-assign it
 to draft status.
@@ -487,7 +499,7 @@ Each JEP should have the following parts:
 
 . **Metadata** - table containing metadata about the JEP, including the JEP
   number, a short descriptive title, the names, and optionally the contact info
-  for each author, etc.
+  for each sponsor, etc.
 . **Abstract** - short (200 word) description of the technical issue
   being addressed.
 . **Specification** - The technical specification should describe the
@@ -511,7 +523,7 @@ during discussion.
 . **Backwards Compatibility** - All JEPs that introduce backwards
   incompatibilities must include a section describing these
   incompatibilities and their severity. The JEP must explain how the
-  author proposes to deal with these incompatibilities. JEP submissions that do
+  sponsor proposes to deal with these incompatibilities. JEP submissions that do
   not adequately discuss backwards compatibility, when such discussion is
   required, may be rejected outright.
 . **Reference Implementation** -- The open source reference implementation must be
@@ -553,7 +565,7 @@ JEP:
 | Title
 | Jenkins Enhancement Proposal Format
 
-| Author
+| Sponsor
 | link:https://github.com/rtyler[R Tyler Croy]
 
 | Status
@@ -570,7 +582,7 @@ JEP:
 
 . **JEP** -- Proposal number, given by the JEP editors. Use "0000" until one is assigned.
 . **Title** -- Brief title explaining the proposal in fewer than 50 characters
-. **Author** -- Author/champion of the JEP, in essence, the individual
+. **Sponsor** -- Sponsor of the JEP, in essence, the individual
   responsible for seeing the JEP through the process.
 . **Status** -- Draft :speech_balloon:, Deferred :hourglass:, Accepted :ok_hand:, Rejected :no_entry:, Withdrawn :hand:, Final :lock:, Replaced :dagger:, Active :smile:.
 . **Type** -- Describes the type of JEP: Standards, Informational, Process
@@ -606,44 +618,44 @@ the directory with the `README.adoc` describing the JEP.
 === Reporting JEP Bugs, or Submitting JEP Updates
 
 The process for reporting a bug or submiting a JEP update depends on several factors, such
-as the maturity of the JEP, the preferences of the JEP author, and the nature
+as the maturity of the JEP, the preferences of the JEP sponsor, and the nature
 of the comments. For the early draft stages of the JEP, it's probably best to
-send  comments and changes directly to the JEP author. For more mature, or
+send  comments and changes directly to the JEP sponsor. For more mature, or
 finished JEPs consider submitting corrections to the JEP repository
 footnoteref:[repo] or the Jenkins issue tracker
-footnoteref:[issues,https://issues.jenkins-ci.org].  If the JEP author is a
+footnoteref:[issues,https://issues.jenkins-ci.org].  If the JEP sponsor is a
 Jenkins developer, assign the bug/patch to them, otherwise assign it to a JEP
 editor.
 
 When in doubt about where to send changes, please check first
-with the JEP author and/or a JEP editor.
+with the JEP sponsor and/or a JEP editor.
 
 
-Even JEP authors with git push privileges for the JEP repository should submit
+Even JEP sponsors with git push privileges for the JEP repository should submit
 via Pull Request, with the exception of status or resolution updates
 which may be pushed directly given the change was already discussed
 and agreed to elsewhere.
 
 [[transferring]]
-=== Transferring JEP Ownership (Changing JEP Author)
+=== Transferring JEP Sponsorship
 
-It occasionally becomes necessary to transfer ownership of JEPs to a
-new champion. In general, it is preferable to retain the original author as
-a co-author of the transferred JEP, but that's really up to the
-original author. A good reason to transfer ownership is because the
-original author no longer has the time or interest in updating it or
+It occasionally becomes necessary to transfer sponsorship of JEPs to a
+new sponsor. In general, it is preferable to retain the original sponsor as
+a co-sponsor of the transferred JEP, but that's really up to the
+original sponsor. A good reason to transfer sponsorship is because the
+original sponsor no longer has the time or interest in updating it or
 following through with the JEP process, or has fallen off the face of
 the 'net (i.e. is unreachable or not responding to email). A bad
-reason to transfer ownership is because the author doesn't agree with the
+reason to transfer sponsorship is because the sponsor doesn't agree with the
 direction of the JEP. One aim of the JEP process is to try to build
-consensus around a JEP, but if that's not possible, an author can always
+consensus around a JEP, but if that's not possible, an sponsor can always
 submit a competing JEP.
 
 Ownership of a JEP may also be assumed via pull request.
-Fork the JEP repository, footnoteref:[repo] make the ownership
+Fork the JEP repository, footnoteref:[repo] make the sponsorship
 modification, and submit a pull request. At the same time, send a message asking
-to take over, addressed to both the original author and the JEP editors via
-jenkinsci-dev@.  If the original author doesn't respond to email in a timely
+to take over, addressed to both the original sponsor and the JEP editors via
+jenkinsci-dev@.  If the original sponsor doesn't respond to email in a timely
 manner, the JEP editors will make a unilateral decision (it's not like such
 decisions can't be reversed :).
 
@@ -677,7 +689,7 @@ the editor may choose to provide feedback instead.
 
 ==== Request Changes
 
-If the JEP isn't ready, an editor will send it back to the author for
+If the JEP isn't ready, an editor will send it back to the sponsor for
 revision with specific instructions.
 
 ==== Approve as Draft
@@ -687,7 +699,7 @@ Once the JEP is ready for the repository, a JEP editor will:
 . Assign a JEP number (almost always just the next available number, but
   may also be a special/joke number, like 666 or 3141).
 . Create a new feature branch in jenkinsci/jep for the JEP, i.e. `jep-1`.
-. Re-target the original author's pull request to the feature branch
+. Re-target the original sponsor's pull request to the feature branch
   (see https://help.github.com/articles/changing-the-base-branch-of-a-pull-request/)
 . Squash the commit(s) into that JEP's feature branch.
 . Update the folder number to match the JEP number
