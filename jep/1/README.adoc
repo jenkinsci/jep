@@ -461,11 +461,18 @@ This is intended for Informational JEPs, where version 2 of an API can replace v
 Not all JEPs will be accepted and finalized.
 
 Rejected::  [[rejected]]
-A JEP can also be "Rejected". Perhaps after all is said and done it
-was not a good idea. It is still important to have a record of this
-fact.
+A JEP can also be "Rejected" by the reviewer. Perhaps after all is said and done it
+was not a good idea. It is still important to have a record of this fact.
+Even an Accepted draft may ultimately be Rejected
+at some point before it reaches "Final" status,
+due to factors not known at the time it was Accepted.
+If the reviewer believes the JEP might be Accepted after some modification,
+the reviewer should not reject the JEP, instead returning it Draft status
+with feedback for the sponsor.
+Upon the request of the sponsor, the BDFL may choose to return a
+Rejected JEP to Draft status, but this is at the discrection of the BDFL.
 
-Rejected::  [[withdrawn]]
+Withdrawn::  [[withdrawn]]
 The "Withdrawn" status is similar to "Rejected" - it means that the JEP sponsor
 themselves has decided that the JEP is actually a bad idea,
 or agrees that a competing proposal is a better alternative.
@@ -490,8 +497,8 @@ The possible paths of a JEP's status are as follows:
 image::workflow.png[JEP Workflow]
 
 When a JEP is Accepted, Rejected or Withdrawn,
-the "Resolution" header must be added with a link to the relevant post
-in the jenkinsci-dev@ mailing list archives.
+a "<<header-resolution, Resolution>>" section must be added to the JEP Header
+with a link to the relevant post in the jenkinsci-dev@ mailing list archives.
 
 
 === JEP Guidelines
@@ -673,22 +680,32 @@ JEP:
 
 =====  Addition Header Rows
 
+BDFL-Delegate:: [[header-bdfl-delegate]]
 A **BDFL-Delegate** row is used to record cases where the final decision to
 approve or reject a JEP rests with someone other than the BDFL.
 
+Discussions-To:: [[header-discussions-to]]
 For a JEP where final pronouncement will be made on a list other than
 jenkinsci-dev@, a **Discussions-To** row will indicate the mailing list
 or URL where the pronouncement will occur. A temporary Discussions-To header
 may also be used when a draft JEP is being discussed prior to submission for
 pronouncement.
 
+Requires:: [[header-requires]]
 JEPs may have a **Requires** row, indicating the JEP numbers that this
 JEP depends on.
 
+Superseded-By:: [[header-superseded-by]]
 JEPs may also have a **Superseded-By** row indicating that a JEP has been
 rendered obsolete by a later document; the value is the number of the JEP that
 replaces the current document. The newer JEP must have a **Replaces** row
 containing the number of the JEP that it rendered obsolete.
+
+Resolution:: [[header-resolution]]
+A  **Resolution** section will be added to JEPs when their status is set to
+Accepted, Rejected or Withdrawn.
+It will include a link to the relevant post in the jenkinsci-dev@ mailing list archives.
+
 
 ==== Auxiliary Files
 
@@ -841,6 +858,7 @@ footnote:[https://groups.google.com/d/msgid/jenkinsci-dev/CA%2BnPnMz-m49TK7Em%2B
  making the PEP model relatively straightforward to graft onto our existing
  processes for making proposals and deciding upon changes.
 
+=== Differences from Python PEP
 
 The process by which a number of link:https://apache.org[Apache] projects are
 operated was also considered, but the Python Enhancement Proposal process was
@@ -851,9 +869,66 @@ The Python process uses "Rationale" as the heading for the section for describin
 However the meaning of "Rationale" is similar to "Motivation" in some contexts.
 We decided to use "Reasoning" instead to avoid confusion.
 
+=== Requirements-level terms
+
 Some non-native english speakers commented on the
 <<requirement-levels, Must/Should/May>> mentioned that "should" is a synonym of "must",
 but that existing RFC was a good justification for keeping the terms.
+
+=== Limits of BDFL model
+
+People expressed concern over the limits of the current model where the BDFL
+has final say in a number of steps.
+They felt having 1-person bottlenecks in the JEP process could be problematic.
+The BDFL delegating to other addresses some of that,
+but it is still worth noting possible alternatives.
+
+One alternative would be for the Jenkins Project Governance meeting to have final say.
+Another alternative would be to create some sort of "Technical Steering Commitee",
+separate from Governance, to do this job.
+
+Issues mentioned in relation to these alternatives:
+
+* **Voting policy** - a voting policy woud need to be established,
+outlining what percentage of the meeting would need to vote for or against a JEP.
+* **Commitee vs Delegation** - a strictly committee-approval approach
+may not result in good decisions being made in a timely manner. For example,
+only a few people are qualified to make decisions on Remoting.
+It would be difficult for a group of people in `#jenkins-meeting` to vote
+sensibily on a JEP relating to Remoting which most of them don't fully understand.
+Delegation to experts and stakeholders is much more likely to produce high quality improvements.
+* **Lack of established process** - structured technical decision making
+in the Jenkins Project (as outlined in this JEP) is still in its early stages.
+
+The BDFL model with Delegation as needed may not be sufficient in the long run,
+but it will suffice for now.
+
+=== Requiring same license
+
+Some contributors were concerned that changes to a componenent
+"must be the same license as the component the proposal is
+meant to added to (or MIT licensed by default)."
+The mentioned that  some companies strictly require "Apache v.2",
+because MIT is not explicit about the patent release.
+By setting this condition we explicitly require contributors
+to create a reference implementation with the MIT license,
+which their employeer may not allow.
+
+We could allow other licenses, or mixed licenses.
+However, most JEPs will refer to core or many of the "essential" plugins.
+All of those are MIT licensed, such that anybody contributing
+to those repositories is already expected to contribute
+under the existing (MIT) license.
+
+We chose to keep this text as-is until we have a concrete reason to change it.
+
+=== Asciidoc linter
+
+There are currently no Asciidoc linters.
+Should one be found, we will evaluate it for automated enforcemeent of
+<<JEP File Format and Style>>.
+
+
 
 == References
 
