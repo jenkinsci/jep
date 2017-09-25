@@ -119,7 +119,8 @@ There are several references in this JEP to the "BDFL". This acronym stands for
 link:https://github.com/kohsuke[Kohsuke Kawaguchi],
 original creator of Jenkins.
 
-==== Editors
+[[editor]]
+==== Editor
 
 The JEP editors are individuals responsible for managing the administrative
 and editorial aspects of the JEP workflow (e.g. assigning JEP numbers and
@@ -136,7 +137,8 @@ JEP editorship is by invitation of the current editors. All of the JEP workflow
 can be conducted via the GitHub JEP Repository footnoteref:[repo] and pull
 requests.
 
-==== Conributor
+[[contributor]]
+==== Contributor
 
 A JEP may have any number of "Contributors" who
 help write, implement, discuss, or offer feedback about that JEP.
@@ -186,6 +188,8 @@ below:
 NOTE: When choosing to go counter to SHOULD or SHOULD NOT guidance,
 the reasons behind that choice SHOULD be documented.
 
+We use the phrase "in a timely manner" or some variation of it
+to describe the timeframe in what a number of actions should occur.
 
 === JEP Workflow
 
@@ -500,6 +504,18 @@ When a JEP is Accepted, Rejected or Withdrawn,
 a "<<header-resolution, Resolution>>" section must be added to the JEP Header
 with a link to the relevant post in the jenkinsci-dev@ mailing list archives.
 
+==== Scheduling and timeframes
+
+This workflow does not dictate specific time frames for any actions.
+In general, it is expected that a JEP should make reasonable progress over time,
+and all involved should respond in everyone can agree is timely manner.
+If it becomes necessary to set specific timeframes for action,
+it is the sponsors responibility to do so.
+Just as the sponsor must build consensus for a JEP,
+they must also set and communicate a reasonable schedule to keep a JEP moving forward.
+If one or more contributors are not responding
+and the sponsor chooses to move forard without their feedback,
+they should document that choice in the "<<Reasoning>>" section of the JEP.
 
 === JEP Guidelines
 
@@ -903,6 +919,27 @@ in the Jenkins Project (as outlined in this JEP) is still in its early stages.
 The BDFL model with Delegation as needed may not be sufficient in the long run,
 but it will suffice for now.
 
+=== Timeliness
+
+Along with concerns about a bottleneck in BDFL reviews,
+some wanted to add specific language to set expectations timeliness
+(also sometimes referred to a
+"link:https://en.wikipedia.org/wiki/Service-level_agreement[service-level agreements]", or SLAs).
+The "<<Deferred>>" status addresses what happens if
+a sponsor does not move a JEP forward in a timely manner,
+but there are no contingencies for slow response from
+contributors, editors, the BDFL, or BDFL delegates.
+
+There are any number of ways to set expectations about timeliness.
+For example, regarding the review process, one person mentioned put forward,
+link:https://github.com/jenkinsci/jep/pull/1#discussion-diff-139636422R362[this possible outline].
+
+For now, we have chosen to add a "<<Scheduling and timeframes>>" section
+and not to set specific timeframes for action or response.
+Attempting to set exact limits on a volunteer organization could lead to more
+difficulties than leaving the timing up to the contributors to each JEP.
+
+
 === Requiring same license
 
 Some contributors were concerned that changes to a componenent
@@ -927,8 +964,6 @@ We chose to keep this text as-is until we have a concrete reason to change it.
 There are currently no Asciidoc linters.
 Should one be found, we will evaluate it for automated enforcemeent of
 <<JEP File Format and Style>>.
-
-
 
 == References
 
