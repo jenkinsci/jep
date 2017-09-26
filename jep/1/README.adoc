@@ -552,12 +552,16 @@ The reasoning should provide evidence of consensus within the
 community and discuss important objections or concerns raised
 during discussion.
 
-. **Backwards Compatibility** -
-  All JEPs must include a section describing any incompatibilities and their severity.
-  The JEP must explain how the sponsor proposes to deal with these incompatibilities.
-  If there are no dackwards compatibility concerns, the section must say that.
-  JEP submissions that do not adequately discuss backwards compatibility,
-  when such discussion is required will not be approved as JEP Drafts.
+. **Backwards Compatibility** - All JEPs must include a section describing any incompatibilities and their severity.
+  The JEP must explain how the it proposes to deal with these incompatibilities.
+  If there are no backwards compatibility concerns, the section must say that.
+. **Security** - All JEPs must include a section describing any security risks and their severity.
+  The JEP must explain how the it proposes to deal with these risks.
+  If there are no security concerns, the section must say that.
+. **Infrastructure Requirements** -
+  All JEPs must include a section describing any infrastructure changes or addtions they require.
+  The JEP must explain the scope of these changes in reasonable detail.
+  If there are no infrastructure changes, the section must say that.
 . **Reference Implementation** --
   If a JEP will include code changes, an open source reference implementation
   must be completed before any JEP is given status "Final".
@@ -570,6 +574,9 @@ during discussion.
   the references section should be updated to include links to the pull requests
   and mailing list discussions which were involved in the process. The JEP
   should self-document the process in which it was developed.
+
+WARNING: JEP submissions that do not adequately complete any of the above sections
+will not be approved as JEP Drafts.
 
 The final implementation must include test code and documentation
 appropriate for either the Jenkins user or developer documentation.
@@ -905,6 +912,19 @@ Should one be found, we will evaluate it for automated checking of
 <<JEP File Format>> for syntax or structural errors
 (or for style guidelines once they are established).
 
+
+== Backwards Compatibility
+
+There are no backwards compatibility concerns related to this proposal.
+
+== Security
+
+There are no security risks related to this proposal.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+This JEP leverages existing infrastructure.
 
 == References
 
