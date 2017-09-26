@@ -40,8 +40,10 @@ endif::[]
 [[abstract]]
 == Abstract
 
-A Jenkins Enhancement Proposal (JEP) is a design document that describes a new feature or aspect of Jenkins itself, or the Jenkins project processes or environment.
-This JEP describes the structure of JEP documents and details the process by which JEPs are created, submitted, reviewed, finalized, and maintained.
+A Jenkins Enhancement Proposal (JEP) is a design document that describes a new feature or aspect of Jenkins itself,
+or the Jenkins project processes or environment.
+This JEP describes the structure of JEP documents and details the process by which JEPs are created,
+submitted, reviewed, finalized, and maintained.
 
 [[specification]]
 == Specification
@@ -49,20 +51,30 @@ This JEP describes the structure of JEP documents and details the process by whi
 === What is a JEP?
 
 JEP stands for Jenkins Enhancement Proposal.
-A JEP is a design document that describes a new feature or aspect of Jenkins itself, or Jenkins project processes or environment.
-A JEP provides a concise technical specification of the feature, describes the motivation for the change, and discusses the rationale behind the design.
+A JEP is a design document that describes a new feature or aspect of Jenkins itself,
+or Jenkins project processes or environment.
+A JEP provides a concise technical specification of the feature,
+describes the motivation for the change, and discusses the rationale behind the design.
 
-JEPs are the primary mechanisms for proposing major new features, for collecting community input on an issue, and for documenting the design decisions that have gone into Jenkins.
+JEPs are the primary mechanisms for proposing major new features,
+for collecting community input on an issue, and for documenting the design decisions that have gone into Jenkins.
 Each JEP must have at least one <<Sponsor>>.
-The JEP Sponsor is responsible for the JEP overall - building consensus for that JEP within the community, documenting dissenting opinions, coordinating contributors work, and generally ensuring the JEP meets the style, format, and quality guidelines described below.
-A JEP may also have any number of <<Contributor, Contributors>> who help write, implement, discussion, or offer feedback about the JEP.
+The JEP Sponsor is responsible for the JEP overall - building consensus for that JEP within the community,
+documenting dissenting opinions, coordinating contributors work,
+and generally ensuring the JEP meets the style, format, and quality guidelines described below.
+A JEP may also have any number of <<Contributor, Contributors>> who help write,
+implement, discussion, or offer feedback about the JEP.
 One contributor might do only one or any combination of these of these things during any part of the life of a JEP.
 
-Because the JEPs are maintained as text files in a versioned repository, their revision history is the historical record of the feature proposal footnoteref:[repo, https://github.com/jenkinsci/jep].
+Because the JEPs are maintained as text files in a versioned repository,
+their revision history is the historical record of the feature proposal
+footnoteref:[repo, https://github.com/jenkinsci/jep].
 
 [NOTE]
 ====
-For non-text files added to the repository, such as images, the files must be readable with free and open source tools, and should ideally be editable by other contributors.
+For non-text files added to the repository, such as images,
+the files must be readable with free and open source tools,
+and should ideally be editable by other contributors.
 For example, use SVG rather than PSD for vector graphics.
 ====
 
@@ -73,12 +85,19 @@ There are three kinds of JEP:
 
 . A **Standards Track** JEP describes a new feature or implementation for Jenkins.
   It may also describe an interoperability or backwards-compatibility standard which will be supported for the feature in current versions of Jenkins, moving forward.
-. An **Informational** JEP describes a Jenkins design issue, or provides general guidelines or information to the Jenkins community, but does not propose a new feature.
-  Informational JEPs do not necessarily represent a Jenkins community consensus or recommendation, so users and implementers are free to ignore Informational JEPs or follow their advice.
-. A **Process** JEP describes a process surrounding Jenkins, or proposes a change to (or an event in) a process.
+. An **Informational** JEP describes a Jenkins design issue,
+  or provides general guidelines or information to the Jenkins community,
+  but does not propose a new feature.
+  Informational JEPs do not necessarily represent a Jenkins community consensus or recommendation,
+  so users and implementers are free to ignore Informational JEPs or follow their advice.
+. A **Process** JEP describes a process surrounding Jenkins,
+or proposes a change to (or an event in) a process.
   Process JEPs are like Standards Track JEPs but apply to areas other than the Jenkins codebase itself.
-  They may propose an implementation, but not for what would be generally considered the Jenkins codebase; they often require community consensus; unlike Informational JEPs, they are more than recommendations, and users are typically not free to ignore them.
-  Examples include procedures, guidelines, changes to the decision-making process, and changes to the tools or environment used in Jenkins development.
+  They may propose an implementation, but not for what would be generally considered the Jenkins codebase;
+  they often require community consensus;
+  unlike Informational JEPs, they are more than recommendations, and users are typically not free to ignore them.
+  Examples include procedures, guidelines, changes to the decision-making process,
+  and changes to the tools or environment used in Jenkins development.
   Any meta-JEP (JEP focusing on the improvement of the Jenkins Enhancement Proposal process) is also considered a Process JEP.
 
 === JEP Terminology
@@ -86,7 +105,9 @@ There are three kinds of JEP:
 ==== BDFL
 
 There are several references in this JEP to the "BDFL".
-This acronym stands for "Benevolent Dictator for Life", and refers to link:https://github.com/kohsuke[Kohsuke Kawaguchi], original creator of Jenkins.
+This acronym stands for "Benevolent Dictator for Life", and refers to
+link:https://github.com/kohsuke[Kohsuke Kawaguchi],
+original creator of Jenkins.
 
 ==== Editor
 
@@ -123,9 +144,11 @@ Their responsibilities include:
 * Setting and communicating the schedule as needed
 
 The Sponsor of a JEP may or may not do any of the tasks other contributors do.
-For example, one sponsor might write large portions of one JEP, while another sponsor might leave the writing to other contributors.
+For example, one sponsor might write large portions of one JEP,
+while another sponsor might leave the writing to other contributors.
 
-Anyone may be Sponsor for a JEP, though it should be someone familiar enough with Jenkins, the Jenkins project, and the JEP workflow to effectively guide the JEP to completion.
+Anyone may be Sponsor for a JEP, though it should be someone familiar enough with Jenkins,
+the Jenkins project, and the JEP workflow to effectively guide the JEP to completion.
 
 A JEP may have more than one Sponsor, especially after it has been finalized and is being maintained over time.
 For simplicity, this document uses the singular ("The JEP Sponsor", "a sponsor") when referring the one or more people in the role of "Sponsor" of a JEP.
@@ -136,39 +159,56 @@ For simplicity, this document uses the singular ("The JEP Sponsor", "a sponsor")
 JEP documents _must_ follow link:https://tools.ietf.org/html/rfc2119[RFC 2119] which defines key words to "indicate requirement levels".
 These are listed below:
 
-. **MUST** This word, or the terms "REQUIRED" or "SHALL", mean that the definition is an absolute requirement of the specification.
-. **MUST NOT** This phrase, or the phrase "SHALL NOT", mean that the definition is an absolute prohibition of the specification.
-. **SHOULD** This word, or the adjective "RECOMMENDED", mean that there may exist valid reasons in particular circumstances to ignore a particular item, but the full implications must be understood and carefully weighed before choosing a different course.
-. **SHOULD NOT** This phrase, or the phrase "NOT RECOMMENDED" mean that there may exist valid reasons in particular circumstances when the particular behavior is acceptable or even useful, but the full implications should be understood and the case carefully weighed before implementing any behavior described with this label.
+. **MUST** This word, or the terms "REQUIRED" or "SHALL",
+  mean that the definition is an absolute requirement of the specification.
+. **MUST NOT** This phrase, or the phrase "SHALL NOT",
+  mean that the definition is an absolute prohibition of the specification.
+. **SHOULD** This word, or the adjective "RECOMMENDED",
+  mean that there may exist valid reasons in particular circumstances to ignore a particular item,
+  but the full implications must be understood and carefully weighed before choosing a different course.
+. **SHOULD NOT** This phrase, or the phrase "NOT RECOMMENDED",
+  mean that there may exist valid reasons in particular circumstances when the particular behavior is acceptable or even useful,
+  but the full implications should be understood and the case carefully weighed before implementing any behavior described with this label.
 . **MAY** This word, or the adjective "OPTIONAL", mean that an item is truly optional.
 
-NOTE: When choosing to go counter to SHOULD or SHOULD NOT guidance, the reasons behind that choice SHOULD be documented.
+NOTE: When choosing to go counter to SHOULD or SHOULD NOT guidance,
+the reasons behind that choice SHOULD be documented.
 
 === JEP Workflow
 
 ==== Overview
 
-Before delving into the details of the JEP workflow, let's take a high-level look at how JEP might go.
+Before delving into the details of the JEP workflow,
+let's take a high-level look at how JEP might go.
 
 . **<<start, Inital Discussion>>** - Andrea has an idea for new feature emails jenkinsci-dev@googlegroups.com.
   She discusses the idea with the group, determining that the idea is worth pursuing.
   She chooses to be the "<<Sponsor>>" for this potential JEP.
-  She <<discussion, gathers initial feedback>> from the community, adjusts her design as needed, records the reasons for design choices, and keeps track of differing views.
+  She <<discussion, gathers initial feedback>> from the community,
+  adjusts her design as needed, records the reasons for design choices,
+  and keeps track of differing views.
 
-. **<<submission, Submission>>** - Andrea writes up the proposal using the JEP document template as a guide, including a supporting documentation and a reference implementation if needed.
+. **<<submission, Submission>>** - Andrea writes up the proposal using the JEP document template as a guide,
+  including a supporting documentation and a reference implementation if needed.
   She then submits the JEP to the JEP editors for <<approval, approval as a Draft JEP>>.
   An editor checks the submission and determines it is ready to considered as a JEP.
-  They "approve" the submission, assigning the JEP a number, and the submission becomes a "Draft" JEP.
+  They "approve" the submission, assigning the JEP a number,
+  and the submission becomes a "Draft" JEP.
 
-. **<<draft, Draft Status>>** - While the JEP is a "<<draft, Draft>>", Andrea may continue to gather feedback, change the proposal, and record the reasoning and differing views.
-  When she believes the design is complete and represents the consensus of the community, she submits the JEP for review by the <<BDFL>>.
+. **<<draft, Draft Status>>** - While the JEP is a "<<draft, Draft>>",
+  Andrea may continue to gather feedback, change the proposal, and record the reasoning and differing views.
+  When she believes the design is complete and represents the consensus of the community,
+  she submits the JEP for review by the <<BDFL>>.
 
-. **<<review, Review>>** - The <<BDFL>> reviews the JEP and decides whether to accept it, making it an "<<accepted, Accepted>>" JEP.
-  Other possible resolutions are "<<rejected, Rejected>>", "<<deferred, Deferred>>", "<<withdrawn, Withdrawn>>".
+. **<<review, Review>>** - The <<BDFL>> reviews the JEP and decides whether to accept it,
+  making it an "<<accepted, Accepted>>" JEP.
+  Other possible resolutions are "<<rejected, Rejected>>",
+  "<<deferred, Deferred>>", "<<withdrawn, Withdrawn>>".
 
 . **<<accepted, Accepted Status>>** -  Andrea and other contributors complete all remaining implementation related to the "<<accepted, Accepted>>" JEP (code, documentation, or other changes).
 
-. **<<final, Final Status>>** - When the implementation is complete and all changes have been published or otherwise incorporated into the appropriate code repositories, the JEP status is changed to "<<final, Final>>".
+. **<<final, Final Status>>** - When the implementation is complete and all changes have been published or otherwise incorporated into the appropriate code repositories,
+  the JEP status is changed to "<<final, Final>>".
   The JEP is done.
 
 . **<<maintenance, Maintenance>>** - At some later date, the JEP may need to be updated.
@@ -195,7 +235,8 @@ Enhancements or patches which have a smaller impact often don't need a JEP can b
 
 ==== Find a Sponsor
 
-Each JEP must have a "<<Sponsor>>" -- someone who writes the JEP using the style and format described below, shepherds the discussions in the appropriate forums, and attempts to build community consensus around the idea.
+Each JEP must have a "<<Sponsor>>" - someone who writes the JEP using the style and format described below,'
+shepherds the discussions in the appropriate forums, and attempts to build community consensus around the idea.
 The JEP Sponsor should first attempt to ascertain whether the idea is JEP-able.
 Posting to the jenkinsci-dev@googlegroups.com mailing list is the best way to go about this.
 
@@ -208,14 +249,17 @@ Asking the Jenkins community first if an idea is original helps prevent too much
 It also helps to make sure the idea is applicable to the entire community and not just the sponsor.
 Just because an idea sounds good to the sponsor does not mean it will work for most people in most areas where Jenkins is used.
 
-Once the sponsor has asked the Jenkins community as to whether an idea has any chance of acceptance, a draft JEP should be presented to jenkinsci-dev@.
-This gives the sponsor a chance to flesh out the draft JEP to make sure it is properly formatted, of high quality, and to address initial concerns about the proposal.
+Once the sponsor has asked the Jenkins community as to whether an idea has any chance of acceptance,
+a draft JEP should be presented to jenkinsci-dev@.
+This gives the sponsor a chance to flesh out the draft JEP to make sure it is properly formatted,
+of high quality, and to address initial concerns about the proposal.
 
 [[submission]]
 ==== Creating a JEP Submission
 
 Following a discussion on jenkinsci-dev@, the proposal should be turned into as a JEP submission and submitted via a GitHub pull request to this repository footnoteref:[repo].
-The submission must be written in JEP style as described below, otherwise, it will fail review immediately (although minor errors may be corrected by the editors).
+The submission must be written in JEP style as described below,
+otherwise, it will fail review immediately (although minor errors may be corrected by the editors).
 
 To submit a JEP for approval as Draft, the JEP sponsor should:
 
@@ -229,7 +273,8 @@ A JEP editor will check the submission for conformance with JEP structure and fo
 Editors may make minor changes to make the submission meets the requirements for approval as a Draft JEP.
 If a JEP requires major changes, editors will add specific feedback and send the submission back to the sponsor for revision.
 
-IMPORTANT: All submissions must go through pull request, even those by editors or contributors with "git push" privileges for the JEP repository footnoteref:[repo].
+IMPORTANT: All submissions must go through pull request,
+even those by editors or contributors with "git push" privileges for the JEP repository footnoteref:[repo].
 
 The JEP editors will not unreasonably deny a JEP.
 Reasons for denying JEP "Draft" status include:
@@ -239,12 +284,14 @@ Reasons for denying JEP "Draft" status include:
 * not providing enough information in the "Motivation" or "Backwards Compatibility" sections
 * not in keeping with the link:https://jenkins.io/project/governance/[Jenkins philosophy].
 
-The BDFL may be consulted during the approval phase, and is the final arbiter of a submission's approvability as a Draft JEP.
+The BDFL may be consulted during the approval phase,
+and is the final arbiter of a submission's approvability as a Draft JEP.
 
 [[approval]]
 ==== Approval as Draft JEP
 
-Once JEP meets requirements for structure and formatting, the editors will approve the submission as a draft JEP by following the steps outlined in the
+Once JEP meets requirements for structure and formatting,
+the editors will approve the submission as a draft JEP by following the steps outlined in the
 <<approve-as-draft, editors' "Approve as Draft" section>>.
 When they are done, the Draft JEP will have an official JEP number and the sumbmission PR will have been merged to a matching folder and feature branch
 (i.e the
@@ -266,7 +313,8 @@ The version of a JEP that is approved as a Draft JEP is rarely the same as the f
 A Draft JEP often requires further refinement and expansion before it is suffiently complete and represents the consensus of the community.
 
 Standards Track JEPs consist of two parts, a design document and a reference implementation.
-At minimum, prototype implementation should be co-developed with the JEP, as ideas that sound good in principle sometimes turn out to be impractical when subjected to the test of implementation.
+At minimum, prototype implementation should be co-developed with the JEP,
+as ideas that sound good in principle sometimes turn out to be impractical when subjected to the test of implementation.
 
 A JEP's sponsor is responsible for collecting community feedback on a JEP before submitting it for review.
 Potential changes to a draft JEP may be discussed further on jenkinsci-dev@.
@@ -282,25 +330,34 @@ JEP sponsors should use their discretion here.
 
 The JEP sponsor may also ask JEP editors for further feedback regarding the style and consistency of a JEP and its readiness for review by the BDFL.
 
-As updates are necessary, the JEP sponsor and other contributors should push commits to their fork of the JEP repository footnoteref:[repo], and submit pull requests targeting the JEP's feature branch.
+As updates are necessary, the JEP sponsor and other contributors should push commits to their fork of the JEP repository footnoteref:[repo],
+and submit pull requests targeting the JEP's feature branch.
 
 [[review]]
 ==== JEP Review
 
-Once the sponsor believes a JEP is complete, they request the BDFL review the JEP for acceptance, usually via an email to the jenkinsci-dev@ mailing list.
+Once the sponsor believes a JEP is complete, they request the BDFL review the JEP for acceptance,
+usually via an email to the jenkinsci-dev@ mailing list.
 For a JEP that is predetermined to be acceptable
-(e.g., it is an obvious win as-is and/or its implementation has already been checked in) the BDFL may also initiate a JEP review, first notifying the JEP sponsor and giving them a chance to make revisions beforehand.
+(e.g., it is an obvious win as-is and/or its implementation has already been checked in)
+the BDFL may also initiate a JEP review, first notifying the JEP sponsor and giving them a chance to make revisions beforehand.
 The BDFL and their chosen consultants then review the JEP.
-They will resolve the JEP as "Accepted" or "Rejected", or keep it as "Draft" sending it back to the JEP sponsor for revision.
+They will resolve the JEP as "Accepted" or "Rejected",
+or keep it as "Draft" sending it back to the JEP sponsor for revision.
 
 The final authority for JEP resolution is the BDFL.
-However, whenever a new JEP is put forward, any core developer that believes they are suitably experienced to make the final decision on that JEP may offer to serve as the BDFL's delegate (or "JEP czar") for that JEP.
-If their self-nomination is accepted by the other core contributors and the BDFL, then they will have the authority to accept (or reject) that JEP.
-This process happens most frequently with JEPs where the BDFL has agreed in principle that *something* needs to be done, but there are details that need to be worked out before the JEP can be accepted.
+However, whenever a new JEP is put forward,
+any core developer that believes they are suitably experienced to make the final decision on that JEP may offer to serve as the BDFL's delegate (or "JEP czar") for that JEP.
+If their self-nomination is accepted by the other core contributors and the BDFL,
+then they will have the authority to accept (or reject) that JEP.
+This process happens most frequently with JEPs where the BDFL has agreed in principle that *something* needs to be done,
+but there are details that need to be worked out before the JEP can be accepted.
 
-If the final decision on a JEP is to be made by a delegate rather than directly by the BDFL, this will be recorded by including the "BDFL-Delegate" header in the JEP.
+If the final decision on a JEP is to be made by a delegate rather than directly by the BDFL,
+this will be recorded by including the "BDFL-Delegate" header in the JEP.
 
-JEP review and resolution may also occur on a list other than jenkinsci-dev@ In this case, the "Discussions-To" heading in the JEP will identify the appropriate alternative list where discussion, review and pronouncement on the JEP will occur.
+JEP review and resolution may also occur on a list other than jenkinsci-dev@ In this case,
+the "Discussions-To" heading in the JEP will identify the appropriate alternative list where discussion, review and pronouncement on the JEP will occur.
 
 [[accepted]]
 ==== Accepting a JEP
@@ -309,14 +366,17 @@ For a JEP to be "Accepted" it must meet certain minimum criteria:
 
 * It must be a clear and complete description of the proposed enhancement.
 * The enhancement must represent a net improvement.
-* The proposed implementation, if applicable, must be solid, must not complicate Jenkins unduly, and must be the same license as the component the proposal is meant to added to (or MIT licensed by default).
+* The proposed implementation, if applicable, must be solid, must not complicate Jenkins unduly,
+  and must be the same license as the component the proposal is meant to added to (or MIT licensed by default).
 
 Once a JEP has been accepted, the implementation must be completed.
-The Jenkins project values contribution over "talk" footnote:[https://jenkins.io/project/governance/#meritocracy], and as such the implementation is of utmost importance to moving any proposal (Standards or Process) forward.
+The Jenkins project values contribution over "talk" footnote:[https://jenkins.io/project/governance/#meritocracy],
+and as such the implementation is of utmost importance to moving any proposal (Standards or Process) forward.
 
 [[final]]
 ==== Finalizing a JEP
-When the implementation is complete and incorporated into the appropriate "main" code repository, the JEP sponsor will change the JEP's status changed to "Final".
+When the implementation is complete and incorporated into the appropriate "main" code repository,
+the JEP sponsor will change the JEP's status changed to "Final".
 
 [[maintenance]]
 ==== JEP Maintenance
@@ -340,12 +400,17 @@ Rejected::  [[rejected]]
 A JEP can also be "Rejected" by the reviewer.
 Perhaps after all is said and done it was not a good idea.
 It is still important to have a record of this fact.
-Even an Accepted draft may ultimately be Rejected at some point before it reaches "Final" status, due to factors not known at the time it was Accepted.
-If the reviewer believes the JEP might be Accepted after some modification, the reviewer should not reject the JEP, instead returning it Draft status with feedback for the sponsor.
-Upon the request of the sponsor, the BDFL may choose to return a Rejected JEP to Draft status, but this is at the discrection of the BDFL.
+Even an Accepted draft may ultimately be Rejected at some point before it reaches "Final" status,
+due to factors not known at the time it was Accepted.
+If the reviewer believes the JEP might be Accepted after some modification, the reviewer should not reject the JEP,
+ instead returning it Draft status with feedback for the sponsor.
+Upon the request of the sponsor, the BDFL may choose to return a Rejected JEP to Draft status,
+but this is at the discrection of the BDFL.
 
 Withdrawn::  [[withdrawn]]
-The "Withdrawn" status is similar to "Rejected" - it means that the JEP sponsor themselves has decided that the JEP is actually a bad idea, or agrees that a competing proposal is a better alternative.
+The "Withdrawn" status is similar to "Rejected" -
+it means that the JEP sponsor themselves has decided that the JEP is actually a bad idea,
+or agrees that a competing proposal is a better alternative.
 
 Deferred:: [[deferred]]
 A JEP can also be assigned a status of "Deferred".
@@ -368,10 +433,13 @@ When a JEP is Accepted, Rejected or Withdrawn, a "<<header-resolution, Resolutio
 ==== Scheduling and timeframes
 
 This workflow does not dictate specific time frames for any actions.
-In general, it is expected that a JEP should make reasonable progress over time, and all involved should respond in everyone can agree is timely manner.
+In general, it is expected that a JEP should make reasonable progress over time,
+and all involved should respond in everyone can agree is timely manner.
 If it becomes necessary to set specific timeframes for action, it is the sponsors responsibility to do so.
-Just as the sponsor must build consensus for a JEP, they must also set and communicate a reasonable schedule to keep a JEP moving forward.
-If one or more contributors are not responding and the sponsor chooses to move forard without their feedback, they should document that choice in the "<<Reasoning>>" section of the JEP.
+Just as the sponsor must build consensus for a JEP,
+they must also set and communicate a reasonable schedule to keep a JEP moving forward.
+If one or more contributors are not responding and the sponsor chooses to move forard without their feedback,
+they should document that choice in the "<<Reasoning>>" section of the JEP.
 
 === JEP Guidelines
 
@@ -379,7 +447,9 @@ If one or more contributors are not responding and the sponsor chooses to move f
 
 All JEPs MUST have the following parts to be "approved as Draft":
 
-. **Metadata** - table containing the <<metadata, JEP Header Preamble>> about the JEP, including the JEP number, a short descriptive title, the names, and optionally the contact info for each sponsor, etc.
+. **Metadata** - table containing the <<metadata, JEP Header Preamble>> about the JEP,
+  including the JEP number, a short descriptive title, the names,
+  and optionally the contact info for each sponsor, etc.
 . **Abstract** - short (200 word) description of the technical issue being addressed.
 . **Specification** - The technical specification should describe the syntax and semantics of any new feature.
   The specification should be sufficiently detailed to allow new or existing Jenkins developers to reasonably understand the scope/impact of an implementation.
@@ -388,16 +458,21 @@ All JEPs MUST have the following parts to be "approved as Draft":
   A JEP submission without sufficient discussion of its motivation will not be approved as a JEP Draft.
 . **Reasoning** - The reasoning describes why particular design decisions were made.
   It should describe alternate designs that were considered and related work, e.g. how the feature is supported in other systems.
-+ The reasoning should provide evidence of consensus within the community and discuss important objections or concerns raised during discussion.
++
+The reasoning should provide evidence of consensus within the community and discuss important objections or concerns raised during discussion.
 
 . **Backwards Compatibility** - All JEPs must include a section describing any incompatibilities and their severity.
   The JEP must explain how the sponsor proposes to deal with these incompatibilities.
   If there are no dackwards compatibility concerns, the section must say that.
-  JEP submissions that do not adequately discuss backwards compatibility, when such discussion is required will not be approved as JEP Drafts.
-. **Reference Implementation** -- If a JEP will include code changes, an open source reference implementation must be completed before any JEP is given status "Final".
+  JEP submissions that do not adequately discuss backwards compatibility,
+  when such discussion is required, will not be approved as JEP Drafts.
+. **Reference Implementation** -- If a JEP will include code changes,
+  an open source reference implementation must be completed before any JEP is given status "Final".
   The reference implementation need not be completed before the JEP is accepted.
-  While there is merit to the approach of reaching consensus on the specification and reasoning before writing code, the principle of "rough consensus and running code" is still useful when it comes to resolving many discussions of API details.
-. **References** -- When moving a JEP from a Draft to "Accepted" or "Final" state, the references section should be updated to include links to the pull requests and mailing list discussions which were involved in the process.
+  While there is merit to the approach of reaching consensus on the specification and reasoning before writing code,
+  the principle of "rough consensus and running code" is still useful when it comes to resolving many discussions of API details.
+. **References** -- When moving a JEP from a Draft to "Accepted" or "Final" state,
+  the references section should be updated to include links to the pull requests and mailing list discussions which were involved in the process.
   The JEP should self-document the process in which it was developed.
 
 The final implementation must include test code and documentation appropriate for either the Jenkins user or developer documentation.
@@ -405,7 +480,8 @@ The final implementation must include test code and documentation appropriate fo
 ==== JEP File Format and Style
 
 JEPs are UTF-8 encoded text files using the link:https://asciidoctor.org[AsciiDoc] format.
-AsciiDoc allows for rich markup that is still quite easy to read, but also results in good-looking and functional HTML.
+AsciiDoc allows for rich markup that is still quite easy to read,
+but also results in good-looking and functional HTML.
 
 The following are style guidelines for JEP asciidoc files.
 Items earlier in the list are higher importance than later items.
@@ -431,7 +507,8 @@ link:http://asciidoctor.org/docs/asciidoc-recommended-practices/#one-sentence-pe
 
 ===== 120 characters per line (REQUIRED)
 
-Aside from the structures mentioned above this point, lines MUST be wrapped before 120 characters per line.
+Aside from the structures mentioned above this point,
+lines MUST be wrapped before 120 characters per line.
 This is required to make diffs and comments reasonably accurate and specific.
 
 ===== 80 characters per line (RECOMMENDED)
@@ -514,7 +591,8 @@ All JEPs MUST begin with an AsciiDoc table containing metadata relevant to the J
 Use "0000" until one is assigned.
 . **Title** -- Brief title explaining the proposal in fewer than 50 characters
 . **Sponsor** -- Sponsor of the JEP, in essence, the individual responsible for seeing the JEP through the process.
-. **Status** -- Draft :speech_balloon:, Deferred :hourglass:, Accepted :ok_hand:, Rejected :no_entry:, Withdrawn :hand:, Final :lock:, Replaced :dagger:, Active :smile:.
+. **Status** -- Draft :speech_balloon:, Deferred :hourglass:, Accepted :ok_hand:,
+  Rejected :no_entry:, Withdrawn :hand:, Final :lock:, Replaced :dagger:, Active :smile:.
 . **Type** -- Describes the type of JEP: Standards, Informational, Process
 . **Created** -- Date (`%Y-%m-%d`) when the document was first created.
 
@@ -524,7 +602,8 @@ BDFL-Delegate:: [[header-bdfl-delegate]]
 A **BDFL-Delegate** row is used to record cases where the final decision to approve or reject a JEP rests with someone other than the BDFL.
 
 Discussions-To:: [[header-discussions-to]]
-For a JEP where final pronouncement will be made on a list other than jenkinsci-dev@, a **Discussions-To** row will indicate the mailing list or URL where the pronouncement will occur.
+For a JEP where final pronouncement will be made on a list other than jenkinsci-dev@,
+a **Discussions-To** row will indicate the mailing list or URL where the pronouncement will occur.
 A temporary Discussions-To header may also be used when a draft JEP is being discussed prior to submission for pronouncement.
 
 Requires:: [[header-requires]]
@@ -541,11 +620,13 @@ It will include a link to the relevant post in the jenkinsci-dev@ mailing list a
 ==== Auxiliary Files
 
 JEPs may include auxiliary files such as diagrams.
-Such files must be named appropriately, with lowercase letters and no spaces, and be included in the directory with the `README.adoc` describing the JEP.
+Such files must be named appropriately, with lowercase letters and no spaces,
+and be included in the directory with the `README.adoc` describing the JEP.
 
 === Reporting JEP Bugs, or Submitting JEP Updates
 
-The process for reporting a bug or submitting a JEP update depends on several factors, such as the maturity of the JEP, the preferences of the JEP sponsor, and the nature of the comments.
+The process for reporting a bug or submitting a JEP update depends on several factors,
+such as the maturity of the JEP, the preferences of the JEP sponsor, and the nature of the comments.
 For the early draft stages of the JEP, it's probably best to send  comments and changes directly to the JEP sponsor.
 For more mature, or finished JEPs consider submitting corrections to the JEP repository
 footnoteref:[repo] or the Jenkins issue tracker
@@ -555,21 +636,26 @@ If the JEP sponsor is a Jenkins developer, assign the bug/patch to them, otherwi
 When in doubt about where to send changes, please check first with the JEP sponsor and/or a JEP editor.
 
 
-Even JEP sponsors with git push privileges for the JEP repository should submit via Pull Request, with the exception of status or resolution updates which may be pushed directly given the change was already discussed and agreed to elsewhere.
+Even JEP sponsors with git push privileges for the JEP repository should submit via Pull Request,
+with the exception of status or resolution updates which may be pushed directly given the change was already discussed and agreed to elsewhere.
 
 [[transferring]]
 === Transferring JEP Sponsorship
 
 It occasionally becomes necessary to transfer sponsorship of JEPs to a new sponsor.
-In general, it is preferable to retain the original sponsor as a co-sponsor of the transferred JEP, but that's really up to the original sponsor.
+In general, it is preferable to retain the original sponsor as a co-sponsor of the transferred JEP,
+but that's really up to the original sponsor.
 A good reason to transfer sponsorship is because the original sponsor no longer has the time or interest in updating it or following through with the JEP process, or has fallen off the face of the 'net (i.e. is unreachable or not responding to email).
 A bad reason to transfer sponsorship is because the sponsor doesn't agree with the direction of the JEP.
-One aim of the JEP process is to try to build consensus around a JEP, but if that's not possible, a sponsor can always submit a competing JEP.
+One aim of the JEP process is to try to build consensus around a JEP,
+but if that's not possible, a sponsor can always submit a competing JEP.
 
 Ownership of a JEP may also be assumed via pull request.
 Fork the JEP repository, footnoteref:[repo] make the sponsorship modification, and submit a pull request.
-At the same time, send a message asking to take over, addressed to both the original sponsor and the JEP editors via jenkinsci-dev@.
- If the original sponsor doesn't respond to email in a timely manner, the JEP editors will make a unilateral decision (it's not like such decisions can't be reversed :).
+At the same time, send a message asking to take over,
+addressed to both the original sponsor and the JEP editors via jenkinsci-dev@.
+If the original sponsor doesn't respond to email in a timely manner,
+the JEP editors will make a unilateral decision (it's not like such decisions can't be reversed :).
 
 [[editor-responsibilities]]
 === JEP Editor Responsibilities & Workflow
@@ -603,9 +689,11 @@ If the JEP isn't ready, an editor will send it back to the sponsor for revision 
 
 Once the JEP is ready for the repository, a JEP editor will:
 
-. Assign a JEP number (almost always just the next available number, but may also be a special/joke number, like 666 or 3141).
+. Assign a JEP number (almost always just the next available number,
+  but may also be a special/joke number, like 666 or 3141).
 . Create a new feature branch in jenkinsci/jep for the JEP, i.e. `jep-1`.
-. Re-target the original sponsor's pull request to the feature branch (see https://help.github.com/articles/changing-the-base-branch-of-a-pull-request/)
+. Re-target the original sponsor's pull request to the feature branch
+  (see https://help.github.com/articles/changing-the-base-branch-of-a-pull-request/)
 . Squash the commit(s) into that JEP's feature branch.
 . Update the folder number to match the JEP number
 . Update the JEP number in the document.
@@ -616,11 +704,14 @@ Once the JEP is ready for the repository, a JEP editor will:
 Jenkins has classically been driven by "you-had-to-be-there" development.
 With specific changes largely being driven by smaller independent groups of developers (sometimes just one).
 
-Design documents extending back into the history of Jenkins are few and far between, as the project grew organically over time.
-As such, a contributor, existing or future, must read mountains of code, pull requests, mailing list discussions, etc, in order to fully understand how/what/why for many major subsystems within Jenkins.
+Design documents extending back into the history of Jenkins are few and far between,
+as the project grew organically over time.
+As such, a contributor, existing or future, must read mountains of code, pull requests, mailing list discussions, etc,
+ in order to fully understand how/what/why for many major subsystems within Jenkins.
 
 Additionally, Jenkins has no formal approach to discussing and reviewing larger changes as evidenced by many of the Jenkins 2.0 mailing list threads
-footnote:[https://groups.google.com/d/msg/jenkinsci-dev/vbXK7JJekFw/BlEvO0UxBgAJ], which ballooned into threads with 100+ replies and sufficient chaos to be very difficult for those who weren't full-time Jenkins developers to understand.
+footnote:[https://groups.google.com/d/msg/jenkinsci-dev/vbXK7JJekFw/BlEvO0UxBgAJ],
+which ballooned into threads with 100+ replies and sufficient chaos to be very difficult for those who weren't full-time Jenkins developers to understand.
 
 
 The Jenkins Enhancement Proposal aims to address both of these major issues by providing an understood process for making sizable, but understandable, enhancements to Jenkins.
@@ -633,13 +724,15 @@ By encouraging "everybody to follow the rules" it will be easier for existing de
 === Benefits to future developers
 
 By providing clear, understandable, and bite-sized design documents which would explain various subsections of Jenkins.
-JEPs also make it clearer how an ambitious new developer to the Jenkins project can propose, and make progress upon, a new idea they have for Jenkins.
+JEPs also make it clearer how an ambitious new developer to the Jenkins project can propose,
+and make progress upon, a new idea they have for Jenkins.
 
 Overall, less chaos and more productivity is the rationale for JEP.
 
 == Reasoning
 
-The Python community, whose process JEP is modeled after, have successfully navigated several large-scale reworkings of Python and its related tools and processes over the past decade.
+The Python community, whose process JEP is modeled after,
+have successfully navigated several large-scale reworkings of Python and its related tools and processes over the past decade.
 This includes most notably the multi-year project of Python 3 (formerly Python 3000).
 
 Their Python Enhancement Proposals are largely consensus driven, which is
@@ -660,7 +753,8 @@ We decided to use "Reasoning" instead to avoid confusion.
 === Requirements-level terms
 
 Some non-native english speakers commented on the
-<<requirement-levels, Must/Should/May>> mentioned that "should" is a synonym of "must", but that existing RFC was a good justification for keeping the terms.
+<<requirement-levels, Must/Should/May>> mentioned that "should" is a synonym of "must",
+but that existing RFC was a good justification for keeping the terms.
 
 === Limits of BDFL model
 
@@ -669,11 +763,13 @@ They felt having 1-person bottlenecks in the JEP process could be problematic.
 The BDFL delegating to other addresses some of that, but it is still worth noting possible alternatives.
 
 One alternative would be for the Jenkins project Governance meeting to have final say.
-Another alternative would be to create some sort of "Technical Steering Committee", separate from Governance, to do this job.
+Another alternative would be to create some sort of "Technical Steering Committee",
+separate from Governance, to do this job.
 
 Issues mentioned in relation to these alternatives:
 
-* **Voting policy** - a voting policy would need to be established, outlining what percentage of the meeting would need to vote for or against a JEP.
+* **Voting policy** - a voting policy would need to be established,
+  outlining what percentage of the meeting would need to vote for or against a JEP.
 * **Committee vs Delegation** - a strictly committee-approval approach may not result in good decisions being made in a timely manner.
   For example, only a few people are qualified to make decisions on Remoting.
   It would be difficult for a group of people in `#jenkins-meeting` to vote sensibly on a JEP relating to Remoting which most of them don't fully understand.
@@ -686,7 +782,8 @@ The BDFL model with Delegation as needed may not be sufficient in the long run, 
 
 Along with concerns about a bottleneck in BDFL reviews, some wanted to add specific language to set expectations timeliness (also sometimes referred to as
 "link:https://en.wikipedia.org/wiki/Service-level_agreement[service-level agreements]", or SLAs).
-The "<<Deferred>>" status addresses what happens if a sponsor does not move a JEP forward in a timely manner, but there are no contingencies for slow response from contributors, editors, the BDFL, or BDFL delegates.
+The "<<Deferred>>" status addresses what happens if a sponsor does not move a JEP forward in a timely manner,
+but there are no contingencies for slow response from contributors, editors, the BDFL, or BDFL delegates.
 
 There are any number of ways to set expectations about timeliness.
 For example, regarding the review process, one person mentioned put forward,
