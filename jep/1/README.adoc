@@ -552,22 +552,23 @@ The reasoning should provide evidence of consensus within the
 community and discuss important objections or concerns raised
 during discussion.
 
-. **Backwards Compatibility** - All JEPs must include a section describing any incompatibilities and their severity.
+. **Backwards Compatibility** - All JEPs must include a section describing
+  any incompatibilities and their severity.
   The JEP must explain how it proposes to deal with these incompatibilities.
   If there are no backwards compatibility concerns, the section must say that.
-. **Security** - All JEPs must include a section ddescribing their impact
-  on the security of affected components, and, if any, how these are dealt with.
-  This includes discussion on potential security issues and how they are prevented,
-  as well as how the proposed changes interact with existing permissions, authentication, authorization, etc.
+. **Security** - All JEPs must include a section describing their security impact.
+  This includes outlining what was done to identify and evaluate security issues,
+  discussion of potential security issues and how they are mitigated or prevented,
+  and how the JEP interacts with existing permissions, authentication, authorization, etc.
   If the JEP has no impact on security, the section must say that.
 . **Infrastructure Requirements** -
   All JEPs must include a section describing their impact on
   Jenkins project infrastructure,
   including additions or changes, interactions with exiting components,
   potential instabilities, service-level agreements,
-  and assigning responsibilty for continuing maintenance.
-  Each JEP must explain the scope of infrastructure change with sufficient detail
-  to allow their initial and on-going cost (in both time and money) can be estimated.
+  and assigning responsibility for continuing maintenance.
+  Each JEP must explain the scope of infrastructure changes with sufficient detail
+  to allow initial and on-going cost (in both time and money) to be estimated.
   If the JEP has no impact on infrastructure, the section must say that.
 . **Reference Implementation** --
   If a JEP will include code changes, an open source reference implementation
