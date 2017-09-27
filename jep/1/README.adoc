@@ -574,88 +574,12 @@ during discussion.
 The final implementation must include test code and documentation
 appropriate for either the Jenkins user or developer documentation.
 
-==== JEP File Format and Style
+==== JEP File Format
 
 JEPs are UTF-8 encoded text files using the
 link:https://asciidoctor.org[AsciiDoc] format.
 AsciiDoc allows for rich markup that is still quite easy to read,
 but also results in good-looking and functional HTML.
-
-The following are style guidelines for JEP asciidoc files.
-Items earlier in the list are higher importance than later items.
-
-===== Keep `link` on one line (REQUIRED)
-
-Asciidoc is newline insensitive by default.
-This means that structures such as links can wrap across lines, like this:
-
-[source, asciidoc]
---
-link:http://asciidoctor.org/docs/asciidoc-recommended-practices/#one-sentence-per-line[One
-sentence per line]
---
-
-This does not improve readability or diffing.
-Keep each link all on the same line.
-
-[source, asciidoc]
---
-link:http://asciidoctor.org/docs/asciidoc-recommended-practices/#one-sentence-per-line[One sentence per line]
---
-
-===== 120 characters per line (REQUIRED)
-
-Aside from the structures mentioned above this point,
-lines MUST be wrapped before 120 characters per line.
-This is required to make diffs and comments reasonably accurate and specific.
-
-===== 80 characters per line (RECOMMENDED)
-
-Similar to the above, lines should be wrapped before 80 characters per line.
-However, this is approximiate - some lines may go beyond 80 characters
-where it seems appropriate.
-This tends to make diffs (including side-by-side views) more readable.
-
-===== One sentence per line (RECOMMENDED)
-
-There are a number of reasons to use
-link:http://asciidoctor.org/docs/asciidoc-recommended-practices/#one-sentence-per-line[one sentence per line].
-
-===== One phrase per line (RECOMMENDED)
-
-Taking one sentence per line a step further,
-splinting sentences to one line per phrase makes even more sense.
-The stucture of sentences can be seen in the raw text
-and text to be even more easily rearraged.
-
-===== Links start new lines (RECOMMENDED)
-
-When reading the raw text diffs multiple links in one sentence
-or even one paragraph can result in an unreadable mess.
-
-[source, asciidoc]
---
-As part of this year's link:https://www.cloudbees.com/jenkinsworld/home[Jenkins
-World] we're hosting another link:http://www.meetup.com/jenkinsmeetup/events/232811529/[Contributor
-Summit], to discuss: link:/projects/blueocean[*Blue Ocean*], link:/doc/pipeline[*Pipeline*]
-and *Storage Pluggability*.
---
-
-Putting each link on a new line makes reading the raw text significantly easier,
-while also tending to make the raw text adhere more closely to line length limits.
-
-[source, asciidoc]
---
-As part of this year's
-link:https://www.cloudbees.com/jenkinsworld/home[Jenkins World]
-we're hosting another
-link:http://www.meetup.com/jenkinsmeetup/events/232811529/[Contributor Summit],
-to discuss:
-link:/projects/blueocean[*Blue Ocean*],
-link:/doc/pipeline[*Pipeline*]
-and *Storage Pluggability*.
---
-
 
 [[metadata]]
 ==== JEP Header Preamble
@@ -965,11 +889,22 @@ under the existing (MIT) license.
 
 We chose to keep this text as-is until we have a concrete reason to change it.
 
-=== Asciidoc linter
+=== Asciidoc style and linter
+
+There are a number of possible asciidoc style guidelines.
+For example, there are a number of reasons to use
+link:http://asciidoctor.org/docs/asciidoc-recommended-practices/#one-sentence-per-line[one sentence per line],
+one phrase per line, or other specific formatting.
+However, choosing which guideline to require, recommend, or even make optional,
+is a potentially long and difficult process.
+Instead of bogging down this JEP in that process,
+we decided to condsider asciidoc style and formatting guidelines in a later JEP.
 
 There are currently no Asciidoc linters.
-Should one be found, we will evaluate it for automated enforcement of
-<<JEP File Format and Style>>.
+Should one be found, we will evaluate it for automated checking of
+<<JEP File Format>> for syntax or structural errors
+(or for style guidelines once they are established).
+
 
 == References
 
