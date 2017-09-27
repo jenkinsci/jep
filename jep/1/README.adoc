@@ -553,15 +553,22 @@ community and discuss important objections or concerns raised
 during discussion.
 
 . **Backwards Compatibility** - All JEPs must include a section describing any incompatibilities and their severity.
-  The JEP must explain how the it proposes to deal with these incompatibilities.
+  The JEP must explain how it proposes to deal with these incompatibilities.
   If there are no backwards compatibility concerns, the section must say that.
-. **Security** - All JEPs must include a section describing any security risks and their severity.
-  The JEP must explain how the it proposes to deal with these risks.
-  If there are no security concerns, the section must say that.
+. **Security** - All JEPs must include a section ddescribing their impact
+  on the security of affected components, and, if any, how these are dealt with.
+  This includes discussion on potential security issues and how they are prevented,
+  as well as how the proposed changes interact with existing permissions, authentication, authorization, etc.
+  If the JEP has no impact on security, the section must say that.
 . **Infrastructure Requirements** -
-  All JEPs must include a section describing any infrastructure changes or addtions they require.
-  The JEP must explain the scope of these changes in reasonable detail.
-  If there are no infrastructure changes, the section must say that.
+  All JEPs must include a section describing their impact on
+  Jenkins project infrastructure,
+  including additions or changes, interactions with exiting components,
+  potential instabilities, service-level agreements,
+  and assigning responsibilty for continuing maintenance.
+  Each JEP must explain the scope of infrastructure change with sufficient detail
+  to allow their initial and on-going cost (in both time and money) can be estimated.
+  If the JEP has no impact on infrastructure, the section must say that.
 . **Reference Implementation** --
   If a JEP will include code changes, an open source reference implementation
   must be completed before any JEP is given status "Final".
