@@ -112,27 +112,6 @@ There are three kinds of JEP:
 
 === JEP Terminology
 
-==== BDFL
-
-There are several references in this JEP to the "BDFL". This acronym stands for
-"link:https://en.wikipedia.org/wiki/Benevolent_dictator_for_life[Benevolent Dictator for Life]".
-The BDFL is a single person whose role in the project is to act as decision maker
-when one is needed. The responsibilities of the BDFL are:
-
-* Review JEPs and decide whether they will will be accepted
-* Delegate JEP Reviewer responsibilities to other contributors as appropriate
-* Resolve disputes or arguments that cannot be resolved by consensus
-* Take any other actions as part of the JEP process that they deem best of the community
-* Clearly communicate the reasoning for any actions taken or decisions made
-* Refrain from using their power, letting the community self-govern whenever possible
-
-The BDFL may override the decision any other contibutors.
-Decisions made by the BDFL are final and the community agrees to abide by them.
-
-For the Jenkins project the BDFL is
-link:https://github.com/kohsuke[Kohsuke Kawaguchi],
-original creator of Jenkins.
-
 ==== Editor
 
 The JEP editors are individuals responsible for managing the administrative
@@ -153,7 +132,7 @@ requests.
 ==== Contributor
 
 A JEP may have any number of "Contributors" who
-help write, implement, discuss, or offer feedback about that JEP.
+help write, implement, discuss, review, or offer feedback about that JEP.
 One contributor might do only one or any combination of these
 of these things during any part of the life of a JEP.
 
@@ -187,23 +166,25 @@ when referring the one or more people in the role of "Sponsor" of a JEP.
 
 ==== Reviewer
 
+Each JEP has one "Reviewer".
+
 The JEP Reviewer is a contributor who will make the final decision whether to accept a JEP.
-The <<BDFL>> is the de facto reviewer for all JEPs, but may delegate the role to someone else.
+Upon request of the sponsor, the reviewer will:
 
-Whenever a new JEP is submitted, any core contributor that believes they are suitably
-experienced to make the final decision on that JEP may offer to serve as the "Reviewer" for that JEP.
-A JEP's <<Sponsor>> cannot also be its Reviewer.
-If their self-nomination is accepted by the other core contributors and the BDFL,
+* Verify the JEP has achieved consensus within the community,
+  including documentation of dissenting opinions
+* Consult with other area experts
+* Ensure the JEP is sufficiently complete
+  to be implemented without further major additions or changes
+
+Any core contributor that believes they have
+suitable knowledge and standing in the community to make the final decision on that JEP
+may offer to serve as the "Reviewer" for that JEP.
+If their self-nomination is accepted by the other core contributors,
 then that contributor will have the authority to accept (or reject) that JEP.
-The BDFL may also choose to be the Reviewer for a JEP, overriding any self-nominations.
-If no other contributor volunteers, or if the core contributors (including the BDFL)
-cannot agree on a suitable Reviwer, the role reverts to the BDFL.
 
-If a contributor other than the BDFL will be the Reviewer for the JEP,
-they should be selected before the JEP is submitted.
-
-If the Reviewer for a JEP is a contributor other than the BDFL,
-this will be recorded in the <<header-reviewer, "Reviewer" header>> in the JEP.
+Unlike, Sponsors, there is only one Reviewer for each JEP.
+A JEP's <<Sponsor>> cannot also be its Reviewer.
 
 [[requirement-levels]]
 ==== Must/Should/May
@@ -238,16 +219,17 @@ the reasons behind that choice SHOULD be documented.
 Before delving into the details of the JEP workflow,
 let's take a high-level look at how JEP might go.
 
-. **<<start, Inital Discussion>>** - Andrea has an idea for new feature emails jenkinsci-dev@googlegroups.com.
+. **<<start, Inital Discussion>>** - Andrea has an idea for new feature and emails it jenkinsci-dev@googlegroups.com.
   She discusses the idea with the group, determining that the idea is worth pursuing.
   She chooses to be the "<<Sponsor>>" for this potential JEP.
+  A well-known contributor voluteers to be the the "<<Reviewer>>"
+  and there is general agreement they are they a good choice.
   She <<discussion, gathers initial feedback>> from the community, adjusts her design as needed,
   records the reasons for design choices, and keeps track of differing views.
 
 . **<<submission, Submission>>** - Andrea writes up the proposal using the JEP document template as a guide,
   including a supporting documentation and a reference implementation if needed.
-  She then submits the JEP to the JEP editors for
-  <<approval, approval as a Draft JEP>>.
+  She then submits the JEP to the JEP editors for <<approval, approval as a Draft JEP>>.
   An editor checks the submission and determines it is ready to considered as a JEP.
   They "approve" the submission, assigning the JEP a number, and the submission becomes a "Draft" JEP.
 
@@ -256,7 +238,7 @@ let's take a high-level look at how JEP might go.
   When she believes the design is complete and represents the consensus of the community,
   she submits the JEP for review.
 
-. **<<review, Review>>** - The <<Reviewer>> (in this case the <<BDFL>>) reviews the JEP and decides to accept it,
+. **<<review, Review>>** - The <<Reviewer>> reviews the JEP and decides to accept it,
   making it an "<<accepted, Accepted>>" JEP.
   Other possible resolutions are "<<rejected, Rejected>>",
   "<<deferred, Deferred>>", "<<withdrawn, Withdrawn>>".
@@ -316,14 +298,14 @@ the idea is applicable to the entire community and not just the sponsor. Just
 because an idea sounds good to the sponsor does not mean it will work for most
 people in most areas where Jenkins is used.
 
+A <<JEP Reviewer>> should be selected before the JEP is submitted,
+but may also be added or changed any time before a document is reviewed.
+
 Once the sponsor has asked the Jenkins community as to whether an idea has any
 chance of acceptance, a draft JEP should be presented to jenkinsci-dev@. This
 gives the sponsor a chance to flesh out the draft JEP to make sure it is
 properly formatted, of high quality, and to address initial concerns about the
 proposal.
-
-If a contributor other than the BDFL will be the <<Reviewer>> for the JEP,
-they should be selected before the JEP is submitted.
 
 [[submission]]
 ==== Creating a JEP Submission
@@ -365,9 +347,6 @@ Reasons for denying JEP "Draft" status include:
 * not providing enough information in the
   "Motivation" or "Backwards Compatibility" sections
 * not in keeping with the link:https://jenkins.io/project/governance/[Jenkins philosophy].
-
-The BDFL may be consulted during the approval phase,
-and is the final arbiter of a submission's approvability as a Draft JEP.
 
 [[approval]]
 ==== Approval as Draft JEP
@@ -423,7 +402,7 @@ Strategies to keep the discussion efficient include:
 JEP sponsors should use their discretion here.
 
 The JEP sponsor may also ask JEP editors for further feedback regarding the
-style and consistency of a JEP and its readiness for review by the BDFL.
+style and consistency of a JEP and its readiness for review.
 
 As updates are necessary, the JEP sponsor and other contributors
 should push commits to their fork of the JEP repository footnoteref:[repo],
@@ -435,13 +414,11 @@ and submit pull requests targeting the JEP's feature branch.
 Once the sponsor believes a JEP is complete,
 they request the JEP be reviewed for acceptance, usually via
 an email to the jenkinsci-dev@ mailing list.
-For a JEP that is predetermined to be acceptable
-(e.g., it is an obvious win as-is and/or its implementation has already been checked in)
-the BDFL may also initiate a JEP review, first notifying the JEP sponsor and
-giving them a chance to make revisions beforehand.
 The JEP <<Reviewer>> and their chosen consultants then review the JEP.
-They will resolve the JEP as "Accepted" or "Rejected",
+The JEP Reviewer will then decide whether to resolve the JEP as "Accepted" or "Rejected",
 or keep it as "Draft" sending it back to the JEP sponsor for revision.
+In all cases, the reviewer will send a detailed response
+on the jenkinsci-dev@ mailing list explaining their decision.
 
 JEP review and resolution may also occur on a list other than jenkinsci-dev@.
 In this case, the "Discussions-To" header in the JEP will identify the
@@ -502,8 +479,8 @@ due to factors not known at the time it was Accepted.
 If the reviewer believes the JEP might be Accepted after some modification,
 the reviewer should not reject the JEP, instead returning it Draft status
 with feedback for the sponsor.
-Upon the request of the sponsor, the BDFL may choose to return a
-Rejected JEP to Draft status, but this is at the discrection of the BDFL.
+Upon the request of the sponsor, the reviewer may choose to return a
+Rejected JEP to Draft status, but this is at the discrection of the reviewer.
 
 Withdrawn::  [[withdrawn]]
 The "Withdrawn" status is similar to "Rejected" - it means that the JEP sponsor
@@ -545,6 +522,21 @@ they must also set and communicate a reasonable schedule to keep a JEP moving fo
 If one or more contributors are not responding
 and the sponsor chooses to move forard without their feedback,
 they should document that choice in the "<<Reasoning>>" section of the JEP.
+
+==== Resolving Disputes
+
+Except for the decision by a reviewer to accept or reject a JEP,
+the JEP process is run by
+link:https://en.wikipedia.org/wiki/Consensus_decision-making[consensus].
+It is the responsibility of the every contributor to respect other contributors,
+listen to their perspectives, and attempt to find solution that work for everyone.
+If consensus cannot be achieved or if there is strong disagreement with the decision of a reviewer,
+a contributor may request that the Jenkins Governance Board intervene.
+The board will take up the matter at their next regular meeting and render a decision at the meeting following.
+
+This should be a last resort and should happen extremely rarely.
+
+
 
 === JEP Guidelines
 
@@ -657,16 +649,13 @@ JEP:
 . **Title** -- Brief title explaining the proposal in fewer than 50 characters
 . **Sponsor** -- <<Sponsor>> of the JEP, in essence, the individual
   responsible for seeing the JEP through the process.
+. **Sponsor** -- <<Reviewer>> of the JEP, the individual will make the final decision to approve or reject a JEP.
 . **Status** -- Draft :speech_balloon:, Deferred :hourglass:, Accepted :ok_hand:,
   Rejected :no_entry:, Withdrawn :hand:, Final :lock:, Replaced :dagger:, Active :smile:.
 . **Type** -- Describes the type of JEP: Standards, Informational, Process
 . **Created** -- Date (`%Y-%m-%d`) when the document was first created.
 
 =====  Addition Header Rows
-
-Reviewer:: [[header-reviewer]]
-A **<<Reviewer>>** row records who will make the final decision to approve or reject a JEP.
-If this row is not included, the BDFL will make the decision.
 
 Discussions-To:: [[header-discussions-to]]
 For a JEP where final pronouncement will be made on a list other than
@@ -842,6 +831,12 @@ footnote:[https://groups.google.com/d/msgid/jenkinsci-dev/CA%2BnPnMz-m49TK7Em%2B
  making the PEP model relatively straightforward to graft onto our existing
  processes for making proposals and deciding upon changes.
 
+=== Requirements-level terms
+
+Some non-native english speakers commented on the
+<<requirement-levels, Must/Should/May>> mentioned that "should" is a synonym of "must",
+but that existing RFC was a good justification for keeping the terms.
+
 === Differences from Python PEP
 
 The process by which a number of link:https://apache.org[Apache] projects are
@@ -853,39 +848,13 @@ The Python process uses "Rationale" as the heading for the section for describin
 However the meaning of "Rationale" is similar to "Motivation" in some contexts.
 We decided to use "Reasoning" instead to avoid confusion.
 
-=== Requirements-level terms
-
-Some non-native english speakers commented on the
-<<requirement-levels, Must/Should/May>> mentioned that "should" is a synonym of "must",
-but that existing RFC was a good justification for keeping the terms.
-
-=== Limits of BDFL model
-
-People expressed concern over the limits of the current model where the BDFL
-has final say in a number of steps.
-They felt having 1-person bottlenecks in the JEP process could be problematic.
-The BDFL delegating to others addresses some of that,
-but it is still worth noting possible alternatives.
-
-One alternative would be for the Jenkins project Governance meeting to have final say.
-Another alternative would be to create some sort of "Technical Steering Committee",
-separate from Governance, to do this job.
-
-Issues mentioned in relation to these alternatives:
-
-* **Voting policy** - a voting policy would need to be established,
-outlining what percentage of the meeting would need to vote for or against a JEP.
-* **Committee vs Delegation** - a strictly committee-approval approach
-may not result in good decisions being made in a timely manner. For example,
-only a few people are qualified to make decisions on Remoting.
-It would be difficult for a group of people in `#jenkins-meeting` to vote
-sensibly on a JEP relating to Remoting which most of them don't fully understand.
-Delegation to experts and stakeholders is much more likely to produce high quality improvements.
-* **Lack of established process** - structured technical decision making
-in the Jenkins project (as outlined in this JEP) is still in its early stages.
-
-The BDFL model with Delegation as needed may not be sufficient in the long run,
-but it will suffice for now.
+The Python process has a role called the BDFL,
+the "link:https://en.wikipedia.org/wiki/Benevolent_dictator_for_life[Benevolent Dictator for Life]".
+The BDFL acts as reviewer and resolver of disuputes.
+People expressed concern over the limits of the BDFL-based model
+They felt having 1-person bottlenecks or too much power in the JEP process could be problematic.
+We chose to remove the BDFL role, adding a "Reviewer" role to handle JEP review and resolution,
+and directing any disputes to the Jenkins Governance Board.
 
 === Timeliness
 
@@ -896,7 +865,7 @@ some wanted to add specific language to set expectations timeliness
 The "<<Deferred>>" status addresses what happens if
 a sponsor does not move a JEP forward in a timely manner,
 but there are no contingencies for slow response from
-contributors, editors, reviewers, and the BDFL.
+contributors, editors, and reviewers.
 
 There are any number of ways to set expectations about timeliness.
 For example, regarding the review process, one person mentioned put forward,
