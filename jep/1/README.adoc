@@ -199,7 +199,8 @@ then that contributor will have the authority to accept (or reject) that JEP.
 The BDFL Delegate for a JEP will be recorded in the
 <<header-delegate, "BDFL-Delegate" header>> in the JEP.
 
-A JEP's <<Sponsor>> cannot also be the BDFL Delegate for that JEP.
+A JEP's <<Sponsor>> may also be the BDFL Delegate for that JEP,
+taking on the responsibilities of both roles.
 
 In all cases where this document refers to the "BDLF" making a decision regarding a JEP,
 it means "the BDFL or BDFL Delegate for this JEP."
