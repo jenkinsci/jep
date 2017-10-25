@@ -117,16 +117,16 @@ There are three kinds of JEP:
 There are several references in this JEP to the "BDFL". This acronym stands for
 "link:https://en.wikipedia.org/wiki/Benevolent_dictator_for_life[Benevolent Dictator for Life]".
 The BDFL is a single person whose role in the project is to act as decision maker
-when one is needed. The responsibilities of the BDFL are:
+when a unilateral decision is needed. The responsibilities of the BDFL are:
 
 * Review JEPs and decide whether they will be accepted
-* Resolve disputes or arguments that cannot be resolved by consensus
-* Take any other actions as part of the JEP process that they deem best of the community
+* Resolve disputes or arguments within the JEP process that cannot be resolved by consensus
+* Take any other actions as part of the JEP process that they deem best for the Jenkins project
 * Clearly communicate the reasoning for any actions taken or decisions made
 * Refrain from using their power, letting the community self-govern whenever possible
 
-The BDFL may override the decision any other contributor.
-Decisions made by the BDFL are final and the community agrees to abide by them.
+WARNING: Under very specific conditions, described in "<<Resolving Disputes>>",
+contributors may ask the Governance Meeting to review a decision by the BDFL.
 
 For the Jenkins project the BDFL is
 link:https://github.com/kohsuke[Kohsuke Kawaguchi],
@@ -541,6 +541,26 @@ they must also set and communicate a reasonable schedule to keep a JEP moving fo
 If one or more contributors are not responding
 and the sponsor chooses to move forard without their feedback,
 they should document that choice in the "<<Reasoning>>" section of the JEP.
+
+==== Resolving Disputes
+
+Except for decisions by the <<BDFL>> to accept or reject a JEP,
+the JEP process is run by
+link:https://en.wikipedia.org/wiki/Consensus_decision-making[consensus].
+It is the responsibility of the every contributor to respect other contributors,
+listen to their perspectives, and attempt to find solutions that work for everyone.
+
+If consensus cannot be achieved, contributors may request that the <<BDFL>> intervene.
+The BDFL will consider the matter, and render their decision,
+including describing what actions will be taken and documenting their reasoning.
+
+If contributors believe a decision made by the BDFL in this manner is not in the best interests to Jenkins project,
+they may request the Governance meeting review the BDFL's decision.
+The Governance meeting will take up the matter and render a decision within a reasonable timeframe.
+Similar to the judiciary, the Governance meeting will _not_ make technical decisions,
+they will only affirm or reject the BDFL's decision.
+If they affirm, the matter is closed.
+If they reject, the BDFL will render a new decision taking into account the Governance Meeting's input.
 
 === JEP Guidelines
 
