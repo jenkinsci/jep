@@ -121,6 +121,7 @@ when a unilateral decision is needed. The responsibilities of the BDFL are:
 
 * Review JEPs and decide whether they will be accepted
 * Resolve disputes or arguments within the JEP process that cannot be resolved by consensus
+* Delegate their responsibilities to other contributors as neeeded on a per-JEP basis (see <<BDLF Delegate>>)
 * Take any other actions as part of the JEP process that they deem best for the Jenkins project
 * Clearly communicate the reasoning for any actions taken or decisions made
 * Refrain from using their power, letting the community self-govern whenever possible
@@ -186,9 +187,9 @@ when referring the one or more people in the role of "Sponsor" of a JEP.
 
 ==== BDFL Delegate
 
-The <<BDFL>> is the final authority for reviewing and resolving JEPs,
-but may delegate that responsibility to another contributor,
+The <<BDFL>> may delegate their responsibilities to another contributor,
 a "BDFL Delegate" on a per-JEP basis.
+The BDFL Delegate for a JEP has all the responsibilities of the BDFL within the context of that JEP.
 
 A BDFL Delegate may be selected at any point before the JEP is reviewed.
 Any contributor with sufficient technical and organizational
@@ -202,8 +203,17 @@ The BDFL Delegate for a JEP will be recorded in the
 A JEP's <<Sponsor>> may also be the BDFL Delegate for that JEP,
 taking on the responsibilities of both roles.
 
-In all cases where this document refers to the "BDLF" making a decision regarding a JEP,
-it means "the BDFL or BDFL Delegate for this JEP."
+A BDFL Delegate may not delegate to someone else -
+there is no such thing as a "BDFL Delegate Delegate".
+The BDFL may remove a Delegate or a BDFL Delegate may resign from from a JEP at any time.
+When a Delegate leaves or is removed from a JEP,
+the BDLF becomes the reviewer again and may ask someone else to be the BDLF Delegate for that JEP.
+
+==== Reviewer
+
+The JEP Reviewer is the contributor who will make the final decision whether to accept a JEP.
+In all cases where this document refers to the "Reviewer",
+it means "the BDFL or BDFL Delegate that will review this JEP."
 
 [[requirement-levels]]
 ==== Must/Should/May
@@ -243,6 +253,7 @@ let's take a high-level look at how JEP might go.
   She chooses to be the "<<Sponsor>>" for this potential JEP.
   She <<discussion, gathers initial feedback>> from the community, adjusts her design as needed,
   records the reasons for design choices, and keeps track of differing views.
+  Daniel, an expert in the area for this JEP, volunteers to be the <<BDFL Delegate>> for this JEP.
 
 . **<<submission, Submission>>** - Andrea writes up the proposal using the JEP document template as a guide,
   including a supporting documentation and a reference implementation if needed.
@@ -256,8 +267,8 @@ let's take a high-level look at how JEP might go.
   When she believes the design is complete and represents the consensus of the community,
   she submits the JEP for review.
 
-. **<<review, Review>>** - The <<BDFL>> reviews the JEP and decides to accept it,
-  making it an "<<accepted, Accepted>>" JEP.
+. **<<review, Review>>** - The <<Reviewer>> for this JEP,
+  reviews the JEP and decides to accept it, making it an "<<accepted, Accepted>>" JEP.
   Other possible resolutions are "<<rejected, Rejected>>",
   "<<deferred, Deferred>>", "<<withdrawn, Withdrawn>>".
 
@@ -363,7 +374,7 @@ Reasons for denying JEP "Draft" status include:
   "Motivation" or "Backwards Compatibility" sections
 * not in keeping with the link:https://jenkins.io/project/governance/[Jenkins philosophy].
 
-The <<BDFL>> may be consulted during the approval phase,
+The <<Reviewer>> for this JEP may be consulted during the approval phase,
 and is the final arbiter of a submission's approvability as a Draft JEP.
 
 [[approval]]
@@ -420,7 +431,7 @@ Strategies to keep the discussion efficient include:
 JEP sponsors should use their discretion here.
 
 The JEP sponsor may also ask JEP editors for further feedback regarding the
-style and consistency of a JEP and its readiness for review by the BDFL.
+style and consistency of a JEP and its readiness for review.
 
 As updates are necessary, the JEP sponsor and other contributors
 should push commits to their fork of the JEP repository footnoteref:[repo],
@@ -432,13 +443,11 @@ and submit pull requests targeting the JEP's feature branch.
 Once the sponsor believes a JEP is complete,
 they request the JEP be reviewed for acceptance, usually via
 an email to the jenkinsci-dev@ mailing list.
-For a JEP that is predetermined to be acceptable
-(e.g., it is an obvious win as-is and/or its implementation has already been checked in)
-the BDFL may also initiate a JEP review, first notifying the JEP sponsor and
-giving them a chance to make revisions beforehand.
-The BDFL and their chosen consultants then review the JEP.
-They will resolve the JEP as "Accepted" or "Rejected",
+The JEP <<Reviewer>> and their chosen consultants then review the JEP.
+The JEP Reviewer will then decide whether to resolve the JEP as "Accepted" or "Rejected",
 or keep it as "Draft" sending it back to the JEP sponsor for revision.
+In all cases, the reviewer will send a detailed response
+to the jenkinsci-dev@ mailing list explaining their decision.
 
 JEP review and resolution may also occur on a list other than jenkinsci-dev@.
 In this case, the "Discussions-To" header in the JEP will identify the
@@ -491,16 +500,16 @@ This is intended for Informational JEPs, where version 2 of an API can replace v
 Not all JEPs will be accepted and finalized.
 
 Rejected::  [[rejected]]
-A JEP can also be "Rejected" by the BDFL. Perhaps after all is said and done it
+A JEP can also be "Rejected" by the reviewer. Perhaps after all is said and done it
 was not a good idea. It is still important to have a record of this fact.
 Even an Accepted draft may ultimately be Rejected
 at some point before it reaches "Final" status,
 due to factors not known at the time it was Accepted.
-If the BDFL believes the JEP might be Accepted after some modification,
-the BDFL will not reject the JEP, instead returning it Draft status
+If the reviewer believes the JEP might be Accepted after some modification,
+the reviewer will not reject the JEP, instead returning it Draft status
 with feedback for the sponsor.
-Upon the request of the sponsor, the BDFL may choose to return a
-Rejected JEP to Draft status, but this is at the discretion of the BDFL.
+Upon the request of the sponsor, the reviewer may choose to return a
+Rejected JEP to Draft status, but this is at the discretion of the reviewer.
 
 Withdrawn::  [[withdrawn]]
 The "Withdrawn" status is similar to "Rejected" - it means that the JEP sponsor
@@ -545,17 +554,24 @@ they should document that choice in the "<<Reasoning>>" section of the JEP.
 
 ==== Resolving Disputes
 
-Except for decisions by the <<BDFL>> to accept or reject a JEP,
+Except for decisions by a JEP's <<Reviewer>> to accept or reject a JEP,
 the JEP process is run by
 link:https://en.wikipedia.org/wiki/Consensus_decision-making[consensus].
 It is the responsibility of the every contributor to respect other contributors,
 listen to their perspectives, and attempt to find solutions that work for everyone.
 
-If consensus cannot be achieved, contributors may request that the <<BDFL>> intervene.
-The BDFL will consider the matter, and render their decision,
+If consensus cannot be achieved on a JEP,
+contributors may request that the <<Reviewer>> for that JEP intervene.
+The reviewer will consider the matter, and render their decision,
 including describing what actions will be taken and documenting their reasoning.
 
-If contributors believe a decision made by the BDFL in this manner is not in the best interests to Jenkins project,
+For disputes over JEP proecess or decisions made by a <<BDFL Delegate>>,
+contributors may request that the <<BDFL>> intervene.
+The BDFL will consider the matter, and render their decision,
+including describing what actions will be taken and documenting their reasoning.
+The BDLF's decision may include technical and other specific instructions to the BDLF Delegate.
+
+If contributors believe a decision made by the BDFL runs counter to the best interests to Jenkins project,
 they may request the Governance meeting review the BDFL's decision.
 The Governance meeting will take up the matter and render a decision within a reasonable timeframe.
 Similar to the judiciary, the Governance meeting will _not_ make technical decisions,
