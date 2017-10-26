@@ -9,8 +9,6 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-
-
 .Metadata
 [cols="2"]
 |===
@@ -24,16 +22,13 @@ endif::[]
 | link:https://github.com/rtyler[R Tyler Croy]
 
 | Status
-| :speech_balloon: Draft
+| Draft :speech_balloon:
 
 | Type
 | Process
 
 | Created
 | 2017-09-12
-
-| Discussions-To
-| link:https://groups.google.com/d/msg/jenkinsci-dev/spDAr8EJm3c/T9Nmhn-fAQAJ[jenkinsci-dev@]
 
 |===
 
@@ -630,15 +625,18 @@ during discussion.
   to allow initial and on-going cost (in both time and money) to be estimated.
   If the JEP has no impact on infrastructure, the section must say that.
 . **Reference Implementation** --
-  If a JEP will include code changes, an open source reference implementation
-  must be completed before any JEP is given status "Final".
-  The reference implementation need not be completed before the JEP is accepted.
+  If a JEP will include code changes,
+  this section will provide links to a an open source reference implementation
+  of those changes.
+  The reference implementation need not be completed before the JEP is <<accepted>>,
+  but must be completed before any JEP is given "Final" status.
   While there is merit to the approach of reaching consensus on the
   specification and reasoning before writing code,
   the principle of "rough consensus and running code" is still useful
   when it comes to resolving many discussions of API details.
+  JEPs which will not include code changes may omit this section.
 . **References** -- When moving a JEP from a Draft to "Accepted" or "Final" state,
-  the references section should be updated to include links to the pull requests
+  the references section must be updated to include links to the pull requests
   and mailing list discussions which were involved in the process. The JEP
   should self-document the process in which it was developed.
 
@@ -1002,3 +1000,15 @@ This JEP leverages existing infrastructure.
 * link:https://www.python.org/dev/peps/[Python Enhancement Proposals]
 * link:https://github.com/jenkins-infra/iep[Infrastructure Enhancement Proposal]
 * link:http://www.ietf.org/rfc.html[IETF RFC]
+
+=== Discussion threads
+
+* link:https://groups.google.com/d/msg/jenkinsci-dev/spDAr8EJm3c/T9Nmhn-fAQAJ[jenkinsci-dev@]
+
+=== Pull Requests
+
+* link:https://github.com/jenkinsci/jep/1[PR 1]
+* link:https://github.com/jenkinsci/jep/pull/12[PR 12]
+* link:https://github.com/jenkinsci/jep/pull/19[PR 19]
+
+
