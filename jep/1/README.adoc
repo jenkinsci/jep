@@ -432,6 +432,24 @@ Strategies to keep the discussion efficient include:
 
 JEP sponsors should use their discretion here.
 
+////
+We found that the Github UI bogs down around 150-200 comments.
+I'd like people feedback on a potential solution.
+
+I'm completely solid on the details yet,
+but the idea is to RECOMMMEND that users propose changes via PRs
+from their own forks rather than by commenting on the base PR.
+
+1. Fork the `jenkinsci/jep` repository
+2. Make proposed changes in a branch on that fork
+3. Submit a PR to the JEP feature branch.
+4. If a PR from the feature branch to master is open, reference that PR in the personal PR.
+      Examnple : "Typo fixes to #12".
+
+For feedback, questions, or less solid ideas, add them as asciidoc comments below/near the lines you'd like to discuss.
+Then people can respond in that PR.
+////
+
 The JEP sponsor may also ask JEP editors for further feedback regarding the
 style and consistency of a JEP and its readiness for review.
 
