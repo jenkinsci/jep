@@ -31,7 +31,7 @@ endif::[]
 | Created
 | 2017-09-12
 
-| Discussion-To
+| Discussions-To
 | link:https://groups.google.com/d/msg/jenkinsci-dev/spDAr8EJm3c/T9Nmhn-fAQAJ[jenkinsci-dev@]
 
 |===
@@ -121,7 +121,7 @@ when a unilateral decision is needed. The responsibilities of the BDFL are:
 
 * Review JEPs and decide whether they will be accepted
 * Resolve disputes or arguments within the JEP process that cannot be resolved by consensus
-* Delegate their responsibilities to other contributors as neeeded on a per-JEP basis (see <<BDLF Delegate>>)
+* Delegate their responsibilities to other contributors as neeeded on a per-JEP basis (see <<BDFL Delegate>>)
 * Take any other actions as part of the JEP process that they deem best for the Jenkins project
 * Clearly communicate the reasoning for any actions taken or decisions made
 * Refrain from using their power, letting the community self-govern whenever possible
@@ -205,9 +205,11 @@ taking on the responsibilities of both roles.
 
 A BDFL Delegate may not delegate to someone else -
 there is no such thing as a "BDFL Delegate Delegate".
-The BDFL may remove a Delegate or a BDFL Delegate may resign from from a JEP at any time.
-When a Delegate leaves or is removed from a JEP,
-the BDLF becomes the reviewer again and may ask someone else to be the BDLF Delegate for that JEP.
+
+If a Delegate wishes to leave a JEP, they may do so at any time by emailing jenkinsci-dev@.
+They can also be removed from a JEP by the BDFL.
+When a BDFL Delegate leaves or is removed from a JEP,
+the BDFL becomes the reviewer again and may ask someone else to be the BDFL Delegate for that JEP.
 
 ==== Reviewer
 
@@ -569,7 +571,7 @@ For disputes over JEP proecess or decisions made by a <<BDFL Delegate>>,
 contributors may request that the <<BDFL>> intervene.
 The BDFL will consider the matter, and render their decision,
 including describing what actions will be taken and documenting their reasoning.
-The BDLF's decision may include technical and other specific instructions to the BDLF Delegate.
+The BDFL's decision may include technical and other specific instructions to the BDFL Delegate.
 
 If contributors believe a decision made by the BDFL runs counter to the best interests to Jenkins project,
 they may request the Governance meeting review the BDFL's decision.
