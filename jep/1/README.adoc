@@ -31,7 +31,7 @@ endif::[]
 | Created
 | 2017-09-12
 
-| Discussion-To
+| Discussions-To
 | link:https://groups.google.com/d/msg/jenkinsci-dev/spDAr8EJm3c/T9Nmhn-fAQAJ[jenkinsci-dev@]
 
 |===
@@ -117,17 +117,17 @@ There are three kinds of JEP:
 There are several references in this JEP to the "BDFL". This acronym stands for
 "link:https://en.wikipedia.org/wiki/Benevolent_dictator_for_life[Benevolent Dictator for Life]".
 The BDFL is a single person whose role in the project is to act as decision maker
-when one is needed. The responsibilities of the BDFL are:
+when a unilateral decision is needed. The responsibilities of the BDFL are:
 
-* Review JEPs and decide whether they will will be accepted
-* Delegate JEP Reviewer responsibilities to other contributors as appropriate
-* Resolve disputes or arguments that cannot be resolved by consensus
-* Take any other actions as part of the JEP process that they deem best of the community
+* Review JEPs and decide whether they will be accepted
+* Resolve disputes or arguments within the JEP process that cannot be resolved by consensus
+* Delegate their responsibilities to other contributors as neeeded on a per-JEP basis (see <<BDFL Delegate>>)
+* Take any other actions as part of the JEP process that they deem best for the Jenkins project
 * Clearly communicate the reasoning for any actions taken or decisions made
 * Refrain from using their power, letting the community self-govern whenever possible
 
-The BDFL may override the decision any other contibutors.
-Decisions made by the BDFL are final and the community agrees to abide by them.
+WARNING: Under very specific conditions, described in "<<Resolving Disputes>>",
+contributors may ask the Governance Meeting to review a decision by the BDFL.
 
 For the Jenkins project the BDFL is
 link:https://github.com/kohsuke[Kohsuke Kawaguchi],
@@ -185,25 +185,37 @@ For simplicity, this document uses the singular
 ("The JEP Sponsor", "a sponsor")
 when referring the one or more people in the role of "Sponsor" of a JEP.
 
-==== Reviewer
+==== BDFL Delegate
 
-The JEP Reviewer is a contributor who will make the final decision whether to accept a JEP.
-The <<BDFL>> is the de facto reviewer for all JEPs, but may delegate the role to someone else.
+The <<BDFL>> may delegate their responsibilities to another contributor,
+a "BDFL Delegate" on a per-JEP basis.
+The BDFL Delegate for a JEP has all the responsibilities of the BDFL within the context of that JEP.
 
-Whenever a new JEP is submitted, any core contributor that believes they are suitably
-experienced to make the final decision on that JEP may offer to serve as the "Reviewer" for that JEP.
-A JEP's <<Sponsor>> cannot also be its Reviewer.
+A BDFL Delegate may be selected at any point before the JEP is reviewed.
+Any contributor with sufficient technical and organizational
+experience to make the final decision on that JEP,
+may offer to be the BDFL's Delegate for a JEP.
 If their self-nomination is accepted by the other core contributors and the BDFL,
 then that contributor will have the authority to accept (or reject) that JEP.
-The BDFL may also choose to be the Reviewer for a JEP, overriding any self-nominations.
-If no other contributor volunteers, or if the core contributors (including the BDFL)
-cannot agree on a suitable Reviwer, the role reverts to the BDFL.
+The BDFL Delegate for a JEP will be recorded in the
+<<header-delegate, "BDFL-Delegate" header>> in the JEP.
 
-If a contributor other than the BDFL will be the Reviewer for the JEP,
-they should be selected before the JEP is submitted.
+A JEP's <<Sponsor>> may also be the BDFL Delegate for that JEP,
+taking on the responsibilities of both roles.
 
-If the Reviewer for a JEP is a contributor other than the BDFL,
-this will be recorded in the <<header-reviewer, "Reviewer" header>> in the JEP.
+A BDFL Delegate may not delegate to someone else -
+there is no such thing as a "BDFL Delegate Delegate".
+
+If a Delegate wishes to leave a JEP, they may do so at any time by emailing jenkinsci-dev@.
+They can also be removed from a JEP by the BDFL.
+When a BDFL Delegate leaves or is removed from a JEP,
+the BDFL becomes the reviewer again and may ask someone else to be the BDFL Delegate for that JEP.
+
+==== Reviewer
+
+The JEP Reviewer is the contributor who will make the final decision whether to accept a JEP.
+In all cases where this document refers to the "Reviewer",
+it means "the BDFL or BDFL Delegate that will review this JEP."
 
 [[requirement-levels]]
 ==== Must/Should/May
@@ -238,11 +250,12 @@ the reasons behind that choice SHOULD be documented.
 Before delving into the details of the JEP workflow,
 let's take a high-level look at how JEP might go.
 
-. **<<start, Inital Discussion>>** - Andrea has an idea for new feature emails jenkinsci-dev@googlegroups.com.
+. **<<start, Initial Discussion>>** - Andrea has an idea for new feature and emails it jenkinsci-dev@googlegroups.com.
   She discusses the idea with the group, determining that the idea is worth pursuing.
   She chooses to be the "<<Sponsor>>" for this potential JEP.
   She <<discussion, gathers initial feedback>> from the community, adjusts her design as needed,
   records the reasons for design choices, and keeps track of differing views.
+  Daniel, an expert in the area for this JEP, volunteers to be the <<BDFL Delegate>> for this JEP.
 
 . **<<submission, Submission>>** - Andrea writes up the proposal using the JEP document template as a guide,
   including a supporting documentation and a reference implementation if needed.
@@ -256,8 +269,8 @@ let's take a high-level look at how JEP might go.
   When she believes the design is complete and represents the consensus of the community,
   she submits the JEP for review.
 
-. **<<review, Review>>** - The <<Reviewer>> (in this case the <<BDFL>>) reviews the JEP and decides to accept it,
-  making it an "<<accepted, Accepted>>" JEP.
+. **<<review, Review>>** - The <<Reviewer>> for this JEP,
+  reviews the JEP and decides to accept it, making it an "<<accepted, Accepted>>" JEP.
   Other possible resolutions are "<<rejected, Rejected>>",
   "<<deferred, Deferred>>", "<<withdrawn, Withdrawn>>".
 
@@ -322,9 +335,6 @@ gives the sponsor a chance to flesh out the draft JEP to make sure it is
 properly formatted, of high quality, and to address initial concerns about the
 proposal.
 
-If a contributor other than the BDFL will be the <<Reviewer>> for the JEP,
-they should be selected before the JEP is submitted.
-
 [[submission]]
 ==== Creating a JEP Submission
 
@@ -366,7 +376,7 @@ Reasons for denying JEP "Draft" status include:
   "Motivation" or "Backwards Compatibility" sections
 * not in keeping with the link:https://jenkins.io/project/governance/[Jenkins philosophy].
 
-The BDFL may be consulted during the approval phase,
+The <<Reviewer>> for this JEP may be consulted during the approval phase,
 and is the final arbiter of a submission's approvability as a Draft JEP.
 
 [[approval]]
@@ -399,7 +409,7 @@ for a Draft JEP.
 The version of a JEP that is approved as a Draft JEP
 is rarely the same as the final version that is reviewed and hopefully accepted.
 A Draft JEP often requires further refinement and expansion
-before it is suffiently complete and represents the consensus of the community.
+before it is sufficiently complete and represents the consensus of the community.
 
 Standards Track JEPs consist of two parts, a design document
 and a reference implementation.
@@ -423,7 +433,7 @@ Strategies to keep the discussion efficient include:
 JEP sponsors should use their discretion here.
 
 The JEP sponsor may also ask JEP editors for further feedback regarding the
-style and consistency of a JEP and its readiness for review by the BDFL.
+style and consistency of a JEP and its readiness for review.
 
 As updates are necessary, the JEP sponsor and other contributors
 should push commits to their fork of the JEP repository footnoteref:[repo],
@@ -435,13 +445,11 @@ and submit pull requests targeting the JEP's feature branch.
 Once the sponsor believes a JEP is complete,
 they request the JEP be reviewed for acceptance, usually via
 an email to the jenkinsci-dev@ mailing list.
-For a JEP that is predetermined to be acceptable
-(e.g., it is an obvious win as-is and/or its implementation has already been checked in)
-the BDFL may also initiate a JEP review, first notifying the JEP sponsor and
-giving them a chance to make revisions beforehand.
 The JEP <<Reviewer>> and their chosen consultants then review the JEP.
-They will resolve the JEP as "Accepted" or "Rejected",
+The JEP Reviewer will then decide whether to resolve the JEP as "Accepted" or "Rejected",
 or keep it as "Draft" sending it back to the JEP sponsor for revision.
+In all cases, the reviewer will send a detailed response
+to the jenkinsci-dev@ mailing list explaining their decision.
 
 JEP review and resolution may also occur on a list other than jenkinsci-dev@.
 In this case, the "Discussions-To" header in the JEP will identify the
@@ -500,10 +508,10 @@ Even an Accepted draft may ultimately be Rejected
 at some point before it reaches "Final" status,
 due to factors not known at the time it was Accepted.
 If the reviewer believes the JEP might be Accepted after some modification,
-the reviewer should not reject the JEP, instead returning it Draft status
+the reviewer will not reject the JEP, instead returning it Draft status
 with feedback for the sponsor.
-Upon the request of the sponsor, the BDFL may choose to return a
-Rejected JEP to Draft status, but this is at the discrection of the BDFL.
+Upon the request of the sponsor, the reviewer may choose to return a
+Rejected JEP to Draft status, but this is at the discretion of the reviewer.
 
 Withdrawn::  [[withdrawn]]
 The "Withdrawn" status is similar to "Rejected" - it means that the JEP sponsor
@@ -545,6 +553,33 @@ they must also set and communicate a reasonable schedule to keep a JEP moving fo
 If one or more contributors are not responding
 and the sponsor chooses to move forard without their feedback,
 they should document that choice in the "<<Reasoning>>" section of the JEP.
+
+==== Resolving Disputes
+
+Except for decisions by a JEP's <<Reviewer>> to accept or reject a JEP,
+the JEP process is run by
+link:https://en.wikipedia.org/wiki/Consensus_decision-making[consensus].
+It is the responsibility of the every contributor to respect other contributors,
+listen to their perspectives, and attempt to find solutions that work for everyone.
+
+If consensus cannot be achieved on a JEP,
+contributors may request that the <<Reviewer>> for that JEP intervene.
+The reviewer will consider the matter, and render their decision,
+including describing what actions will be taken and documenting their reasoning.
+
+For disputes over JEP proecess or decisions made by a <<BDFL Delegate>>,
+contributors may request that the <<BDFL>> intervene.
+The BDFL will consider the matter, and render their decision,
+including describing what actions will be taken and documenting their reasoning.
+The BDFL's decision may include technical and other specific instructions to the BDFL Delegate.
+
+If contributors believe a decision made by the BDFL runs counter to the best interests to Jenkins project,
+they may request the Governance meeting review the BDFL's decision.
+The Governance meeting will take up the matter and render a decision within a reasonable timeframe.
+Similar to the judiciary, the Governance meeting will _not_ make technical decisions,
+they will only affirm or reject the BDFL's decision.
+If they affirm, the matter is closed.
+If they reject, the BDFL will render a new decision taking into account the Governance Meeting's input.
 
 === JEP Guidelines
 
@@ -664,8 +699,8 @@ JEP:
 
 =====  Addition Header Rows
 
-Reviewer:: [[header-reviewer]]
-A **<<Reviewer>>** row records who will make the final decision to approve or reject a JEP.
+BDFL-Delegate:: [[header-delegate]]
+A **<<BDFL-Delegate>>** row records who will make the final decision to approve or reject a JEP.
 If this row is not included, the BDFL will make the decision.
 
 Discussions-To:: [[header-discussions-to]]
@@ -829,6 +864,8 @@ Overall, less chaos and more productivity is the rationale for JEP.
 
 == Reasoning
 
+=== Based on Python PEP
+
 The Python community, whose process JEP is modeled after, have successfully
 navigated several large-scale reworkings of Python and its related tools and
 processes over the past decade. This includes most notably the multi-year
@@ -896,7 +933,7 @@ some wanted to add specific language to set expectations timeliness
 The "<<Deferred>>" status addresses what happens if
 a sponsor does not move a JEP forward in a timely manner,
 but there are no contingencies for slow response from
-contributors, editors, reviewers, and the BDFL.
+contributors, editors, BDFL, or BDFL delegates.
 
 There are any number of ways to set expectations about timeliness.
 For example, regarding the review process, one person mentioned put forward,
@@ -910,14 +947,14 @@ difficulties than leaving the timing up to the contributors to each JEP.
 
 === Requiring same license
 
-Some contributors were concerned that changes to a componenent
+Some contributors were concerned that changes to a component
 "must be the same license as the component the proposal is
 meant to added to (or MIT licensed by default)."
 The mentioned that  some companies strictly require "Apache v.2",
 because MIT is not explicit about the patent release.
 By setting this condition we explicitly require contributors
 to create a reference implementation with the MIT license,
-which their employeer may not allow.
+which their employer may not allow.
 
 We could allow other licenses, or mixed licenses.
 However, most JEPs will refer to core or many of the "essential" plugins.
@@ -936,7 +973,7 @@ one phrase per line, or other specific formatting.
 However, choosing which guideline to require, recommend, or even make optional,
 is a potentially long and difficult process.
 Instead of bogging down this JEP in that process,
-we decided to condsider asciidoc style and formatting guidelines in a later JEP.
+we decided to consider asciidoc style and formatting guidelines in a later JEP.
 
 There are currently no Asciidoc linters.
 Should one be found, we will evaluate it for automated checking of
