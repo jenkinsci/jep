@@ -101,10 +101,11 @@ in favor of the more general +ClassFilter.setDefault+, as is the system property
 The new filter has several levels of rules:
 
 * A +CustomClassFilter+ implementation may override any behavior. This is discussed in the compatibility section.
+* Classes mentioned in the original blacklist continue to be rejected.
 * Java arrays and enums are accepted, as these are special formats.
 * Java +Throwable+ types are accepted, as they are commonly used in Remoting responses and it is impractical to enumerate every exception that might be thrown.
 * A class defined in Jenkins core, Remoting, or a Jenkins plugin is accepted. This does _not_ apply to classes defined in other JARs packaged in +WEB-INF/lib/*.jar+.
-* Some classes defined in test utilities, by mocking frameworks, etc., when running inside tests.
+* Some classes defined in test utilities, by mocking frameworks, etc., are accepted when running inside tests.
 * Any other class is accepted if it is explicitly mentioned in a list +whitelisted-classes.txt+ bundled in Jenkins core. These consist of:
 ** Basic Java utility types (roughly half).
 ** Some other collection types defined in Google Guava.
@@ -224,8 +225,8 @@ as the existing blacklist is retained as a fallback unless deliberately overridd
 == Infrastructure Requirements
 
 A new redirect +https://jenkins.io/redirect/class-filter/+ will be needed, perhaps pointing to a wiki page.
-This permalink is printed to log messages appearing when a whitelist violation is encountered,
-in which cases plugin developers or administrators are likely to need instructions on how to proceed.
+This permalink is printed to log messages appearing when a whitelist violation is encountered;
+in these cases plugin developers or administrators are likely to need instructions on how to proceed.
 
 == Reference Implementation
 
