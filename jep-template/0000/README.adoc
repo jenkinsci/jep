@@ -13,13 +13,12 @@ endif::[]
 [TIP]
 ====
 In this document, all text in a "Tip" block (or inline text with with a ":bulb:" on either side)
-MUST be remove and/or replaced with text appropriate to this JEP before submission.
+MUST be removed and/or replaced with text appropriate to this JEP before submission.
 
 Sections may include aditional help and advice in comments.
 ":bulb:" entries in comments only need to be filled in if that text is uncommented.
-Comm
 
-See JEP-1 for full and accurate description of the JEP process and what is required in each section.
+See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for full and accurate description of the JEP process and what is required in each section.
 ====
 
 .Metadata
@@ -54,11 +53,11 @@ See JEP-1 for full and accurate description of the JEP process and what is requi
 //
 //
 // Uncomment if there will be a BDFL delegate for this JEP.
-//| BDLF-Delegate
+//| BDFL-Delegate
 //| :bulb: Link to github user page :bulb:
 //
 //
-// Uncomment if discussion will occur in formum other than jenkinsci-dev@ mailing list.
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
 //| Discussions-To
 //| :bulb: Link to where discussion and final status announcement will occur :bulb:
 //
@@ -163,7 +162,7 @@ JEPs which will not include code changes may omit this section.
 
 [TIP]
 ====
-Provide links to any related docuemnts.
+Provide links to any related documents.
 ====
 
 [IMPORTANT]
