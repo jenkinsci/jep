@@ -344,15 +344,19 @@ otherwise, it will fail review immediately
 To submit a JEP for approval as Draft, the JEP sponsor should:
 
 . Fork the JEP repository footnoteref:[repo].
-. Create a new branch called `jep-submission` their fork
+. Clone their forked repository locally.
+. Create a new branch called `jep-submission` in their clone
   (`git checkout -b jep-submission`).
   If there is already a JEP being submitted from this fork,
-  you may uniquify the branch name; for example, `jep-submission-JENKINS-nnnnn`.
+  they may uniquify the branch name; for example, `jep-submission-JENKINS-nnnnn`.
 . Copy the folder `jep-template/0000` to `jep/0000`.
 . Modify the template JEP in `jep/0000`
   per the instructions in this JEP (which are also outlined in the template).
 . Commit and push the changes to their fork
   and submit a pull request targeting the `jenkinsci/master` branch.
+
+NOTE: The sponsor may alter the steps above or do something else entirely
+as long the result is a PR with a submission in the appropriate format.
 
 A JEP editor will check the submission for conformance with
 JEP structure and formatting guidelines.
