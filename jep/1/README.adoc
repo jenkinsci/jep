@@ -298,9 +298,13 @@ If in doubt, sponsors should split their JEP into several well-focused ones.
 
 [NOTE]
 ====
-Enhancements or patches which have a smaller impact often don't need a
-JEP can be handle via the Jenkins development workflow with a JIRA item and/or
-pull request to the appropriate repository.
+Enhancements or patches which have a smaller impact often don’t need a JEP.
+These can be handled via the regular Jenkins development workflow with a JIRA issue and/or pull request to the appropriate repository.
+
+A JEP may still have an accompanying JIRA issue as a placeholder.
+This might be useful, for example, if implementation of the JEP is later found to have introduced a bug;
+being able to link the `regression`-labelled JIRA issue to the placeholder is valuable for tracking purposes.
+In such a case be sure to specify a "<<header-jira, JIRA>>" section.
 ====
 
 ==== Find a Sponsor
@@ -703,6 +707,9 @@ JEP:
 . **Created** -- Date (`%Y-%m-%d`) when the document was first created.
 
 =====  Addition Header Rows
+
+JIRA:: [[header-jira]]
+A **JIRA** row is available to specify a linked placeholder JIRA issue, if any.
 
 BDFL-Delegate:: [[header-delegate]]
 A **<<BDFL-Delegate>>** row records who will make the final decision to approve or reject a JEP.

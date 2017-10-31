@@ -52,6 +52,11 @@ See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for fu
 | :bulb: Date :bulb:
 //
 //
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
 // Uncomment if there will be a BDFL delegate for this JEP.
 //| BDFL-Delegate
 //| :bulb: Link to github user page :bulb:
