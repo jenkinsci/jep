@@ -228,6 +228,42 @@ A new redirect +https://jenkins.io/redirect/class-filter/+ will be needed, perha
 This permalink is printed to log messages appearing when a whitelist violation is encountered;
 in these cases plugin developers or administrators are likely to need instructions on how to proceed.
 
+== Testing
+
+The reference implementation includes test coverage for the essential aspects of the newly added filter:
+for example, that an example library class not currently included in the whitelist is rejected under the expected conditions.
+
+A number of core tests had already been added during various advisories as mentioned in the motivation.
+When the fallback to the original blacklist is disabled, these continue to pass, indicating that the whitelist alone is a good defense.
+(In a few cases, some technical changes had to made to these tests to ensure that they exercised a realistic code path.)
+
+The interesting testing is however driven by scanning ATH and PCT results for failures mentioning certain keywords,
+as detailed in the discussion on backwards compatibility.
+The broader the set of plugins which can be included in these test runs, the more regressions will be caught early.
+
+For example, a mistake in the `dockerhub-notification` plugin (that would have caused errors under this proposal)
+was already detected by an automated test run, and a simple fix proposed and merged.
+
+Testing against this proposal also rediscovered https://issues.jenkins-ci.org/browse/JENKINS-47158[JENKINS-47158],
+though sufficient reasonable whitelist entries were added to not cause regressions for Blue Ocean even if that were not fixed.
+
+In several cases, test failures and consequent whitelist additions highlighted poor design decisions in existing code.
+For example, as of https://github.com/jenkinsci/git-plugin/pull/497[PR 497]
+the `git` plugin does a lot of tricky things with the Eclipse JGit library.
+That is true even if you have specified the CLI implementation of Git for use in the build!
+In this case, `GitSCM.printCommitMessageToLog` asks the agent to return a `RevCommit` (a JGit type),
+which is serialized and deserialized, and then the master calls `getShortMessage()` on that structure.
+It would be simpler, faster, and safer to do this processing on the agent and send back a `String`,
+but the deceptive ease of Remoting tempts developers to do the wrong thing.
+Enforcing a whitelist in the baseline version of Jenkins might help guide them to the simpler solution.
+
+Functional tests (using `JenkinsRule`) which employ mocking frameworks (Mockito / PowerMock)
+force the new filter to be disabled, as the changes to class loading prevent normal operation.
+Thus any plugin functionality covered only by mock-based tests might quietly regress.
+Fortunately these tests generally check only unit functionality to begin with,
+and are not likely to be exercising interesting code paths such as settings storage or remote calls to agents.
+For similar reasons, certain tests written in Groovy rather than Java prevent normal filter operation and may fail spuriously.
+
 == Reference Implementation
 
 https://github.com/jenkinsci/jenkins/pull/3120/files[Jenkins PR 3120] contains the bulk of the change and links to related PRs.
