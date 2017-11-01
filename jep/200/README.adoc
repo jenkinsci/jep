@@ -13,7 +13,7 @@ endif::[]
 [cols="2"]
 |===
 | JEP
-| 0000
+| 200
 
 | Title
 | Switch Remoting/XStream blacklist to a whitelist
