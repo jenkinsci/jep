@@ -1,0 +1,291 @@
+= JEP-0000: Switch Remoting/XStream blacklist to a whitelist
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 200
+
+| Title
+| Switch Remoting/XStream blacklist to a whitelist
+
+| Sponsor
+| https://github.com/jglick[@jglick]
+
+| Status
+// Uncomment the appropriate line.
+//| Not Submitted :information_source:
+| Draft :speech_balloon:
+//| Deferred :hourglass:
+//| Accepted :ok_hand:
+//| Rejected :no_entry:
+//| Withdrawn :hand:
+//| Final :lock:
+//| Replaced :dagger:
+//| Active :smile:
+
+| Type
+| Standards
+
+| Created
+| 2017 Oct 30
+
+| JIRA
+| https://issues.jenkins-ci.org/browse/JENKINS-47736[JENKINS-47736]
+
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+Since its early days, Jenkins has used two object serialization frameworks:
+Java’s built-in API, from the Remoting layer;
+and XStream, for persisting configuration and settings.
+Both permit any Java class to be loaded merely by specifying its name in the input.
+
+For years, the Jenkins project has received reports of remote code execution (RCE) attacks involving these frameworks.
+Typically the attacks involve fairly exotic classes in the Java Platform, or sundry libraries such as Groovy.
+The Jenkins CERT has responded to such reports reactively, by blacklisting the affected classes or packages.
+That approach has proven unmaintainable, as there is a constant threat of further exploits using unexamined classes.
+
+This proposal switches the blacklist to a whitelist of a few dozen entries:
+for Jenkins to process a third-party class, it must be explicitly approved.
+Classes defined in Jenkins core or plugins are exempt, as are a few special categories.
+
+In practice it seems that very few plugins actually need to serialize any (third-party) types outside the whitelist.
+Many such cases point to dubious design decisions, but to retain compatibility a few such entries are bundled in core.
+Plugins or administrators can also expand the whitelist if regressions arise.
+
+== Specification
+
+The main aspect of the change is the introduction of a `ClassFilterImpl` in Jenkins core which supplants the simple blacklist defined in Remoting.
+This filter is applied to all Java or XStream deserialization performed by the Jenkins master (as well as XStream _serialization_, to "fail fast").
+A crude blacklist extension API in Remoting introduced in
+link:https://jenkins.io/security/advisory/2017-04-26/[2017-04-26] is deprecated
+in favor of the more general `ClassFilter.setDefault`, as is the system property `hudson.remoting.ClassFilter.DEFAULTS_OVERRIDE_LOCATION`.
+
+The new filter has several levels of rules:
+
+* A `CustomClassFilter` implementation may override any behavior. This is discussed in the compatibility section.
+* Classes mentioned in the original blacklist continue to be rejected.
+* Java arrays and enums are accepted, as these are special formats.
+* Java `Throwable` types are accepted, as they are commonly used in Remoting responses and it is impractical to enumerate every exception that might be thrown.
+* A class defined in Jenkins core, Remoting, or a Jenkins plugin is accepted. This does _not_ apply to classes defined in other JARs packaged in `WEB-INF/lib/*.jar`.
+* Some classes defined in test utilities, by mocking frameworks, etc., are accepted when running inside tests.
+* Classes defined in a `RemoteClassLoader` (so, already sent to this JVM from a presumably trusted source) are accepted.
+  This is needed at least by CloudBees Jenkins Operations Center, and clients of the `master-to-master-api` plugin if there are any.
+* Any other class is accepted if it is explicitly mentioned in a list `whitelisted-classes.txt` bundled in Jenkins core. These consist of:
+** Basic Java utility types (roughly half).
+** Some other collection types defined in Google Guava.
+** A handful of safe types defined in some libraries used by Jenkins core.
+** A handful of types used by some common plugins known to otherwise fail: Git, Pipeline, Maven, Job DSL.
+
+The whitelist has been built up by repeatedly running a large array of tests against a patched core and collecting relevant errors.
+It is expected that the standard whitelist will be expanded somewhat as field reports arrive of less common code paths needing new entries.
+
+When a class is (first) rejected, a warning is printed to the system log.
+This is particularly useful when scanning large automated test results for regressions caused by this change.
+Typically the rejection will also trigger an exception which gets displayed in some other manner.
+
+== Motivation
+
+The past few years have seen a flurry of activity by security researchers regarding Java deserialization vulnerabilities.
+The `ysoserial` attack library has been created to host standard "gadgets";
+Moritz Bechler has
+link:https://github.com/mbechler/marshalsec/[published a survey of the field].
+
+While none of the Jenkins CERT team members are experts in this area,
+various parties have reported remote code execution (RCE) attacks targeting Jenkins.
+In just the past two years, the CERT team has had to issue five security advisories including fixes for deserialization vulnerabilities:
+first in
+link:https://jenkins.io/security/advisory/2015-11-11/[2015-11-11],
+when a new `ClassFilter` blacklist was introduced as a defense; then in
+link:https://jenkins.io/security/advisory/2016-02-24/[2016-02-24],
+link:https://jenkins.io/security/advisory/2016-11-16/[2016-11-16],
+link:https://jenkins.io/security/advisory/2017-02-01/[2017-02-01], and
+link:https://jenkins.io/security/advisory/2017-04-26/[2017-04-26].
+At this point it is difficult to have any confidence that the ever-growing blacklist in fact covers every dangerous class
+bundled in the Java Platform, Jenkins core, or commonly used plugins.
+Any newly discovered exploit could be a critical breach in Jenkins security, and it may not be responsibly disclosed.
+
+The exploit in the last (2017-04-26) advisory, like many of the others, was reported against the Jenkins CLI tool.
+Since this historically used Jenkins Remoting, it allowed remote attackers—often even with no authentication—to run code inside the Jenkins master.
+The fallout from this exploit led the CERT team to deprecate use of Remoting in CLI and switch to a safer protocol:
+link:https://gist.github.com/jglick/9721427da892a9b2f75dc5bc09f8e6b3[JENKINS-41745].
+Thus Java deserialization exploits are no longer a threat to users of the recommended CLI modes.
+
+Similarly, after 2017-02-01 a potential attack vector involving console notes (markup in Jenkins build logs) was closed:
+these must now be signed by a key available only inside Jenkins, and deserialization is only performed after successful signature verification.
+
+However, deserialization is still performed on data an attacker could control in two cases.
+Messages sent from an agent to the Jenkins master (unprompted, or responses to requests) are normally passed through a "callable whitelist" as of
+link:https://jenkins.io/security/advisory/2014-10-30/[2014-10-30].
+This whitelist is only applied _after_ deserializing the message, though, at which point it may be too late.
+Since an agent JVM is assumed to be compromisable with a little effort by a rogue build (for example, of a malicious pull request),
+the master must apply a filter on incoming classes.
+
+XStream deserialization is also performed when loading job (agent, …) definitions from several REST or CLI commands.
+These commands require some authentication and authorization,
+but it is worrisome that XStream does not require that a class implement the `Serializable` interface,
+so the reserve of potentially exploitable classes is far broader.
+Thus any blacklist which hopes to be exhaustive must include many more classes than typical gadgets attempt to use.
+
+(Note: Pipeline builds based on the Groovy CPS engine use yet another serialization framework, JBoss Marshalling, to save state.
+This is not considered a security issue since the `program.dat` files are never read from user data.)
+
+== Reasoning
+
+The CERT team could continue to expand the blacklist in response to newly reported vulnerabilities.
+This has proven to be a significant maintenance burden, and there is little trust in the result.
+Outside security authorities have repeatedly urged the Jenkins team to switch to a whitelist.
+
+Jenkins could theoretically switch to other designs that do not involve Java object deserialization.
+In practice this would be wildly incompatible, requiring a rewrite of much of Jenkins core and most plugins.
+
+Every single class used in serial form by Remoting or XStream could be listed.
+This would be a gigantic list, however, and would consist mostly of types defined in plugins (thus being antimodular):
+it is perfectly common to define callables, settings, or nested "structs" in a plugin for purposes of communication or persistence.
+It seems a reasonable compromise to expect that classes defined specifically for use in Jenkins not expose unsafe deserialization behaviors.
+
+In the other direction, it would be possible to reduce the size of the whitelist
+by automatically approving any third-party class which does not define a custom deserialization method such as `readResolve`.
+(There are some tricky points here involving subclasses, since the Serialization specification allows some inheritance of behaviors.)
+This would defend against the most obvious attacks which involve unexpected code execution during deserialization of the exploited class itself.
+However, some more subtle gadgets rely on a combination of behaviors:
+custom deserialization methods in quite standard classes (usually some kind of collection) which call methods like `equals` or `hashCode` on elements;
+and unusual classes which have unsafe implementations of these methods.
+Some experimentation was done on this strategy,
+but in fact the whitelist size increase needed to handle third-party classes with no deserialization methods is not dramatic,
+and this seems well worth the added measure of safety and transparency.
+
+http://openjdk.java.net/jeps/290[JDK Enhancement Proposal (JEP) 290] provides a standard way to apply deserialization filters in Java.
+This is not particularly helpful for Jenkins.
+There are two kinds of filters in JEP 290: declarative and programmatic.
+The programmatic filters would allow the full flexibility that Jenkins’ `ClassFilter` requires.
+However, this is only available in Java 9 and later, and anyway we already control the `ObjectInputStream` construction, so it would be functionally equivalent.
+(But with no XStream support.)
+The declarative filters are available in Java 8, but are too limited
+(for example, we cannot automatically approve types defined in Jenkins code);
+these have the advantage of applying to any `ObjectInputStream` in the system,
+but that is only really helpful when defending against attacks like the `SignedObject` exploit in 2017-04-26,
+which was already covered by a blacklist entry (and now a lack of whitelisting as well).
+
+== Backwards Compatibility
+
+There is an obvious risk that some plugins will have a legitimate need to serialize and deserialize third-party types not covered in the whitelist.
+In fact it is expected that there will be some such cases;
+this is simply the cost of having a tighter security policy.
+
+To ameliorate the risk we can check automated test results against the patched core,
+specifically scanning for the term `class-filter` which appears in logs whenever a violation is encountered.
+Some runs of `acceptance-test-harness` (ATH) were already performed in this mode.
+`plugin-compat-tester` (PCT) was also run against an array of plugins (including those bundled in CloudBees products);
+unfortunately the Jenkins project currently has no maintained CI job running PCT against all plugins suggested by the setup wizard.
+
+If new whitelist entries are needed after release, they can be added to core in weekly updates.
+Plugins can also contribute their own whitelist (or even blacklist) entries for third-party libraries they bundle,
+by creating `META-INF/hudson.remoting.ClassFilter` entries.
+(An extension point `CustomClassFilter` is defined allowing _dynamic_ expansions,
+but currently not exposed as an API, pending a demonstrated use case.)
+
+Finally, an individual administrator can define site-specific whitelist (or blacklist) entries with a system property `hudson.remoting.ClassFilter`.
+This could be useful as an emergency measure, permitting functionality to be restored while awaiting a new plugin release.
+(Such a command-line option could be noted as a workaround in a JIRA bug report by someone familiar with the Jenkins security architecture.)
+
+== Security
+
+This proposal is expected to strictly improve Jenkins security,
+as the existing blacklist is retained as a fallback unless deliberately overridden.
+
+== Infrastructure Requirements
+
+A new redirect `https://jenkins.io/redirect/class-filter/` will be needed, perhaps pointing to a wiki page.
+This permalink is printed to log messages appearing when a whitelist violation is encountered;
+in these cases plugin developers or administrators are likely to need instructions on how to proceed.
+
+== Testing
+
+The reference implementation includes test coverage for the essential aspects of the newly added filter:
+for example, that an example library class not currently included in the whitelist is rejected under the expected conditions.
+
+A number of core tests had already been added during various advisories as mentioned in the motivation.
+When the fallback to the original blacklist is disabled, these continue to pass, indicating that the whitelist alone is a good defense.
+(In a few cases, some technical changes had to made to these tests to ensure that they exercised a realistic code path.)
+
+The interesting testing is however driven by scanning ATH and PCT results for failures mentioning certain keywords,
+as detailed in the discussion on backwards compatibility.
+The broader the set of plugins which can be included in these test runs, the more regressions will be caught early.
+
+For example, a mistake in the `dockerhub-notification` plugin (that would have caused errors under this proposal)
+was already detected by an automated test run, and a simple fix proposed and merged.
+
+Testing against this proposal also rediscovered
+link:https://issues.jenkins-ci.org/browse/JENKINS-47158[JENKINS-47158],
+though sufficient reasonable whitelist entries were added to not cause regressions for Blue Ocean even if that were not fixed.
+
+In several cases, test failures and consequent whitelist additions highlighted poor design decisions in existing code.
+For example, as of
+link:https://github.com/jenkinsci/git-plugin/pull/497[PR 497]
+the `git` plugin does a lot of tricky things with the Eclipse JGit library.
+That is true even if you have specified the CLI implementation of Git for use in the build!
+In this case, `GitSCM.printCommitMessageToLog` asks the agent to return a `RevCommit` (a JGit type),
+which is serialized and deserialized, and then the master calls `getShortMessage()` on that structure.
+It would be simpler, faster, and safer to do this processing on the agent and send back a `String`,
+but the deceptive ease of Remoting tempts developers to do the wrong thing.
+Enforcing a whitelist in the baseline version of Jenkins might help guide them to the simpler solution.
+
+Functional tests (using `JenkinsRule`) which employ mocking frameworks (Mockito / PowerMock)
+force the new filter to be disabled, as the changes to class loading prevent normal operation.
+Thus any plugin functionality covered only by mock-based tests might quietly regress.
+Fortunately these tests generally check only unit functionality to begin with,
+and are not likely to be exercising interesting code paths such as settings storage or remote calls to agents.
+For similar reasons, certain tests written in Groovy rather than Java prevent normal filter operation and may fail spuriously.
+
+== Reference Implementation
+
+link:https://github.com/jenkinsci/jenkins/pull/3120/files[Jenkins PR 3120] contains the bulk of the change and links to related PRs.
+
+== References
+
+N/A
+
+[IMPORTANT]
+====
+When moving this JEP from a Draft to "Accepted" or "Final" state,
+include links to the pull requests and mailing list discussions which were involved in the process.
+====
