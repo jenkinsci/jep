@@ -94,8 +94,9 @@ Plugins or administrators can also expand the whitelist if regressions arise.
 == Specification
 
 The main aspect of the change is the introduction of a +ClassFilterImpl+ in Jenkins core which supplants the simple blacklist defined in Remoting.
-This filter is applied to all Java or XStream deserialization performed by the Jenkins master (as well as XStream _serialization_, to “fail fast”).
-A crude blacklist extension API in Remoting introduced in https://jenkins.io/security/advisory/2017-04-26/[2017-04-26] is deprecated
+This filter is applied to all Java or XStream deserialization performed by the Jenkins master (as well as XStream _serialization_, to "fail fast").
+A crude blacklist extension API in Remoting introduced in
+link:https://jenkins.io/security/advisory/2017-04-26/[2017-04-26] is deprecated
 in favor of the more general +ClassFilter.setDefault+, as is the system property +hudson.remoting.ClassFilter.DEFAULTS_OVERRIDE_LOCATION+.
 
 The new filter has several levels of rules:
@@ -124,29 +125,36 @@ Typically the rejection will also trigger an exception which gets displayed in s
 == Motivation
 
 The past few years have seen a flurry of activity by security researchers regarding Java deserialization vulnerabilities.
-The +ysoserial+ attack library has been created to host standard “gadgets”;
-Moritz Bechler has https://github.com/mbechler/marshalsec/[published a survey of the field].
+The +ysoserial+ attack library has been created to host standard "gadgets";
+Moritz Bechler has
+link:https://github.com/mbechler/marshalsec/[published a survey of the field].
 
 While none of the Jenkins CERT team members are experts in this area,
 various parties have reported remote code execution (RCE) attacks targeting Jenkins.
 In just the past two years, the CERT team has had to issue five security advisories including fixes for deserialization vulnerabilities:
-first in https://jenkins.io/security/advisory/2015-11-11/[2015-11-11], when a new +ClassFilter+ blacklist was introduced as a defense;
-then in https://jenkins.io/security/advisory/2016-02-24/[2016-02-24], https://jenkins.io/security/advisory/2016-11-16/[2016-11-16],
-https://jenkins.io/security/advisory/2017-02-01/[2017-02-01], and https://jenkins.io/security/advisory/2017-04-26/[2017-04-26].
+first in
+link:https://jenkins.io/security/advisory/2015-11-11/[2015-11-11],
+when a new +ClassFilter+ blacklist was introduced as a defense; then in
+link:https://jenkins.io/security/advisory/2016-02-24/[2016-02-24],
+link:https://jenkins.io/security/advisory/2016-11-16/[2016-11-16],
+link:https://jenkins.io/security/advisory/2017-02-01/[2017-02-01], and
+link:https://jenkins.io/security/advisory/2017-04-26/[2017-04-26].
 At this point it is difficult to have any confidence that the ever-growing blacklist in fact covers every dangerous class
 bundled in the Java Platform, Jenkins core, or commonly used plugins.
 Any newly discovered exploit could be a critical breach in Jenkins security, and it may not be responsibly disclosed.
 
 The exploit in the last (2017-04-26) advisory, like many of the others, was reported against the Jenkins CLI tool.
 Since this historically used Jenkins Remoting, it allowed remote attackers—often even with no authentication—to run code inside the Jenkins master.
-The fallout from this exploit led the CERT team to deprecate use of Remoting in CLI and switch to a safer protocol: https://gist.github.com/jglick/9721427da892a9b2f75dc5bc09f8e6b3[JENKINS-41745].
+The fallout from this exploit led the CERT team to deprecate use of Remoting in CLI and switch to a safer protocol:
+link:https://gist.github.com/jglick/9721427da892a9b2f75dc5bc09f8e6b3[JENKINS-41745].
 Thus Java deserialization exploits are no longer a threat to users of the recommended CLI modes.
 
 Similarly, after 2017-02-01 a potential attack vector involving console notes (markup in Jenkins build logs) was closed:
 these must now be signed by a key available only inside Jenkins, and deserialization is only performed after successful signature verification.
 
 However, deserialization is still performed on data an attacker could control in two cases.
-Messages sent from an agent to the Jenkins master (unprompted, or responses to requests) are normally passed through a “callable whitelist” as of https://jenkins.io/security/advisory/2014-10-30/[2014-10-30].
+Messages sent from an agent to the Jenkins master (unprompted, or responses to requests) are normally passed through a "callable whitelist" as of
+link:https://jenkins.io/security/advisory/2014-10-30/[2014-10-30].
 This whitelist is only applied _after_ deserializing the message, though, at which point it may be too late.
 Since an agent JVM is assumed to be compromisable with a little effort by a rogue build (for example, of a malicious pull request),
 the master must apply a filter on incoming classes.
@@ -171,7 +179,7 @@ In practice this would be wildly incompatible, requiring a rewrite of much of Je
 
 Every single class used in serial form by Remoting or XStream could be listed.
 This would be a gigantic list, however, and would consist mostly of types defined in plugins (thus being antimodular):
-it is perfectly common to define callables, settings, or nested “structs” in a plugin for purposes of communication or persistence.
+it is perfectly common to define callables, settings, or nested "structs" in a plugin for purposes of communication or persistence.
 It seems a reasonable compromise to expect that classes defined specifically for use in Jenkins not expose unsafe deserialization behaviors.
 
 In the other direction, it would be possible to reduce the size of the whitelist
@@ -246,11 +254,13 @@ The broader the set of plugins which can be included in these test runs, the mor
 For example, a mistake in the `dockerhub-notification` plugin (that would have caused errors under this proposal)
 was already detected by an automated test run, and a simple fix proposed and merged.
 
-Testing against this proposal also rediscovered https://issues.jenkins-ci.org/browse/JENKINS-47158[JENKINS-47158],
+Testing against this proposal also rediscovered
+link:https://issues.jenkins-ci.org/browse/JENKINS-47158[JENKINS-47158],
 though sufficient reasonable whitelist entries were added to not cause regressions for Blue Ocean even if that were not fixed.
 
 In several cases, test failures and consequent whitelist additions highlighted poor design decisions in existing code.
-For example, as of https://github.com/jenkinsci/git-plugin/pull/497[PR 497]
+For example, as of
+link:https://github.com/jenkinsci/git-plugin/pull/497[PR 497]
 the `git` plugin does a lot of tricky things with the Eclipse JGit library.
 That is true even if you have specified the CLI implementation of Git for use in the build!
 In this case, `GitSCM.printCommitMessageToLog` asks the agent to return a `RevCommit` (a JGit type),
@@ -268,7 +278,7 @@ For similar reasons, certain tests written in Groovy rather than Java prevent no
 
 == Reference Implementation
 
-https://github.com/jenkinsci/jenkins/pull/3120/files[Jenkins PR 3120] contains the bulk of the change and links to related PRs.
+link:https://github.com/jenkinsci/jenkins/pull/3120/files[Jenkins PR 3120] contains the bulk of the change and links to related PRs.
 
 == References
 
