@@ -634,6 +634,12 @@ during discussion.
   Each JEP must explain the scope of infrastructure changes with sufficient detail
   to allow initial and on-going cost (in both time and money) to be estimated.
   If the JEP has no impact on infrastructure, the section must say that.
+. **Testing** -
+  All JEPs which include code changes must include a section summarizing how the
+  changes will be tested. The JEP itself need not include a complete test
+  plan—this could be developed concurrently with the rest of the
+  implementation—but it should set out expectations for testability. If the JEP
+  has no testing needs, the section must say that.
 . **Reference Implementation** --
   If a JEP will include code changes,
   this section will provide links to a an open source reference implementation
