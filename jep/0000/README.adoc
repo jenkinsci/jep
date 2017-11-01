@@ -106,6 +106,8 @@ The new filter has several levels of rules:
 * Java +Throwable+ types are accepted, as they are commonly used in Remoting responses and it is impractical to enumerate every exception that might be thrown.
 * A class defined in Jenkins core, Remoting, or a Jenkins plugin is accepted. This does _not_ apply to classes defined in other JARs packaged in +WEB-INF/lib/*.jar+.
 * Some classes defined in test utilities, by mocking frameworks, etc., are accepted when running inside tests.
+* Classes defined in a +RemoteClassLoader+ (so, already sent to this JVM from a presumably trusted source) are accepted.
+  This is needed at least by CloudBees Jenkins Operations Center, and clients of the +master-to-master-api+ plugin if there are any.
 * Any other class is accepted if it is explicitly mentioned in a list +whitelisted-classes.txt+ bundled in Jenkins core. These consist of:
 ** Basic Java utility types (roughly half).
 ** Some other collection types defined in Google Guava.
