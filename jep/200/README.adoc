@@ -1,4 +1,4 @@
-= JEP-0000: Switch Remoting/XStream blacklist to a whitelist
+= JEP-200: Switch Remoting/XStream blacklist to a whitelist
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
