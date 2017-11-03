@@ -253,9 +253,10 @@ let's take a high-level look at how JEP might go.
   records the reasons for design choices, and keeps track of differing views.
   Daniel, an expert in the area for this JEP, volunteers to be the <<BDFL Delegate>> for this JEP.
 
-. **<<submission, Submission>>** - Andrea writes up the proposal using the JEP document template as a guide,
-  including a supporting documentation and a reference implementation if needed.
-  She then submits the JEP to the JEP editors for
+. **<<submission, Submission>>** - Andrea writes up the proposal using the JEP document template as a guide.
+  She includes supporting documentation
+  and a prototype implementation sufficient to convey the viability of the design.
+  She submits the JEP to the JEP editors for
   <<approval, approval as a Draft JEP>>.
   An editor checks the submission and determines it is ready to considered as a JEP.
   They "approve" the submission, assigning the JEP a number, and the submission becomes a "Draft" JEP.
@@ -418,8 +419,8 @@ A Draft JEP often requires further refinement and expansion
 before it is sufficiently complete and represents the consensus of the community.
 
 Standards Track JEPs consist of two parts, a design document
-and a reference implementation.
-At minimum, prototype implementation should be co-developed with the JEP,
+and a prototype implementation.
+The prototype implementation should be co-developed with the JEP,
 as ideas that sound good in principle sometimes turn out to be impractical
 when subjected to the test of implementation.
 
@@ -640,12 +641,12 @@ during discussion.
   plan—this could be developed concurrently with the rest of the
   implementation—but it should set out expectations for testability. If the JEP
   has no testing needs, the section must say that.
-. **Reference Implementation** --
+. **Prototype Implementation** --
   If a JEP will include code changes,
-  this section will provide links to a an open source reference implementation
-  of those changes.
-  The reference implementation need not be completed before the JEP is <<accepted>>,
-  but must be completed before any JEP is given "Final" status.
+  this section will provide links to a an open source prototype implementation of those changes.
+  The prototype implementation must be present for a JEP to be approved as <<draft>>.
+  The prototype implementation must be sufficient to convey the viability of the design
+  for a JEP to be <<accepted>>.
   While there is merit to the approach of reaching consensus on the
   specification and reasoning before writing code,
   the principle of "rough consensus and running code" is still useful
@@ -971,7 +972,7 @@ meant to added to (or MIT licensed by default)."
 The mentioned that  some companies strictly require "Apache v.2",
 because MIT is not explicit about the patent release.
 By setting this condition we explicitly require contributors
-to create a reference implementation with the MIT license,
+to create at least a prototype implementation with the MIT license,
 which their employer may not allow.
 
 We could allow other licenses, or mixed licenses.
