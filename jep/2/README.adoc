@@ -1,3 +1,6 @@
+= JEP-2: Criteria for selecting "Suggested Plugins"
+:toc: preamble
+:toclevels: 3
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
@@ -5,10 +8,6 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
-
-= JEP-9999: Criteria for selecting "Suggested Plugins"
-
-:toc:
 
 .Metadata
 [cols="2"]
