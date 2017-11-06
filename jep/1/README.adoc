@@ -394,7 +394,7 @@ the editors will approve the submission as a draft JEP
 by following the steps outlined in the
 <<approve-as-draft, editors' "Approve as Draft" section>>.
 When they are done, the Draft JEP will have an official JEP number and
-the sumbmission PR will have been merged to a matching folder
+the submission PR will have been merged to a matching folder
 (for example,
 `link:https://github.com/jenkinsci/jep/tree/master/jep/1[jep/1]`)
 in the `master` branch.
