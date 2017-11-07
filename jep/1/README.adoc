@@ -484,6 +484,8 @@ When the implementation is complete and incorporated into the
 appropriate "main" code repository, the JEP sponsor will change
 the JEP's status changed to "Final".
 
+At this time the JEP editors will merge its feature branch into the `master` branch of the `jep` repository.
+
 [[maintenance]]
 ==== JEP Maintenance
 
@@ -839,6 +841,9 @@ Once the JEP is ready for the repository, a JEP editor will:
 . Update the folder number to match the JEP number
 . Update the JEP number in the document.
 
+==== Mark as Final
+
+Once a JEP is finalized, a JEP editor will merge its feature branch into `master` and delete the feature branch.
 
 == Motivation
 
