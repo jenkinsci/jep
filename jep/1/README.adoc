@@ -185,7 +185,8 @@ when referring the one or more people in the role of "Sponsor" of a JEP.
 
 The <<BDFL>> may delegate their responsibilities to another contributor,
 a "BDFL Delegate" on a per-JEP basis.
-The BDFL Delegate for a JEP has all the responsibilities of the BDFL within the context of that JEP.
+The BDFL Delegate for a JEP has all the responsibilities of the BDFL within the context of that JEP,
+except that BDFL Delegate may not delegate to someone else - there is no such thing as a "BDFL Delegate Delegate".
 
 A BDFL Delegate may be selected at any point before the JEP is reviewed.
 Any contributor with sufficient technical and organizational
@@ -198,9 +199,6 @@ The BDFL Delegate for a JEP will be recorded in the
 
 A JEP's <<Sponsor>> may also be the BDFL Delegate for that JEP,
 taking on the responsibilities of both roles.
-
-A BDFL Delegate may not delegate to someone else -
-there is no such thing as a "BDFL Delegate Delegate".
 
 If a Delegate wishes to leave a JEP, they may do so at any time by emailing jenkinsci-dev@.
 They can also be removed from a JEP by the BDFL.
@@ -558,7 +556,7 @@ it is the sponsors responsibility to do so.
 Just as the sponsor must build consensus for a JEP,
 they must also set and communicate a reasonable schedule to keep a JEP moving forward.
 If one or more contributors are not responding
-and the sponsor chooses to move forard without their feedback,
+and the sponsor chooses to move forward without their feedback,
 they should document that choice in the "<<Reasoning>>" section of the JEP.
 
 ==== Resolving Disputes
@@ -566,7 +564,7 @@ they should document that choice in the "<<Reasoning>>" section of the JEP.
 Except for decisions by a JEP's <<Reviewer>> to accept or reject a JEP,
 the JEP process is run by
 link:https://en.wikipedia.org/wiki/Consensus_decision-making[consensus].
-It is the responsibility of the every contributor to respect other contributors,
+It is the responsibility of every contributor to respect other contributors,
 listen to their perspectives, and attempt to find solutions that work for everyone.
 
 If consensus cannot be achieved on a JEP,
@@ -574,7 +572,7 @@ contributors may request that the <<Reviewer>> for that JEP intervene.
 The reviewer will consider the matter, and render their decision,
 including describing what actions will be taken and documenting their reasoning.
 
-For disputes over JEP proecess or decisions made by a <<BDFL Delegate>>,
+For disputes over JEP process or decisions made by a <<BDFL Delegate>>,
 contributors may request that the <<BDFL>> intervene.
 The BDFL will consider the matter, and render their decision,
 including describing what actions will be taken and documenting their reasoning.
@@ -713,7 +711,7 @@ JEP:
 . **Type** -- Describes the type of JEP: Standards, Informational, Process
 . **Created** -- Date (`%Y-%m-%d`) when the document was first created.
 
-=====  Addition Header Rows
+=====  Additional Header Rows
 
 JIRA:: [[header-jira]]
 A **JIRA** row is available to specify a linked placeholder JIRA issue, if any.
