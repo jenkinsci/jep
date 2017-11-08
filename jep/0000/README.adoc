@@ -19,7 +19,7 @@ endif::[]
 | Jenkins Configuration as Code
 
 | Sponsor
-| https://github.com/praqma[Praqma]
+| https://github.com/ewelinawilkosz2[Ewelina Wilkosz] from https://github.com/praqma[Praqma]
 
 | Status
 // Uncomment the appropriate line.
