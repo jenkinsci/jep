@@ -395,10 +395,10 @@ the editors will approve the submission as a draft JEP
 by following the steps outlined in the
 <<approve-as-draft, editors' "Approve as Draft" section>>.
 When they are done, the Draft JEP will have an official JEP number and
-the sumbmission PR will have been merged to a matching folder and feature branch
-(i.e the
-`link:https://github.com/jenkinsci/jep/tree/jep-1/jep/1[jep/1]` folder in the
-`https://github.com/jenkinsci/jep/tree/jep-1/[jep-1]` branch).
+the submission PR will have been merged to a matching folder
+(for example,
+`link:https://github.com/jenkinsci/jep/tree/master/jep/1[jep/1]`)
+in the `master` branch.
 
 IMPORTANT: "Approval as Draft" is *not* the same as accepting the JEP.
 
@@ -445,7 +445,7 @@ style and consistency of a JEP and its readiness for review.
 
 As updates are necessary, the JEP sponsor and other contributors
 should push commits to their fork of the JEP repository footnoteref:[repo],
-and submit pull requests targeting the JEP's feature branch.
+and submit pull requests targeting the `master` branch.
 
 [[review]]
 ==== JEP Review
@@ -835,10 +835,7 @@ Once the JEP is ready for the repository, a JEP editor will:
 
 . Assign a JEP number (almost always just the next available number, but
   may also be a special/joke number, like 666 or 3141).
-. Create a new feature branch in jenkinsci/jep for the JEP, i.e. `jep-1`.
-. Re-target the original sponsor's pull request to the feature branch
-  (see https://help.github.com/articles/changing-the-base-branch-of-a-pull-request/)
-. Squash the commit(s) into that JEP's feature branch.
+. Squash the commit(s) into the `master` branch.
 . Update the folder number to match the JEP number
 . Update the JEP number in the document.
 
