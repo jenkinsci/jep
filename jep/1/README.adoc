@@ -152,7 +152,8 @@ A JEP may have any number of "Contributors" who
 help write, implement, discuss, or offer feedback about that JEP.
 One contributor might do only one or any combination of these
 of these things during any part of the life of a JEP.
-Companies or legal entitites cannot be contributors.
+While we invite contributions by companies or other organizations, contributors listed in a JEP
+(such as Sponsors or BDFL Delegates below) need to be specific people.
 
 ==== Sponsor
 
