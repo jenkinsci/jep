@@ -152,6 +152,7 @@ A JEP may have any number of "Contributors" who
 help write, implement, discuss, or offer feedback about that JEP.
 One contributor might do only one or any combination of these
 of these things during any part of the life of a JEP.
+Companies or legal entitites cannot be contributors.
 
 ==== Sponsor
 
@@ -189,6 +190,7 @@ The BDFL Delegate for a JEP has all the responsibilities of the BDFL within the 
 except that BDFL Delegate may not delegate to someone else - there is no such thing as a "BDFL Delegate Delegate".
 
 A BDFL Delegate may be selected at any point before the JEP is reviewed.
+A record of this selection must be available publicly.
 Any contributor with sufficient technical and organizational
 experience to make the final decision on that JEP,
 may offer to be the BDFL's Delegate for a JEP.
