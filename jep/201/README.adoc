@@ -1,4 +1,4 @@
-= JEP-0000: Jenkins Configuration as Code
+= JEP-201: Jenkins Configuration as Code
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -13,7 +13,7 @@ endif::[]
 [cols="2"]
 |===
 | JEP
-| 0000
+| 201
 
 | Title
 | Jenkins Configuration as Code
@@ -23,8 +23,8 @@ endif::[]
 
 | Status
 // Uncomment the appropriate line.
-| Not Submitted :information_source:
-//| Draft :speech_balloon:
+//| Not Submitted :information_source:
+| Draft :speech_balloon:
 //| Deferred :hourglass:
 //| Accepted :ok_hand:
 //| Rejected :no_entry:
@@ -74,11 +74,11 @@ endif::[]
 
 == Abstract
 
-Jenkins installation setup require various configuration steps users have to handle on the web UI. This provide flexibility for newcomers,
+Jenkins installation setup require various configuration steps users have to handle on the web UI. This provides flexibility for newcomers,
 but for repeated deployment, users are all looking for some way to automate things and provide a reproducible installation.
 
 Configuration-as-Code is a DevOps practice to manage software configuration as versioned files managed in SCM, which can be tested,
-discussed and validated in various environment before they actually update the production target.
+discussed and validated in various environments before they actually update the production target.
 
 Many Companies do rely on dozens or hundred Jenkins masters, and as such require some way to control their setup and initial configuration.
 
@@ -89,12 +89,12 @@ Many Companies do rely on dozens or hundred Jenkins masters, and as such require
 
 We want to introduce a simple way to define Jenkins configuration from a declarative document that would be accessible even to newcomers.
 Such a document should replicate the web UI user experience so the resulting structure looks natural to end user. Jenkins components have
-to be identified by convention / user friendly names better than by actual implementation class name.
+to be identified by convention or user-friendly names rather than by actual implementation class name.
 
 === Mimic web UI
 
 We consider web UI as a natural documentation for end-user. As they switch to configuration-as-code they will search for the labels and
-model they use to see on web UI. The configuration-as-code model should follow as much as possible this model.
+model their use to see on web UI. The configuration-as-code model should follow as much as possible this model.
 
 === No glue-code requirement
 
@@ -130,7 +130,7 @@ produce adequate xml structure, while end user only knows Jenkins Web UI. Those 
 practice for advanced Jenkins users.
 
 Configuration as Code should not be available only to advanced Jenkins users. Typically, when selecting implementation for an extension
-point, a non-expert end-user don't know the actual class name to be used internally and stored in xml configuration; he just select a
+point, a non-expert end-user doesn't know the actual class name to be used internally and stored in xml configuration; they just select a
 label in a dropdown list. This is what we want to offer “as-code”.
 
 === Target Audience
@@ -149,18 +149,18 @@ to upgrade jenkins by running latest official docker image and re-using previous
 
 == Reasoning
 
-Configuration as Code as a simple text file with both documentation and schema would make it possible for any Jenkins user to replicate
-the configuration he use to setup by hand on web UI.
+Configuration as Code as a simple text file with both documentation and schema that would make it possible for any Jenkins user to replicate
+the configuration they would previously setup by hand on web UI.
 
 This is a major differentiator vs Groovy init scripts used by many Advanced Jenkins users, who are confident with internal APIs and Groovy
-syntax. Using a basic text file format with validation make this feature available to arbitrary DevOps team without need to be familiar
+syntax. Using a basic text file format with validation makes this feature available to arbitrary DevOps teams without the need to be familiar
 with Jenkins or Groovy.
 
 === File format
 
-To avoid Configuration as Code to be tied to some development community, we selected YAML as format to define Jenkins configuration.
+To avoid Configuration as Code being tied to a specific developer community, we selected YAML as format to define Jenkins configuration.
 
-YAML allows to :
+YAML allows us to :
 
 * Have a plain text, human readable format
 * Include comments to provide runnable sample configuration files
@@ -169,8 +169,9 @@ YAML allows to :
 
 === Configuration mechanism
 
-Configuration file define a tree model. For every node we need to find the matching Jenkins component. Relying on @Symbol annotation is an
-efficient way to identify components with a human friendly short name. For plugin which didn’t (yet) adopted this annotation, we can rely
+Configuration files define a tree model.
+For every node, we need to find the matching Jenkins component. Relying on @Symbol annotation is an
+efficient way to identify components with a human friendly short name. For plugin which haven't (yet) adopted this annotation, we can rely
 on some convention. A common pattern is to name an implementation class as prefix + API class name, like “LDAPSecurityRealm”. As we know
 the API we are looking for implementation, we can establish a natural short name for this implementation as “ldap” and offer a Symbol-like
 short name to end user for his configuration file.
@@ -181,27 +182,27 @@ jenkins component (*) do rely on them and as such offer a 1:1 match between inte
 
 (*) We noticed many +Descriptor+s do rely on manual parsing of +JSONObject+. We will need to fix them
 
-In some circumstances the Java codebase doesn’t match the web UI forms and relies on some custom code for configuration. Jenkins root
-object is such a component. For those, we need to provide some dedicated configuration adapter code. Some plugins might need  We have
-identified credentials-plugin as such a component.
+In some circumstances the Java codebase doesn’t match the web UI forms and relies on some custom code for configuration. The Jenkins root
+object is such a component. For those, we need to provide some dedicated configuration adapter code. Some plugins might need the same.
+We have identified credentials-plugin as such a component.
 
 === Documentation / Schema generation
 
-As configuration-as-code mechanism relies on DataBound mechanism we can construct a full data model from a live jenkins instance, and
+As configuration-as-code mechanism relies on DataBound mechanism, we can construct a full data model from a live jenkins instance, and
 produce documentation. We also can include help tips from various inputs as additional guidance to end-user reading the doc.
 
 The same way we generate documentation we can generate a JSON-schema to validate a configuration file without need to run a jenkins master
 for acceptance.
 
 === (Im)mutability
-Depending the audience, some want to use configuration-as-code to generate a working Jenkins master with some initial configuration, but
-let the actual administrator make changes. Such use case is mostly looking for “recipe for a new jenkins master”.
+Depending on the audience, some want to use configuration-as-code to generate a working Jenkins master with some initial configuration, but
+also let the actual administrator make changes. Such use case is mostly looking for “recipe for a new jenkins master”.
 
 Others want configuration-as-code to fully control the master, and be able to apply updates. Comparable to Chef/Puppet/Ansible management.
 
 Both use cases can be supported (as well as a mix of both).
 
-The former just using the configuration-as-code mechanism for initial setup.
+The former just uses the configuration-as-code mechanism for initial setup.
 
 The later would apply the configuration when updates are detected on file. It could benefit some way to lock down configuration for
 components configured by the configuration-as-code mechanism to be read-only on web UI.
@@ -226,7 +227,7 @@ N/A
 We will provide a set of configuration samples for various popular plugins, both as documentation for newcomers and for acceptance of the
 implementation.
 
-== Reference Implementation
+== Prototype Implementation
 
 https://github.com/jenkinsci/configuration-as-code-plugin
 
