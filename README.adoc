@@ -8,11 +8,9 @@ endif::[]
 
 = Jenkins Enhancement Proposals
 
-[NOTE]
-====
-This repository is a work in progress.
-====
+See link:jep/1/README.adoc[JEP-1] for a description of JEPs.
 
+link:jep/[Index of all JEPs] accepted at least as drafts.
 
 == License
 
@@ -32,8 +30,3 @@ Under the following terms:
   use.
 * **ShareAlike** - If you remix, transform, or build upon the material, you must
   distribute your contributions under the same license as the original.
-
-== Related Works
-
-* link:https://www.python.org/dev/peps/[Python Enhancement Proposals]
-* link:https://github.com/jenkins-infra/iep[Infrastructure Enhancement Proposal]
