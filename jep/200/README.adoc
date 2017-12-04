@@ -42,11 +42,9 @@ endif::[]
 | JIRA
 | https://issues.jenkins-ci.org/browse/JENKINS-47736[JENKINS-47736]
 
-//
-//
-// Uncomment if there will be a BDFL delegate for this JEP.
-//| BDFL-Delegate
-//| :bulb: Link to github user page :bulb:
+| BDFL-Delegate
+| https://github.com/oleg-nenashev[@oleg-nenashev]
+
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
