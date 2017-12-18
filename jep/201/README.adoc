@@ -169,6 +169,8 @@ YAML allows us to :
 
 === Configuration mechanism
 
+==== Component names
+
 Configuration files define a tree model.
 For every node, we need to find the matching Jenkins component. Relying on `@Symbol` annotation is an
 efficient way to identify components with a human friendly short name. For plugin which haven't (yet) adopted this annotation, we can rely
@@ -176,9 +178,36 @@ on some convention. A common pattern is to name an implementation class as prefi
 the API we are looking for implementation, we can establish a natural short name for this implementation as “ldap” and offer a Symbol-like
 short name to the end user for his configuration file.
 
+==== General mechanism
 
 ++DataBoundSetter++s & ++DataBoundConstructor++s offer a natural way to construct Jenkins components from a set of key=value pairs. Most
-jenkins components footnote:[We noticed many ++Descriptor++s rely on manual parsing of +JSONObject+. We will need to fix them.] do rely on them and as such offer a 1:1 match between internal data structure and web UI configuration forms.
+jenkins components do rely on them and as such offer a 1:1 match between internal data structure and web UI configuration forms. Component to follow UI binding conventions and best practices will then be supported out-of-the-box. The few of them with custom UI binding rules should be easily fixed, as the required changes are limited to data binding conventions.
+
+==== Descriptors global configuration
+
+A major exception to this is ++Descriptor++s which in many cases rely on manual parsing of +JSONObject+. In this JEP we propose to offer guidance and recommendation for plugin developers to apply the same databinding mechanisme to descriptor's ++configure++ method. We published a https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/PLUGINS.md[step-by-step guide] for this purpose and will open pull-requests on few commons plugins to demonstrate this approach.
+
+Most plugin do already have setters for descriptor's attribte, designed to enable configuration from groovy scripts. We do rely on those when they exist, but adoption databinding mechanisms will ensure
+
+1. accessors name and types do match the internal data model
+1. all attributes are configurable relying on DataBound setters.
+
+==== Attribute naming
+
+===== Aliases
+In few cases attribute and accessors names do no match the UI labels, either for legacy reasons ("slave" vs "agent") or for technical databinding implementation details ("lavelString" vs "label"). As we want the configuration-as-code model to mimic web UI, considering this one is "natural documentation" for most users, we need to fix this.
+We propose to document in setters the attribute preferred name using an ++@Symbol++ annotation (see https://github.com/jenkinsci/structs-plugin/pull/18[structs-plugin#18]). 
+
+We consider this to be a **must have** feature
+
+===== Delegate
+There's other places where attribute are managed within web UI by a dedicated compoment. ++Jenkins.securityRealm++ for sample is managed by ++GlobalSecurityConfiguration++ component, which doesn't have any attribute by himself. 
+
+We propose to declare such management delegation as annotations on the attribute owner. So Jenkins.securityRealm would document attribute is actually managed by ++GlobalSecurityConfiguration++, and the later would offer setters for securityRealm, to actually configure Jenkins owning component.
+
+We consider this to be a **nive to have** feature
+
+==== Corner cases
 
 In some circumstances the Java codebase doesn’t match the web UI forms and relies on some custom code for configuration. The Jenkins root
 object is such a component. For those, we need to provide some dedicated configuration adapter code. Some plugins might need the same.
