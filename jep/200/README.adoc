@@ -103,15 +103,18 @@ The new filter has several levels of rules:
 * Classes mentioned in the original blacklist continue to be rejected.
 * Java arrays and enums are accepted, as these are special formats.
 * Java `Throwable` types are accepted, as they are commonly used in Remoting responses and it is impractical to enumerate every exception that might be thrown.
-* A class defined in Jenkins core, Remoting, or a Jenkins plugin is accepted. This does _not_ apply to classes defined in other JARs packaged in `WEB-INF/lib/*.jar`.
+* A class defined in Jenkins core, Remoting, or a Jenkins module/plugin is accepted. This does _not_ apply to classes defined in other JARs packaged in `WEB-INF/lib/*.jar`.
 * Some classes defined in test utilities, by mocking frameworks, etc., are accepted when running inside tests.
 * Classes defined in a `RemoteClassLoader` (so, already sent to this JVM from a presumably trusted source) are accepted.
   This is needed at least by CloudBees Jenkins Operations Center, and clients of the `master-to-master-api` plugin if there are any.
 * Any other class is accepted if it is explicitly mentioned in a list `whitelisted-classes.txt` bundled in Jenkins core. These consist of:
-** Basic Java utility types (roughly half).
+//oleg-nenashev: What does block us from allowing all types?
+** Basic Java utility types (roughly half, see the reference implementation).
 ** Some other collection types defined in Google Guava.
 ** A handful of safe types defined in some libraries used by Jenkins core.
+//oleg-nenashev: All detached plugins and modules have been checked, right?
 ** A handful of types used by some common plugins known to otherwise fail: Git, Pipeline, Maven, Job DSL.
+*  New APIs for `ClassFilter` management are blacklisted in the Script Security plugin
 
 The whitelist has been built up by repeatedly running a large array of tests against a patched core and collecting relevant errors.
 It is expected that the standard whitelist will be expanded somewhat as field reports arrive of less common code paths needing new entries.
@@ -209,6 +212,7 @@ There is an obvious risk that some plugins will have a legitimate need to serial
 In fact it is expected that there will be some such cases;
 this is simply the cost of having a tighter security policy.
 
+// oleg-nenashev: TODO: Clarify, which plugins have been tested and which plugins in the setup wizard were not covered by tests
 To ameliorate the risk we can check automated test results against the patched core,
 specifically scanning for the term `class-filter` which appears in logs whenever a violation is encountered.
 Some runs of `acceptance-test-harness` (ATH) were already performed in this mode.
