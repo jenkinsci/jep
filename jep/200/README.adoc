@@ -48,8 +48,8 @@ endif::[]
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
-//| Discussions-To
-//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+| Discussions-To
+| https://groups.google.com/forum/#!topic/jenkinsci-dev/hOn7DTGv9tw[jenkinsci-dev mailing list thread]
 //
 //
 // Uncomment if this JEP depends on one or more other JEPs.
@@ -99,7 +99,7 @@ in favor of the more general `ClassFilter.setDefault`, as is the system property
 
 The new filter has several levels of rules:
 
-* A `CustomClassFilter` implementation may override any behavior. This is discussed in the compatibility section.
+* A custom `ClassFilter` implementation may override any behavior. This is discussed in the compatibility section.
 * Classes mentioned in the original blacklist continue to be rejected.
 * Java arrays and enums are accepted, as these are special formats.
 * Java `Throwable` types are accepted, as they are commonly used in Remoting responses and it is impractical to enumerate every exception that might be thrown.
@@ -276,7 +276,9 @@ For similar reasons, certain tests written in Groovy rather than Java prevent no
 
 == Reference Implementation
 
-link:https://github.com/jenkinsci/jenkins/pull/3120/files[Jenkins PR 3120] contains the bulk of the change and links to related PRs.
+* link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] contains the bulk of the change and links to related PRs.
+* link:https://github.com/jenkinsci/remoting/pull/208[Remoting PR #208] introduces the new API required to deliver the change.
+
 
 == References
 
