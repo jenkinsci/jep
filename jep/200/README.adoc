@@ -279,6 +279,82 @@ For similar reasons, certain tests written in Groovy rather than Java prevent no
 * link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] contains the bulk of the change and links to related PRs.
 * link:https://github.com/jenkinsci/remoting/pull/208[Remoting PR #208] introduces the new API required to deliver the change.
 
+== Rollout plan
+
+=== Phase 1. Remoting release
+
+Target date: Dec 29, 2017
+
+JEP-200 requires extra API in Remoting, so link:https://github.com/jenkinsci/remoting/pull/208[pull request #208]
+needs to be delivered in advance.
+https://github.com/oleg-nenashev[@oleg-nenashev] will release the following components once the rollout plan is confirmed with the JEP sponsor:
+
+* Remoting
+* link:https://github.com/jenkinsci/docker-slave[docker-slave] (including the `latest` tag)
+* link:https://github.com/jenkinsci/docker-jnlp-slave[docker-jnlp-slave] images (including the `latest` tag)
+* link:https://github.com/jenkinsci/swarm-plugin/[Swarm Plugin Client]
+
+If everything goes fine, the Remoting release may be integrated into the weekly release
+(without actual use of the new API).
+
+=== Phase 2. Weekly Release
+
+Target date: Jan 13, 2017
+
+0. Once this JEP is approved, the https://jenkins.io/redirect/class-filter/ will be created on the Jenkins website
+** This document should provide a custom guide for creating JIRA issues with the `jep-200` label
+0. The JEP sponsor will write an announcement blogpost, which will describe the change and provide links to mitigation guidelines
+** This blog-post will be used as part of the upgrade guideline for LTS
+0. Once the blog post draft is approved,
+link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] will be integrated towards the next weekly release
+
+// oleg-nenashev: This process is a bit harsh for a single JEP sponsor, but in this case the sponsor represents a company AFAIK.
+// So I feel reasonable to set a maintenance quality bar taking a serious risk of regressions into account
+After the weekly release the JEP sponsor
+(or a group of people nominated by him, _JEP-200 maintainer(s)_)
+will be responsible to provide an extra support for the issues:
+
+* Issues with the `jep-200` label in Jenkins JIRA get first response within 2 business days (Monday-Friday)
+* Eligible components: Any non-blacklisted plugin hosted within the `jenkinsci` organization
+with more than `100` installations.
+* _JEP-200 maintainer(s)_ may request additional information from the reporter,
+but they are expected to provide a response within 2 business days after each iteration.
+Finally, they are expected to communicate the triage outcome.
+* Possible triage outcomes:
+** Accepted - patch in the plugin
+** Accepted - update whitelist in the core (similar to link:https://github.com/jenkinsci/jenkins/pull/3120/files#diff-ff24cb984ddd641f49a22cc13a90cfd3[these cases])
+** Rejected - functional defect.
+_JEP-200 maintainer(s)_ are **not responsible** to fix any issue,
+the reporter can use the suggested workarounds.
+** Rejected - security risk.
+In such case the issue will be moved to the SECURITY bugtracker and then handled by the link:https://jenkins.io/security/[Jenkins Security team]
+* For accepted issues _JEP-200 maintainer(s)_ schedule the fix and communicate the fix ETA to the reporter
+
+=== Phase 3. LTS availability
+
+Target Date: Mar 14, 2018
+
+There is no plan to backport the proposed change to the 2.89.x LTS baseline.
+The change will be integrated into the LTS if the
+link:https://wiki.jenkins.io/display/JENKINS/Governance+Meeting+Agenda[governance meeting]
+selects a weekly with the integrated change.
+The weekly may be rejected if the release is not stable enough.
+Estimated meeting date - Feb 14, 2018.
+
+Notes:
+
+* The change will be referenced in the upgrade guidelines based on the announcement blog post
+** These guidelines will be updated by the weekly rollout results
+** If there are any unresolved known issues, they will be referenced in the _Known Issues_ section
+
+=== Phase 4. Post-release
+
+The change may cause regressions in plugins on updating instances.
+In order to mitigate them, we define an extra support policy in the community.
+
+_JEP-200 maintainer(s)_ will be responsible to triage/fix issues till May 01, 2018.
+It means there will be an extra month of active support.
+The process is similar to the one described in the Phase 2 section.
 
 == References
 
