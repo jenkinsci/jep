@@ -99,7 +99,7 @@ in favor of the more general `ClassFilter.setDefault`, as is the system property
 
 The new filter has several levels of rules:
 
-* A custom `ClassFilter` implementation may override any behavior. This is discussed in the compatibility section.
+* A `CustomClassFilter` implementation may override any behavior. This is discussed in the compatibility section.
 * Classes mentioned in the original blacklist continue to be rejected.
 * Java arrays and enums are accepted, as these are special formats.
 * Java `Throwable` types are accepted, as they are commonly used in Remoting responses and it is impractical to enumerate every exception that might be thrown.
@@ -122,6 +122,18 @@ It is expected that the standard whitelist will be expanded somewhat as field re
 When a class is (first) rejected, a warning is printed to the system log.
 This is particularly useful when scanning large automated test results for regressions caused by this change.
 Typically the rejection will also trigger an exception which gets displayed in some other manner.
+
+== Extensibility
+
+Plugin developers will be able to whitelist the classes in their libraries/plugins using
+the following approaches:
+
+0. `Jenkins-ClassFilter-Whitelisted` manifest entry (link:https://github.com/jenkinsci/lib-jenkins-maven-embedder/pull/15[example for Maven])
+0. By providing a custom `META-INF/hudson.remoting.ClassFilter` resource file in the plugin
+0. By implementing the `CustomClassFilter` extension point and implementing `permits()` methods
+
+The first two approaches do not require Jenkins core requirement update in plugins.
+Old Hudson plugins may also need additional manifest properties to be processed as Jenkins plugins by the engine.
 
 == Motivation
 
@@ -298,17 +310,20 @@ https://github.com/oleg-nenashev[@oleg-nenashev] will release the following comp
 * link:https://github.com/jenkinsci/docker-jnlp-slave[docker-jnlp-slave] images (including the `latest` tag)
 * link:https://github.com/jenkinsci/swarm-plugin/[Swarm Plugin Client]
 
-If everything goes fine, the Remoting release may be integrated into the weekly release
-(without actual use of the new API).
+The Remoting release **may** be integrated into the weekly release before link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120]
+gets integrated.
+In such case new API will not be used, and hence there will be no behavior change.
 
 === Phase 2. Weekly Release
 
-Target date: Jan 13, 2017
+Target date: Jan 06, 2017
 
 0. Once this JEP is approved, the https://jenkins.io/redirect/class-filter/ will be created on the Jenkins website
 ** This document should provide a custom guide for creating JIRA issues with the `jep-200` label
 0. The JEP sponsor will write an announcement blogpost, which will describe the change and provide links to mitigation guidelines
 ** This blog-post will be used as part of the upgrade guideline for LTS
+** Upgrade guidelines should explicitly recommend backing up the instance before the upgrade
+** Upgrade guidelines will also provide whitelisting guidelines to plugin developers
 0. Once the blog post draft is approved,
 link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] will be integrated towards the next weekly release
 
