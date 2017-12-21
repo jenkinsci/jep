@@ -114,7 +114,6 @@ The new filter has several levels of rules:
 ** A handful of safe types defined in some libraries used by Jenkins core.
 //oleg-nenashev: All detached plugins and modules have been checked, right?
 ** A handful of types used by some common plugins known to otherwise fail: Git, Pipeline, Maven, Job DSL.
-*  New APIs for `ClassFilter` management are blacklisted in the Script Security plugin
 
 The whitelist has been built up by repeatedly running a large array of tests against a patched core and collecting relevant errors.
 It is expected that the standard whitelist will be expanded somewhat as field reports arrive of less common code paths needing new entries.
