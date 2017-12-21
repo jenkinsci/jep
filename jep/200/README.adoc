@@ -340,7 +340,7 @@ Finally, they are expected to communicate the triage outcome.
 * Possible triage outcomes:
 ** Accepted - patch in the plugin. Patch to be proposed by _JEP-200 maintainer(s)_
 ** Accepted - update whitelist in the core (similar to link:https://github.com/jenkinsci/jenkins/pull/3120/files#diff-ff24cb984ddd641f49a22cc13a90cfd3[these cases]),
-patch to be done _JEP-200 maintainer(s)_
+patch to be proposed by _JEP-200 maintainer(s)_
 ** Rejected - functional defect.
 _JEP-200 maintainer(s)_ are **not responsible** to fix any issue,
 the reporter can use the suggested workarounds.
