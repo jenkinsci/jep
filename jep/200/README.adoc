@@ -122,7 +122,7 @@ When a class is (first) rejected, a warning is printed to the system log.
 This is particularly useful when scanning large automated test results for regressions caused by this change.
 Typically the rejection will also trigger an exception which gets displayed in some other manner.
 
-== Extensibility
+=== Extensibility
 
 Plugin developers will be able to whitelist the classes in their libraries/plugins using
 the following approaches:
@@ -228,8 +228,6 @@ specifically scanning for the term `class-filter` which appears in logs whenever
 Some runs of `acceptance-test-harness` (ATH) were already performed in this mode.
 `plugin-compat-tester` (PCT) was also run against an array of plugins.
 See the list in _Appendix A_ for more details.
-// oleg-nenashev: I will try to solve some bits of it before approving this JEP
-Unfortunately the Jenkins project currently has no maintained CI job running PCT against all plugins suggested by the setup wizard.
 
 If new whitelist entries are needed after release, they can be added to core in weekly updates.
 Plugins can also contribute their own whitelist (or even blacklist) entries for third-party libraries they bundle,
@@ -335,8 +333,9 @@ will be responsible to provide an extra support for the issues:
 * _JEP-200 maintainer(s)_ may request additional information from the reporter.
 Finally, they are expected to communicate the triage outcome.
 * Possible triage outcomes:
-** Accepted - patch in the plugin. to be done by _JEP-200 maintainer(s)_
-** Accepted - update whitelist in the core (similar to link:https://github.com/jenkinsci/jenkins/pull/3120/files#diff-ff24cb984ddd641f49a22cc13a90cfd3[these cases]), to be done _JEP-200 maintainer(s)_
+** Accepted - patch in the plugin. Patch to be proposed by _JEP-200 maintainer(s)_
+** Accepted - update whitelist in the core (similar to link:https://github.com/jenkinsci/jenkins/pull/3120/files#diff-ff24cb984ddd641f49a22cc13a90cfd3[these cases]),
+patch to be done _JEP-200 maintainer(s)_
 ** Rejected - functional defect.
 _JEP-200 maintainer(s)_ are **not responsible** to fix any issue,
 the reporter can use the suggested workarounds.
@@ -347,13 +346,12 @@ In such case the issue will be moved to the SECURITY bugtracker and then handled
 
 === Phase 3. LTS availability
 
-Target Date: Mar 14, 2018
+Target Date: Mar 14, 2018 (if the weekly gets accepted to LTS)
 
 There is no plan to backport the proposed change to the 2.89.x LTS baseline.
 The change will be integrated into the LTS if the
 link:https://wiki.jenkins.io/display/JENKINS/Governance+Meeting+Agenda[governance meeting]
 selects a weekly with the integrated change.
-The weekly may be rejected if the release is not stable enough.
 Estimated meeting date - Feb 14, 2018.
 
 Notes:
@@ -385,10 +383,25 @@ include links to the pull requests and mailing list discussions which were invol
 
 == Appendix A. Tested Plugins
 
-<!-- TODO: Explicitly covered what was covered...
+Current state:
 
-* Everything in ATH
-* PCT for a set of plugins, @jglick and @oleg-nenashev will construct a list. Generally, "compatible" and "verified" plugins from https://go.cloudbees.com/plugins/
-* @oleg-nenashev will review the uncovered plugins, and then we will plan testing for them before the JEP changes get released
+* link:https://github.com/jenkinsci/acceptance-test-harness[Jenkins Acceptance Test Harness] has been executed with the patched components, several plugins were fixed (see the _Testing_ section)
+* link:https://github.com/jenkinsci/plugin-compat-tester[Plugin Compatibility Tester (PCT)] has been executed for a limited plugin set
+** Not all plugins recommended in the Setup Wizard have been verified
+** Currently the Jenkins project currently has no maintained CI job running PCT against all plugins suggested by the Setup Wizard
+** The list of tested plugins is provided below
 
--->
+// TODO: Explicitly covered what was covered...
+//
+//* Everything in ATH
+//* PCT for a set of plugins, @jglick and @oleg-nenashev will construct a list. Generally, "compatible" and "verified" plugins from https://go.cloudbees.com/plugins/
+//* @oleg-nenashev will review the uncovered plugins, and then we will plan testing for them before the JEP changes get released
+//
+
+=== Plugins verified by PCT
+
+NOTE: The section is in progress
+
+|=========================================================
+| Plugin | Issues found? | Released in | Issue links
+|=========================================================
