@@ -48,8 +48,8 @@ endif::[]
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
-//| Discussions-To
-//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+| Discussions-To
+| https://groups.google.com/forum/#!topic/jenkinsci-dev/hOn7DTGv9tw[jenkinsci-dev mailing list thread]
 //
 //
 // Uncomment if this JEP depends on one or more other JEPs.
@@ -103,14 +103,16 @@ The new filter has several levels of rules:
 * Classes mentioned in the original blacklist continue to be rejected.
 * Java arrays and enums are accepted, as these are special formats.
 * Java `Throwable` types are accepted, as they are commonly used in Remoting responses and it is impractical to enumerate every exception that might be thrown.
-* A class defined in Jenkins core, Remoting, or a Jenkins plugin is accepted. This does _not_ apply to classes defined in other JARs packaged in `WEB-INF/lib/*.jar`.
+* A class defined in Jenkins core, Remoting, or a Jenkins module/plugin is accepted. This does _not_ apply to classes defined in other JARs packaged in `WEB-INF/lib/*.jar`.
 * Some classes defined in test utilities, by mocking frameworks, etc., are accepted when running inside tests.
 * Classes defined in a `RemoteClassLoader` (so, already sent to this JVM from a presumably trusted source) are accepted.
   This is needed at least by CloudBees Jenkins Operations Center, and clients of the `master-to-master-api` plugin if there are any.
 * Any other class is accepted if it is explicitly mentioned in a list `whitelisted-classes.txt` bundled in Jenkins core. These consist of:
-** Basic Java utility types (roughly half).
+//oleg-nenashev: What does block us from allowing all types?
+** Basic Java utility types (roughly half, see the reference implementation).
 ** Some other collection types defined in Google Guava.
 ** A handful of safe types defined in some libraries used by Jenkins core.
+//oleg-nenashev: All detached plugins and modules have been checked, right?
 ** A handful of types used by some common plugins known to otherwise fail: Git, Pipeline, Maven, Job DSL.
 
 The whitelist has been built up by repeatedly running a large array of tests against a patched core and collecting relevant errors.
@@ -119,6 +121,23 @@ It is expected that the standard whitelist will be expanded somewhat as field re
 When a class is (first) rejected, a warning is printed to the system log.
 This is particularly useful when scanning large automated test results for regressions caused by this change.
 Typically the rejection will also trigger an exception which gets displayed in some other manner.
+
+=== Extensibility
+
+Plugin developers will be able to whitelist the classes in their libraries/plugins using
+the following approaches:
+
+0. By providing a custom `META-INF/hudson.remoting.ClassFilter` resource file in their plugin
+0. By adding the `Jenkins-ClassFilter-Whitelisted=true` manifest entry (link:https://github.com/jenkinsci/lib-jenkins-maven-embedder/pull/15[example for Maven])
+** Old Hudson plugins **may** need an update to be processed as Jenkins plugins by the extensions mentioned above.
+** The manifest should have `Short-Name`, and any of `Plugin-Version`/`Jenkins-Version` entries
+** The entries are known to be fine for Jenkins/Hudson plugin POM versions newer than 1.320 (with default maven-hpi-plugin settings)
+
+link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] adds a new restricted `CustomClassFilter` extension point
+which offers `permits(Class)` and `permits(String)` methods.
+The proposal is to keep the extension point restricted for now, because the offered features are similar to the
+`META-INF/hudson.remoting.ClassFilter` resource file.
+If there is a use-case for the extension point, it can be enabled later.
 
 == Motivation
 
@@ -212,8 +231,8 @@ this is simply the cost of having a tighter security policy.
 To ameliorate the risk we can check automated test results against the patched core,
 specifically scanning for the term `class-filter` which appears in logs whenever a violation is encountered.
 Some runs of `acceptance-test-harness` (ATH) were already performed in this mode.
-`plugin-compat-tester` (PCT) was also run against an array of plugins (including those bundled in CloudBees products);
-unfortunately the Jenkins project currently has no maintained CI job running PCT against all plugins suggested by the setup wizard.
+`plugin-compat-tester` (PCT) was also run against an array of plugins.
+See the list in _Appendix A_ for more details.
 
 If new whitelist entries are needed after release, they can be added to core in weekly updates.
 Plugins can also contribute their own whitelist (or even blacklist) entries for third-party libraries they bundle,
@@ -276,14 +295,112 @@ For similar reasons, certain tests written in Groovy rather than Java prevent no
 
 == Reference Implementation
 
-link:https://github.com/jenkinsci/jenkins/pull/3120/files[Jenkins PR 3120] contains the bulk of the change and links to related PRs.
+* link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] contains the bulk of the change and links to related PRs.
+* link:https://github.com/jenkinsci/remoting/pull/208[Remoting PR #208] introduces the new API required to deliver the change.
+
+== Rollout plan
+
+=== Phase 1. Remoting release
+
+Target date: Dec 29, 2017
+
+JEP-200 requires extra API in Remoting, so link:https://github.com/jenkinsci/remoting/pull/208[pull request #208]
+needs to be delivered in advance.
+https://github.com/oleg-nenashev[@oleg-nenashev] will release the following components once the rollout plan is confirmed with the JEP sponsor:
+
+* Remoting
+* link:https://github.com/jenkinsci/docker-slave[docker-slave] (including the `latest` tag)
+* link:https://github.com/jenkinsci/docker-jnlp-slave[docker-jnlp-slave] images (including the `latest` tag)
+* link:https://github.com/jenkinsci/swarm-plugin/[Swarm Plugin Client]
+
+The Remoting release **may** be integrated into the weekly release before link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120]
+gets integrated.
+In such case new API will not be used, and hence there will be no behavior change.
+
+=== Phase 2. Weekly Release
+
+Target date: Jan 06, 2017
+
+0. Once this JEP is approved, the https://jenkins.io/redirect/class-filter/ will be created on the Jenkins website
+** This document should provide a custom guide for creating JIRA issues with the `jep-200` label
+0. The JEP sponsor will write an announcement blogpost, which will describe the change and provide links to mitigation guidelines
+** This blog-post will be used as part of the upgrade guideline for LTS
+** Upgrade guidelines should explicitly recommend backing up the instance before the upgrade
+** Upgrade guidelines will also provide whitelisting guidelines to plugin developers
+0. Once the blog post draft is approved,
+link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] will be integrated towards the next weekly release
+
+After the weekly release the JEP sponsor
+(or a group of people nominated by him, _JEP-200 maintainer(s)_)
+will be responsible to provide an extra support for the issues:
+
+* _JEP-200 maintainer(s)_ will regularly review open defects and triage them
+* _JEP-200 maintainer(s)_ may request additional information from the reporter.
+Finally, they are expected to communicate the triage outcome.
+* Possible triage outcomes:
+** Accepted - patch in the plugin. Patch to be proposed by _JEP-200 maintainer(s)_
+** Accepted - update whitelist in the core (similar to link:https://github.com/jenkinsci/jenkins/pull/3120/files#diff-ff24cb984ddd641f49a22cc13a90cfd3[these cases]),
+patch to be proposed by _JEP-200 maintainer(s)_
+** Rejected - functional defect.
+_JEP-200 maintainer(s)_ are **not responsible** to fix any issue,
+the reporter can use the suggested workarounds.
+The issue remains open as a common bug.
+** Rejected - security risk.
+In such case the issue will be moved to the SECURITY bugtracker and then handled by the link:https://jenkins.io/security/[Jenkins Security team]
+* For accepted issues _JEP-200 maintainer(s)_ schedule the fix and communicate ETAs to the reporter
+
+=== Phase 3. LTS availability
+
+Target Date: Mar 14, 2018 (if the weekly gets accepted to LTS)
+
+There is no plan to backport the proposed change to the 2.89.x LTS baseline.
+The change will be integrated into the LTS if the
+link:https://wiki.jenkins.io/display/JENKINS/Governance+Meeting+Agenda[governance meeting]
+selects a weekly with the integrated change.
+Estimated meeting date - Feb 14, 2018.
+
+Notes:
+
+* The change will be referenced in the upgrade guidelines based on the announcement blog post
+** These guidelines will be updated by the weekly rollout results
+** If there are any unresolved known issues, they will be referenced in the _Known Issues_ section
+
+=== Phase 4. Post-release
+
+The change may cause regressions in plugins on updating instances.
+In order to mitigate them, we define an extra support policy in the community.
+
+* Before May 01, 2018 - _JEP-200 maintainer(s)_ will be responsible to review/triage issues.
+It means there will be an extra month of active support.
+The process is similar to the one described in the Phase 2 section.
+* After May 01, 2018 - Issues labeled with `jep-200` will not be regularly reviewed by _JEP-200 maintainer(s)_,
+so the maintainers will be the entry point.
 
 == References
 
 N/A
 
-[IMPORTANT]
-====
-When moving this JEP from a Draft to "Accepted" or "Final" state,
-include links to the pull requests and mailing list discussions which were involved in the process.
-====
+== Appendix A. Tested Plugins
+
+Current state:
+
+* link:https://github.com/jenkinsci/acceptance-test-harness[Jenkins Acceptance Test Harness] has been executed with the patched components, several plugins were fixed (see the _Testing_ section)
+* link:https://github.com/jenkinsci/plugin-compat-tester[Plugin Compatibility Tester (PCT)] has been executed for a limited plugin set
+** Not all plugins recommended in the Setup Wizard have been verified
+** Currently the Jenkins project currently has no maintained CI job running PCT against all plugins suggested by the Setup Wizard
+** The list of tested plugins is provided below
+
+// TODO: Describe what was covered...
+//
+//* Everything in ATH
+//* PCT for a set of plugins, @jglick and @oleg-nenashev will construct a list. Generally, "compatible" and "verified" plugins from https://go.cloudbees.com/plugins/
+//* @oleg-nenashev will review the uncovered plugins, and then we will plan testing for them before the JEP changes get released
+//
+
+=== Plugins verified by PCT
+
+NOTE: The section is in progress
+
+|=========================================================
+| Plugin | Issues found? | Released in | Issue links
+|=========================================================
