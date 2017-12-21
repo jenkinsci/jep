@@ -327,8 +327,6 @@ Target date: Jan 06, 2017
 0. Once the blog post draft is approved,
 link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] will be integrated towards the next weekly release
 
-// oleg-nenashev: This process is a bit harsh for a single JEP sponsor, but in this case the sponsor represents a company AFAIK.
-// So I feel reasonable to set a maintenance quality bar taking a serious risk of regressions into account
 After the weekly release the JEP sponsor
 (or a group of people nominated by him, _JEP-200 maintainer(s)_)
 will be responsible to provide an extra support for the issues:
