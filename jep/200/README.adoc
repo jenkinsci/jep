@@ -131,7 +131,7 @@ the following approaches:
 0. By adding the `Jenkins-ClassFilter-Whitelisted=true` manifest entry (link:https://github.com/jenkinsci/lib-jenkins-maven-embedder/pull/15[example for Maven])
 ** Old Hudson plugins **may** need an update to be processed as Jenkins plugins by the extensions mentioned above.
 ** The manifest should have `Short-Name`, and any of `Plugin-Version`/`Jenkins-Version` entries
-** According to the analysis, Jenkins/Hudson plugin POMs offer these entries by default for versions newer than 1.320
+** The entries are known to be fine for Jenkins/Hudson plugin POM versions newer than 1.320 (with default maven-hpi-plugin settings)
 
 link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] adds a new restricted `CustomClassFilter` extension point
 which offers `permits(Class)` and `permits(String)` methods.
