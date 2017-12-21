@@ -390,7 +390,7 @@ Current state:
 ** Currently the Jenkins project currently has no maintained CI job running PCT against all plugins suggested by the Setup Wizard
 ** The list of tested plugins is provided below
 
-// TODO: Explicitly covered what was covered...
+// TODO: Describe what was covered...
 //
 //* Everything in ATH
 //* PCT for a set of plugins, @jglick and @oleg-nenashev will construct a list. Generally, "compatible" and "verified" plugins from https://go.cloudbees.com/plugins/
@@ -404,9 +404,3 @@ NOTE: The section is in progress
 |=========================================================
 | Plugin | Issues found? | Released in | Issue links
 |=========================================================
-
-[IMPORTANT]
-====
-When moving this JEP from a Draft to "Accepted" or "Final" state,
-include links to the pull requests and mailing list discussions which were involved in the process.
-====
