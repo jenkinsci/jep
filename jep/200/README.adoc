@@ -127,12 +127,17 @@ Typically the rejection will also trigger an exception which gets displayed in s
 Plugin developers will be able to whitelist the classes in their libraries/plugins using
 the following approaches:
 
-0. `Jenkins-ClassFilter-Whitelisted` manifest entry (link:https://github.com/jenkinsci/lib-jenkins-maven-embedder/pull/15[example for Maven])
-0. By providing a custom `META-INF/hudson.remoting.ClassFilter` resource file in the plugin
-0. By implementing the `CustomClassFilter` extension point and implementing `permits()` methods
+0. By providing a custom `META-INF/hudson.remoting.ClassFilter` resource file in their plugin
+0. By adding the `Jenkins-ClassFilter-Whitelisted=true` manifest entry (link:https://github.com/jenkinsci/lib-jenkins-maven-embedder/pull/15[example for Maven])
+** Old Hudson plugins **may** need an update to be processed as Jenkins plugins by the extensions mentioned above.
+** The manifest should have `Short-Name`, and any of `Plugin-Version`/`Jenkins-Version` entries
+** According to the analysis, Jenkins/Hudson plugin POMs offer these entries by default for versions newer than 1.320
 
-The first two approaches do not require Jenkins core requirement update in plugins.
-Old Hudson plugins may also need additional manifest properties to be processed as Jenkins plugins by the engine.
+link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] adds a new restricted `CustomClassFilter` extension point
+which offers `permits(Class)` and `permits(String)` methods.
+The proposal is to keep the extension point restricted for now, because the offered features are similar to the
+`META-INF/hudson.remoting.ClassFilter` resource file.
+If there is a use-case for the extension point, it can be enabled later.
 
 == Motivation
 
@@ -375,12 +380,6 @@ so the maintainers will be the entry point.
 
 N/A
 
-[IMPORTANT]
-====
-When moving this JEP from a Draft to "Accepted" or "Final" state,
-include links to the pull requests and mailing list discussions which were involved in the process.
-====
-
 == Appendix A. Tested Plugins
 
 Current state:
@@ -405,3 +404,9 @@ NOTE: The section is in progress
 |=========================================================
 | Plugin | Issues found? | Released in | Issue links
 |=========================================================
+
+[IMPORTANT]
+====
+When moving this JEP from a Draft to "Accepted" or "Final" state,
+include links to the pull requests and mailing list discussions which were involved in the process.
+====
