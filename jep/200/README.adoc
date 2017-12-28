@@ -319,7 +319,7 @@ In such case new API will not be used, and hence there will be no behavior chang
 
 === Phase 2. Weekly Release
 
-Target date: Jan 06, 2017
+Target date: Jan 13, 2017
 
 0. Once this JEP is approved, the https://jenkins.io/redirect/class-filter/ will be created on the Jenkins website
 ** This document should provide a custom guide for creating JIRA issues with the `jep-200` label
@@ -384,11 +384,18 @@ N/A
 
 Current state:
 
-* link:https://github.com/jenkinsci/acceptance-test-harness[Jenkins Acceptance Test Harness] has been executed with the patched components, several plugins were fixed (see the _Testing_ section)
-* link:https://github.com/jenkinsci/plugin-compat-tester[Plugin Compatibility Tester (PCT)] has been executed for a limited plugin set
+* link:https://github.com/jenkinsci/acceptance-test-harness[Jenkins Acceptance Test Harness (ATH)] has been executed with the patched components, several plugins were fixed (see the _Testing_ section)
+** After the discoveries in PCT (see below), the ATH results need to be reviewed carefully
+** BDFL Delegate is waiting for info about what has been tested
+(Jenkins WAR from link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] or a custom build with custom plugin versions)
+* link:https://github.com/jenkinsci/plugin-compat-tester[Plugin Compatibility Tester (PCT)] has been executed for a limited plugin set for a sponsor's custom Jenkins WAR
 ** Not all plugins recommended in the Setup Wizard have been verified
+** The verified plugins have been checked with the sponsor's special set of plugins, not with the latest releases of plugins in Jenkins update centers.
+It cannot be considered as a reliable check since newer versions may contain other classes being serialized over Remoting/XStream.
 ** Currently the Jenkins project currently has no maintained CI job running PCT against all plugins suggested by the Setup Wizard
-** The list of tested plugins is provided below
+** In the current state PCT does not run well against the Jenkins WAR packages with the reference implementation patch.
+BDFL Delegate discovered several issues, which prevent him from running PCT.
+These issues are aggregated in the link:https://issues.jenkins-ci.org/browse/JENKINS-48734[JENKINS-48734] EPIC.
 
 // TODO: Describe what was covered...
 //
