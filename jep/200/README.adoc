@@ -306,7 +306,7 @@ For similar reasons, certain tests written in Groovy rather than Java prevent no
 
 === Phase 1. Remoting release
 
-Target date: Dec 29, 2017
+Target date: Jan 10, 2017
 
 JEP-200 requires extra API in Remoting, so link:https://github.com/jenkinsci/remoting/pull/208[pull request #208]
 needs to be delivered in advance.
