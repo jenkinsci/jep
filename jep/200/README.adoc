@@ -257,6 +257,10 @@ in these cases plugin developers or administrators are likely to need instructio
 
 == Testing
 
+NOTE: This section is listed as described by the JEP Sponsor.
+Additional testing has been performed during the JEP-200 review in order to evaluate the proposal.
+Testing notes for the JEP review phase can be found in _Appendix A_ and the linked documents.
+
 The reference implementation includes test coverage for the essential aspects of the newly added filter:
 for example, that an example library class not currently included in the whitelist is rejected under the expected conditions.
 
