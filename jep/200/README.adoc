@@ -414,3 +414,27 @@ According to the JEP sponsor, they were covered by their internal testing proced
 Although there will be extra testing performed before the release of the change in the Weekly,
 BDFL confirms that the current test coverage is good enough to accept this Jenkins Enhancement Proposal
 (Jan 08, 2017).
+
+=== Concern about the single whitelist approach
+
+https://github.com/oleg-nenashev[@oleg-nenashev] raised a concern about using the same whitelist for Remoting and XStream:
+
+* With the reference implementation in link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120]
+there is no way to approve serialization only for a single serialization type
+(e.g. only XStream).
+* Possible attack vectors in Remoting and XStream differxw,
+especially when Remoting CLI is enabled due to the features missing in other CLI modes (multiple file parameters, etc.).
+In such case
+
+Feedback from the JEP Sponsor:
+
+* Remoting CLI is not a concern since we are going to consider it as insecure
+and deprecated option even after integrating
+* Current implementation can be extended in the future if needed.
+Jenkins core patch may be required to pass information about the serialization type to
+the `CustomClassFilter` implementations
+* `CustomClassFilter` extension point is restricted now,
+so any required adjustements can be made by API users when needed.
+
+The BDFL delegate agreed with the provided feedback (Jan 03, 2017).
+He would like to see better extensibility in the future, but it does not block delivery of JEP-200.
