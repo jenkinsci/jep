@@ -426,9 +426,11 @@ https://github.com/oleg-nenashev[@oleg-nenashev] raised a concern about using th
 * With the reference implementation in link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120]
 there is no way to approve serialization only for a single serialization type
 (e.g. only XStream).
-* Possible attack vectors in Remoting and XStream differxw,
+* Possible attack vectors in Remoting and XStream differ,
 especially when Remoting CLI is enabled due to the features missing in other CLI modes (multiple file parameters, etc.).
-In such case
+** For attack via XML you usually need `Item.CONFIGURE` permissions
+** For attack over Remoting - `Computer.CONFIGURE` or write access to Remoting/Swarm Client JAR files on an agent.
+If Remoting CLI is enabled... then there is no special permissions required.
 
 Feedback from the JEP Sponsor:
 
@@ -442,3 +444,6 @@ so any required adjustements can be made by API users when needed.
 
 The BDFL delegate agreed with the provided feedback (Jan 03, 2017).
 He would like to see better extensibility in the future, but it does not block delivery of JEP-200.
+It is **NOT** a deferred task, JEP Sponsor has no plan to implement it.
+If a need arises, it can been contributed by somebody else.
+
