@@ -378,36 +378,34 @@ so the maintainers will be the entry point.
 
 == References
 
-N/A
+* link:https://docs.google.com/document/d/1uQcyaaLvGFwFDe0mQ27JHeG2icdX0XfCHILbHGOtAmA/edit[JEP-200 Testing Notes (BDFL Review)]
 
-== Appendix A. Tested Plugins
+== Appendix A. JEP Review Notes
 
-Current state:
+=== Tested Plugins
+
+During JEP-200 review an extra testing has been performed.
+Testing steps and discovered issues are being tracked in
+link: https://docs.google.com/document/d/1uQcyaaLvGFwFDe0mQ27JHeG2icdX0XfCHILbHGOtAmA/edit[JEP-200 Testing Notes].
 
 * link:https://github.com/jenkinsci/acceptance-test-harness[Jenkins Acceptance Test Harness (ATH)] has been executed with the patched components, several plugins were fixed (see the _Testing_ section)
-** After the discoveries in PCT (see below), the ATH results need to be reviewed carefully
-** BDFL Delegate is waiting for info about what has been tested
-(Jenkins WAR from link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] or a custom build with custom plugin versions)
-* link:https://github.com/jenkinsci/plugin-compat-tester[Plugin Compatibility Tester (PCT)] has been executed for a limited plugin set for a sponsor's custom Jenkins WAR
-** Not all plugins recommended in the Setup Wizard have been verified
-** The verified plugins have been checked with the sponsor's special set of plugins, not with the latest releases of plugins in Jenkins update centers.
-It cannot be considered as a reliable check since newer versions may contain other classes being serialized over Remoting/XStream.
-** Currently the Jenkins project currently has no maintained CI job running PCT against all plugins suggested by the Setup Wizard
-** In the current state PCT does not run well against the Jenkins WAR packages with the reference implementation patch.
-BDFL Delegate discovered several issues, which prevent him from running PCT.
-These issues are aggregated in the link:https://issues.jenkins-ci.org/browse/JENKINS-48734[JENKINS-48734] EPIC.
+** Jenkins WAR from link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] has been tested with a custom core
+** After reviewing of existing ATH tests we concluded that usage of a custom WAR is not a problem
+** We agreed that testing against obsolete dependencies could be a problem.
+During the PR merge procedure the JEP Sponsor and the BDFL Delegate will rerun ATH to confirm there is no issues with stock Jenkins WAR
+* link:https://github.com/jenkinsci/plugin-compat-tester[Plugin Compatibility Tester (PCT)]
+** Originally PCT has been executed for a limited plugin set for a sponsor's custom Jenkins WAR.
+** It was decided that it is not enough (not recent plugin versions, potential impact on the plugin behavior by the custom logic),
+so the BDFL delegate and the JEP Sponsor re-run PCT with a standard Jenkins WAR
+** During testing the BDFL Delegate discovered issues which prevent him from running PCT in
+particular cases.
+These issues are listed in the link:https://issues.jenkins-ci.org/browse/JENKINS-48734[JENKINS-48734] EPIC.
+The blocker issues have been resolved.
+** All plugins recommended in the Jenkins Installation Wizard have been covered as well as many other plugins
+** BDFL delegate has not tested Pipeline and Blue Ocean plugins,
+because they are being maintained by employees of the JEP Sponsor's company.
+According to the JEP sponsor, they were covered by their internal testing procedure.
 
-// TODO: Describe what was covered...
-//
-//* Everything in ATH
-//* PCT for a set of plugins, @jglick and @oleg-nenashev will construct a list. Generally, "compatible" and "verified" plugins from https://go.cloudbees.com/plugins/
-//* @oleg-nenashev will review the uncovered plugins, and then we will plan testing for them before the JEP changes get released
-//
-
-=== Plugins verified by PCT
-
-NOTE: The section is in progress
-
-|=========================================================
-| Plugin | Issues found? | Released in | Issue links
-|=========================================================
+Although there will be extra testing performed before the release of the change in the Weekly,
+BDFL confirms that the current test coverage is good enough to accept this Jenkins Enhancement Proposal
+(Jan 08, 2017).
