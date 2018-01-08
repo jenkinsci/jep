@@ -327,6 +327,9 @@ Target date: Jan 13, 2017
 ** This blog-post will be used as part of the upgrade guideline for LTS
 ** Upgrade guidelines should explicitly recommend backing up the instance before the upgrade
 ** Upgrade guidelines will also provide whitelisting guidelines to plugin developers
+** The blog post will include a reference to a
+link:https://wiki.jenkins.io/display/JENKINS/Plugins+affected+by+fix+for+JEP-200[Plugins affected by JEP-200] Wiki page,
+which will be providing info to Jenkins administrators about new discoveries if any.
 0. Once the blog post draft is approved,
 link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] will be integrated towards the next weekly release
 
@@ -379,6 +382,8 @@ so the maintainers will be the entry point.
 == References
 
 * link:https://docs.google.com/document/d/1uQcyaaLvGFwFDe0mQ27JHeG2icdX0XfCHILbHGOtAmA/edit[JEP-200 Testing Notes (BDFL Review)]
+* link:https://github.com/jenkins-infra/jenkins.io/pull/1293[Announcement Blog Post Draft]
+* link:https://wiki.jenkins.io/display/JENKINS/Plugins+affected+by+fix+for+JEP-200[Wiki Page: Plugins affected by JEP-200]
 
 == Appendix A. JEP Review Notes
 
