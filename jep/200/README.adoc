@@ -24,9 +24,9 @@ endif::[]
 | Status
 // Uncomment the appropriate line.
 //| Not Submitted :information_source:
-| Draft :speech_balloon:
+// | Draft :speech_balloon:
 //| Deferred :hourglass:
-//| Accepted :ok_hand:
+| Accepted :ok_hand:
 //| Rejected :no_entry:
 //| Withdrawn :hand:
 //| Final :lock:
@@ -257,6 +257,10 @@ in these cases plugin developers or administrators are likely to need instructio
 
 == Testing
 
+NOTE: This section is listed as described by the JEP Sponsor.
+Additional testing has been performed during the JEP-200 review in order to evaluate the proposal.
+Testing notes for the JEP review phase can be found in _Appendix A_ and the linked documents.
+
 The reference implementation includes test coverage for the essential aspects of the newly added filter:
 for example, that an example library class not currently included in the whitelist is rejected under the expected conditions.
 
@@ -302,7 +306,7 @@ For similar reasons, certain tests written in Groovy rather than Java prevent no
 
 === Phase 1. Remoting release
 
-Target date: Dec 29, 2017
+Target date: Jan 10, 2017
 
 JEP-200 requires extra API in Remoting, so link:https://github.com/jenkinsci/remoting/pull/208[pull request #208]
 needs to be delivered in advance.
@@ -319,7 +323,7 @@ In such case new API will not be used, and hence there will be no behavior chang
 
 === Phase 2. Weekly Release
 
-Target date: Jan 06, 2017
+Target date: Jan 13, 2017
 
 0. Once this JEP is approved, the https://jenkins.io/redirect/class-filter/ will be created on the Jenkins website
 ** This document should provide a custom guide for creating JIRA issues with the `jep-200` label
@@ -327,6 +331,9 @@ Target date: Jan 06, 2017
 ** This blog-post will be used as part of the upgrade guideline for LTS
 ** Upgrade guidelines should explicitly recommend backing up the instance before the upgrade
 ** Upgrade guidelines will also provide whitelisting guidelines to plugin developers
+** The blog post will include a reference to a
+link:https://wiki.jenkins.io/display/JENKINS/Plugins+affected+by+fix+for+JEP-200[Plugins affected by JEP-200] Wiki page,
+which will be providing info to Jenkins administrators about new discoveries if any.
 0. Once the blog post draft is approved,
 link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] will be integrated towards the next weekly release
 
@@ -378,29 +385,65 @@ so the maintainers will be the entry point.
 
 == References
 
-N/A
+* link:https://docs.google.com/document/d/1uQcyaaLvGFwFDe0mQ27JHeG2icdX0XfCHILbHGOtAmA/edit[JEP-200 Testing Notes (BDFL Review)]
+* link:https://github.com/jenkins-infra/jenkins.io/pull/1293[Announcement Blog Post Draft]
+* link:https://wiki.jenkins.io/display/JENKINS/Plugins+affected+by+fix+for+JEP-200[Wiki Page: Plugins affected by JEP-200]
 
-== Appendix A. Tested Plugins
+== Appendix A. JEP Review Notes
 
-Current state:
+=== Tested Plugins
 
-* link:https://github.com/jenkinsci/acceptance-test-harness[Jenkins Acceptance Test Harness] has been executed with the patched components, several plugins were fixed (see the _Testing_ section)
-* link:https://github.com/jenkinsci/plugin-compat-tester[Plugin Compatibility Tester (PCT)] has been executed for a limited plugin set
-** Not all plugins recommended in the Setup Wizard have been verified
-** Currently the Jenkins project currently has no maintained CI job running PCT against all plugins suggested by the Setup Wizard
-** The list of tested plugins is provided below
+During JEP-200 review an extra testing has been performed.
+Testing steps and discovered issues are being tracked in
+link: https://docs.google.com/document/d/1uQcyaaLvGFwFDe0mQ27JHeG2icdX0XfCHILbHGOtAmA/edit[JEP-200 Testing Notes].
 
-// TODO: Describe what was covered...
-//
-//* Everything in ATH
-//* PCT for a set of plugins, @jglick and @oleg-nenashev will construct a list. Generally, "compatible" and "verified" plugins from https://go.cloudbees.com/plugins/
-//* @oleg-nenashev will review the uncovered plugins, and then we will plan testing for them before the JEP changes get released
-//
+* link:https://github.com/jenkinsci/acceptance-test-harness[Jenkins Acceptance Test Harness (ATH)] has been executed with the patched components, several plugins were fixed (see the _Testing_ section)
+** Jenkins WAR from link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] has been tested with a custom core
+** After reviewing of existing ATH tests we concluded that usage of a custom WAR is not a problem
+** We agreed that testing against obsolete dependencies could be a problem.
+During the PR merge procedure the JEP Sponsor and the BDFL Delegate will rerun ATH to confirm there is no issues with stock Jenkins WAR
+* link:https://github.com/jenkinsci/plugin-compat-tester[Plugin Compatibility Tester (PCT)]
+** Originally PCT has been executed for a limited plugin set for a sponsor's custom Jenkins WAR.
+** It was decided that it is not enough (not recent plugin versions, potential impact on the plugin behavior by the custom logic),
+so the BDFL delegate and the JEP Sponsor re-run PCT with a standard Jenkins WAR
+** During testing the BDFL Delegate discovered issues which prevent him from running PCT in
+particular cases.
+These issues are listed in the link:https://issues.jenkins-ci.org/browse/JENKINS-48734[JENKINS-48734] EPIC.
+The blocker issues have been resolved.
+** All plugins recommended in the Jenkins Installation Wizard have been covered as well as many other plugins
+** BDFL delegate has not tested Pipeline and Blue Ocean plugins,
+because they are being maintained by employees of the JEP Sponsor's company.
+According to the JEP sponsor, they were covered by their internal testing procedure.
 
-=== Plugins verified by PCT
+Although there will be extra testing performed before the release of the change in the Weekly,
+BDFL confirms that the current test coverage is good enough to accept this Jenkins Enhancement Proposal
+(Jan 08, 2017).
 
-NOTE: The section is in progress
+=== Concern about the single whitelist approach
 
-|=========================================================
-| Plugin | Issues found? | Released in | Issue links
-|=========================================================
+https://github.com/oleg-nenashev[@oleg-nenashev] raised a concern about using the same whitelist for Remoting and XStream:
+
+* With the reference implementation in link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120]
+there is no way to approve serialization only for a single serialization type
+(e.g. only XStream).
+* Possible attack vectors in Remoting and XStream differ,
+especially when Remoting CLI is enabled due to the features missing in other CLI modes (multiple file parameters, etc.).
+** For attack via XML you usually need `Item.CONFIGURE` permissions
+** For attack over Remoting - `Computer.CONFIGURE` or write access to Remoting/Swarm Client JAR files on an agent.
+If Remoting CLI is enabled... then there is no special permissions required.
+
+Feedback from the JEP Sponsor:
+
+* Remoting CLI is not a concern since we are going to consider it as insecure
+and deprecated option even after integrating
+* Current implementation can be extended in the future if needed.
+Jenkins core patch may be required to pass information about the serialization type to
+the `CustomClassFilter` implementations
+* `CustomClassFilter` extension point is restricted now,
+so any required adjustements can be made by API users when needed.
+
+The BDFL delegate agreed with the provided feedback (Jan 03, 2017).
+He would like to see better extensibility in the future, but it does not block delivery of JEP-200.
+It is **NOT** a deferred task, JEP Sponsor has no plan to implement it.
+If a need arises, it can been contributed by somebody else.
+
