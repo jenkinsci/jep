@@ -24,12 +24,12 @@ endif::[]
 | Status
 // Uncomment the appropriate line.
 //| Not Submitted :information_source:
-// | Draft :speech_balloon:
+//| Draft :speech_balloon:
 //| Deferred :hourglass:
-| Accepted :ok_hand:
+//| Accepted :ok_hand:
 //| Rejected :no_entry:
 //| Withdrawn :hand:
-//| Final :lock:
+| Final :lock:
 //| Replaced :dagger:
 //| Active :smile:
 
@@ -108,12 +108,10 @@ The new filter has several levels of rules:
 * Classes defined in a `RemoteClassLoader` (so, already sent to this JVM from a presumably trusted source) are accepted.
   This is needed at least by CloudBees Jenkins Operations Center, and clients of the `master-to-master-api` plugin if there are any.
 * Any other class is accepted if it is explicitly mentioned in a list `whitelisted-classes.txt` bundled in Jenkins core. These consist of:
-//oleg-nenashev: What does block us from allowing all types?
-** Basic Java utility types (roughly half, see the reference implementation).
+** Basic Java utility types (see the reference implementation).
 ** Some other collection types defined in Google Guava.
 ** A handful of safe types defined in some libraries used by Jenkins core.
-//oleg-nenashev: All detached plugins and modules have been checked, right?
-** A handful of types used by some common plugins known to otherwise fail: Git, Pipeline, Maven, Job DSL.
+** A handful of types used by some plugins known to otherwise fail: Git, Pipeline, Maven, Job DSL, etc.
 
 The whitelist has been built up by repeatedly running a large array of tests against a patched core and collecting relevant errors.
 It is expected that the standard whitelist will be expanded somewhat as field reports arrive of less common code paths needing new entries.
@@ -132,12 +130,7 @@ the following approaches:
 ** Old Hudson plugins **may** need an update to be processed as Jenkins plugins by the extensions mentioned above.
 ** The manifest should have `Short-Name`, and any of `Plugin-Version`/`Jenkins-Version` entries
 ** The entries are known to be fine for Jenkins/Hudson plugin POM versions newer than 1.320 (with default maven-hpi-plugin settings)
-
-link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] adds a new restricted `CustomClassFilter` extension point
-which offers `permits(Class)` and `permits(String)` methods.
-The proposal is to keep the extension point restricted for now, because the offered features are similar to the
-`META-INF/hudson.remoting.ClassFilter` resource file.
-If there is a use-case for the extension point, it can be enabled later.
+0. By implementing the `CustomClassFilter` extension point, for dynamic whitelists—for example, all implementations of some interface.
 
 == Motivation
 
@@ -236,13 +229,13 @@ See the list in _Appendix A_ for more details.
 
 If new whitelist entries are needed after release, they can be added to core in weekly updates.
 Plugins can also contribute their own whitelist (or even blacklist) entries for third-party libraries they bundle,
-by creating `META-INF/hudson.remoting.ClassFilter` entries.
-(An extension point `CustomClassFilter` is defined allowing _dynamic_ expansions,
-but currently not exposed as an API, pending a demonstrated use case.)
+as described in Extensibility above.
 
 Finally, an individual administrator can define site-specific whitelist (or blacklist) entries with a system property `hudson.remoting.ClassFilter`.
 This could be useful as an emergency measure, permitting functionality to be restored while awaiting a new plugin release.
 (Such a command-line option could be noted as a workaround in a JIRA bug report by someone familiar with the Jenkins security architecture.)
+`jenkins.security.ClassFilterImpl.SUPPRESS_WHITELIST` disables the whitelist, logging violations, but keeps the blacklist;
+`jenkins.security.ClassFilterImpl.SUPPRESS_ALL` disables them both (which is very dangerous).
 
 == Security
 
@@ -251,7 +244,7 @@ as the existing blacklist is retained as a fallback unless deliberately overridd
 
 == Infrastructure Requirements
 
-A new redirect `https://jenkins.io/redirect/class-filter/` will be needed, perhaps pointing to a wiki page.
+A new redirect `https://jenkins.io/redirect/class-filter/` has been offered, pointing to a wiki page.
 This permalink is printed to log messages appearing when a whitelist violation is encountered;
 in these cases plugin developers or administrators are likely to need instructions on how to proceed.
 
@@ -316,10 +309,6 @@ https://github.com/oleg-nenashev[@oleg-nenashev] will release the following comp
 * link:https://github.com/jenkinsci/docker-slave[docker-slave] (including the `latest` tag)
 * link:https://github.com/jenkinsci/docker-jnlp-slave[docker-jnlp-slave] images (including the `latest` tag)
 * link:https://github.com/jenkinsci/swarm-plugin/[Swarm Plugin Client]
-
-The Remoting release **may** be integrated into the weekly release before link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120]
-gets integrated.
-In such case new API will not be used, and hence there will be no behavior change.
 
 === Phase 2. Weekly Release
 
@@ -446,4 +435,3 @@ The BDFL delegate agreed with the provided feedback (Jan 03, 2017).
 He would like to see better extensibility in the future, but it does not block delivery of JEP-200.
 It is **NOT** a deferred task, JEP Sponsor has no plan to implement it.
 If a need arises, it can been contributed by somebody else.
-
