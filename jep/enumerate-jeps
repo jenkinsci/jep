@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+cat > README.adoc <<EOF
+= Index of Jenkins Enhancement Proposals
+
+EOF
+
+for f in $(ls); do
+    if [ -f "$f/README.adoc" ]; then
+        echo "> Processing JEP-$f";
+        description=$(head -n 1 $f/README.adoc | sed 's/^=\ //')
+
+        cat >> README.adoc <<EOF
+* link:${f}/[$description]
+EOF
+    fi;
+done;
