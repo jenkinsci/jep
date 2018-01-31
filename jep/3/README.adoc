@@ -1,4 +1,4 @@
-= JEP-3: :bulb: Adding the "Released As" field and "Ready for Release" status to Jenkins JIRA :bulb:
+= JEP-3: Adding the "Released As" field and "Ready for Release" status to Jenkins JIRA
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -16,7 +16,7 @@ endif::[]
 | 3
 
 | Title
-| :bulb: Title :bulb:
+| Adding the "Released As" field and "Ready for Release" status to Jenkins JIRA
 
 | Sponsor
 | link:https://github.com/oleg-nenashev[@oleg-nenashev]
