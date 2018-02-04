@@ -82,7 +82,7 @@ to understand the fix/release status.
 
 . Add new “Fixed But Not Released” state (aka "Stage Release")
 ** Instead of "In Progress" => "Resolved", contributors can optionally move integrated fixed into the "Fixed But Not Released" state
-. All current transitions in JENKINS workflow should be retained
+. All current transitions in JENKINS workflow should be retained.
 JIRA tickets can be moved to “Resolved” state from any existing state
 ** “In Review” => “Resolved” is a default transition in UI so that the change is not disruptive
 
