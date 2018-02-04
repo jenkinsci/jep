@@ -71,16 +71,10 @@ endif::[]
 
 |===
 
+== Abstract
 
-== Motivation
-
-As a Jenkins user and contributor, sometimes I have difficulties when I need to understand in which release the fix is available.
-GitHub commit links from the bot help much, but it requires extra time to navigate across commits and UI.
-In Jenkins core, Remoting and my plugins I would like to make it more explicit.
-
-It may be helpful for components which do not release the integrated fixes immediately
-(e.g. Core, its modules, Remoting, Stapler, Blue Ocean, other plugins).
-For plugins this change will be opt-in in order to avoid impact on plugin maintainers.
+This JEP targets improving experience for Jenkins users who review statuses of issues in JIRA
+to understand the fix/release status.
 
 == Specification
 
@@ -120,6 +114,21 @@ Changes to be done:
 ** Extras Executable WAR
 * JIRA issue link bot documentation should describe a way to change flow in other components if needed
 * TBD: Automatically fill in the “Released as” field according to POM.xml (proposed by Ullrich Hafner)
+
+== Motivation
+
+As a Jenkins contributor, I see may users struggling to understand the issue statuses and the version including the fix.
+Currently we have an issue with the _FIXED_ status.
+Depending on the component type, it may mean "merged" or "released".
+E.g. Jenkins JIRA linking bot automatically marks merged tickets with "FIXED" keyword as _FIXED_.
+Users usually understand "FIXED" as "released, please update".
+Such ambiguity causes users to spend time checking update centers and commits in GitHub.
+It does not improve the overall user experience.
+
+I would like to make issue statuses more explicit at least in the kernel components
+(Core, Remoting, detached plugins).
+It could be also helpful for plugins which do not release the integrated fixes immediately.
+For plugins this change would be an opt-in in order to avoid impact on established workflows used by plugin maintainers.
 
 == Reasoning
 
