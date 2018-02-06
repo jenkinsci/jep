@@ -358,11 +358,6 @@ JEPs which will not include code changes may omit this section.
 
 == References
 
-[TIP]
-====
-Provide links to any related documents.
-====
-
 [IMPORTANT]
 ====
 When moving this JEP from a Draft to "Accepted" or "Final" state,
@@ -370,4 +365,9 @@ include links to the pull requests and mailing list discussions which were invol
 ====
 
 
+=== Related works
+
+* link:https://dev.chromium.org/getting-involved/dev-channel[Chrome release channels] which provide the most analogous release process to what's proposed in this document.
+* link:https://en.opensuse.org/Portal:Tumbleweed[openSUSE Tumbleweed]: "The Tumbleweed distribution is a pure rolling release version of openSUSE containing the latest stable versions of all software instead of relying on rigid periodic release cycles"
+* Chakra Linux's "link:https://wiki.chakralinux.org/index.php?title=Half-Rolling_Release_Model[half-rolling release model]": "aims to provide a stable core of software, and rolling applications on top of it, and it is one of the keys of the success of the distribution. "
 
