@@ -1,0 +1,373 @@
+= JEP-300: Jenkins Essentials
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 300
+
+| Title
+| Jenkins Essentials Overview
+
+| Sponsor
+| link:https://github.com/rtyler[R. Tyler Croy]
+
+| Status
+//| Draft Not Submitted :information_source:
+| Draft :speech_balloon:
+//| Deferred :hourglass:
+//| Accepted :ok_hand:
+//| Rejected :no_entry:
+//| Withdrawn :hand:
+//| Final :lock:
+//| Replaced :dagger:
+//| Active :smile:
+
+| Type
+| Standards
+
+| Created
+| 2018-01-10
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+We often describe Jenkins using the metaphor of lego bricks which can be pieced
+together by the end-user in order to solve their problems. Borrowing that metaphor,
+Jenkins Essentials provides the end-user with a
+pre-assembled collection of legos that can be immediately used to implement CI
+footnoteref:[ci, https://en.wikipedia.org/wiki/Continuous_integration]
+and CD
+footnoteref:[cd, https://en.wikipedia.org/wiki/Continuous_delivery] workloads.
+At the same time, this focus on end-users success in these well-defined scenarios
+will help the Jenkins project develop new features, and fix
+bugs, more rapidly than before.
+
+
+== Specification
+
+Jenkins Essentials covers an ambitious scope which is more thoroughly
+detailed in subsequent JEP footnoteref:[jep,
+https://github.com/jenkinsci/jep/tree/master/jep/1#jep-1-jenkins-enhancement-proposal-format]
+documents in this series. This specification describes the problem, and
+overall proposed solution, as it relates to the Jenkins project and existing
+structures.
+
+[[target-audience]]
+=== Target Audience
+
+Jenkins Essentials is targeted at existing and new Jenkins users who are
+not necessarily interested in becoming Jenkins experts,
+but rather wish to use Jenkins as a means to and end.
+That end being: building, testing, and
+delivering their projects, with as little overhead as possible.
+
+Jenkins Essentials is not going to be an ideal solution
+for _everybody_ who is interested in Jenkins. It is expected that some number
+of users will continue to "build their own" Jenkins environment, cobbling
+together a core `.war` and the specific set of plugins which meet their desired
+goals.
+
+
+=== Pillars
+
+The pillars to Jenkins Essentials will be described in more detail in future
+documents but this section provides an overview of the four core aspects of
+Jenkins Essentials which, taken together, will address the problems facing the
+<<target-audience>>.
+
+
+[[auto-update]]
+==== Automatically Updated Distribution
+
+In order to provide an easier-to-use and easier-to-manage Jenkins environment,
+Jenkins Essentials will be distributed as an automatically self-updating
+distribution, containing Jenkins core and a version-locked set of plugins considered "essential."
+Rather than attempting to mirror the existing Weekly and LTS release lines for core, plus
+some plugin version matrix, Jenkins Essentials will update in a manner similar
+to Google Chrome.
+footnote:[https://en.wikipedia.org/wiki/Google_Chrome#Release_channels,_cycles_and_updates]
+
+For Jenkins end-users, this automatically updating distribution will
+mean that Jenkins Essentials will require significantly less overhead to manage,
+receiving improvements and bug fixes without any user involvement. From the user
+perspective, their Jenkins will appear to automatically improve over time.
+
+For Jenkins project developers, this approach introduces multiple improvements:
+
+. Greatly reduced time between core and "foundational" plugin changes landing,
+  and being adoptable by downstream components.
+. Greatly reduced version matrix for testing core/plugin changes against one another.
+. Small-batch changes, automatically distributed to Jenkins instances which are
+  inherently more <<connected>>, can can automatically report success/error
+  telemetry, providing rapid feedback for changes. This feedback mechanism,
+  rather than relying on end-users to manually upgrade, notice potential
+  issues, and file tickets in JIRA, when coupled with an automatically updating
+  distribution allows for rapodily backing out changes which may cause problems
+  for users.
+
+[[sane-defaults]]
+==== Automatic Sane Defaults
+
+Providing a core along with "essential" plugins is a good first step to helping
+Jenkins users successfully automate their CI/CD workloads, but requires
+additional "smoothing" over some of the numerous options and configurations
+plugins.
+
+This will take numerous forms, including but not limited to:
+
+. Refactoring in "essential" plugins to identify shared configuration
+  opportunities. For example, numerous plugins benefit from the use of a GitHub
+  authentication credential, yet Blue Ocean, GitHub Branch Source, and GitHub
+  OAuth all have slightly different  views on where and how these credentials
+  should be stored.
+. Scripting (`init.groovy.d/`) environmental-driven defaults, such as
+  detecting Docker or Cloud support which can be automatically configured, etc.
+
+[[connected]]
+==== Connected
+
+In order to provide a more seamless experience for end-users, and ensure that
+Jenkins project developers receive useful error and usage telemetry to drive
+further improvements in Jenkins, Jenkins Essentials must necessarily be viewed
+as a "Connected" application. This entails some yet-to-be-specified number of
+server-side applications to coordinate updates, receive and process telemetry,
+broker 3rd-party service authentications, relay webhooks, etc.
+
+[[obvious-path]]
+==== Obvious Path to User Success
+
+The final pillar in Jenkins Essentials, is to ensure that Jenkins provides an
+obvious path for a user to configure and use it successfully. This largely
+entails in-application documentation, examples, and disabling legacy
+functionality within the application. All with the end goal of preventing users
+from inadvertently choosing legacy, or poorly supported, options when
+configuring their CI/CD workloads.
+
+
+== Motivation
+
+The "bucket of legos" approach is one of the numerous reasons why Jenkins has
+reached its current level of popularity and adoption, thereby allowing savvy
+users to create an solution customized to their needs. This approach is not
+productive or useful for end-users
+footnote:[https://ghc.haskell.org/trac/ghc/wiki/ContinuousIntegration]
+who are weighing their options between running Jenkins, or using a
+CI-as-a-Service offering such as Travis CI or Circle CI.
+
+Additionally, existing processes around "Suggested Plugins", or any
+others for that matter, result in many "fiefdoms" of development rather than a
+shared understanding of problems and solutions which should be addressed to
+make new, and existing, users successful with Jenkins.
+
+=== Problem
+
+For novice-to-intermediate users, the time necessary to prepare a Jenkins
+environment "from scratch" into something productive for common CI/CD
+workloads, can span from hours to days, depending on their understanding of
+Jenkins and it's related technologies. The preparation of the
+environment can also be very error prone and require significant on-going
+maintenance overhead in order to continue to stay up-to-date, secure, and
+productive.
+
+Additionally, many Jenkins users suffer from a paradox of choice
+footnote:[https://en.wikipedia.org/wiki/The_Paradox_of_Choice] when it comes to
+deciding which plugins should be combined, in which ways, and how they should
+be configured, in order to construct a suitable CI/CD environment for their
+projects. While this is related to the problem which JEP-2
+footnoteref:[jep2, https://github.com/jenkinsci/jep/tree/master/jep/2#jep-2-criteria-for-selecting-suggested-plugins]
+attempted to address in the "Setup Wizard" introduced in Jenkins 2.0, Jenkins
+Essentials aims to address the broader problem of providing users with a
+low-overhead, easily maintained, and solid distribution of common features
+(provided by a set of existing plugins) which will help the user focus on
+building, testing, and delivering their projects rather than maintaining
+Jenkins.
+
+
+==== Inside the Project
+
+Within the Jenkins project there is little organizational overlap between those
+common installed, arguably "required", plugins and their developers. This same
+gap exists, to a certain extent, between core and the extended plugin developer
+community.
+This results in:
+
+* Configuration redundancies, such as the Configure System page entries for
+  "GitHub" (provided by link:https://plugins.jenkins.io/github[GitHub]) and
+  "GitHub Enterprise Servers" (provided by
+  link:https://plugins.jenkins.io/github-branch-source[GitHub Branch Source]).
+* User-success isolation, that is to say, dependent plugins which are many
+  layers away how users are interacting with Jenkins, may never get useful
+  feedback on how their code is being exercised. This can lead to costly
+  rewrites and refactoring, such as that done with SCM API v2.
+  footnote:[https://jenkins.io/blog/2017/01/17/scm-api-2/]
+* Slow adoption of new, or planned, core changes in plugins, causing significant amounts of
+  testing workloads in order to successfully make significant improvements to
+  Jenkins core. footnote:[https://jenkins.io/blog/2018/01/13/jep-200/]
+
+
+
+
+
+== Reasoning
+
+=== Mission and Priority Specification
+
+This document does not  propose a _specific_ design or implementation, as other JEPs might.
+This is intentional.
+Later JEPs in this series will will address design and implementation.
+This document specifies the concept of "Jenkins Essentials" and the mission and priorities
+of the Jenkins Essentials project.
+Limiting the scope of this JEP to high-level goals will let us build
+a solid consensus for that direction before we begin working on individual features.
+Having a unified plan as we begin is vital to addressing the "User-success isolation"
+mentioned in the <<Motivation>> section.
+
+
+=== Alternative Approaches
+
+The first foray into this problem domain with
+"Suggested Plugins" footnoteref:[jep2] resulted in a tremendous increase in
+installations of plugins which had been deemed "useful." The "Suggested
+Plugins" approach has failed to make significant changes in user success.
+
+For example, Jenkins 2.0 significantly emphasized
+link:https://jenkins.io/doc/book/pipeline[Jenkins Pipeline] however,
+at the time of this document's writing the anonymous usage statistics indicate
+over 10 million Freestyle Jobs, compared to just over 2 million Pipelines
+footnote:[December 2017 stats, 10991962 Freestyle, 2029622 Pipeline]
+after 20 months since 2.0 has been released, and over 3 years since Pipeline
+was first introduced.
+footnote:[https://github.com/jenkinsci/pipeline-plugin/blob/82e7defa37c05c5f004f1ba01c93df61ea7868a5/CHANGES.md]
+Simply providing an end-user a smaller set of choices (plugins) still requires
+the end-user to configure and utilize them correctly to solve their problems.
+
+The underlying problem remains unsolved, to this end the pillars of
+<<sane-defaults>> and <<obvious-path>> aim to ensure that users are able to
+rapidly adopt features provided by "essential" plugins to successfully solve
+their problems.
+
+By channeling this work through the <<auto-update>>, Jenkins Essentials aims to
+cross some of the organizational boundaries currently present in the Jenkins
+project, as is necessary to provide a more cohesive solution for end-users.
+
+Plainly stated, Jenkins Essentials means: the whole is greater than the sum of
+its parts.
+
+==== Suggested Plugins
+
+As mentioned earlier, the "Suggested Plugins" functionality in the "Setup
+Wizard" might be considered an alternate approach which has been implemented in
+Jenkins. Expanding on this functionality had been considered, but without
+the support from an <<auto-update>> it's highly unlikely that this approach
+would result significant benefits to developers or end-users that would help
+cross some of the existing organizational boundaries.
+
+==== CloudBees Assurance Program
+
+Another approach suggested by colleagues at
+link:https://cloudbees.com[CloudBees] was to emulate the "CloudBees Assurance
+Program."
+footnote:[https://go.cloudbees.com/docs/cloudbees-documentation/assurance-program/]
+This would entail creating a form of "LTS for Plugins" which meet some quality
+criteria bar. This idea was swiftly rejected as the maintenance burden on a
+core LTS alone is significant. Additionally, an "LTS for Plugins" would not
+necessarily be useful for the <<target-audience>> of users who wish to "get
+stuff done" but would rather provide more benefit to long-lived, slower moving,
+Jenkins environments which are likely already being serviced by experienced
+administrators or solutions providers.
+
+
+== Backwards Compatibility
+
+There are no anticipated backwards compatibility issues to discuss in this
+document. Future enhancements to plugins under the guise of Jenkins Essentials
+may make backwards incompatible changes, and thereby require new core version
+dependencies in their `pom.xml`.
+
+
+== Security
+
+There are no inherent security impacts to discuss in this document, another
+document related to Jenkins Essentials will discuss a proposed process for
+handling link:https://jenkins.io/security/[Security (CERT)] advisories and
+updates.
+
+
+== Infrastructure Requirements
+
+There are no infrastructure requirements to discuss in this document,
+additional documents which propose new service-oriented functionality will
+however have infrastructure requirements documented in each proposal.
+
+
+== Testing
+
+There are no testing issues related to this proposal.
+
+== Prototype Implementation
+
+[TIP]
+====
+Link to any open source reference implementation of code changes for this proposal.
+The reference implementation need not be completed before the JEP is <<accepted>>,
+but must be completed before any JEP is given "Final" status.
+JEPs which will not include code changes may omit this section.
+====
+
+== References
+
+[IMPORTANT]
+====
+When moving this JEP from a Draft to "Accepted" or "Final" state,
+include links to the pull requests and mailing list discussions which were involved in the process.
+====
+
+
+=== Related works
+
+* link:https://dev.chromium.org/getting-involved/dev-channel[Chrome release channels] which provide the most analogous release process to what's proposed in this document.
+* link:https://en.opensuse.org/Portal:Tumbleweed[openSUSE Tumbleweed]: "The Tumbleweed distribution is a pure rolling release version of openSUSE containing the latest stable versions of all software instead of relying on rigid periodic release cycles"
+* Chakra Linux's "link:https://wiki.chakralinux.org/index.php?title=Half-Rolling_Release_Model[half-rolling release model]": "aims to provide a stable core of software, and rolling applications on top of it, and it is one of the keys of the success of the distribution. "
+
