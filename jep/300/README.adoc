@@ -148,7 +148,7 @@ For Jenkins project developers, this approach introduces multiple improvements:
   for users.
   
 The components responsible for this automatically self-updating distribution, will be referred
-to as the "Evergreen" distribution system, will be described further in subsequent JEP documents.
+to as the "Evergreen" distribution system, and will be described further in subsequent JEP documents.
 
 [[sane-defaults]]
 ==== Automatic Sane Defaults
