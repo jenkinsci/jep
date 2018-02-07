@@ -3,8 +3,9 @@
 cat > README.adoc <<EOF
 = Index of Jenkins Enhancement Proposals
 
+[cols="<,^"]
 |===
-| Status | Title
+| Title | Status
 
 EOF
 
@@ -18,12 +19,12 @@ for f in $(ls | sort -n); do
             jep_status="Unknown"
         fi;
 
-        echo $jep_status >> README.adoc
-
         cat >> README.adoc <<EOF
 | link:${f}/[$description]
+$jep_status
 
 EOF
+
     fi;
 done;
 
