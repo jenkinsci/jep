@@ -1,0 +1,191 @@
+= JEP-3: Adding the "Released As" field and "Ready for Release" status to Jenkins JIRA
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 3
+
+| Title
+| Adding the "Released As" field and "Ready for Release" status to Jenkins JIRA
+
+| Sponsor
+| link:https://github.com/oleg-nenashev[@oleg-nenashev]
+
+| Status
+// Uncomment the appropriate line.
+| Draft :information_source:
+//| Draft :speech_balloon:
+//| Deferred :hourglass:
+//| Accepted :ok_hand:
+//| Rejected :no_entry:
+//| Withdrawn :hand:
+//| Final :lock:
+//| Replaced :dagger:
+//| Active :smile:
+
+| Type
+| :bulb: Standards, Informational, or Process :bulb:
+
+| Created
+| Jan 29, 2018
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+| JIRA
+| https://issues.jenkins-ci.org/browse/INFRA-1301[INFRA-1301]
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+| Discussions-To
+| link:https://groups.google.com/forum/#!topic/jenkinsci-dev/wzc4VLplHvs[jenkinsci-dev thread]
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+This JEP targets improving experience for Jenkins users who review statuses of issues in JIRA
+to understand the fix/release status.
+
+== Specification
+
+=== UPDATE: Modify the workflow in the JENKINS project
+
+. Add new “Fixed But Not Released” state (aka "Stage Release")
+** Instead of "In Progress" => "Resolved", contributors can optionally move integrated fixed into the "Fixed But Not Released" state
+. All current transitions in JENKINS workflow should be retained.
+JIRA tickets can be moved to “Resolved” state from any existing state
+** “In Review” => “Resolved” is a default transition in UI so that the change is not disruptive
+
+The proposed workflow change may be adopted in other projects (e.g. _SECURITY_),
+but it is outside of this JEP scope.
+
+=== ADD: an optional "Released As" field to JIRA (type=String)
+
+* When a contributor moves the issue to "Fixed But Not Released", "Resolved" or "Closed" state, an optional “Released as” field appears in the dialog
+* Type of the field: String (see the _Reasoning_ section below)
+* Version format in the field is up to maintainers
+* Description should have a recommendation to use comma-separated list of git tags
+(e.g. “jenkins-2.74,remoting-3.11” or “git-3.2.3”)
+* If the field is non-empty, it will appear in the ticket header,
+hence users won't need to look into comments and commit histories
+
+=== UPDATE: Modify JIRA issue linking bot
+
+Current code location:
+https://github.com/cloudbees/java.net-scm-issue-link
+
+Changes to be done:
+
+* “FIXED JENKINS-123” should now move the tickets to the “Fixed But Not Released” state in JIRA in the following components:
+** Jenkins core
+** All modules and libraries bundled into the Jenkins core
+** Remoting Library
+** Winstone
+** Extras Executable WAR
+* JIRA issue link bot documentation should describe a way to change flow in other components if needed
+* TBD: Automatically fill in the “Released as” field according to POM.xml (proposed by Ullrich Hafner)
+
+== Motivation
+
+As a Jenkins contributor, I see may users struggling to understand the issue statuses and the version including the fix.
+Currently we have an issue with the _FIXED_ status.
+Depending on the component type, it may mean "merged" or "released".
+E.g. Jenkins JIRA linking bot automatically marks merged tickets with "FIXED" keyword as _FIXED_.
+Users usually understand "FIXED" as "released, please update".
+Such ambiguity causes users to spend time checking update centers and commits in GitHub.
+It does not improve the overall user experience.
+
+I would like to make issue statuses more explicit at least in the kernel components
+(Core, Remoting, detached plugins).
+It could be also helpful for plugins which do not release the integrated fixes immediately.
+For plugins this change would be an opt-in in order to avoid impact on established workflows used by plugin maintainers.
+
+== Reasoning
+
+* The current specification has been created according to the feedback from Jenkins contributors
+in the link:https://docs.google.com/document/d/1EIRuCMOjmPgpxybkWRPHfx1f1yglcuYlqPWN8K1Ni28/edit#[original proposal].
+* The proposed changes are opt-in in order to address feedback from
+link:https://github.com/uhafner[Ulli Hafner] and link:https://github.com/i386[James Dumay].
+
+
+The following feedback has been addressed:
+
+. Ullrich Hafner: Impact on plugin maintainers
+** The document has been updated to make all changes opt-in
+. James Dumay: Impact on custom dashboards/reports
+** There may be some updates required in custom dashboards if they filter the statuses by value
+** Mitigation: The change will be announced in the blogpost with detailed description of the change and potential impact
+. James Dumay: Current JIRA structure does not address my needs. Instead of that, let's move plugins to separate projects
+** JEP Sponsor feels that splitting plugins to separate projects may be feasible,
+but it requires a huge amount of time to implement it gracefully without a serious impact on Jira users
+** The changes proposed in this JEP are compatible with the approach proposed by James Dumay
+** JEP Sponsor decided not to go that far with this JEP, it may be a subject for follow-up changes
+. James Dumay: Let's use JIRA versions instead of String fields
+** JIRA does not support per-component versions.
+With the single-project structure we would end up with huge list within the _JENKINS_ JIRA project
+** JEP Sponsor decided to keep his proposal as is (with "String type")
+
+== Backwards Compatibility
+
+N/A
+
+== Security
+
+N/A
+
+== Infrastructure Requirements
+
+* Workflows need to be updated for the `JENKINS` project in JIRA
+
+== Testing
+
+* New JIRA workflows will be tested using the _TEST_ project
+* Issue linking bot will be tested using the test project in JIRA
+
+== Prototype Implementation
+
+This change does not impact Jenkins codebase itself.
+A prototype can be set up on Jenkins JIRA site once the JEP is accepted as a draft.
+
+== References
+
+* link:https://docs.google.com/document/d/1EIRuCMOjmPgpxybkWRPHfx1f1yglcuYlqPWN8K1Ni28/edit#[Original proposal]
+
+[IMPORTANT]
+====
+When moving this JEP from a Draft to "Accepted" or "Final" state,
+include links to the pull requests and mailing list discussions which were involved in the process.
+====
+
+
+
