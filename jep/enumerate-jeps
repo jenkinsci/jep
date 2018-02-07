@@ -3,9 +3,9 @@
 cat > README.adoc <<EOF
 = Index of Jenkins Enhancement Proposals
 
-[cols="<,^"]
+[cols="^,>"]
 |===
-| Title | Status
+| Status | Title
 
 EOF
 
@@ -20,8 +20,8 @@ for f in $(ls | sort -n); do
         fi;
 
         cat >> README.adoc <<EOF
-| link:${f}/[$description]
 $jep_status
+| link:${f}/[$description]
 
 EOF
 
