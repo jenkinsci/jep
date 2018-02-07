@@ -22,13 +22,6 @@ endif::[]
 | https://github.com/jglick[@jglick]
 
 | Status
-// Uncomment the appropriate line.
-//| Not Submitted :information_source:
-//| Draft :speech_balloon:
-//| Deferred :hourglass:
-//| Accepted :ok_hand:
-//| Rejected :no_entry:
-//| Withdrawn :hand:
 | Final :lock:
 //| Replaced :dagger:
 //| Active :smile:

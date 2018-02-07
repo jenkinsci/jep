@@ -3,15 +3,28 @@
 cat > README.adoc <<EOF
 = Index of Jenkins Enhancement Proposals
 
+|===
+| Status | Title
+
 EOF
 
 for f in $(ls | sort -n); do
     if [ -f "$f/README.adoc" ]; then
         echo "> Processing JEP-$f";
         description=$(head -n 1 $f/README.adoc | sed 's/^=\ //')
+        jep_status=$(grep -x -m 1 -A 1 -e "| Status" $f/README.adoc | tail -n 1)
+
+        if [ $? -ne 0 ]; then
+            jep_status="Unknown"
+        fi;
+
+        echo $jep_status >> README.adoc
 
         cat >> README.adoc <<EOF
-* link:${f}/[$description]
+| link:${f}/[$description]
+
 EOF
     fi;
 done;
+
+echo "|===" >> README.adoc

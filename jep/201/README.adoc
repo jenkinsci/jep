@@ -22,10 +22,6 @@ endif::[]
 | https://github.com/ewelinawilkosz2[Ewelina Wilkosz] from https://github.com/praqma[Praqma]
 
 | Status
-// Uncomment the appropriate line.
-//| Not Submitted :information_source:
-//| Draft :speech_balloon:
-//| Deferred :hourglass:
 | Accepted :ok_hand:
 //| Rejected :no_entry:
 //| Withdrawn :hand:
