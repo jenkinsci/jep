@@ -1,0 +1,348 @@
+= JEP-301: Evergreen packaging for Jenkins Essentials
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 301
+
+| Title
+| Evergreen packaging for Jenkins Essentials
+
+| Sponsor
+| link:https://github.com/rtyler[R. Tyler Croy]
+
+| Status
+// Uncomment the appropriate line.
+//| Not Submitted :information_source:
+| Draft :speech_balloon:
+//| Deferred :hourglass:
+//| Accepted :ok_hand:
+//| Rejected :no_entry:
+//| Withdrawn :hand:
+//| Final :lock:
+//| Replaced :dagger:
+//| Active :smile:
+
+| Type
+| Standards
+
+| Created
+| 2018-02-07
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+A key aspect of
+link:https://github.com/jenkinsci/jep/tree/master/jep/300[Jenkins Essentials]
+is the
+link:https://github.com/jenkinsci/jep/tree/master/jep/300#auto-update[automatically updating distribution],
+which aims to provide an easier to use, self-updating distribution of Jenkins
+core and an "essential" set of plugins. This document outlines the design of
+the Evergreen packaging system for Jenkins Essentials which is, in short, a
+self-updating Docker container necessary to provide the least-error-prone
+mechanism for automatically self-updating Jenkins and a set of plugins.
+
+
+== Specification
+
+[TIP]
+====
+Provide a detailed specification what is being proposed.
+Be as technical and detailed as needed to allow new or existing Jenkins developers
+to reasonably understand the scope/impact of an implementation.
+====
+
+This document proposes the creation of a new Docker image in the
+link:https://hub.docker.com/r/jenkins/[jenkins Docker Hub organization]
+referred to henceforth as `jenkins/evergreen`.
+
+Unlike the current primary images footnoteref:[docker, https://github.com/jenkinsci/docker],
+`jenkins/jenkins:latest`, `jenkins/jenkins:lts`, `jenkins/jenkins:alpine`, and
+`jenkins/jenkins:lts-alpine`, the `jenkins/evergreen` image will contain
+additional scripting, tooling, and machinery to coordinate the
+automatically self-updating functions of Jenkins Essentials.
+
+The first additional tool added into `jenkins/evergreen` is
+link:http://supervisord.org/[supervisord],
+a Python-based process control and supervision daemon. The `supervisord`
+process is responsible for maintaining a proper running state for the two
+subsequent processes which must be launched within the container:
+
+* Jenkins core (`jenkins.war`)
+* <<evergreen-client>>
+
+As described in the diagram below:
+
+[source]
+----
++-------------------------------+
+|  jenkins/evergreen            |
+|-------------------------------|                             |
+| ENTRYPOINT:                   |
+| +---------------------------+ |
+| | supervisord               | |
+| | +-----------------------+ | |
+| | |node: evergreen client | | |
+| | +-----------------------+ | |
+| | +-----------------------+ | |
+| | |java: jenkins.war      | | |
+| | +-----------------------+ | |
+| +---------------------------+ |
++------------------------------ +
+----
+
+`supervisord` is also responsible for reporting process status and allowing
+<<evergreen-client>> to inspect the current running state and information of
+the Jenkins core process.
+
+
+[[evergreen-client]]
+=== Evergreen Client
+
+The second additional tool added into `jenkins/evergreen` is the
+`evergreen-client` process.  In short, it is the process responsible for
+managing updates, interrogating `supervisord` for process status, and reporting
+necessary telemetry to the Evergreen hosted service layer. The
+`evergreen-client` process is also expected to manage restarts of the
+`jenkins.war` process as updates are downloaded and made available.
+
+The specific design of the `evergreen-client` is largely subject of a future
+document.
+
+
+[[base-image]]
+=== Base Image
+
+The `jenkins/evergreen` image extends the base image of
+`jenkins/jenkins:alpine` in order to have the necessary `install-plugins.sh`
+and other scripting support already mananaged "upstream" in the Docker
+packaging footnoteref:[docker].
+
+New revisions of the base image should cause a rebuild of the `latest` tag of
+`jenkins/evergreen` but only to ensure that new users of
+`jenkins/evergreen:latest` will have access to the latest useful tooling and
+scripts committed upstream.
+
+
+[[plugins]]
+=== Plugins
+
+The `jenkins/evergreen` image does not have any plugins pre-installed, since
+the plugin versions in Jenkins Essentials will be constantly updating. Rather
+`jenkins/evergreen` must have some "first-boot" behavior to reach out to the
+Evergreen hosted service layer to request the current plugin versions.
+
+This has the added benefit of keeping `jenkins/evergreen` itself reasonably
+small.
+
+[[scripts]]
+=== Scripts
+
+Since the `jenkins/evergreen` image is likely going to be moving slower than
+Jenkins Essentials itself, it will contain only the bare minimum amount of
+scripts to support configuring and setting up `evergreen-client`, Jenkins core,
+and `supervisord`.
+
+The scripts packaged into the image will not be responsible for configuring
+Jenkins or setting up the
+link:https://github.com/jenkinsci/jep/tree/master/jep/300#sane-defaults[Automatic Sane Defaults]
+descrbied in
+link:https://github.com/jenkinsci/jep/tree/master/jep/300[JEP-300].
+
+
+[[kubernetes]]
+=== Kubernetes
+
+At the present time there are no explicit caveats or changes in this design to
+support running in a link:https://kubernetes.io[Kubernetes] environment
+specifically.
+
+It is however very likely that the relationship between `evergreen-client` and
+`jenkins.war` may be changed in the future to take advantage of the container
+orchestration patterns and practices made available by Kubernetes.
+
+
+[[motivation]]
+== Motivation
+
+
+The current
+link:https://github.com/jenkinsci/packaging[Jenkins packaging]
+is largely structured around the need to provide a multitide of native Jenkins
+core packages for different platforms.
+
+The two downsides to this multi-variant packaging approach, which necessitate a
+separate packaging mechanism for Jenkins Essentials, are:
+
+. The numerous platform-specific packages requires a non-trivial amount of work
+  to maintain, build, and support.
+. Jenkins Essentials requires a very confined and consistent environment, at
+  least initially, to safely perform automatically self-updates. The isolated
+  packaging approach described above, creating a `jenkins/evergreen` image,
+  allows for a dramatic reduction in variance in the build, testing, and
+  runtime environments for Jenkins Essentials.
+
+Additionally, packaging as a separate `jenkins/evergreen` container allows for
+safe experimentation without disrupting existing users of native packages, or
+the current `jenkins/jenkins` containers.
+
+
+== Reasoning
+
+As described in the <<motivation>> section, Jenkins Essentials requires a very
+confined and consistent environment. The requirements are a natural fit for
+Docker containers. Compared to three years ago, containers are now much more
+commonly accepted as a distribution mechanism for software such as Jenkins. As
+of this writing, the `jenkins/jenkins`
+footnote:[https://hub.docker.com/r/jenkins/jenkins/]
+image on Docker Hub has been "pulled" over 5 million times.
+
+The major architecture change _within_ the container, compared to
+`jenkins/jenkins`, comes with the introduction of the `evergreen-client`
+process. The process is responsible for managing the lifecycle of the Jenkins
+core and essential plugins, along with a number of other responsibilities which
+are unique to Jenkins Essentials. By delegating these responsibilities to
+something _external_ to Jenkins core, `evergreen-client`, lifecycle processes
+which require the termination of the Jenkins process can be safely managed.
+
+This notion of a "sidecar process" necessitates the introduction of
+`supervisord` into `jenkins/evergreen` for ensuring that both the Jenkins core
+and the `evergreen-client` process are properly running. The selection of
+`supervisord` for this task is not coincidental, but rather it was chosen for
+the following reasons:
+
+* `supervisord` is a relatively lightweight Python process and does not add
+  significant space on disk or consume significant CPU/RAM overhead when
+  running.
+* `supervisord` is very easy to put inside of a Docker container, compared to
+  say `systemd`.
+* `supervisord` exposes an link:http://supervisord.org/api.html[XML-RPC API]
+  which provides useful process status information, and control, over HTTP for
+  consumption by the `evergreen-client` process.
+
+=== Alternative Approaches
+
+==== Extending Jenkins itself
+
+The only other alternative approach to the "sidecar
+process" and a Docker container which was considered was extending Jenkins
+itself via a plugin or something similar.
+
+This approach was discarded early on in the prototype stage for a number of
+reasons, but the most important one is the need to be able to control Jenkins
+_while_ Jenkins is offline. One such scenario would be if an automatic
+self-upgrade fails, resulting in the Jenkins process failing to boot due to
+some critical error. Using a Jenkins plugin as the vehicle for managing
+Jenkins Essentials upgrades would open the potential for "bricked instances"
+when a bad upgrade is delivered.
+
+Extending Jenkins itself also adds other constraints, such as requiring the
+dependencies loaded into the JVM to be compatible with other code loaded by
+Jenkins core and plugins. Or the ability for other plugins or users to build
+dependencies off of the code itself, inadvertently leading to de facto public
+APIs to be consumed.
+
+
+== Backwards Compatibility
+
+Since this document describes a new packaging medium, there are no backwards
+compatibility concerns as all existing packaging will remain the same.
+
+
+== Security
+
+The security impact of this proposal is minimal, but does require chaining of
+the `jenkins/evergreen` build "downstream" of the `jenkins/jenkins` build to
+ensure that necessary core security updates are baked into the image by
+default.
+
+The documents describing the design of `evergreen-client` and the Jenkins
+Essentials plugin list will detail the specific security ramifications of those
+two systems.
+
+
+== Infrastructure Requirements
+
+The infrastructure requirements for the `jenkins/evergreen` image are mostly on
+services external to the Jenkins project such as
+link:https://hub.docker.com[Docker Hub].
+
+The requirements of the Jenkins project infrastructure are only:
+
+* A Pipeline on ci.jenkins.io for validation of the repository and pull
+  requests
+* A Pipeline in the "trusted.ci" environment for publishing of images to Docker
+  Hub
+* A repository within the `jenkins-infra` GitHub organization.
+
+
+== Testing
+
+The testing of what composes "Jenkins Essentials" is the subject of another JEP
+document, but in the context of the Evergreen packaging there are no plans for
+specific test suites other than to ensure that the `jenkins/evergreen`
+container can properly boot both Jenkins core and the `evergreen-client` after
+a new `jenkins/evergreen` image has been built.
+
+
+== Prototype Implementation
+
+The current prototype implementation can be found in
+link:https://github.com/rtyler/evergreen[this repository].
+
+Of particular note are the following files:
+
+* `Dockerfile.jenkins`
+* `supervisord.conf`
+
+[CAUTION]
+====
+As of 2018-02-07 there are no tests which validate that the container built is
+correct. This work is captured in
+link:https://issues.jenkins-ci.org/browse/JENKINS-49449[JENKINS-49449]
+====
+
+
+== References
