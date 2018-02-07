@@ -24,9 +24,9 @@ endif::[]
 | Status
 // Uncomment the appropriate line.
 //| Not Submitted :information_source:
-| Draft :speech_balloon:
+//| Draft :speech_balloon:
 //| Deferred :hourglass:
-//| Accepted :ok_hand:
+| Accepted :ok_hand:
 //| Rejected :no_entry:
 //| Withdrawn :hand:
 //| Final :lock:
@@ -261,3 +261,4 @@ https://github.com/jenkinsci/configuration-as-code-plugin
 == References
 
 This topic was initially discussed on https://issues.jenkins-ci.org/browse/JENKINS-31094[JENKINS-31094].
+Subsequent discussion https://groups.google.com/d/msg/jenkinsci-dev/6TjlxEqHUEs/nKSG1xSkCQAJ[here].
