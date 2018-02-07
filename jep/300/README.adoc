@@ -146,6 +146,9 @@ For Jenkins project developers, this approach introduces multiple improvements:
   issues, and file tickets in JIRA, when coupled with an automatically updating
   distribution allows for rapodily backing out changes which may cause problems
   for users.
+  
+The components responsible for this automatically self-updating distribution will be referred
+to as the "Evergreen" distribution system, and will be described further in subsequent JEP documents.
 
 [[sane-defaults]]
 ==== Automatic Sane Defaults
