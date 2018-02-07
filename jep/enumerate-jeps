@@ -5,7 +5,7 @@ cat > README.adoc <<EOF
 
 EOF
 
-for f in $(ls); do
+for f in $(ls | sort -n); do
     if [ -f "$f/README.adoc" ]; then
         echo "> Processing JEP-$f";
         description=$(head -n 1 $f/README.adoc | sed 's/^=\ //')
