@@ -87,13 +87,6 @@ mechanism for automatically self-updating Jenkins and a set of plugins.
 
 == Specification
 
-[TIP]
-====
-Provide a detailed specification what is being proposed.
-Be as technical and detailed as needed to allow new or existing Jenkins developers
-to reasonably understand the scope/impact of an implementation.
-====
-
 This document proposes the creation of a new Docker image in the
 link:https://hub.docker.com/r/jenkins/[jenkins Docker Hub organization]
 referred to henceforth as `jenkins/evergreen`.
@@ -119,7 +112,7 @@ As described in the diagram below:
 ----
 +-------------------------------+
 |  jenkins/evergreen            |
-|-------------------------------|                             |
+|-------------------------------|
 | ENTRYPOINT:                   |
 | +---------------------------+ |
 | | supervisord               | |
