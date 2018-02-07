@@ -181,7 +181,7 @@ and `supervisord`.
 The scripts packaged into the image will not be responsible for configuring
 Jenkins or setting up the
 link:https://github.com/jenkinsci/jep/tree/master/jep/300#sane-defaults[Automatic Sane Defaults]
-descrbied in
+described in
 link:https://github.com/jenkinsci/jep/tree/master/jep/300[JEP-300].
 
 
@@ -230,7 +230,7 @@ Docker containers. Compared to three years ago, containers are now much more
 commonly accepted as a distribution mechanism for software such as Jenkins. As
 of this writing, the `jenkins/jenkins`
 footnote:[https://hub.docker.com/r/jenkins/jenkins/]
-image on Docker Hub has been "pulled" over 5 million times.
+image on Docker Hub has been "pulled" over five million times.
 
 The major architecture change _within_ the container, compared to
 `jenkins/jenkins`, comes with the introduction of the `evergreen-client`
