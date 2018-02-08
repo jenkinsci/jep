@@ -10,7 +10,7 @@
 | Draft :speech_balloon:
 | link:2/[JEP-2: Criteria for selecting "Suggested Plugins"]
 
-| Draft :information_source:
+| Draft :speech_balloon:
 | link:3/[JEP-3: Adding the "Released As" field and "Ready for Release" status to Jenkins JIRA]
 
 | Final :lock:
