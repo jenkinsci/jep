@@ -22,8 +22,7 @@ endif::[]
 | link:https://github.com/oleg-nenashev[@oleg-nenashev]
 
 | Status
-| Draft :information_source:
-//| Draft :speech_balloon:
+| Draft :speech_balloon:
 //| Deferred :hourglass:
 //| Accepted :ok_hand:
 //| Rejected :no_entry:
