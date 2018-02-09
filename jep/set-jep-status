@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+# `set-jep-status <jep-number> <status>`
+
+if [ -z "$1" ] ; then
+  echo Missing JEP number.
+  exit 1
+fi
+
+if [ -z "$2" ] ; then
+  echo Missing JEP status.
+  exit 1
+fi
+
+JEP_NUMBER=$1
+
+if [ ! -f $JEP_NUMBER/README.adoc ] ; then
+  echo $JEP_NUMBER/README.adoc not found.
+  exit 1
+fi
+
+JEP_STATUS=$(sed -n '/| Status/,/|/p' $JEP_NUMBER/README.adoc | head -n 2 | tail -n 1)
+
+JEP_NEW_STATUS="$(grep -i -e "^| $2 " <<EOF
+| Draft :speech_balloon:
+| Deferred :hourglass:
+| Accepted :ok_hand:
+| Rejected :no_entry:
+| Withdrawn :hand:
+| Final :lock:
+| Replaced :dagger:
+| Active :smile:
+EOF
+)"
+
+if [ -z "$JEP_NEW_STATUS" ] ; then
+  echo Invalid JEP status: $2.
+  exit 1
+fi
+
+# This will replace other lines with the same content as the status line
+# So far this is only a problem on JEP-1 which we shouldn't have to set status on
+sed -i '' "s/^$JEP_STATUS/$JEP_NEW_STATUS/" $JEP_NUMBER/README.adoc &&
+    echo "Set status of JEP-$JEP_NUMBER to $(echo $JEP_NEW_STATUS | cut -d " " -f 2)." &&
+    ./enumerate-jeps

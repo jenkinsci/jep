@@ -694,7 +694,7 @@ JEP:
 | link:https://github.com/rtyler[R Tyler Croy]
 
 | Status
-| :speech_balloon: Draft
+| Draft :speech_balloon:
 
 | Type
 | Process
