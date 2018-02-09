@@ -13,7 +13,9 @@ for f in $(ls | sort -n); do
     if [ -f "$f/README.adoc" ]; then
         echo "> Processing JEP-$f";
         description=$(head -n 1 $f/README.adoc | sed 's/^=\ //')
-        jep_status=$(grep -x -m 1 -A 1 -e "| Status" $f/README.adoc | tail -n 1)
+        # grep -A doesn't work on osx grep, use sed instead
+        #jep_status=$(grep -x -m 1 -A 1 -e "| Status" $f/README.adoc | tail -n 1)
+        jep_status=$(sed -n '/| Status/,/|/p' $f/README.adoc | head -n 2 | tail -n 1)
 
         if [ $? -ne 0 ]; then
             jep_status="Unknown"
