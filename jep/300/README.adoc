@@ -22,7 +22,6 @@ endif::[]
 | link:https://github.com/rtyler[R. Tyler Croy]
 
 | Status
-//| Draft Not Submitted :information_source:
 | Draft :speech_balloon:
 //| Deferred :hourglass:
 //| Accepted :ok_hand:

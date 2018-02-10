@@ -1,9 +1,28 @@
 = Index of Jenkins Enhancement Proposals
 
-* link:1/[JEP-1: Jenkins Enhancement Proposal Format]
-* link:2/[JEP-2: Criteria for selecting "Suggested Plugins"]
-* link:200/[JEP-200: Switch Remoting/XStream blacklist to a whitelist]
-* link:201/[JEP-201: Jenkins Configuration as Code]
-* link:3/[JEP-3: Adding the "Released As" field and "Ready for Release" status to Jenkins JIRA]
-* link:300/[JEP-300: Jenkins Essentials]
-* link:301/[JEP-301: Evergreen packaging for Jenkins Essentials]
+[cols="^,>"]
+|===
+| Status | Title
+
+| Active :smile:
+| link:1/[JEP-1: Jenkins Enhancement Proposal Format]
+
+| Draft :speech_balloon:
+| link:2/[JEP-2: Criteria for selecting "Suggested Plugins"]
+
+| Draft :speech_balloon:
+| link:3/[JEP-3: Adding the "Released As" field and "Ready for Release" status to Jenkins JIRA]
+
+| Final :lock:
+| link:200/[JEP-200: Switch Remoting/XStream blacklist to a whitelist]
+
+| Accepted :ok_hand:
+| link:201/[JEP-201: Jenkins Configuration as Code]
+
+| Draft :speech_balloon:
+| link:300/[JEP-300: Jenkins Essentials]
+
+| Draft :speech_balloon:
+| link:301/[JEP-301: Evergreen packaging for Jenkins Essentials]
+
+|===
