@@ -22,9 +22,9 @@ endif::[]
 | link:https://github.com/rtyler[R. Tyler Croy]
 
 | Status
-| Draft :speech_balloon:
+//| Draft :speech_balloon:
 //| Deferred :hourglass:
-//| Accepted :ok_hand:
+| Accepted :ok_hand:
 //| Rejected :no_entry:
 //| Withdrawn :hand:
 //| Final :lock:
@@ -360,12 +360,7 @@ JEPs which will not include code changes may omit this section.
 
 == References
 
-[IMPORTANT]
-====
-When moving this JEP from a Draft to "Accepted" or "Final" state,
-include links to the pull requests and mailing list discussions which were involved in the process.
-====
-
+* link:https://groups.google.com/d/msg/jenkinsci-dev/2BtaGQILZtk/LOr0QtvBAAAJ[Mailing list discussion]
 
 === Related works
 
