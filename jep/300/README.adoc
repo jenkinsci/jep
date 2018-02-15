@@ -167,6 +167,17 @@ This will take numerous forms, including but not limited to:
 . Scripting (`init.groovy.d/`) environmental-driven defaults, such as
   detecting Docker or Cloud support which can be automatically configured, etc.
 
+
+For the various cloud platforms, rather than support all the
+environmental-driven defaults in a _single_ package. Jenkins Essentials should
+provide a "flavor" specific to that environment. For example, Azure users
+should click a "Deploy to Azure" button which launches an Azure-specific flavor
+of Jenkins Essentials. Whereas Kubernetes users should deploy a
+[Helm](https://helm.sh/) chart.
+
+The specifics of each flavor will be suhject to different documents describing
+their design.
+
 [[connected]]
 ==== Connected
 
