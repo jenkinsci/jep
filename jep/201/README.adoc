@@ -230,6 +230,28 @@ The former just uses the configuration-as-code mechanism for initial setup.
 The latter would apply the configuration when updates are detected on file. It could benefit some way to lock down configuration for
 components configured by the configuration-as-code mechanism to be read-only on web UI.
 
+=== Plugin management
+As part of configuring Jenkins Master we support plugin installation and management. Configuration-as-Code plugin itself is out-of-scope, it has to be bundled with Jenkins so it can take control on master. But for all other plugins we want configuration-as-code to offer :
+
+- a high-level user friendly way to define "feature" plugins to be installed. Typically, end-user want to build github pull requests, he doesn't care this one will required `token-macro` for some low-level implementation reasons.
+- a fully reproducible way to setup a master. Relying on `latest` for transitive dependencies is _not_ an acceptable solution. Upgrades should also be tracked as configuration changes.
+- ability to configure infrastructure : private update sites and http proxy to download plugins.
+
+==== Shrink wrap
+`npm` is a typical sample for a dependency manager which has to support comparable requirements : provide a reproducible dependency management in a moving javascript ecosystem. It supports a [`shrinkwrap` file](https://docs.npmjs.com/cli/shrinkwrap) to compute dependency list from a higher level definition, and be able to exactly reproduce this setup later.
+
+Configuration-as-Code plugin can offer plugin management _outside_ jenkins as a standalone java executable. It can then consume a `plugins.yaml` file, provided as part of the configuraiton, to resolve plugin dependencies and compute a full list of plugins to be installed, which would be stored as `plugins.shrinkwrap` file. This later file can be used to automate plugin installation.
+
+==== Plugin installation
+Configuration-as-Code can consume this shrinkwrap file and compare the requested state _vs_ actual master installation. If some extra plugins have to be installed, it can then setup pluginManager and trigger plugins installation, then restart jenkins. 
+As the yaml configuration may have references to plugins components, this process has to be executed _before_ any other configuration.
+
+For flexibility and convenience, `plugins.shrinkwrap` file is optional, and plugin installation would then just rely on PluginManager to manage transitive dependencies. Configuration-as-Code would then just log a warning about reproducibility.
+
+==== Dependency management
+As `plugins.shrinkwrap` computation is executed outside Jenkins, we can offer an alternate implementation for transitive dependency management and dependency resolution. With extra metadata exposed in update center, we could offer some more advanced logic in dependency resolution, not just getting `latest` of all plugins. Such metadata would express known compatibility-breaks, synchronized releases for highly dependent plugins, recommended version, etc. This is typically what Linux package management system do.
+
+
 
 == Backwards Compatibility
 
