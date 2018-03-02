@@ -98,7 +98,7 @@ structures.
 
 Jenkins Essentials is targeted at existing and new Jenkins users who are
 not necessarily interested in becoming Jenkins experts,
-but rather wish to use Jenkins as a means to and end.
+but rather wish to use Jenkins as a means to an end.
 That end being: building, testing, and
 delivering their projects, with as little overhead as possible.
 
