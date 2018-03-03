@@ -22,14 +22,7 @@ endif::[]
 | link:https://github.com/oleg-nenashev[@oleg-nenashev]
 
 | Status
-//| Draft :speech_balloon:
-//| Deferred :hourglass:
 | Accepted :ok_hand:
-//| Rejected :no_entry:
-//| Withdrawn :hand:
-//| Final :lock:
-//| Replaced :dagger:
-//| Active :smile:
 
 | Type
 | :bulb: Standards, Informational, or Process :bulb:
