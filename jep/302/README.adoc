@@ -1,0 +1,228 @@
+= JEP-302: Evergreen snapshotting data safety system
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 302
+
+| Title
+| Evergreen snapshotting data safety system
+
+| Sponsor
+| https://github.com/batmat
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2018-03-18
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+| JIRA
+| https://issues.jenkins-ci.org/browse/JENKINS-49406[JENKINS-49406]
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+link:https://github.com/jenkinsci/jep/tree/master/jep/300:[Jenkins Essentials], and more specifically its link:https://github.com/jenkinsci/jep/tree/master/jep/301:[Evergreen] _component_, aims at providing an link:https://github.com/jenkinsci/jep/tree/master/jep/300#auto-update[automatically updating distribution] of Jenkins.
+
+Continuous Delivery is about making small incremental changes, making failures much more easily recoverable. In the context here, it means we need to be able to seamlessly upgrade Jenkins, _but also_ roll back to the previously running version if an upgrade goes wrong.
+As Jenkins does not support downgrading alone, we need to introduce a system that will enable that auto-downgrade capability.
+
+This document outlines the design of the snapshotting system we plan to use.
+
+== Specification
+
+[TIP]
+====
+Provide a detailed specification what is being proposed.
+Be as technical and detailed as needed to allow new or existing Jenkins developers
+to reasonably understand the scope/impact of an implementation.
+====
+
+=== Design
+_Evergreen_ works with two main components: Jenkins itself, and what we call the evergreen-client.
+
+[[boom]]
+=== Upgrading/downgrading
+
+Once an evergreen client has been instructed to perform an upgrade, it is responsible for the following operations:
+
+1. (If needed) Initialize the git repository.
+So this part must be idempotent and called each time.
+2. Stop Jenkins
+3. Take a snapshot (see <<snapshot>> below)
+5. Perform the upgrade (WAR, plugins...)
+6. Start new Jenkins version
+7. [[healthcheck]] Check it is responding in a healthy manner.
+8. If not:
+.. Take a snapshot footnote:[this way, if new files were created, we don't just delete them when going back to the previous snapshot].
+.. Rollback to the previous snapshot.
+To do so, we will generally create a new commit (i.e. avoid `git reset --hard HEAD~`), to keep a durable track of where we went through, accessible through `git log`.
+.. Start (previous) Jenkins version
+// what if starting the previous version doesn't work either?
+9. Report the outcome to the Essentials backend.
+
+[[snapshot]]
+==== Take a snapshot
+
+We use `git` for this purpose, so in this context:
+
+////
+I think .gitignore content must be designed to be able to evolve over time.
+To allow more flexibility, I think the content should be associated between an essentials release/bom to a given .gitignore content.
+////
+
+* Update `.gitignore` content with current Essentials release.
+* `git add .`
+* `git add -u `
+* git commit
++
+[NOTE]
+====
+ The commit log should ideally be made understandable for humans.
+ We will use tags to be able to revert/switch between snapshots in a programmatic reliable way.
+ Each tag name should be designed so that it is clear and easy to link it to a given version of Essentials.
+////
+We need to finish up the work on the BOM to be more precise here.
+////
+====
+
+== Motivation
+
+Jenkins has never supported downgrading by itself, and it's unlikely the core constructs will change in this regard anytime soon.
+The official way to revert an upgrade if something went wrong is to restore a previous backup.
+
+In the context of _Essentials_, we cannot rely on external backups to revert to the _N-1_ version: this would require some manual user intervention, which is clearly not the user experience _Essentials_ wants to provide.
+
+== Reasoning
+
+=== Why Git
+
+Using filesystem-level tools offering a snapshotting feature, like LVM, ZFS or btrfs to give a few examples, was considered.
+But this was evacuated because _Essentials_ vision is about providing an link:https://github.com/jenkinsci/jep/tree/71d9391744c8cc7d6595805f7fdd327eedf6811a/jep/300#automatically-updated-distribution["_easier to use_ and _easier to manage_ Jenkins environment"].
+As per the link:https://github.com/jenkinsci/jep/tree/71d9391744c8cc7d6595805f7fdd327eedf6811a/jep/300#target-audience[targeted audience], we obviously do not want to expect _Essentials_ users to be system experts able to set up a dedicated filesystem to operate Jenkins.
+And even with system expert, doing so would not make Essentials a very easy and quick to use distribution of Jenkins.
+
+Git offers in this matter a powerful user-space tool that allows us to version,
+and quickly rollback to some previous state if need be.
+
+Git is also a very common tool nowadays for developers,
+hence it will help making Essentials more accessible to contributors.
+
+== Backwards Compatibility
+
+There are no backwards compatibility concerns related to this proposal.
+
+== Security
+
+=== Secrets
+
+Versioning secrets is not an issue, as the snapshotting system is going to be local to the running instance.
+As the Git repository data will never be pushed _outside_, no data leak is expected from this side.
+
+=== Man In The Middle
+
+The main issue here is that an attacker could for instance instruct the evergreen client to ignore everything (by putting `*` in `.gitignore`), hence make it impossible to rollback.
+
+But this would mean someone was able to talk with connected instances.
+So even if this is a valid concern, this is considered a larger scope issue that will be addressed through link:https://issues.jenkins-ci.org/browse/JENKINS-49844[JENKINS-49844].
+
+Hence there are no *specific* security risks related to this proposal.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+We must create an image of _Essentials_ preconfigured with a complete set of representative data.
+
+Creating/defining this data clearly requires human work, but the following checks are deemed automatable.
+
+
+=== Upgrading/downgrading
+
+Before delivering updates on real connected instances, we must test at least the following scenarios.
+
+* Apply the upgrade or downgrade, then check the instance is _running fine_:
+** No administrative monitor triggered
+** No new ERROR logs showing up
+
+We will need to develop adhoc testing tools to be able to automatically assess the health of a Jenkins Essentials instance after an upgrade or a downgrade.
+
+Automatically giving some kind of health grade to a running instance is definitely a critical part of Jenkins Essentials.
+Detailing this here is out of scope for this proposal.
+It is however highly desirable that we centralize this logic and use it both during automated tests, and in production for the evergreen-client to automatically analyze if a product instance is healthy or is not (and decide to rollback or not, for the current matter here).
+
+We will leverage the link:https://github.com/cloudbees/operations-center-acceptance-test/[Jenkins Acceptance Test Harness project] for this purpose.
+
+=== Leveraging Telemetry and live instances data
+
+_Essentials_ is a link:https://github.com/jenkinsci/jep/tree/master/jep/300#connected[connected] system.
+That means we are able to know exactly what versions are running in production.
+We will leverage this to test the *actual* possible upgrade paths.
+
+Along the way, that also means we will continuously be able to adjust and enrich what is reported by the __Evergreen client__s from live instances to improve the associated combinations of tests we run.
+
+== Prototype Implementation
+
+[TIP]
+====
+Link to any open source reference implementation of code changes for this proposal.
+The reference implementation need not be completed before the JEP is <<accepted>>,
+but must be completed before any JEP is given "Final" status.
+JEPs which will not include code changes may omit this section.
+====
+
+== References
+
+* link:https://github.com/jenkinsci/jep/tree/master/jep/300[JEP-300: _Jenkins Essentials_]
+* link:https://github.com/jenkinsci/jep/tree/master/jep/300[JEP-301: Evergreen packaging for _Jenkins Essentials_]
+
+[IMPORTANT]
+====
+When moving this JEP from a Draft to "Accepted" or "Final" state,
+include links to the pull requests and mailing list discussions which were involved in the process.
+====
