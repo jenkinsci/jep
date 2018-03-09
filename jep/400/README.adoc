@@ -1,19 +1,71 @@
-
 = JEP-400: Jenkins X: Jenkins for Kubernetes CD
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
 
-Table 1. Metadata
+.Metadata
+[cols="2"]
 |===
-|JEP|400
+| JEP
+| 400
 
-|Title|Jenkins X: Jenkins for Kubernetes CD
-|Sponsor|https://github.com/jstrachan[James Strachan]
-|Status|Draft
-|Type|Standards
-|Created|2018-02-07
-|===
+| Title
+| Jenkins X: Jenkins for Kubernetes CD
+
+| Sponsor
+| link:https://github.com/jstrachan[James Strachan]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2018-02-07
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: link:https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
 == Abstract
 
-Jenkins X provides a Kubernetes-native CI / CD platform for developing Cloud Native applications. Jenkins X uses a distribution of Jenkins as the core CI / CD engine.
+Jenkins X provides a Kubernetes-native CI / CD platform for developing Cloud Native applications.
+Jenkins X uses a distribution of Jenkins as the core CI / CD engine.
 
 This JEP is a “stake on the ground” that captures the mission and the general directions.
 
@@ -34,10 +86,15 @@ This is akin to what Maven brought over Ant —  encouraging developers to use a
 
 Here are some examples of the practice:
 
-* The master branch shall be always clean and release ready. No long running feature branches to stay lean.
-* Pull requests are used to work on new changes that then land to the master. CI tests are triggered on changes to a PR and the PR can only merged if all the CI checks pass and it passes any required code reviews etc.
-* A release is produced from the master branch to create versioned immutable artifacts (jars, binaries, docker images, helm charts etc). A release might be triggered manually, or automatically upon a new PR merge, or even at set frequency.
-* Which version of what services run in which environment is managed declaratively in a separate environment Git repo. You make deployment happen by pushing changes into the environment git repository which then triggers the Environments pipeline. This approach is often referred to as _GitOps_ and is similar to how people develop Chef recipes or Ansible playbooks with Git.
+* The master branch shall be always clean and release ready.
+  No long running feature branches to stay lean.
+* Pull requests are used to work on new changes that then land to the master.
+  CI tests are triggered on changes to a PR and the PR can only merged if all the CI checks pass and it passes any required code reviews etc.
+* A release is produced from the master branch to create versioned immutable artifacts (jars, binaries, docker images, helm charts etc).
+  A release might be triggered manually, or automatically upon a new PR merge, or even at set frequency.
+* Which version of what services run in which environment is managed declaratively in a separate environment Git repo.
+  You make deployment happen by pushing changes into the environment git repository which then triggers the Environments pipeline.
+  This approach is often referred to as _GitOps_ and is similar to how people develop Chef recipes or Ansible playbooks with Git.
 
 === ‘Environment’ Model
 
@@ -148,7 +205,7 @@ E.g. we can use Helm Hooks to implement quality gates to ensure a release is goo
 
 === UpdateBot
 
-UpdateBot is a CLI tool which automates updating downstream dependencies as part of a CI / CD pipeline by generating Pull Requests to eagerly push changes through repositories and give better feedback to upstream libraries/component developers if changes break the CI pipelines of downstream repositories. 
+UpdateBot is a CLI tool which automates updating downstream dependencies as part of a CI / CD pipeline by generating Pull Requests to eagerly push changes through repositories and give better feedback to upstream libraries/component developers if changes break the CI pipelines of downstream repositories.
 
 E.g. as a developer of an upstream library, as you release new versions of your library the release pipeline can invoke UpdateBot to generate Pull Requests on all downstream repositories using your library.
 UpdateBot can then wait for those Pull Requests to trigger the downstream CI pipelines and pass/fail.
@@ -182,7 +239,8 @@ In both cases we expect these users to "just want get things done" by using best
 Kubernetes provides the ideal abstraction for building cloud native applications and running them at scale on any public cloud, laptop or data centre.
 It’s rapidly gaining traction in the industry, is adopted by all the major public clouds and it will play a key role in how people develop web apps tomorrow.
 
-People developing apps on Kubernetes can today use Jenkins to do CI/CD, but it requires work. That’s true not just with Kubernetes, but with any development environment.
+People developing apps on Kubernetes can today use Jenkins to do CI/CD, but it requires work.
+That’s true not just with Kubernetes, but with any development environment.
 Mobile apps, embedded apps, you name it.
 You know Jenkins, so you know what that is like --- finding the right set of plugins, designing the CD process, writing pipeline definitions, and so on.
 This is both the strength and the weakness of Jenkins.
