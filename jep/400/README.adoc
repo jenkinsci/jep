@@ -51,7 +51,7 @@ The development practice then talks in terms of promoting apps from one environm
 For example a release occurs for a new version `1.2.3` resulting in immutable artifacts being created.
 So docker images and helm charts with the version `1.2.3` are created along with other things (npm packages, maven jars or whatever).
 
-So the _promotion_ of an application from version `1.2.2` to `1.2.3` for an Environment in the Jenkins X GitOps model results in"
+Then the _promotion_ of an application from version `1.2.2` to `1.2.3` for an Environment in the Jenkins X GitOps model results in:
 
 * A Pull Request being created in the environment’s git repository to update the version of the application
 * When the Pull Request is approved and merged, a Pipeline runs in the environment applying the new changes to the underlying Environment in a Kubernetes namespace
