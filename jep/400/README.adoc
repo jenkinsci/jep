@@ -20,7 +20,8 @@ This JEP is a “stake on the ground” that captures the mission and the genera
 == Specification
 
 
-The Jenkins X sub project focuses 100% on Kubernetes, CI/CD and Cloud Native use cases to provide great developer productivity. To that end, we have so far identified the following major deliverables.
+The Jenkins X sub project focuses 100% on Kubernetes, CI/CD and Cloud Native use cases to provide great developer productivity.
+To that end, we have so far identified the following major deliverables.
 
 === Development Practice
 
@@ -33,7 +34,7 @@ The value of Jenkins X is that if you follow this best practice, then Jenkins X 
 Here are some examples of the practice:
 
 * The master branch shall be always clean and release ready. No long running feature branches to stay lean.
-* Pull requests are used to work on new changes that then land to the master. CI tests are triggered on changes to a PR and the PR is only merged if all the CI checks pass.
+* Pull requests are used to work on new changes that then land to the master. CI tests are triggered on changes to a PR and the PR can only merged if all the CI checks pass and it passes any required code reviews etc.
 * A release is produced from the master branch to create versioned immutable artifacts (jars, binaries, docker images, helm charts etc). A release might be triggered manually, or automatically upon a new PR merge, or even at set frequency.
 * Which version of what services run in which environment is managed declaratively in a separate environment Git repo. You make deployment happen by pushing changes into the environment git repository which then triggers the Environments pipeline. This approach is often referred to as _GitOps_ and is similar to how people develop Chef recipes or Ansible playbooks with Git.
 
@@ -43,7 +44,9 @@ Among web application developers practicing Continuous Delivery, the notion of �
 
 Jenkins X bridges this gap by introducing the concept of ‘environment’ on top of more generic Kubernetes concepts, such as namespaces and GitOps. The development practice then talks in terms of promoting apps from one environment to another in a cascading manner.
 
-Promotion of a new version to an Environment in the Jenkins X GitOps model results in
+For example a release occurs for a new version `1.2.3` resulting in immutable artifacts being created. So docker images and helm charts with the version `1.2.3` are created along with other things (npm packages, maven jars or whatever).
+
+So the _promotion_ of an application from version `1.2.2` to `1.2.3` for an Environment in the Jenkins X GitOps model results in"
 
 * A Pull Request being created in the environment’s git repository to update the version of the application
 * When the Pull Request is approved and merged, a Pipeline runs in the environment applying the new changes to the underlying Environment in a Kubernetes namespace
@@ -64,7 +67,7 @@ Jenkins X CLI is a central user interface of Jenkins X. It makes it easy to:
 * create new kubernetes clusters from scratch on the public cloud
 * setting up Environments for each Team
 * import existing projects or creating new Spring Boot applications then:
-** automatically setup the CI / CD pipeline and webhooks
+** automatically set up the CI / CD pipeline and webhooks
 ** create new releases and promote them through the Environments on merge to master
 ** support Preview Environments on Pull Requests
 
@@ -72,9 +75,9 @@ Jenkins X CLI is a central user interface of Jenkins X. It makes it easy to:
 
 At the heart of Jenkins X is an automation that controls how applications are built, tested, deployed, and promoted across different environments. Jenkins Pipeline plays a major role in achieving this. 
 
-Jenkins X extends Declarative Pipeline, so that a pipeline that embodies the best development practice discussed above is be represented in a Jenkinsfile that’s very simple, easy to understand, and declarative. This allows Jenkins X to leverage the ease of use of Blue Ocean and its visual editor to make it accessible for our target audience.
+Jenkins X extends Declarative Pipeline, so that a pipeline that embodies the best development practice discussed above is be represented in a _Jenkinsfile_ that’s very simple, easy to understand, and declarative. This allows Jenkins X to leverage the ease of use of Blue Ocean and its visual editor to make it accessible for our target audience.
 
-CLI provides the building blocks of common tasks, which helps keep Jenkinsfile small and concise.
+CLI provides the building blocks of common tasks, which helps keep _Jenkinsfile_ small and concise.
 
 === Build Packs
 
@@ -103,23 +106,36 @@ E.g. we expect there to be Jenkins X addons like:
 
 === Kubernetes Native Jenkins
 
-Jenkins X is not a general purpose Jenkins that can modified to anything. Instead, it is tailored to focus on Kubernetes and Cloud Native use cases, hence the name “Kubernetes native Jenkins.” 
+Jenkins X is not a general purpose Jenkins that can modified to do anything. Instead, it is tailored to focus on Kubernetes and Cloud Native use cases, hence the name “Kubernetes native Jenkins.”
 
 Jenkins X includes Jenkins core with a specific set of plugins bundled together to provide the necessary user experience out of the box, without the user needing to “assemble their own LEGO blocks.”
 
-Over time, we see an opportunity to improve Jenkins core itself based on our learning in Jenkins X, so that Jenkins itself can be used in more cloud native configurations. This should benefit not only Jenkins X but other uses of Jenkins. E.g. to allow storage of Jenkins resources (config, pipelines, builds, credentials, artifacts, logs) outside of the Jenkins master local file system to avoid a single point of failure and make managing persistent disk easier.
+Over time, we see an opportunity to improve Jenkins core itself based on our learning in Jenkins X, so that Jenkins itself can be used in more cloud native configurations.
+This should benefit not only Jenkins X but other uses of Jenkins.
+These changes will result in separate JEP proposals.
 
-It is common in the Kubernetes ecosystem to store system state in highly available persistent Kubernetes resources (e.g. Pods, Services, ConfigMaps, Secrets etc). This allows microservices running on Kubernetes to integrate via Kubernetes resources. As part of the Kubernetes native Jenkins initiative we hope to increasingly use Kubernetes resources for the storage of Jenkins state. E.g. to represent Environments, Pipeline Activity (Runs) and Releases we will use Kubernetes resources (https://kubernetes.io/docs/concepts/api-extension/custom-resources/[Custom Resources]). We intend to extend this to other Jenkins resources like MultiBranchProject, Pipeline, Run, Credentials etc.
+E.g. to allow storage of Jenkins resources (config, pipelines, builds, credentials, artifacts, logs) outside of the Jenkins master local file system to avoid a single point of failure and make managing persistent disk easier.
 
-This will allow microservices on kubernetes to ‘plugin’ to Jenkins X in a similar way conceptually to the way current Jenkins java plugins but without the code having to be colocated inside the Jenkins master. Any microsevice with the right RBAC rules will be allowed to list, get, update, delete Jenkins resources via the kubernetes REST API, kubectl or the kubernetes language clients. E.g. so a ChatBot gateway component could watch for pipelines starting, changing, terminating and notify users of the state - without having to modify the Jenkins master.
+It is common in the Kubernetes ecosystem to store system state in highly available persistent Kubernetes resources (e.g. Pods, Services, ConfigMaps, Secrets etc).
+This allows microservices running on Kubernetes to integrate via Kubernetes resources.
+As part of the Kubernetes native Jenkins initiative we hope to increasingly use Kubernetes resources for the storage of Jenkins state. E.g. to represent Environments, Pipeline Activity (Runs) and Releases we will use Kubernetes resources (https://kubernetes.io/docs/concepts/api-extension/custom-resources/[Custom Resources]).
+We intend to extend this to other Jenkins resources like MultiBranchProject, Pipeline, Run, Credentials etc.
 
-Another area of extensibility is via https://github.com/kubernetes/helm/blob/master/docs/charts_hooks.md[Helm hooks] which allows any https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/[kubernetes Job] to be triggered after an application is installed or upgraded to perform any kind of test to ensure the new version is good. E.g. we can use Helm Hooks to implement quality gates to ensure a release is good enough in terms of operational monitoring of failures, performance and SLA metrics - if a release is not good enough we can automatically roll back.
+This will allow microservices on kubernetes to ‘plugin’ to Jenkins X in a similar way conceptually to the way current Jenkins java plugins but without the code having to be colocated inside the Jenkins master.
+Any microsevice with the right RBAC rules will be allowed to list, get, update, delete Jenkins resources via the kubernetes REST API, kubectl or the kubernetes language clients.
+E.g. so a ChatBot gateway component could watch for pipelines starting, changing, terminating and notify users of the state - without having to modify the Jenkins master.
+
+Another area of extensibility is via https://github.com/kubernetes/helm/blob/master/docs/charts_hooks.md[Helm hooks] which allows any https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/[kubernetes Job] to be triggered after an application is installed or upgraded to perform any kind of test to ensure the new version is good.
+E.g. we can use Helm Hooks to implement quality gates to ensure a release is good enough in terms of operational monitoring of failures, performance and SLA metrics - if a release is not good enough we can automatically roll back.
 
 === UpdateBot
 
 UpdateBot is a CLI tool which automates updating downstream dependencies as part of a CI / CD pipeline by generating Pull Requests to eagerly push changes through repositories and give better feedback to upstream libraries/component developers if changes break the CI pipelines of downstream repositories. 
 
-E.g. as a developer of an upstream library, as you release new versions of your library the release pipeline can invoke UpdateBot to generate Pull Requests on all downstream repositories using your library. UpdateBot can then wait for those Pull Requests to trigger the downstream CI pipelines and pass/fail. If any downstream repositories CI jobs fail then your upstream library pipeline fails; giving valuable early feedback to both the upstream team making the change and downstream teams who become aware of which versions cause failures.
+E.g. as a developer of an upstream library, as you release new versions of your library the release pipeline can invoke UpdateBot to generate Pull Requests on all downstream repositories using your library.
+UpdateBot can then wait for those Pull Requests to trigger the downstream CI pipelines and pass/fail.
+If any downstream repositories CI jobs fail then your upstream library pipeline fails; giving valuable early feedback to both the upstream team making the change and downstream teams who become aware of which versions cause failures.
+We should make the waiting configurable so upstream development teams can choose which repositories to wait for and how long to wait before failing a pipeline.
 
 Libraries and base docker images are often not deployed directly to Environments; but they are promoted into downstream repositories via Pull Requests changing dependency information in files like pom.xml, package.json, Dockerfile or helm charts etc. So you can think of UpdateBot as a tool for providing Continuous Delivery for libraries, base docker images or base helm charts.
 
