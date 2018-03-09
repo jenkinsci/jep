@@ -29,7 +29,8 @@ Jenkins X promotes a particular Git branching & repository model. The rest of th
 
 This development practice represents the best practice of developing Kubernetes applications, based in part on the experience of developing Fabric8, a project of a similar mission and on the results of the https://puppet.com/resources/whitepaper/state-of-devops-report[State of DevOps report].
 
-The value of Jenkins X is that if you follow this best practice, then Jenkins X assembles all the pieces for you (e.g., Jenkins, Kubernetes, Git, CI/CD etc) such that developers can be instantly productive. This is akin to what Maven brought over Ant —  encouraging developers to use a standard Lifecycle-model provided by Maven (https://en.wikipedia.org/wiki/Don%27t_repeat_yourself[DRY]) to achieve greater productivity.
+The value of Jenkins X is that if you follow this best practice, then Jenkins X assembles all the pieces for you (e.g., Jenkins, Kubernetes, Git, CI/CD etc) such that developers can be instantly productive.
+This is akin to what Maven brought over Ant —  encouraging developers to use a standard Lifecycle-model provided by Maven (https://en.wikipedia.org/wiki/Don%27t_repeat_yourself[DRY]) to achieve greater productivity.
 
 Here are some examples of the practice:
 
@@ -40,28 +41,37 @@ Here are some examples of the practice:
 
 === ‘Environment’ Model
 
-Among web application developers practicing Continuous Delivery, the notion of “environment” is a well-established practice. It allows orderly flow of changes from a developer, through testing and staging to production. Yet, Jenkins does not have the environment concept as the first class citizen.
+Among web application developers practicing Continuous Delivery, the notion of “environment” is a well-established practice.
+It allows orderly flow of changes from a developer, through testing and staging to production.
+Yet, Jenkins does not have the environment concept as the first class citizen.
 
-Jenkins X bridges this gap by introducing the concept of ‘environment’ on top of more generic Kubernetes concepts, such as namespaces and GitOps. The development practice then talks in terms of promoting apps from one environment to another in a cascading manner.
+Jenkins X bridges this gap by introducing the concept of ‘environment’ on top of more generic Kubernetes concepts, such as namespaces and GitOps.
+The development practice then talks in terms of promoting apps from one environment to another in a cascading manner.
 
-For example a release occurs for a new version `1.2.3` resulting in immutable artifacts being created. So docker images and helm charts with the version `1.2.3` are created along with other things (npm packages, maven jars or whatever).
+For example a release occurs for a new version `1.2.3` resulting in immutable artifacts being created.
+So docker images and helm charts with the version `1.2.3` are created along with other things (npm packages, maven jars or whatever).
 
 So the _promotion_ of an application from version `1.2.2` to `1.2.3` for an Environment in the Jenkins X GitOps model results in"
 
 * A Pull Request being created in the environment’s git repository to update the version of the application
 * When the Pull Request is approved and merged, a Pipeline runs in the environment applying the new changes to the underlying Environment in a Kubernetes namespace
 
-In classic web application development, environments are often static. Jenkins X leverages the elasticity of Kubernetes to offer more dynamic environments to users. For example, we offer “preview environments” that are tied to GitHub pull requests, to let reviewers  see the running changes before approving the merge to master.
+In classic web application development, environments are often static.
+Jenkins X leverages the elasticity of Kubernetes to offer more dynamic environments to users.
+For example, we offer “preview environments” that are tied to GitHub pull requests, to let reviewers  see the running changes before approving the merge to master.
 
 === CLI
 
 Following the development practice discussed above, one finds that some common sequences of tasks will happen over and over.
 
-One such sequence of tasks is the act of “promoting” an application to an environment. As an input, it takes what version of which application to promote which environment, then it needs to execute a series of appropriate Kubernetes commands to change some pods that are running, with appropriate metadata.
+One such sequence of tasks is the act of “promoting” an application to an environment.
+As an input, it takes what version of which application to promote which environment, then it needs to execute a series of appropriate Kubernetes commands to change some pods that are running, with appropriate metadata.
 
-In order to make these common tasks easy, Jenkins X defines a command line tool, https://github.com/jenkins-x/jx[jx], which encapsulates them as high-level operations. Jenkins X CLI is used not only by developers from their computers, but also used by Jenkins Pipeline, which will be discussed later.
+In order to make these common tasks easy, Jenkins X defines a command line tool, https://github.com/jenkins-x/jx[jx], which encapsulates them as high-level operations.
+Jenkins X CLI is used not only by developers from their computers, but also used by Jenkins Pipeline, which will be discussed later.
 
-Jenkins X CLI is a central user interface of Jenkins X. It makes it easy to:
+Jenkins X CLI is a central user interface of Jenkins X.
+It makes it easy to:
 
 * install Jenkins X on any kubernetes cluster
 * create new kubernetes clusters from scratch on the public cloud
@@ -73,9 +83,11 @@ Jenkins X CLI is a central user interface of Jenkins X. It makes it easy to:
 
 === Pipeline where “the right thing is the easiest thing”
 
-At the heart of Jenkins X is an automation that controls how applications are built, tested, deployed, and promoted across different environments. Jenkins Pipeline plays a major role in achieving this. 
+At the heart of Jenkins X is an automation that controls how applications are built, tested, deployed, and promoted across different environments.
+Jenkins Pipeline plays a major role in achieving this.
 
-Jenkins X extends Declarative Pipeline, so that a pipeline that embodies the best development practice discussed above is be represented in a _Jenkinsfile_ that’s very simple, easy to understand, and declarative. This allows Jenkins X to leverage the ease of use of Blue Ocean and its visual editor to make it accessible for our target audience.
+Jenkins X extends Declarative Pipeline, so that a pipeline that embodies the best development practice discussed above is be represented in a _Jenkinsfile_ that’s very simple, easy to understand, and declarative.
+This allows Jenkins X to leverage the ease of use of Blue Ocean and its visual editor to make it accessible for our target audience.
 
 CLI provides the building blocks of common tasks, which helps keep _Jenkinsfile_ small and concise.
 
@@ -89,11 +101,15 @@ Teams and communities can share and customise their build packs allowing builds,
 
 === Helm Charts
 
-Helm charts are the standard packaging mechanism for installing and upgrading applications on Kubernetes.  Jenkins X provides a Helm chart so it is easy to install Jenkins X on any kubernetes cluster. 
+Helm charts are the standard packaging mechanism for installing and upgrading applications on Kubernetes.
+Jenkins X provides a Helm chart so it is easy to install Jenkins X on any kubernetes cluster.
 
-Helm charts can also be composed and configured in various ways; so we can provide customised Jenkins X helm charts tailored to different public clouds so that Jenkins X can automatically make the best use of  the available services on the cloud without the user needing to configure anything. E.g. so that Jenkins X can use Stackdriver on Google or CloudWatch on AWS for application and pipeline logs.
+Helm charts can also be composed and configured in various ways; so we can provide customised Jenkins X helm charts tailored to different public clouds so that Jenkins X can automatically make the best use of  the available services on the cloud without the user needing to configure anything.
+E.g. so that Jenkins X can use Stackdriver on Google or CloudWatch on AWS for application and pipeline logs.
 
-Traditionally the plugin model of Jenkins has been to add jars inside the JVM of the Jenkins master. With Kubernetes the extension model can be more flexible and allow extension through separate microservices and configurations distributed in Helm charts.  These microservices then communicate with each other via Kubernetes resources which are exposed in the Kubernetes REST APIs, kubernetes language clients, Kubernetes Dashboard and the kubectl command line tool.
+Traditionally the plugin model of Jenkins has been to add jars inside the JVM of the Jenkins master.
+With Kubernetes the extension model can be more flexible and allow extension through separate microservices and configurations distributed in Helm charts.
+These microservices then communicate with each other via Kubernetes resources which are exposed in the Kubernetes REST APIs, kubernetes language clients, Kubernetes Dashboard and the kubectl command line tool.
 
 One goal of Jenkins X is to foster a community of Jenkins X addons which are optional Helm charts that can extend Jenkins X with additional capabilities; whether its for different source control repositories, issue management, code quality tools, testing tools, chat integration, UIs or operational management tooling.
 
@@ -106,7 +122,8 @@ E.g. we expect there to be Jenkins X addons like:
 
 === Kubernetes Native Jenkins
 
-Jenkins X is not a general purpose Jenkins that can modified to do anything. Instead, it is tailored to focus on Kubernetes and Cloud Native use cases, hence the name “Kubernetes native Jenkins.”
+Jenkins X is not a general purpose Jenkins that can modified to do anything.
+Instead, it is tailored to focus on Kubernetes and Cloud Native use cases, hence the name “Kubernetes native Jenkins.”
 
 Jenkins X includes Jenkins core with a specific set of plugins bundled together to provide the necessary user experience out of the box, without the user needing to “assemble their own LEGO blocks.”
 
@@ -118,7 +135,8 @@ E.g. to allow storage of Jenkins resources (config, pipelines, builds, credentia
 
 It is common in the Kubernetes ecosystem to store system state in highly available persistent Kubernetes resources (e.g. Pods, Services, ConfigMaps, Secrets etc).
 This allows microservices running on Kubernetes to integrate via Kubernetes resources.
-As part of the Kubernetes native Jenkins initiative we hope to increasingly use Kubernetes resources for the storage of Jenkins state. E.g. to represent Environments, Pipeline Activity (Runs) and Releases we will use Kubernetes resources (https://kubernetes.io/docs/concepts/api-extension/custom-resources/[Custom Resources]).
+As part of the Kubernetes native Jenkins initiative we hope to increasingly use Kubernetes resources for the storage of Jenkins state.
+E.g. to represent Environments, Pipeline Activity (Runs) and Releases we will use Kubernetes resources (https://kubernetes.io/docs/concepts/api-extension/custom-resources/[Custom Resources]).
 We intend to extend this to other Jenkins resources like MultiBranchProject, Pipeline, Run, Credentials etc.
 
 This will allow microservices on kubernetes to ‘plugin’ to Jenkins X in a similar way conceptually to the way current Jenkins java plugins but without the code having to be colocated inside the Jenkins master.
@@ -137,11 +155,14 @@ UpdateBot can then wait for those Pull Requests to trigger the downstream CI pip
 If any downstream repositories CI jobs fail then your upstream library pipeline fails; giving valuable early feedback to both the upstream team making the change and downstream teams who become aware of which versions cause failures.
 We should make the waiting configurable so upstream development teams can choose which repositories to wait for and how long to wait before failing a pipeline.
 
-Libraries and base docker images are often not deployed directly to Environments; but they are promoted into downstream repositories via Pull Requests changing dependency information in files like pom.xml, package.json, Dockerfile or helm charts etc. So you can think of UpdateBot as a tool for providing Continuous Delivery for libraries, base docker images or base helm charts.
+Libraries and base docker images are often not deployed directly to Environments; but they are promoted into downstream repositories via Pull Requests changing dependency information in files like pom.xml, package.json, Dockerfile or helm charts etc.
+So you can think of UpdateBot as a tool for providing Continuous Delivery for libraries, base docker images or base helm charts.
 
 === Longer Term integrations: Prow & Argo
 
-The kubernetes ecosystem uses https://github.com/kubernetes/test-infra/tree/master/prow[Prow] for its CI / CD infrastructure - which is a cloud native solution for handling events & webhooks from GitHub such as for processing comments and https://prow.k8s.io/command-help.html[commands] on Issues & Pull Requests. Prow can trigger arbitrary jobs on events; including Jenkins builds/pipelines. There are lots of similarities between the goals of Prow and Jenkins X (e.g. Kubernetes native and use of highly available Kubernetes resources to store state).
+The kubernetes ecosystem uses https://github.com/kubernetes/test-infra/tree/master/prow[Prow] for its CI / CD infrastructure - which is a cloud native solution for handling events & webhooks from GitHub such as for processing comments and https://prow.k8s.io/command-help.html[commands] on Issues & Pull Requests.
+Prow can trigger arbitrary jobs on events; including Jenkins builds/pipelines.
+There are lots of similarities between the goals of Prow and Jenkins X (e.g. Kubernetes native and use of highly available Kubernetes resources to store state).
 
 https://blog.argoproj.io/[Argo] is another useful technology which  handles Kubernetes-native long-term human workflows such as approvals and promotions.
 
@@ -158,41 +179,64 @@ In both cases we expect these users to "just want get things done" by using best
 
 == Motivation
 
-Kubernetes provides the ideal abstraction for building cloud native applications and running them at scale on any public cloud, laptop or data centre. It’s rapidly gaining traction in the industry, is adopted by all the major public clouds and it will play a key role in how people develop web apps tomorrow.
+Kubernetes provides the ideal abstraction for building cloud native applications and running them at scale on any public cloud, laptop or data centre.
+It’s rapidly gaining traction in the industry, is adopted by all the major public clouds and it will play a key role in how people develop web apps tomorrow.
 
-People developing apps on Kubernetes can today use Jenkins to do CI/CD, but it requires work. That’s true not just with Kubernetes, but with any development environment. Mobile apps, embedded apps, you name it. You know Jenkins, so you know what that is like --- finding the right set of plugins, designing the CD process, writing pipeline definitions, and so on. This is both the strength and the weakness of Jenkins.
+People developing apps on Kubernetes can today use Jenkins to do CI/CD, but it requires work. That’s true not just with Kubernetes, but with any development environment.
+Mobile apps, embedded apps, you name it.
+You know Jenkins, so you know what that is like --- finding the right set of plugins, designing the CD process, writing pipeline definitions, and so on.
+This is both the strength and the weakness of Jenkins.
 
-But with Kubernetes lies an unique opportunity. It defines the structure and high-level constructs that we can leverage through Jenkins. When we integrate Kubernetes and Jenkins together, developers need not be familiar with how best to do CD on Kubernetes (most people are not) nor do they need to be familiar with Jenkins Pipeline (most people are not). This much better ease of use can make Kubernetes itself a much more attractive platform, and make Jenkins a de-facto CI/CD platform for Kubernetes. This is the motivation of Jenkins X.
+But with Kubernetes lies an unique opportunity.
+It defines the structure and high-level constructs that we can leverage through Jenkins.
+When we integrate Kubernetes and Jenkins together, developers need not be familiar with how best to do CD on Kubernetes (most people are not) nor do they need to be familiar with Jenkins Pipeline (most people are not).
+This much better ease of use can make Kubernetes itself a much more attractive platform, and make Jenkins a de-facto CI/CD platform for Kubernetes.
+This is the motivation of Jenkins X.
 
 == Reasoning
 
-Many of the reasonings for the design of Jenkins X comes from our experience with Fabric8, where we worked on a similar set of problems. The key points are discussed below.
+Many of the reasonings for the design of Jenkins X comes from our experience with Fabric8, where we worked on a similar set of problems.
+The key points are discussed below.
 
 === Ease of Use
 
 The focus on ease of use for the target audience drives a number of design choices.
 
-First, in order to make Jenkins X approachable, we didn’t want to invent a whole new workflow, concept, or the way of interacting with Jenkins X. Instead, we choose to meet people where they are by adopting existing well-established practices, gluing them together, and amplifying the usefulness of them. For example, UpdateBot reflects the popularity of pull requests as a mechanism to propagate changes. Preview environments amplify the value of pull requests.
+First, in order to make Jenkins X approachable, we didn’t want to invent a whole new workflow, concept, or the way of interacting with Jenkins X.
+Instead, we choose to meet people where they are by adopting existing well-established practices, gluing them together, and amplifying the usefulness of them.
+For example, UpdateBot reflects the popularity of pull requests as a mechanism to propagate changes.
+Preview environments amplify the value of pull requests.
 
-Second, it necessitates Jenkins X to take care of how people go from zero to productivity. Therefore, Jenkins X will pay a lot of attention to how we can make the first encounter smooth. This is why we put such emphasis on the CLI tool 'jx' to provision new Kubernetes cluster, new Jenkins, new environments, and then create or import new applications.
+Second, it necessitates Jenkins X to take care of how people go from zero to productivity.
+Therefore, Jenkins X will pay a lot of attention to how we can make the first encounter smooth.
+This is why we put such emphasis on the CLI tool 'jx' to provision new Kubernetes cluster, new Jenkins, new environments, and then create or import new applications.
 
-We also believe that automation should be a “butler”, providing backstage  invisible assistance to make things go smoothly, as opposed to being front & center of the attention itself. From this perspective comes CLI, bot, etc.
+We also believe that automation should be a “butler”, providing backstage  invisible assistance to make things go smoothly, as opposed to being front & center of the attention itself.
+From this perspective comes CLI, bot, etc.
 
 === CLI as Main Developer Experience
 
-Emphasis on CLI also comes from this thinking. Kubernetes users are used to get things done with the Kubernetes CLI tool, https://kubernetes.io/docs/reference/kubectl/overview/[kubectl]. So we choose to expose Jenkins X data through Kubernetes by using https://kubernetes.io/docs/concepts/api-extension/custom-resources/[its extensibility mechanism], which allows people to use Kubernetes CLI to interact with Jenkins X. Where this is not practical, Jenkins X defines its own CLI in a similar pattern, so that the familiarity with Kubernetes CLI will translate to Jenkins X CLI.
+Emphasis on CLI also comes from this thinking.
+Kubernetes users are used to get things done with the Kubernetes CLI tool, https://kubernetes.io/docs/reference/kubectl/overview/[kubectl].
+So we choose to expose Jenkins X data through Kubernetes by using https://kubernetes.io/docs/concepts/api-extension/custom-resources/[its extensibility mechanism], which allows people to use Kubernetes CLI to interact with Jenkins X.
+Where this is not practical, Jenkins X defines its own CLI in a similar pattern, so that the familiarity with Kubernetes CLI will translate to Jenkins X CLI.
 
 Longer term we hope to add jx into https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/[kubectl as a plugin] to expose more of the capabilities of jx directly into kubectl so that Jenkins X and CI / CD feels a natural part of the kubernetes platform.
 
 === Jenkins in Kubernetes
 
-While powerful, the existing extensibility model of Jenkins is not without challenges. Among other things, the fact that every piece of code needs to run inside a single process makes it difficult to isolate failures, scale better, and replace pieces.
+While powerful, the existing extensibility model of Jenkins is not without challenges.
+Among other things, the fact that every piece of code needs to run inside a single process makes it difficult to isolate failures, scale better, and replace pieces.
 
-So in Jenkins X, as we run Jenkins on Kubernetes, we aim to leverage the underlying capabilities of Kubernetes to solve these problems. For example, in Jenkins X, many features should be developed as independent microservices as add-ons.
+So in Jenkins X, as we run Jenkins on Kubernetes, we aim to leverage the underlying capabilities of Kubernetes to solve these problems.
+For example, in Jenkins X, many features should be developed as independent microservices as add-ons.
 
 This philosophy expands beyond the implementation details of Jenkins X, as discussed in the “helm charts” section. We intend this to become the next extensibility layer for Jenkins X.
 
-Finally, achieving the level of integration and ease of use that we aim requires aggressive omission/demotion/hiding of certain features in Jenkins and addition of many more pieces at the same time. It is no longer an all-purpose Jenkins packaged for a specific platform. it is rather a purpose-built flavor of Jenkins for one purpose. This calls for an extension to Jenkins and a  distribution with a name that’s related but separate from Jenkins, hence "Jenkins X."
+Finally, achieving the level of integration and ease of use that we aim requires aggressive omission/demotion/hiding of certain features in Jenkins and addition of many more pieces at the same time.
+It is no longer an all-purpose Jenkins packaged for a specific platform.
+It is rather a purpose-built flavor of Jenkins for one purpose.
+This calls for an extension to Jenkins and a  distribution with a name that’s related but separate from Jenkins, hence "Jenkins X."
 
 == Backwards Compatibility
 
@@ -200,7 +244,8 @@ The Jenkins X is a distribution of Jenkins and additional software for Kubernete
 
 == Security
 
-From a Jenkins perspective the security model of the Jenkins master inside Jenkins X is that of the regular Jenkins distribution. We hope to make it configurable in the Helm chart to use either basic auth or OAuth. 
+From a Jenkins perspective the security model of the Jenkins master inside Jenkins X is that of the regular Jenkins distribution.
+We hope to make it configurable in the Helm chart to use either basic auth or OAuth.
 
 The kubernetes resources used by Jenkins X will all follow the https://kubernetes.io/docs/admin/authorization/rbac/[Kubernetes RBAC security] approach.
 
@@ -212,15 +257,18 @@ There are no new infrastructure requirements related to this proposal - as we in
 
 Jenkins X will add its own unit tests (e.g. in the jenkins-x/jx repo) together with its own BDD tests for testing the integration of Kubernetes + Jenkins X for CI / CD.
 
-We also intend to use Jenkins X to host the CI / CD environment for Jenkins X; storing most of the results of these in GitHub (e.g. as comments on issues or Pull Requests or as releases in GitHub). Each Pull Request and merge to master should have its status updated via Jenkins X and be linked to the CI / CD pipelines.
+We also intend to use Jenkins X to host the CI / CD environment for Jenkins X; storing most of the results of these in GitHub (e.g. as comments on issues or Pull Requests or as releases in GitHub).
+Each Pull Request and merge to master should have its status updated via Jenkins X and be linked to the CI / CD pipelines.
 
-e.g. each Pull Request on any Jenkins X git repository will run a CI pipeline to test the code change. When Pull Requests are merged to master then the CD pipeline will trigger to release the repository’s artifacts (docker images, binaries, helm charts etc).
+e.g. each Pull Request on any Jenkins X git repository will run a CI pipeline to test the code change.
+When Pull Requests are merged to master then the CD pipeline will trigger to release the repository’s artifacts (docker images, binaries, helm charts etc).
 
 At this early stage of the project there are no specific coverage or performance metric goals but we can figure that out in the community.
 
 == Prototype Implementation
 
-Jenkins X will consist of many repositories. While we can create them in the jenkinsci org, for practical reasons it’s easier to group them in a separate org, just like jenkins-infra and jenkins-docs are.
+Jenkins X will consist of many repositories.
+While we can create them in the jenkinsci org, for practical reasons it’s easier to group them in a separate org, just like jenkins-infra and jenkins-docs are.
 
 We have been putting all the github repositories for Jenkins X in the github organisation https://github.com/jenkins-x[jenkins-x]
 
