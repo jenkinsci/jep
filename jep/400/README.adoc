@@ -62,6 +62,8 @@ endif::[]
 //| Resolution
 //| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
 
+|===
+
 == Abstract
 
 Jenkins X provides a Kubernetes-native CI / CD platform for developing Cloud Native applications.
