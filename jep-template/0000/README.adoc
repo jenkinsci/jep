@@ -138,7 +138,7 @@ Describing any impact on Jenkins project infrastructure.
 
 Include any additions or changes, interactions with exiting components,
 potential instabilities, service-level agreements,
-and responsibilitiesfor continuing maintenance.
+and responsibilities for continuing maintenance.
 Explain the scope of infrastructure changes with sufficient detail
 to allow initial and on-going cost (in both time and money) to be estimated.
 If this proposal will have no impact on infrastructure, this section may simply say:
