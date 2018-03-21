@@ -44,7 +44,7 @@ endif::[]
 //
 //
 | BDFL-Delegate
-| https://github.com/rtyler[Tyler Croy]
+| https://github.com/rtyler[R. Tyler Croy]
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
