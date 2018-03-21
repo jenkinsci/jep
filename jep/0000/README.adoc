@@ -138,7 +138,8 @@ Basically, instead of the now usual `/var/jenkins_home`, we will introduce two s
 
 Here is what it will look like:
 
-```
+[source]
+----
 /evergreen/jenkins/
 ├── home
 │   ├── jobs
@@ -161,7 +162,7 @@ Here is what it will look like:
         ├── META-INF
         ├── WEB-INF
         ├── ...
-```
+----
 
 ===== What to back up
 
@@ -201,12 +202,13 @@ In the context of _Essentials_, we cannot rely on external backups to revert to 
 
 === Scope of the data snapshotting: not a backup system
 
-The practical timeframe where this system is designed to be used is in the next seconds or minutes after an upgrade occurred.
+The practical time frame where this system is designed to be used is in the next seconds or minutes after an upgrade occurred.
 If Jenkins, after it has been restarted, is deemed unhealthy, then an auto-rollback _can_ be initiated.
 
 If a version is proved to be problematic after a few days, the data snapshotting system will **not** be used.
 
-This would be quite impractical because the instance probably generated actual work items during this timeframe.
+This would be quite impractical because the instance probably generated actual
+work items during this time frame.
 So rolling back that much later would risk data loss.
 
 The way we will correct things discovered later will instead be by delivering a new version of Jenkins core or the problematic plugin to fix the issue, thereby leveraging the main goal of _Jenkins Essentials_ to make upgrades seamless.
