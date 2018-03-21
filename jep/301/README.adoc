@@ -216,7 +216,7 @@ orchestration patterns and practices made available by Kubernetes.
 
 The current
 link:https://github.com/jenkinsci/packaging[Jenkins packaging]
-is largely structured around the need to provide a multitide of native Jenkins
+is largely structured around the need to provide a multitude of native Jenkins
 core packages for different platforms.
 
 The two downsides to this multi-variant packaging approach, which necessitate a
