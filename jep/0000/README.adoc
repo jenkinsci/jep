@@ -131,19 +131,15 @@ We will configure Jenkins to use non default values to better separate the more 
 To keep things simple, we will keep having a single Docker volume, but introduce an additional level to separate things that must be snapshotted, and things that do not need to.
 Incidentally, this will help keep `.gitignore` short.
 
-Basically, instead of the now usual `/var/jenkins_home`, we will introduce two subdirectories under `/var/jenkins` (which we will refer to as `$JENKINS_DIR`):
+Basically, instead of the now usual `/var/jenkins_home`, we will introduce two subdirectories under `/evergreen` (which we will refer to as `$EVERGREEN_HOME`):
 
-* `/var/jenkins/home` (=`$JENKINS_HOME`) for to-be-snapshotted part,
-* and `/var/jenkins/var` for the rest.
-
-////
-I'm not a 100% sure about /var/jenkins/var. We could put all those directly under /var/jenkins, but I fear it becomes a bit dirty over time.
-////
+* `/evergreen/jenkins/home` (=`$JENKINS_HOME`) for to-be-snapshotted part, and
+* `/evergreen/jenkins/var` for the rest.
 
 Here is what it will look like:
 
 ```
-/var/jenkins/
+/evergreen/jenkins/
 ├── home
 │   ├── jobs
 │   │   └── the_job # configuration file only
@@ -169,7 +165,7 @@ Here is what it will look like:
 
 ===== What to back up
 
-Thanks to the data segregation explained above, we will be snapshotting (almost) everything under `/var/jenkins/home`.
+Thanks to the data segregation explained above, we will be snapshotting (almost) everything under `/evergreen/jenkins/home`.
 
 We still need to have a `.gitignore` file for some things that either cannot be moved elsewhere, or that we do not want to store in the Git repository.
 As said above, this will likely be improved as we go.
@@ -181,10 +177,10 @@ updates/
 secrets/master.key
 ----
 
-====== about `/var/jenkins/home/plugins`
+====== about `$JENKINS_HOME/plugins`
 
 This directory contains the hpi/jpi files before extraction.
-Ideally, we should be moving this elsewhere under `/var/jenkins/var/plugins`, but it's not doable yet currently (`--pluginsroot` only configures a different location for exploded plugins).
+Ideally, we should be moving this elsewhere under `$EVERGREEN_HOME/jenkins/var/plugins`, but it's not doable yet currently (`--pluginsroot` only configures a different location for exploded plugins).
 
 [[healthcheck]]
 === Checking Jenkins health
