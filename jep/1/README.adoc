@@ -50,7 +50,7 @@ created, submitted, reviewed, finalized, and maintained.
 
 JEP stands for Jenkins Enhancement Proposal.
 A JEP is a design document that
-describes a new feature or aspect of Jenkins itself, or Jenkins project processes or environment.
+describes a new feature or aspect of Jenkins itself, or Jenkins project, plugin, processes or environment.
 A JEP provides a concise technical specification of the feature,
 describes the motivation for the change,
 and discusses the rationale behind the design.
