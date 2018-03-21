@@ -67,47 +67,45 @@ endif::[]
 
 link:https://github.com/jenkinsci/jep/tree/master/jep/300:[Jenkins Essentials], and more specifically its link:https://github.com/jenkinsci/jep/tree/master/jep/301:[Evergreen] _component_, aims at providing an link:https://github.com/jenkinsci/jep/tree/master/jep/300#auto-update[automatically updating distribution] of Jenkins.
 
-Continuous Delivery is about making small incremental changes, making failures much more easily recoverable. In the context here, it means we need to be able to seamlessly upgrade Jenkins, _but also_ roll back to the previously running version if an upgrade goes wrong.
-As Jenkins does not support downgrading alone, we need to introduce a system that will enable that auto-downgrade capability.
-
-This document outlines the design of the snapshotting system we plan to use.
+Continuous Delivery is about making small incremental changes, making failures much more easily recoverable. In the context here, it means Jenkins Essentials must to be able to seamlessly upgrade Jenkins, _but also_ roll back to the previously running version if an upgrade goes wrong.
+As Jenkins does not support downgrading alone, this document introduces the snapshotting system that which enables that auto-downgrade capability.
 
 == Specification
 
-_Evergreen_ works with two main components: Jenkins itself, and what we call the evergreen-client.
+_Evergreen_ works with two main components: Jenkins itself, and the `evergreen-client`.
 
-=== Upgrading & downgrading
+=== Upgrading and downgrading
 
-Once an evergreen client has been instructed to perform an upgrade, it is responsible for the following operations:
+Once an `evergreen client` has been instructed to perform an upgrade, it is responsible for the following operations:
 
-1. (If needed) Initialize the git repository.
-2. Stop Jenkins
-3. Take a snapshot (see <<snapshot>> below)
-4. Perform the instructed upgrade to the given Essentials BOM
-footnote:[Bill Of Materials: this format is currently being designed, but will list everything constituting a version of Essentials: WAR and exact versions of all plugins]
-5. Start new Jenkins version and check Jenkins state (see below <<healthcheck>>).
-6. If a rollback is decided:
+. (If needed) Initialize the git repository.
+. Stop Jenkins
+. Take a snapshot (see <<snapshot>> below)
+. Perform the instructed upgrade to the given Essentials BOM footnote:[Bill Of Materials: this format is currently being designed, but will list everything constituting a version of Essentials: WAR and exact versions of all plugins]
+. Start new Jenkins version and check Jenkins state (see below <<healthcheck>>).
+. If a rollback is decided:
 .. Take a snapshot footnote:[this way, if new files were created, we don't just delete them in an unrecoverable way when going back to the previous snapshot].
 .. Roll back to the previous data snapshot and Essentials BOM version.
 Doing so, we will create an actual new commit using `revert` (i.e. avoid `git reset --hard HEAD~`), to keep a durable track of where we went through, accessible through `git log`.
 .. Start (previous) Jenkins version
 // what if starting the previous version doesn't work either?
-7. Report the outcome to the Essentials backend.
+. Report the outcome to the Essentials backend.
 
 [[snapshot]]
 ==== Take a snapshot
 
-We use `git` for this purpose.
-The intent is to have everything not ignored in the index.
-In other words, `git status` just after a SNAPSHOT should be in the `nothing to commit, working tree clean` state.
+Behind the scenes, this system uses `git` for the purpose of snapshotting, excluding everything not ignored by `.gitignore` in Git's index.
+In other words, `git status` just after a **snapshot** action, would read: `nothing to ocmmit. working tree clean`
 
-We will *not* snapshot data that is too big or does not make sense to store.
-We will configure Jenkins in a way that physically separates as much as possible the things that must be snapshotted, and things that will not (see <<data_segregation>> for details).
+This system is **not** responsible for snapshotting data which is too large or is not sensible to store.
+To support snapshotting, Jenkins is configured in a way that physically separates as much as possible between those files which must be snapshotted, and those which must not. See <<data_segregation>> for more details below.
 
 ////
 I think .gitignore content must be designed to be able to evolve over time.
 To allow more flexibility, I think the content should be associated between an essentials release/bom to a given .gitignore content.
 ////
+
+An manual example of the process can be visualized with the following:
 
 . Update `.gitignore` content with current Essentials release.
 . `git add --all`
@@ -124,19 +122,25 @@ We need to finish up the work on the BOM to be more precise here.
 ====
 
 [[data_segregation]]
-===== Segregate configuration from binaries, variable build data, logs...
+===== Segregating configuration from binaries, build data, logs, etc
 
-We will configure Jenkins to use non default values to better separate the more static and critically important things that must be snapshotted, like the configuration for jobs, or for Jenkins itself, from the more fluctuating data like build data, workspaces, exploded content for WAR or plugins, etc.
+To support snapshotting only appropriate files, Jenkins must be configured with a few non-default values to better separate the more static, and critically important, files which must be preserved between upgrades.
+These files include:
 
-To keep things simple, we will keep having a single Docker volume, but introduce an additional level to separate things that must be snapshotted, and things that do not need to.
-Incidentally, this will help keep `.gitignore` short.
+* Jenkins global configuration
+* Job/Pipeline configuration
 
-Basically, instead of the now usual `/var/jenkins_home`, we will introduce two subdirectories under `/evergreen` (which we will refer to as `$EVERGREEN_HOME`):
+Compared to the more ephemeral files, such as:  build data, workspaces, exploded plugin files, and exploded core files.
+*
+To keep things simple, Evergreen uses a single Docker volume, but introduces an additional level to separate files that must be snapshotted, and those which don't require snapshotting.
+Incidentally, this keeps `.gitignore` short.
 
-* `/evergreen/jenkins/home` (=`$JENKINS_HOME`) for to-be-snapshotted part, and
+Basically, instead of the typical `/var/jenkins_home`, Evergreen introduces two subdirectories under `/evergreen`, referred to hereafter as `$EVERGREEN_HOME`.
+
+* `/evergreen/jenkins/home` (=`$JENKINS_HOME`) for to-be-snapshotted content, and
 * `/evergreen/jenkins/var` for the rest.
 
-Here is what it will look like:
+On the filesystem, for example, this would be laid out as such:
 
 [source]
 ----
@@ -164,12 +168,12 @@ Here is what it will look like:
         ├── ...
 ----
 
-===== What to back up
+===== Files to store
 
-Thanks to the data segregation explained above, we will be snapshotting (almost) everything under `/evergreen/jenkins/home`.
+Using the data segregation explained above, Evergreen snapshots _almost_  everything under `/evergreen/jenkins/home`.
 
-We still need to have a `.gitignore` file for some things that either cannot be moved elsewhere, or that we do not want to store in the Git repository.
-As said above, this will likely be improved as we go.
+Evergreen must have a `.gitignore` file for some files that either cannot be moved elsewhere, or that should not be stored in the Git repository.
+As mentioned above, this file will likely need to be iterated upon as needs change:
 
 [source,gitignore,title=.gitignore]
 ----
@@ -178,40 +182,45 @@ As said above, this will likely be improved as we go.
 /secrets/master.key
 ----
 
-====== about `$JENKINS_HOME/plugins`
 
-This directory contains the hpi/jpi files before extraction.
-Ideally, we should be moving this elsewhere under `$EVERGREEN_HOME/jenkins/var/plugins`, but it's not doable yet currently (`--pluginsroot` only configures a different location for exploded plugins).
+Regarding `$JENKINS_HOME/plugins`, this directory contains the hpi/jpi files before extraction.
+Ideally, Evergreen would move this elsewhere under `$EVERGREEN_HOME/jenkins/var/plugins`, but this is currently not yet doable, as
+`--pluginsroot` only configures a different location for exploded plugins.
 
 [[healthcheck]]
 === Checking Jenkins health
 
-From the perspective of this proposal, this is out of scope.
-But the outer _controller_ of the upgrade, the evergreen client, will need a way to decide if a rollback must be triggered or not.
+From the perspective of this proposal, health checking Jenkins itself is out of scope.
+But the  _driver_ of the upgrade, `evergreen client`, requires a way to determine whether or not a rollback should be executed.
 
-For reference, the dedicated JIRA issue for this is link:https://issues.jenkins-ci.org/browse/JENKINS-50294[JENKINS-50294].
+For reference, the Jira issue tracking this design work is: link:https://issues.jenkins-ci.org/browse/JENKINS-50294[JENKINS-50294].
 
 == Motivation
 
 Jenkins has never supported downgrading by itself, and it's unlikely the core constructs will change in this regard anytime soon.
 The official way to revert an upgrade if something went wrong is to restore a previous backup.
 
-In the context of _Essentials_, we cannot rely on external backups to revert to the _N-1_ version: this would require some manual user intervention, which is clearly not the user experience _Essentials_ wants to provide.
+In the context of _Essentials_, it cannot rely on external backups to revert to the _N-1_ version as this would require regular manual user intervention, which is clearly not the desired user experience.
 
 == Reasoning
 
-=== Scope of the data snapshotting: not a backup system
+=== Scope of the data snapshotting
 
-The practical time frame where this system is designed to be used is in the next seconds or minutes after an upgrade occurred.
+
+Snapshotting data is **not** a backup system.
+
+The practical time frame where the snapshots are designed to be used is within the seconds or minutes after an upgrade has been initiated.
 If Jenkins, after it has been restarted, is deemed unhealthy, then an auto-rollback _can_ be initiated.
 
-If a version is proved to be problematic after a few days, the data snapshotting system will **not** be used.
+If a version is determined to be problematic after a few days, the data
+snapshotting system will **not** be used. After a longer time period, where
+Jenkins has executed user-motivated workloads, generating new data, the
+snapshots can no longer be treated as a source of truth. Therefore rolling back
+outside of the "upgrade window" would risk data loss.
 
-This would be quite impractical because the instance probably generated actual
-work items during this time frame.
-So rolling back that much later would risk data loss.
-
-The way we will correct things discovered later will instead be by delivering a new version of Jenkins core or the problematic plugin to fix the issue, thereby leveraging the main goal of _Jenkins Essentials_ to make upgrades seamless.
+Errors discovered outside of this "upgrade window" should instead be resolved
+by new changes to Jenkins core, or an erring plugin, in order to solve the
+user's issue.
 
 === Why Git
 
@@ -220,23 +229,20 @@ But this was discounted because _Essentials_ vision is about providing an link:h
 As per the link:https://github.com/jenkinsci/jep/tree/71d9391744c8cc7d6595805f7fdd327eedf6811a/jep/300#target-audience[targeted audience], we obviously do not want to expect _Essentials_ users to be system experts able to set up a dedicated filesystem to operate Jenkins.
 And even with system expert, doing so would not make Essentials a very easy and quick to use distribution of Jenkins.
 
-Git offers in this matter a powerful user-space tool that allows us to version,
+Git offers in this matter a powerful user-space tool that allows Evergreen to version,
 and quickly roll back to some previous state if need be.
 
 Git is also a very common tool nowadays for developers,
-hence it will help making Essentials more accessible to contributors.
+hence it makes Evergreen more accessible to contributors.
 
 === Why not use compatibleSinceVersion metadata
 
-[TIP]
-====
-A given plugin can indicate a link:https://jenkinsci.github.io/maven-hpi-plugin/hpi-mojo.html#compatibleSinceVersion[`compatibleSinceVersion`] information, i.e. what is "the oldest version [...] configuration-compatible with.". For example:
+For context, a plugin can indicate a link:https://jenkinsci.github.io/maven-hpi-plugin/hpi-mojo.html#compatibleSinceVersion[`compatibleSinceVersion`] information, i.e. what is "the oldest version [...] configuration-compatible with.". For example:
 
 * a plugin is being upgraded from version `1.4` to `1.5`
 * it specifies `compatibleSinceVersion`=`1.5`
 
 In such case, *if* this plugin wrote configuration files, this means you cannot safely roll back to the `1.4` version of the plugin.
-====
 
 Conversely, with the following situation:
 
@@ -245,14 +251,14 @@ Conversely, with the following situation:
 
 In such case, _even_ if the plugin did write its updated configuration files on the disk, we can expect being able to safely rollback the plugin to the previous `1.4` version, _while leaving_ the configuration file content that was just updated for `1.5` version.
 
-We decided to not specifically handle this situation for now.
-In other words, we *will* also roll back those files.
+This situation is not specifically handled in this design.
+In other words, Evergreen *will* also roll back those files.
 
 For two reasons:
 
 * this looks like an _optimization_.
 Hence as such, this is probably premature to try and be very smart with the way the downgrade will work ;
-* we need to first work on the link:https://issues.jenkins-ci.org/browse/JENKINS-49806[JEP to define criteria for selecting plugins to include in Jenkins Essentials], so that we have clear process and automated tests in place to check for correct `compatibleSinceVersion` usage.
+* First, work must be done on the link:https://issues.jenkins-ci.org/browse/JENKINS-49806[JEP to define criteria for selecting plugins to include in Jenkins Essentials], so that there is a clear process and automated tests in place to check for correct `compatibleSinceVersion` usage.
 
 == Backwards Compatibility
 
@@ -263,13 +269,13 @@ There are no backwards compatibility concerns related to this proposal.
 === Secrets
 
 Versioning secrets should not be an issue per se, as the data snapshotting system is designed to be local to the running instance.
-In other words, the Git repository data will never be pushed _outside_ by the _Essentials_ code, so no data leak is normally expected from this side.
+The Git repository data will never be pushed _outside_ by the _Essentials_ code, so no data leak is normally expected from this side.
 
-But as users may have the unfortunate idea to push that repository elsewhere, not being aware they are leaking all secrets, we will conservatively add `secrets/master.key` to the `.gitignore` file.
+As users may have the unfortunate idea to push that repository elsewhere, not being aware they could leak secrets, Evergreen conservatively adds `secrets/master.key` to the `.gitignore` file.
 
 === Man In The Middle
 
-The main issue here is that an attacker could for instance instruct the evergreen client to ignore everything (by putting `*` in `.gitignore`), hence make it impossible to roll back.
+The main issue here is that an attacker could for instance instruct the `evergreen client` to ignore everything (by putting `*` in `.gitignore`), hence make it impossible to roll back.
 
 But this would mean someone was able to talk with connected instances.
 So even if this is a valid concern, this is considered a larger scope issue that will be addressed through link:https://issues.jenkins-ci.org/browse/JENKINS-49844[JENKINS-49844].
@@ -288,30 +294,30 @@ Creating/defining this data clearly requires human work, but the following check
 
 === Upgrading/downgrading
 
-Before delivering updates on real connected instances, we must test at least the following scenarios.
+Before delivering updates on real connected instances, testing must occur in at least the following scenarios:
 
 * Apply the upgrade or downgrade, then check the instance is _running fine_
 footnote:[See again <<healthcheck>>]
 
-We will need to develop ad-hoc testing tools to be able to automatically assess the health of a Jenkins Essentials instance after an upgrade or a downgrade.
+Ad-hoc testing tools should be developed to be able to automatically assess the health of a Jenkins Essentials instance after an upgrade or a downgrade.
 
 Automatically giving some kind of health grade to a running instance is definitely a critical part of Jenkins Essentials.
 Detailing this here is out of scope for this proposal.
-It is however highly desirable that we centralize this logic and use it both during automated tests, and in production for the evergreen-client to automatically analyze if a product instance is healthy or is not (and decide to roll back or not, for the current matter here).
+This logic however, should be centralized and used in both during automated tests, and in production for the evergreen-client to automatically analyze if a product instance is healthy or is not (and decide to roll back or not, for the current matter here).
 
-We will leverage the link:https://github.com/jenkinsci/acceptance-test-harness[Jenkins Acceptance Test Harness project] for this purpose.
+Evergreen should leverage the link:https://github.com/jenkinsci/acceptance-test-harness[Jenkins Acceptance Test Harness project] for this purpose.
 
 === Leveraging Telemetry and live instances data
 
 _Essentials_ is a link:https://github.com/jenkinsci/jep/tree/master/jep/300#connected[connected] system.
 That means we are able to know exactly what versions are running in production.
-We will leverage this to test the *actual* possible upgrade paths.
+This information must be used to test the *actual* possible upgrade paths.
 
-Along the way, that also means we will continuously be able to adjust and enrich what is reported by the __Evergreen client__s from live instances to improve the associated combinations of tests we run.
+Along the way, that also means Evergreen should continuously be able to adjust and enrich what is reported by the __Evergreen client__s from live instances to improve the associated combinations of tests we run.
 
 == Prototype Implementation
 
-This will be implemented in https://github.com/jenkins-infra/evergreen.
+A prototype implementation is available in the link:https://github.com/jenkins-infra/evergreen[jenkins-infra/evergreen] repository.
 
 == References
 
