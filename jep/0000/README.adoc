@@ -172,9 +172,9 @@ As said above, this will likely be improved as we go.
 
 [source,gitignore,title=.gitignore]
 ----
-plugins/
-updates/
-secrets/master.key
+/plugins/
+/updates/
+/secrets/master.key
 ----
 
 ====== about `$JENKINS_HOME/plugins`
