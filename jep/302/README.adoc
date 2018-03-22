@@ -94,7 +94,7 @@ Doing so, we will create an actual new commit using `revert` (i.e. avoid `git re
 ==== Take a snapshot
 
 Behind the scenes, this system uses `git` for the purpose of snapshotting, excluding everything not ignored by `.gitignore` in Git's index.
-In other words, `git status` just after a **snapshot** action, would read: `nothing to ocmmit. working tree clean`
+In other words, `git status` just after a **snapshot** action, would read: `nothing to commit, working tree clean`
 
 This system is **not** responsible for snapshotting data which is too large or is not sensible to store.
 To support snapshotting, Jenkins is configured in a way that physically separates as much as possible between those files which must be snapshotted, and those which must not. See <<data_segregation>> for more details below.
