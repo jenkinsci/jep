@@ -26,6 +26,9 @@
 | link:301/[JEP-301: Evergreen packaging for Jenkins Essentials]
 
 | Draft :speech_balloon:
+| link:302/[JEP-302: Evergreen snapshotting data safety system]
+
+| Draft :speech_balloon:
 | link:400/[JEP-400: Jenkins X: Jenkins for Kubernetes CD]
 
 |===
