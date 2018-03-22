@@ -68,15 +68,15 @@ endif::[]
 link:https://github.com/jenkinsci/jep/tree/master/jep/300:[Jenkins Essentials], and more specifically its link:https://github.com/jenkinsci/jep/tree/master/jep/301:[Evergreen] _component_, aims at providing an link:https://github.com/jenkinsci/jep/tree/master/jep/300#auto-update[automatically updating distribution] of Jenkins.
 
 Continuous Delivery is about making small incremental changes, making failures much more easily recoverable. In the context here, it means Jenkins Essentials must to be able to seamlessly upgrade Jenkins, _but also_ roll back to the previously running version if an upgrade goes wrong.
-As Jenkins does not support downgrading alone, this document introduces the snapshotting system that which enables that auto-downgrade capability.
+As Jenkins does not support downgrading alone, this document introduces the snapshotting system which enables that auto-downgrade capability.
 
 == Specification
 
-_Evergreen_ works with two main components: Jenkins itself, and the `evergreen-client`.
+_Evergreen_ works with two main components: Jenkins itself, and the _evergreen-client_.
 
 === Upgrading and downgrading
 
-Once an `evergreen client` has been instructed to perform an upgrade, it is responsible for the following operations:
+Once an _evergreen client_ has been instructed to perform an upgrade, it is responsible for the following operations:
 
 . (If needed) Initialize the git repository.
 . Stop Jenkins
@@ -191,7 +191,7 @@ Ideally, Evergreen would move this elsewhere under `$EVERGREEN_HOME/jenkins/var/
 === Checking Jenkins health
 
 From the perspective of this proposal, health checking Jenkins itself is out of scope.
-But the  _driver_ of the upgrade, `evergreen client`, requires a way to determine whether or not a rollback should be executed.
+But the  _driver_ of the upgrade, _evergreen client_, requires a way to determine whether or not a rollback should be executed.
 
 For reference, the Jira issue tracking this design work is: link:https://issues.jenkins-ci.org/browse/JENKINS-50294[JENKINS-50294].
 
@@ -212,15 +212,11 @@ Snapshotting data is **not** a backup system.
 The practical time frame where the snapshots are designed to be used is within the seconds or minutes after an upgrade has been initiated.
 If Jenkins, after it has been restarted, is deemed unhealthy, then an auto-rollback _can_ be initiated.
 
-If a version is determined to be problematic after a few days, the data
-snapshotting system will **not** be used. After a longer time period, where
-Jenkins has executed user-motivated workloads, generating new data, the
-snapshots can no longer be treated as a source of truth. Therefore rolling back
-outside of the "upgrade window" would risk data loss.
+If a version is determined to be problematic after a few days, the data snapshotting system will **not** be used.
+After a longer time period, where Jenkins has executed user-motivated workloads, generating new data, the snapshots can no longer be treated as a source of truth.
+Therefore rolling back outside of the "upgrade window" would risk data loss.
 
-Errors discovered outside of this "upgrade window" should instead be resolved
-by new changes to Jenkins core, or an erring plugin, in order to solve the
-user's issue.
+Errors discovered outside of this "upgrade window" should instead be resolved by new changes to Jenkins core, or an erring plugin, in order to solve the user's issue.
 
 === Why Git
 
@@ -275,7 +271,7 @@ As users may have the unfortunate idea to push that repository elsewhere, not be
 
 === Man In The Middle
 
-The main issue here is that an attacker could for instance instruct the `evergreen client` to ignore everything (by putting `*` in `.gitignore`), hence make it impossible to roll back.
+The main issue here is that an attacker could for instance instruct the _evergreen client_ to ignore everything (by putting `*` in `.gitignore`), hence make it impossible to roll back.
 
 But this would mean someone was able to talk with connected instances.
 So even if this is a valid concern, this is considered a larger scope issue that will be addressed through link:https://issues.jenkins-ci.org/browse/JENKINS-49844[JENKINS-49844].
@@ -303,7 +299,7 @@ Ad-hoc testing tools should be developed to be able to automatically assess the 
 
 Automatically giving some kind of health grade to a running instance is definitely a critical part of Jenkins Essentials.
 Detailing this here is out of scope for this proposal.
-This logic however, should be centralized and used in both during automated tests, and in production for the evergreen-client to automatically analyze if a product instance is healthy or is not (and decide to roll back or not, for the current matter here).
+This logic however, should be centralized and used in both during automated tests, and in production for the _evergreen-client_ to automatically analyze if a product instance is healthy or is not (and decide to roll back or not, for the current matter here).
 
 Evergreen should leverage the link:https://github.com/jenkinsci/acceptance-test-harness[Jenkins Acceptance Test Harness project] for this purpose.
 
