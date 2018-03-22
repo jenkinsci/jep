@@ -37,9 +37,8 @@ endif::[]
 | https://issues.jenkins-ci.org/browse/JENKINS-49406[JENKINS-49406]
 //
 //
-// Uncomment if there will be a BDFL delegate for this JEP.
-//| BDFL-Delegate
-//| :bulb: Link to github user page :bulb:
+| BDFL-Delegate
+| https://github.com/rtyler[R. Tyler Croy]
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
