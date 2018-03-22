@@ -42,7 +42,7 @@ endif::[]
 //
 //
 // Uncomment if there will be a BDFL delegate for this JEP.
-/| BDFL-Delegate
+//| BDFL-Delegate
 //| https://github.com/ewelinawilkosz[Ewelina Wilkosz]
 //
 //
