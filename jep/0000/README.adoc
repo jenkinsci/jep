@@ -132,9 +132,10 @@ key. This provides the Authentication Service enough information to verify that
 the client is authentic.
 
 Once the client has been deemed authentic, the Authentication Service will
-generate an encrypted link:https://jwt.io[JSON Web Token]
-which contains a **14 day expiry** for the <<claims>> contained within the
-token. Reasoning for <<jwt>> can be found below.
+generate a link:https://jwt.io[JSON Web Token] (JWT) which must be encrypted
+with a pre-shared key (PSK), known to the other backend services, but not the
+client. Additionally, JWT must contains a **14 day expiry** for the <<claims>>
+contained within the token. Reasoning for <<jwt>> can be found below.
 
 The client must include this encrypted JWT in subsequent HTTP requests under
 the `Authorization` header.
