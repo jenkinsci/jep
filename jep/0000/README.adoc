@@ -75,12 +75,6 @@ Evergreen hosted services layer.
 
 == Specification
 
-[CAUTION]
-====
-This specification is still in flux and should be considered a work in progress
-until a prototype has been successfully demonstrated
-====
-
 This specification describes a *non-interactive* registration and
 authentication mechanism to be performed by the `evergreen-client`, the reasons
 why <<non-interactive>> is an important aspect of this proposal can be found
@@ -104,8 +98,7 @@ and return the UUID to the client.
 Once this exchange has successfully completed, the client should be in a
 "registered" state.
 
-
-[reg-diagram]
+[[reg-diagram]]
 .Registration
 [source]
 ----
@@ -140,7 +133,7 @@ contained within the token. Reasoning for <<jwt>> can be found below.
 The client must include this encrypted JWT in subsequent HTTP requests under
 the `Authorization` header.
 
-[login-diagram]
+[[login-diagram]]
 .Login
 [source]
 ----
@@ -253,8 +246,7 @@ distribution system.
 
 Some of the specific aspects of this design are discussed further below.
 
-
-[non-interactive]
+[[non-interactive]]
 === Non-interactive
 
 * No user/password login for an administrator
@@ -331,7 +323,6 @@ backwards compatibility concerns.
 
 == Security
 
-
 Securely registering and authenticating clients is the primary motivation and
 consequence of this desig. This section is intentionally empty as security
 concerns are manifest in all other sections of this document.
@@ -385,13 +376,4 @@ JEPs which will not include code changes may omit this section.
 
 == References
 
-[TIP]
-====
-Provide links to any related documents.
-====
-
-[IMPORTANT]
-====
-When moving this JEP from a Draft to "Accepted" or "Final" state,
-include links to the pull requests and mailing list discussions which were involved in the process.
-====
+* link:https://groups.google.com/d/msgid/jenkinsci-dev/20180324020555.p26pfpln3j722m5r%40blackberry.coupleofllamas.com[Initial discussion thread on jenkinsci-dev@]
