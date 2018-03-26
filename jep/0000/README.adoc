@@ -166,7 +166,7 @@ database         service           service              client
    |               |                  |                    |
 ----
 
-The generated JWTs are _expected_ to expiry, and the client must gracefully
+The generated JWTs are _expected_ to expire, and the client must gracefully
 handle expired tokens. In the case of an expired JWT, the client must repeat
 the <<login-diagram, Login flow>> once again, before re-attempting its original
 request.
@@ -209,7 +209,7 @@ database         service           service              client
    |               |                  |                    |
 -----
 
-[claims]
+[[claims]]
 === Claims
 
 JSON Web Tokens (JWT) include the notion of "claims" which indicate to the
@@ -261,7 +261,7 @@ Some of the specific aspects of this design are discussed further below.
 * Ensures not-yet-setup instances are still included in the Evergreen
   distribution system
 
-[jwt]
+[[jwt]]
 == JSON Web Tokens
 
 link:https://jwt.io[JSON Web Tokens]
@@ -371,6 +371,3 @@ Provide links to any related documents.
 When moving this JEP from a Draft to "Accepted" or "Final" state,
 include links to the pull requests and mailing list discussions which were involved in the process.
 ====
-
-
-
