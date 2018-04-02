@@ -1,0 +1,425 @@
+= JEP-0000: Evergreen Client Registration and Authentication
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 0000
+
+| Title
+| Evergreen Client Registration and Authentication
+
+| Sponsor
+| link:https://github.com/rtyler[R. Tyler Croy]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2018-03-21
+//
+//
+| JIRA
+| https://issues.jenkins-ci.org/browse/JENKINS-49810[JENKINS-49810], https://issues.jenkins-ci.org/browse/JENKINS-50347[JENKINS-50347]
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+| BDFL-Delegate
+| link:https://github.com/rtyler[R. Tyler Croy]
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+| Requires
+| JEP-300, JEP-301
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+A major component of the
+link:https://github.com/jenkinsci/jep/blob/master/jep/300[Jenkins Essentials]
+initiative is the "connected-ness" of an instance. This entails sending
+telemetry and receiving updates from the Evergreen hosted services layer. In
+order to safely, and correctly, provide these services, each instance must have
+a unique **identity** and a means of truthfully conveying information to the
+Evergreen hosted services layer.
+
+
+== Specification
+
+This specification describes a *non-interactive* registration and
+authentication mechanism to be performed by the `evergreen-client`, the reasons
+why <<non-interactive>> is an important aspect of this proposal can be found
+below.
+
+The `evergreen-client` must _initiate_ the registration process by generating
+link:https://nodejs.org/dist/latest-v9.x/docs/api/crypto.html#crypto_class_ecdh[ECDH]
+public and private keys. Similar to SSH-based public/private key
+authentication, the public key will be shared with the Evergreen hosted
+services layer, while the private key must be maintained entirely confidential
+and unique to that Jenkins Essentials instance.
+
+
+Once the public/private key pair has been generated, the `evergreen-client`
+must send a `registration` request which includes, but is not limited to, the
+public key. The Registration Service's responsibility is to persist the
+client's public key, generate a new UUID footnoteref:[uuid, https://en.wikipedia.org/wiki/Uuid],
+and return the UUID to the client.
+
+
+Once this exchange has successfully completed, the client should be in a
+"registered" state.
+
+[[reg-diagram]]
+.Registration
+[source]
+----
+               registration        status              evergreen
+database         service           service              client
+   |               |                  |                    |
+   |               |                  |    <generate ECDH pub/priv keypair>
+   |               |                  |                    |
+   |               |     PUT with generated public key     |
+   | store pub/key |<--------------------------------------o
+   |   and uuid    |                  |                    |
+   |<--------------o                  |                    |
+   o-----/ok/----->|            HTTP 201 Created           |
+   |               |          (respond with uuid)          |
+   |               o-------------------------------------->|
+   |               |                  |                    |
+----
+
+
+Clients in a registered state must log into the authentication service in order
+to access any other resources in the Evergreen hosted service layer. A `login`
+request consists of the UUID footnoteref:[uuid], signed by the client's private
+key. This provides the Authentication Service enough information to verify that
+the client is authentic.
+
+Once the client has been deemed authentic, the Authentication Service will
+generate a link:https://jwt.io[JSON Web Token] (JWT) which must be encrypted
+with a pre-shared key (PSK), known to the other backend services, but not the
+client. Additionally, JWT must contain a **14 day expiry** for the <<claims>>
+contained within the token. Reasoning for <<jwt>> can be found below.
+
+The client must include this encrypted JWT in subsequent HTTP requests under
+the `Authorization` header.
+
+[[login-diagram]]
+.Login
+[source]
+----
+              authentication       status              evergreen
+database         service           service              client
+   |               |                  |                    |
+   |               |       PUT uuid signed by private key  |
+   |    get uuid   |<--------------------------------------o
+   |   and pubkey  |                  |                    |
+   |<--------------o                  |                    |
+   o-------------->|                  |                    |
+   |       <verify signature>         |                    |
+   |     <generate JWT enc token>     |                    |
+   |               |            HTTP 200 Ok                |
+   |               |         (respond with JWT)            |
+   |               o-------------------------------------->|
+   |               |                  |                    |
+   |               |                  |    Status request  |
+   |               |                  |      (with JWT)    |
+   |               |                  |<-------------------o
+   |               |                  |      HTTP 200      |
+   |               |                  o------------------->|
+   |               |                  |                    |
+----
+
+The generated JWTs are _expected_ to expire, and the client must gracefully
+handle expired tokens. In the case of an expired JWT, the client must repeat
+the <<login-diagram, Login flow>> once again, before re-attempting its original
+request.
+
+The client should perform an exponential backoff if it is unable to
+successfully repeat the Login flow in order to avoid client or service-side
+errors leading to cascading failures.
+
+
+[expiry-diagram]
+.JWT Expiry
+[source]
+-----
+              authentication       status              evergreen
+database         service           service              client
+   |               |                  |                    |
+   |               |                  |    Status request  |
+   |               |                  |      (with JWT)    |
+   |               |                  |<-------------------o
+   |               |                  |      HTTP 401      |
+   |               |                  o------------------->|
+   |               |                  |             <re-initiate login>
+   |               |                  |                    |
+   |               |       PUT uuid signed by private key  |
+   |    get uuid   |<--------------------------------------o
+   |   and pubkey  |                  |                    |
+   |<--------------o                  |                    |
+   o-------------->|                  |                    |
+   |       <verify signature>         |                    |
+   |     <generate JWT enc token>     |                    |
+   |               |            HTTP 200 Ok                |
+   |               |         (respond with JWT)            |
+   |               o-------------------------------------->|
+   |               |                  |                    |
+   |               |                  |    Status request  |
+   |               |                  |      (with JWT)    |
+   |               |                  |<-------------------o
+   |               |                  |      HTTP 200      |
+   |               |                  o------------------->|
+   |               |                  |                    |
+-----
+
+[[claims]]
+=== Claims
+
+JSON Web Tokens (JWT) include the notion of "claims" which indicate to the
+backend services whether the client possessing the token is authorized to
+access that particular service.
+
+Within the scope of this document, the Authentication Service must include the
+"default" claims expected for clients in the JWT.
+
+In this specification there is not any specific claims included in the design,
+service/client claims should be considered subject to future designs and
+implementations.
+
+=== Client Re-keying
+
+This specification does not include a design for clients to re-key and
+transition from an older to a newer key. Such as in the case of a vulnerability
+disclosure, algorithm change, or for other reasons. This topic **must** be
+discussed in a future JEP but is not considered within the scope of this
+document.
+
+
+=== Token Revocation
+
+This document doesn't specify the requirements or need for *individual* JWT
+revocation, should that need arise, a future design will be required. For _en
+masse_ token revocation, in such cases as a compromise or other events which
+necessitate all tokens be revoked, the backend services will need to have a
+coordinated deployment to rotate their Pre-Shared Key in order to invalidate
+all active JSON Web Tokens.
+
+== Motivation
+
+The motivation for this design should be fairly self evident. The Evergreen
+distribution system requires a means of uniquely identifying clients and
+managing their interactions with the various backend services. Not only must
+these clients be uniquely identified, it's important that clients cannot
+maliciously, or accidentally forge requests, on behalf of other clients.
+
+
+== Reasoning
+
+Much of this design is influenced by large-scale Client/Service registration
+and authentication systems familiar to the
+link:https://github.com/rtyler[author]
+from previous projects. A key goal in this design is to provide a secure means
+of authentication, and avoid an Authentication Service becoming a single point
+of failure in the backend services necessary to power the Evergreen
+distribution system.
+
+Some of the specific aspects of this design are discussed further below.
+
+[[non-interactive]]
+=== Non-interactive
+
+* No user/password login for an administrator
+* Ensures not-yet-setup instances are still included in the Evergreen
+  distribution system
+
+[[jwt]]
+== JSON Web Tokens
+
+link:https://jwt.io[JSON Web Tokens]
+have a number of useful features, but by far the most useful feature of JWTs is
+that they are *stateless*. This ensures that once the initial token negotiation
+(see: <<login-diagram, the login diagram>>)
+has completed, a JWT may be passed in _any_ subsequent service request without
+requiring the involvement of the Authentication Service or the database which
+stores UUIDs and public keys.
+
+Of secondary importance with JWT is the concept of <<claims>>, which allow
+different clients to be given differing levels of access control to the backend
+services. This is expected to be more useful in later stages of development for
+the Evergreen distribution system when clients using an "alpha" or "beta"
+channel receive access to different backend services that more generally
+available clients will not yet have access to.
+
+
+=== JWT Expiry
+
+Tokens, keys, or authentications without expirations are generally considered
+an "anti-pattern", potentially leading to insecure applications for which users
+have an "infinite login." Avoiding this is the primary reasoning for JWTs in
+this design to expire after 14 days.
+
+A secondary reasoning is that the expiry, and forcing a client to re-login,
+allows the backend services to re-issue new <<claims>> for the client. Leaving
+room for adjustment in the future to access control levels granted to the
+clients.
+
+
+=== Alternative Approaches
+
+There were no substantial alternative approaches considered in the design of
+this registration and authentication system. In order to remain
+<<non-interactive>>, the notion of a Username/Password combination for
+registration is functionally impractical, if not impossible.
+
+The use of OpenSSH-based public/private keys was considered early on, during
+the "whiteboard stage", but was quickly discarded due to general lack of
+wide-spread library support when compared to <<jwt>>.
+
+==== Jenkins Instance Identity
+
+Jenkins has a built-in concept referred to as
+link:https://wiki.jenkins.io/display/JENKINS/Instance+Identity[Instance Identity]
+which provides a standard mechanism for both uniquely identifying a Jenkins
+installation and permitting permitting asymmetrically-encrypted communications.
+
+In a much earlier iteration of design of the process described in this
+document, re-using this Instance Identity mechanism was considered.
+
+Using the Instance Identity key generated by Jenkins requires a Jenkins
+installation to boot at least once in order to generate the keys. In the case
+of new Jenkins Essentials installations, the first thing that the
+link:https://github.com/jenkinsci/jep/tree/master/jep/301#evergreen-client[evergreen-client]
+is expected to do is check with the Evergreen hosted services layer for the
+latest version of Jenkins Essentials, download the updates, and _then_ start
+Jenkins.
+
+Rather than have a single unprotected/identified route in the
+service backend for bootstrapping new installations, this design chooses a
+separate public/private keypair which can be generated by `evergreen-client`
+to ensure _all_ requests for "updates" from the backend are similar signed and
+registered.
+
+==== JWT HMAC Request Signing
+
+One alternative approach suggested which still relies on <<jwt>> would be to
+use JWT for signing the full requests, rather than treating the JWT as a
+"bearer token."
+
+This approach was rejected as there is little concern with authorized clients
+_forging_ requests, or _replay_ attacks being launched against the Evergreen
+backend service layer. Additionally, JWT HMAC request signing would require key
+distribution _to_ the client rather than simple JWT distribution to the client,
+which adds significant additional key management complexity for little benefit.
+
+As the backend services are all presumed to have equal levels of trust, the
+Pre-Shared Key approach referenced above for the backend services, and an
+opaque bearer token containing claims, is sufficient for the needs of Jenkins
+Essentials at this time.
+
+
+== Backwards Compatibility
+
+There is no previous "Jenkins Essentials registration system" and therefore no
+backwards compatibility concerns.
+
+
+== Security
+
+Securely registering and authenticating clients is the primary motivation and
+consequence of this design. This section is intentionally empty as security
+concerns are manifest in all other sections of this document.
+
+[[tls]]
+=== TLS/SSL
+
+This document makes an assumption that *all* services **must** be only
+accessible via a TLS encrypted channel, like other services currently hosted
+under the
+link:https://jenkins.io/[jenkins.io]
+domain.
+
+=== Certificate Pinning
+
+While this document expects that backend services are served via <<tls>>, it
+doesn't describe additional security enhancements which may come in a future
+design document such as:
+link:https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning[Certificate Pinning]
+
+Certificate pinning would ensure that clients are hard-coded to only trust the
+Evergreen backend service layer, further reducing the potential for
+Man-in-the-Middle attacks. At this point in time however, this is considered
+unnecessary.
+
+
+Another form of Certificate Pinning which may be considered in future designs
+is the use of the `Expect-CT` header, as described
+link:https://scotthelme.co.uk/a-new-security-header-expect-ct/[in this blog post]
+which would require investigation into client-side support for the enforcement
+of the HTTP header.
+
+
+== Infrastructure Requirements
+
+The infrastructure requirements of this document are fundamentally the same as
+the Evergreen hosted service layer's existing, assumed, requirements: a
+container orchestration layer to deploy service containers in (e.g. the
+Registration service) and a PostgreSQL database for application storage.
+
+The specifics of these requirements will be defined in a future
+link:https://github.com/jenkins-infra/iep[Infrastructure Enhancement Proposal].
+
+
+== Testing
+
+Testing of these registration and authentication flows is performed within the
+context of the existing automated testing in the
+link:https://github.com/jenkins-infra/evergreen[jenkins-infra/evergreen]
+repository. This includes the expected amount of unit tests, and full
+acceptance tests which invoke REST endpoints and act as mock clients.
+
+
+== Prototype Implementation
+
+
+The prototype/reference implementation of this work can be found in the
+link:https://github.com/jenkins-infra/evergreen[jenkins-infra/evergreen]
+GitHub repository.
+
+The registration component was introduced in
+link:https://github.com/jenkins-infra/evergreen/pull/37[this pull request].
+
+
+== References
+
+* link:https://groups.google.com/d/msgid/jenkinsci-dev/20180324020555.p26pfpln3j722m5r%40blackberry.coupleofllamas.com[Initial discussion thread on jenkinsci-dev@]
+* link:https://www.owasp.org/index.php/Key_Management_Cheat_Sheet[OWASP key management cheat sheet]
