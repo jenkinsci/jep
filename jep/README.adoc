@@ -29,6 +29,9 @@
 | link:302/[JEP-302: Evergreen snapshotting data safety system]
 
 | Draft :speech_balloon:
+| link:303/[JEP-303: Evergreen Client Registration and Authentication]
+
+| Draft :speech_balloon:
 | link:400/[JEP-400: Jenkins X: Jenkins for Kubernetes CD]
 
 |===
