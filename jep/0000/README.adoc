@@ -127,7 +127,7 @@ the client is authentic.
 Once the client has been deemed authentic, the Authentication Service will
 generate a link:https://jwt.io[JSON Web Token] (JWT) which must be encrypted
 with a pre-shared key (PSK), known to the other backend services, but not the
-client. Additionally, JWT must contains a **14 day expiry** for the <<claims>>
+client. Additionally, JWT must contain a **14 day expiry** for the <<claims>>
 contained within the token. Reasoning for <<jwt>> can be found below.
 
 The client must include this encrypted JWT in subsequent HTTP requests under
@@ -154,7 +154,7 @@ database         service           service              client
    |               |                  |    Status request  |
    |               |                  |      (with JWT)    |
    |               |                  |<-------------------o
-   |               |                  |      HTTP 201      |
+   |               |                  |      HTTP 200      |
    |               |                  o------------------->|
    |               |                  |                    |
 ----
@@ -197,7 +197,7 @@ database         service           service              client
    |               |                  |    Status request  |
    |               |                  |      (with JWT)    |
    |               |                  |<-------------------o
-   |               |                  |      HTTP 401      |
+   |               |                  |      HTTP 200      |
    |               |                  o------------------->|
    |               |                  |                    |
 -----
@@ -356,7 +356,7 @@ backwards compatibility concerns.
 == Security
 
 Securely registering and authenticating clients is the primary motivation and
-consequence of this desig. This section is intentionally empty as security
+consequence of this design. This section is intentionally empty as security
 concerns are manifest in all other sections of this document.
 
 [[tls]]
@@ -376,7 +376,7 @@ design document such as:
 link:https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning[Certificate Pinning]
 
 Certificate pinning would ensure that clients are hard-coded to only trust the
-EVergreen backend service layer, further reducing the potential for
+Evergreen backend service layer, further reducing the potential for
 Man-in-the-Middle attacks. At this point in time however, this is considered
 unnecessary.
 
@@ -401,7 +401,7 @@ link:https://github.com/jenkins-infra/iep[Infrastructure Enhancement Proposal].
 
 == Testing
 
-Testing of these registration and authentication flow is performed within the
+Testing of these registration and authentication flows is performed within the
 context of the existing automated testing in the
 link:https://github.com/jenkins-infra/evergreen[jenkins-infra/evergreen]
 repository. This includes the expected amount of unit tests, and full
