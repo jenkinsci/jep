@@ -266,17 +266,17 @@ let's take a high-level look at how JEP might go.
   feedback, change the proposal, and record the reasoning and differing views.
   At the same time, she and other contributors continue working on the prototype implementation,
   expanding and modifying it as needed to match the current state of the JEP.
-  When she believes the JEP is stable, addresses all major design and scope questions,
+    When Andrea believes the JEP is stable,
+  addresses all major design and scope questions,
   and represents the consensus of the community,
-  Andrea then submits the JEP for review.
+  she then asks the <<Reviewer>> to review the JEP for Acceptance.
 
-. **<<review, Review>>** - The <<Reviewer>> for this JEP reviews the JEP.
-  They agree that consensus has been reached regarding the JEP
+. **<<review, Review>>** - The <<Reviewer>> considers the JEP
+  and any related discussions and implementation.
+  They agree with Andrea that consensus has been reached regarding the JEP
   and that the implementation is far enough along to enusure that
   the design is stable and complete.
   They mark the JEP as an "<<accepted, Accepted>>" JEP.
-  Other possible resolutions are "<<rejected, Rejected>>",
-  "<<deferred, Deferred>>", "<<withdrawn, Withdrawn>>".
 
 . **<<accepted, Accepted Status>>** -  Andrea and other contributors
   complete all remaining implementation related to the
@@ -375,7 +375,7 @@ as long the result is a PR with a submission in the appropriate format.
 
 A JEP editor will check the submission for conformance with
 JEP structure and formatting guidelines.
-Editors may make minor changes to make the submission meets
+Editors may make minor changes to make the submission meet
 the requirements for approval as a Draft JEP.
 If a JEP requires major changes, editors will add specific feedback
 and send the submission back to the sponsor for revision.
@@ -459,14 +459,13 @@ and submit pull requests targeting the `master` branch.
 [[review]]
 ==== JEP Review
 
-Once the sponsor believes a JEP is meets at least the minimum criteria to be "Accepted",
+Once the sponsor believes a JEP meets at least the minimum criteria to be "<<Accepted, Accepted>>",
 they request the JEP be reviewed for acceptance, usually via
 an email to the jenkinsci-dev@ mailing list.
 The JEP <<Reviewer>> and their chosen consultants then review the JEP.
-The JEP Reviewer will then decide whether to resolve the JEP as
-"<<Accepted, Accepted>>" or "<<Rejected, Rejected>>",
-or keep it as "Draft" sending it back to the JEP sponsor for revision.
-In all cases, the reviewer will send a detailed response
+If the Reviewer agrees that JEP is ready, they mark the JEP as "<<Accepted, Accepted>>".
+If they do not agree, they leave the JEP as a "Draft", awaiting further revision.
+In either case, the reviewer must send a detailed response
 to the jenkinsci-dev@ mailing list explaining their decision.
 
 JEP review and resolution may also occur on a list other than jenkinsci-dev@.
@@ -509,15 +508,16 @@ footnote:[https://jenkins.io/project/governance/#meritocracy], and as such the
 implementation is of utmost importance to moving any proposal (Standards or
 Process) forward.
 
-Ideally, all major changes to a JEP should be completed before it is "Accepted",
-but surprises may still occur.
-Major changes include anything that would significantly alter
-the intent, scope, API, or core behavior of the JEP.
+Ideally, all changes to a JEP should be completed before it is "Accepted",
+but surprises may still occur.  Changes might be minor changes,
+such as clarifications or typo fixes, or major changes,
+which would alter the intent, scope, API, or core behavior of the JEP.
 
-If major changes are proposed to an already "Accepted" JEP,
-it is be the responsibility of the Sponsor to communicate those changes on the mailing list
-and take sufficient time to gain consensus before merging those changes.
-A link to the thread should be added to the PR for the change
+All changes to an already "Accepted" JEP, must be submitted via PR as usual.
+In the case of major changes,
+the Sponsor should also communicate those changes on the mailing list
+and take sufficient time to ensure consensus is maintained before merging those changes.
+A link to any discussion should be added to the PR for the change
 and to the <<Required Sections, References>> section.
 If there are significant objections or questions around proposed changes,
 the JEP Sponsor or Reviewer may choose to return the JEP to a "Draft" status
@@ -1072,5 +1072,5 @@ This JEP leverages existing infrastructure.
 * link:https://github.com/jenkinsci/jep/1[PR 1]
 * link:https://github.com/jenkinsci/jep/pull/12[PR 12]
 * link:https://github.com/jenkinsci/jep/pull/19[PR 19]
-
+* link:https://github.com/jenkinsci/jep/pull/76[PR 76]
 
