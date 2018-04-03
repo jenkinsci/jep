@@ -55,7 +55,7 @@ A JEP provides a concise technical specification of the feature,
 describes the motivation for the change,
 and discusses the rationale behind the design.
 
-JEPs are the primary mechanisms for proposing major new
+JEPs are the primary mechanism for proposing major new
 features, for collecting community input on an issue, and for
 documenting the design decisions that have gone into Jenkins.
 Each JEP must have at least one <<Sponsor>>.
@@ -256,19 +256,25 @@ let's take a high-level look at how JEP might go.
 
 . **<<submission, Submission>>** - Andrea writes up the proposal using the JEP document template as a guide.
   She includes supporting documentation
-  and a prototype implementation sufficient to convey the viability of the design.
+  and a minimal prototype implementation sufficient to convey the viability of the design.
   She submits the JEP to the JEP editors for
   <<approval, approval as a Draft JEP>>.
   An editor checks the submission and determines it is ready to considered as a JEP.
   They "approve" the submission, assigning the JEP a number, and the submission becomes a "Draft" JEP.
 
-. **<<draft, Draft Status>>** - While the JEP is a "<<draft, Draft>>", Andrea may continue to gather
+. **<<draft, Draft Status>>** - While the JEP is a "<<draft, Draft>>", Andrea continues to gather
   feedback, change the proposal, and record the reasoning and differing views.
-  When she believes the design is complete and represents the consensus of the community,
-  she submits the JEP for review.
+  At the same time, she and other contributors continue working on the prototype implementation,
+  expanding and modifying it as needed to match the current state of the JEP.
+  When she believes the JEP is stable, addresses all major design and scope questions,
+  and represents the consensus of the community,
+  Andrea then submits the JEP for review.
 
-. **<<review, Review>>** - The <<Reviewer>> for this JEP,
-  reviews the JEP and decides to accept it, making it an "<<accepted, Accepted>>" JEP.
+. **<<review, Review>>** - The <<Reviewer>> for this JEP reviews the JEP.
+  They agree that consensus has been reached regarding the JEP
+  and that the implementation is far enough along to enusure that
+  the design is stable and complete.
+  They mark the JEP as an "<<accepted, Accepted>>" JEP.
   Other possible resolutions are "<<rejected, Rejected>>",
   "<<deferred, Deferred>>", "<<withdrawn, Withdrawn>>".
 
@@ -280,9 +286,12 @@ let's take a high-level look at how JEP might go.
   or otherwise incorporated into the appropriate code repositories,
   the JEP status is changed to "<<final, Final>>".  The JEP is done.
 
-. **<<maintenance, Maintenance>>** - At some later date, the JEP may need to be updated.
+. **<<maintenance, Maintenance>>** - At some later date, the JEP may need to be updated
+  with minor changes and clarifications.
   As "Sponsor" of the JEP, Andrea makes changes as needed or hands off sponsorship to someone else.
   Updates follow the same basic JEP workflow.
+  For major changes or additions,
+  Andrea will start a whole new JEP instead of updating the original JEP.
 
 IMPORTANT: The above is only a high-level overview of the JEP workflow.
 The full and complete description of the JEP workflow is provided below.
@@ -400,7 +409,7 @@ the submission PR will have been merged to a matching folder
 `link:https://github.com/jenkinsci/jep/tree/master/jep/1[jep/1]`)
 in the `master` branch.
 
-IMPORTANT: "Approval as Draft" is *not* the same as accepting the JEP.
+IMPORTANT: "Approval as Draft" is *not* the same as <<accepted, accepting the JEP>>.
 
 Editors are not the only ones who can approve as submission.
 Non-editor contributors who have "git push" privileges for the
@@ -450,11 +459,12 @@ and submit pull requests targeting the `master` branch.
 [[review]]
 ==== JEP Review
 
-Once the sponsor believes a JEP is complete,
+Once the sponsor believes a JEP is meets at least the minimum criteria to be "Accepted",
 they request the JEP be reviewed for acceptance, usually via
 an email to the jenkinsci-dev@ mailing list.
 The JEP <<Reviewer>> and their chosen consultants then review the JEP.
-The JEP Reviewer will then decide whether to resolve the JEP as "Accepted" or "Rejected",
+The JEP Reviewer will then decide whether to resolve the JEP as
+"<<Accepted, Accepted>>" or "<<Rejected, Rejected>>",
 or keep it as "Draft" sending it back to the JEP sponsor for revision.
 In all cases, the reviewer will send a detailed response
 to the jenkinsci-dev@ mailing list explaining their decision.
@@ -467,19 +477,52 @@ JEP will occur.
 [[accepted]]
 ==== Accepting a JEP
 
-For a JEP to be "Accepted" it must meet certain minimum criteria:
+For a JEP to be "Accepted" it must meet certain minimum criteria.
+It must:
 
-* It must be a clear and complete description of the proposed enhancement.
-* The enhancement must represent a net improvement.
-* The proposed implementation, if applicable, must be solid, must not
-  complicate Jenkins unduly, and must be the same license as the component the
+* provide a net improvement.
+* represent the consensus of the community,
+  including documentation of disenting opions.
+* clearly define the scope and features of the proposed enhancement.
+* describe a completed design that addesses any major design questions.
+
+For JEPs that include implementation based on the proposal,
+the implmentation must meet certain minimum criteria.
+It must:
+
+* be solid and have progressed enough to resolve major design or scope questions.
+* not complicate Jenkins unduly.
+* have the same license as the component the
   proposal is meant to added to (or MIT licensed by default).
 
-Once a JEP has been accepted, the implementation must be completed.
+By marking a JEP as "Accepted" the Reviewer says they believe that the JEP has
+clear scope, design completeness, community consensus, and in-progress implementation.
+Without all of these a JEP cannot be accepted.
+For this reason, it is not unusual for JEPs to remain in "Draft" state
+even after they have strong community support and progressing implementation.
+They must still pass the other criteria, such as scoping and design completeness.
+
+Once a JEP has been accepted, the implementation must continue to progress
+and eventually be completed.
 The Jenkins project values contribution over "talk"
 footnote:[https://jenkins.io/project/governance/#meritocracy], and as such the
 implementation is of utmost importance to moving any proposal (Standards or
 Process) forward.
+
+Ideally, all major changes to a JEP should be completed before it is "Accepted",
+but surprises may still occur.
+Major changes include anything that would significantly alter
+the intent, scope, API, or core behavior of the JEP.
+
+If major changes are proposed to an already "Accepted" JEP,
+it is be the responsibility of the Sponsor to communicate those changes on the mailing list
+and take sufficient time to gain consensus before merging those changes.
+A link to the thread should be added to the PR for the change
+and to the <<Required Sections, References>> section.
+If there are significant objections or questions around proposed changes,
+the JEP Sponsor or Reviewer may choose to return the JEP to a "Draft" status
+for more extensive discussion and re-review.
+
 
 [[final]]
 ==== Finalizing a JEP
@@ -1022,6 +1065,7 @@ This JEP leverages existing infrastructure.
 === Discussion threads
 
 * link:https://groups.google.com/d/msg/jenkinsci-dev/spDAr8EJm3c/T9Nmhn-fAQAJ[jenkinsci-dev@]
+* link:https://groups.google.com/d/topic/jenkinsci-dev/tw0ETwvboAM/discussion[Modification of "Accepted" JEPs]
 
 === Pull Requests
 
