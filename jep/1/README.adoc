@@ -278,20 +278,28 @@ let's take a high-level look at how JEP might go.
   the design is stable and complete.
   They mark the JEP as an "<<accepted, Accepted>>" JEP.
 
-. **<<accepted, Accepted Status>>** -  Andrea and other contributors
+. **<<accepted, Accepted Status>>** - Andrea and other contributors
   complete all remaining implementation related to the
   "<<accepted, Accepted>>" JEP (code, documentation, or other changes).
 
-. **<<final, Final Status>>** - When the implementation is complete and all changes have been published
+. **<<final, Final Status>>** - When the implementation is complete
+  and all changes have been published
   or otherwise incorporated into the appropriate code repositories,
-  the JEP status is changed to "<<final, Final>>".  The JEP is done.
+  the JEP status is changed to "<<final, Final>>"
+  (or in some cases "<<active, Active>>").
+  The JEP is done.
 
-. **<<maintenance, Maintenance>>** - At some later date, the JEP may need to be updated
-  with minor changes and clarifications.
+. **<<maintenance, Maintenance>>** - At some later date,
+  the JEP may need to be updated with minor changes and clarifications.
   As "Sponsor" of the JEP, Andrea makes changes as needed or hands off sponsorship to someone else.
   Updates follow the same basic JEP workflow.
   For major changes or additions,
   Andrea will start a whole new JEP instead of updating the original JEP.
+  This new JEP might expand on the orginal or might <<replaced, replace>> it.
+
+. **<<Other JEP Outcomes, Other Outcomes** - Not all JEPs will be accepted and finalized.
+  Other possible outcomes include "<<rejected, Rejected>>",
+  "<<deferred, Deferred>>", "<<withdrawn, Withdrawn>>".
 
 IMPORTANT: The above is only a high-level overview of the JEP workflow.
 The full and complete description of the JEP workflow is provided below.
@@ -530,6 +538,10 @@ When the implementation is complete and incorporated into the
 appropriate "main" code repository, the JEP sponsor will change
 the JEP's status changed to "Final".
 
+Active:: [[active]]
+Some Informational and Process JEPs may have a status of "Active" instead of "Final"
+These JEPs are ongoing and never meant to be completed per se. E.g. JEP 1 (this JEP).
+
 [[maintenance]]
 ==== JEP Maintenance
 
@@ -543,7 +555,7 @@ Informational and Process JEPs may be updated over time to reflect changes
 to development practices and other details. The precise process followed in
 these cases will depend on the nature and purpose of the JEP being updated.
 
-Replaced::  [[replaced]]
+Replaced:: [[replaced]]
 Final JEPs may eventually also be "Replaced" - superseded by a different JEP -
 rendering the original obsolete.
 This is intended for Informational JEPs, where version 2 of an API can replace version 1.
@@ -552,19 +564,24 @@ This is intended for Informational JEPs, where version 2 of an API can replace v
 
 Not all JEPs will be accepted and finalized.
 
-Rejected::  [[rejected]]
-A JEP can also be "Rejected" by the reviewer. Perhaps after all is said and done it
-was not a good idea. It is still important to have a record of this fact.
-Even an Accepted draft may ultimately be Rejected
+Rejected:: [[rejected]]
+A JEP can also be "Rejected" by the <<Reviewer>>.
+Perhaps after all is said and done it was not a good idea.
+It is still important to have a record of this fact.
++
+Rejecting a JEP is a very strong statement.
+If the reviewer believes the JEP might eventually be accepted with sufficient modification,
+the reviewer will not reject the JEP.
+If a reviewer is confident JEP will never be accepted,
+they should inform the JEP sponsor sooner rather than later to prevent wasted effort.
+On the other hand, even an <<Accepted, Accepted>> JEP may ultimately be Rejected
 at some point before it reaches "Final" status,
 due to factors not known at the time it was Accepted.
-If the reviewer believes the JEP might be Accepted after some modification,
-the reviewer will not reject the JEP, instead returning it Draft status
-with feedback for the sponsor.
++
 Upon the request of the sponsor, the reviewer may choose to return a
 Rejected JEP to Draft status, but this is at the discretion of the reviewer.
 
-Withdrawn::  [[withdrawn]]
+Withdrawn:: [[withdrawn]]
 The "Withdrawn" status is similar to "Rejected" - it means that the JEP sponsor
 themselves has decided that the JEP is actually a bad idea,
 or agrees that a competing proposal is a better alternative.
@@ -574,10 +591,6 @@ A JEP can also be assigned a status of "Deferred". The JEP sponsor or an
 editor can assign the JEP this status when no progress is being made
 on the JEP. Once a JEP is deferred, a JEP editor can re-assign it
 to draft status.
-
-Active:: [[active]]
-Some Informational and Process JEPs may also have a status of "Active" if they
-are ongoing and never meant to be completed per se. E.g. JEP 1 (this JEP).
 
 ==== Updating JEP Status and Resolution
 
