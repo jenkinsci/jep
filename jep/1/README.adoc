@@ -297,7 +297,7 @@ let's take a high-level look at how JEP might go.
   Andrea will start a whole new JEP instead of updating the original JEP.
   This new JEP might expand on the orginal or might <<replaced, replace>> it.
 
-. **<<Other JEP Outcomes, Other Outcomes** - Not all JEPs will be accepted and finalized.
+. **<<Other JEP Outcomes, Other Outcomes>>** - Not all JEPs will be accepted and finalized.
   Other possible outcomes include "<<rejected, Rejected>>",
   "<<deferred, Deferred>>", "<<withdrawn, Withdrawn>>".
 
@@ -494,7 +494,7 @@ It must:
 * describe a completed design that addesses any major design questions.
 
 For JEPs that include implementation based on the proposal,
-the implmentation must meet certain minimum criteria.
+the implementation must meet certain minimum criteria.
 It must:
 
 * be solid and have progressed enough to resolve major design or scope questions.
