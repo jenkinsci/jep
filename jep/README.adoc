@@ -32,6 +32,9 @@
 | link:303/[JEP-303: Evergreen Client Registration and Authentication]
 
 | Draft :speech_balloon:
+| link:304/[JEP-304: Essentials Client Error Telemetry Logging]
+
+| Draft :speech_balloon:
 | link:400/[JEP-400: Jenkins X: Jenkins for Kubernetes CD]
 
 |===
