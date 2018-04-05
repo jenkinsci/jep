@@ -240,6 +240,11 @@ We want to check we do not inadvertently change, or disable totally for instance
 == References
 
 * link:https://issues.jenkins-ci.org/browse/JENKINS-49805[JENKINS-49805]
+* Mailing list related threads:
+** link:https://groups.google.com/d/msg/jenkinsci-dev/1qtL_ADxfFE/W2_1UOzJAAAJ[Thoughts on sending error telemetry for Jenkins Essentials]
+** link:https://groups.google.com/d/msg/jenkinsci-dev/sS8XQbnm9cg/xXEOFx-GBwAJ[Where to store necessary classes: plugin or a core module?]
+** link:https://groups.google.com/d/msg/jenkinsci-dev/IrNOfrlgEEw/MiR5wDiXAQAJ[Early draft review of this JEP]
+
 [IMPORTANT]
 ====
 When moving this JEP from a Draft to "Accepted" or "Final" state,
