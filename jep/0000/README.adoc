@@ -67,20 +67,13 @@ link:https://github.com/jenkinsci/jep/tree/master/jep/301[JEP-301]
 
 
 == Abstract
-////
-link:https://github.com/jenkinsci/jep/tree/master/jep/300[Jenkins Essentials] aims at providing a great user experience for Jenkins, especially for non-expert users.
-To that end, we endeavour to always use the latest versions of everything.
-This will benefit the end users getting latest improvements without any manual upgrade effort, and in the same go provide a short feedback loop to developers, leading to a virtuous circle of improvements.
-
-Therefore a critical aspect for this is to be able to automatically detect issues, to both potentially trigger an immediate rollback and provide feedback to the global system to avoid upgrading _other_ instances to a version deemed problematic.
-
-////
-
 
 Sending error logging to the backend is a critical aspect of Essentials to be able to implement the _Automated Health Assessment_ story
 footnote:[a dedicated proposal will be written for this in link:https://issues.jenkins-ci.org/browse/JENKINS-50294[JENKINS-50294]].
 
-The current document describes how we plan to handle this.
+_Jenkins Essentials_ needs a way to _extract_ the error logging from the Jenkins instance.
+
+The current document describes how we plan to extract those logs so that the _evergreen-client_ can find, process and send them to the backend.
 
 == Specification
 
