@@ -113,7 +113,7 @@ This will **not** be the case in real conditions so that one line is one log ent
 
 The logs is sent in `JSON` format.
 A version tag is put with initial value 1.
-This will make it easier to parse and to evolve if needed.
+This will make it easier to evolve the format if needed.
 
 The formatting is done by a `JSONFormatter` extending link:https://docs.oracle.com/javase/8/docs/api/java/util/logging/SimpleFormatter.html[`java.util.logging.Formatter`].
 
@@ -180,7 +180,7 @@ The _Jenkins Project_ has already everything ready to handle the hosting and rel
 Using a `jenkins-module` would mean we need to set up a custom Jenkins WAR build for Essentials.
 This would also mean we cannot use the quality assurance improvements we have started to put in place in the same way for Essentials, and for the standard Jenkins core delivery.
 
-Though having a dedicated packaging for _Jenkins Essentials_ is very likely something we will do in the future, we deemed preferrable to defer it to later, and focus instead on the other yet unresolved design questions of Essentials.
+Though having a dedicated WAR packaging for _Jenkins Essentials_ is very likely something we will do in the future, we deemed preferrable to defer it to later, and focus instead on the other yet unresolved design questions of Essentials.
 
 === The `exception` field in the JSON logs
 
