@@ -78,7 +78,7 @@ The current document describes how we plan to extract those logs so that the _ev
 == Specification
 
 Jenkins will be configured to send the logs to the _evergreen-client_.
-The client being already connected by definition, this will avoid having to maintain two ways to authenticate and access the backend.
+The client being already link:https://github.com/jenkinsci/jep/tree/master/jep/303[connected] by definition, this will avoid having to maintain two ways to authenticate and access the backend.
 
 === Summary
 
