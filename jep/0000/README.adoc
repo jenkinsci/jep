@@ -184,23 +184,13 @@ Though having a dedicated WAR packaging for _Jenkins Essentials_ is very likely 
 
 === The `exception` field in the JSON logs
 
-Following link:https://en.wikipedia.org/wiki/You_aren%27t_gonna_need_it[YAGNI], we use a simple `exception` field where the exception is basically serialized using `Exception.printStackTrace()`.
+Following link:https://en.wikipedia.org/wiki/You_aren%27t_gonna_need_it[YAGNI], we use a simple `exception` field where the exception is basically serialized as text.
+We will likely use `hudson.Functions.printThrowable()`
+footnote:[which formats chained exceptions more readably than `Exception.printStackTrace()`.]
+for the text formatting.
 
-If needed, this _may_ be replaced in the future by a richer structure, for instance something like:
-
-[source,json]
-[source,json, title=Required fields for a single log entry]
-{
-  "version": 2,
-  [...],
-  "exception": {
-    "message": "the exception message",
-    "stacktrace": [
-       "some.package.SomeClass.method(SomeClass.java:23)",
-       ...
-    ]
-  }
-}
+If needed, this _might_ be replaced in the future by a richer structure.
+In such case we will bump the `version` field to a higher number.
 
 == Backwards Compatibility
 
