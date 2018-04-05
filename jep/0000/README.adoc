@@ -92,6 +92,7 @@ The client being already connected by definition, this will avoid having to main
 Logs are sent:
 
 * in `JSON` format for easier parsing by the client.
+** Each log entry separated by a newline, so that each line can be parsed as a JSON object, without needing a JSON streaming parser.
 * only if the level is greater or equal to _WARNING_.
 * to the disk, under `$JENKINS_VAR/logs/essentials.log.N` rotating files.
 ** 5 files maximum ;
@@ -107,8 +108,8 @@ See <<plugin-or-module>> for why a Jenkins plugin.
 
 === Logging format
 
-NOTE: The JSON excerpts below are pretty-printed for readability.
-This will most likely not be the case in real conditions.
+CAUTION: The JSON excerpts below are pretty-printed for readability.
+This will **not** be the case in real conditions so that one line is one log entry.
 
 The logs is sent in `JSON` format.
 A version tag is put with initial value 1.
