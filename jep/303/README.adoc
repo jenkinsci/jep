@@ -81,7 +81,7 @@ why <<non-interactive>> is an important aspect of this proposal can be found
 below.
 
 The `evergreen-client` must _initiate_ the registration process by generating
-link:https://nodejs.org/dist/latest-v9.x/docs/api/crypto.html#crypto_class_ecdh[ECDH]
+link:https://en.wikipedia.org/wiki/Elliptic_Curve_DSA[ECDSA]
 public and private keys. Similar to SSH-based public/private key
 authentication, the public key will be shared with the Evergreen hosted
 services layer, while the private key must be maintained entirely confidential
@@ -417,6 +417,9 @@ GitHub repository.
 
 The registration component was introduced in
 link:https://github.com/jenkins-infra/evergreen/pull/37[this pull request].
+
+The login component was introduced in
+link:https://github.com/jenkins-infra/evergreen/pull/42[this pull request].
 
 
 == References
