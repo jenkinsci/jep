@@ -252,31 +252,33 @@ let's take a high-level look at how JEP might go.
   She chooses to be the "<<Sponsor>>" for this potential JEP.
   She <<discussion, gathers initial feedback>> from the community, adjusts her design as needed,
   records the reasons for design choices, and keeps track of differing views.
-  Daniel, an expert in the area for this JEP, volunteers to be the <<BDFL Delegate>> for this JEP.
+  Kelly, an expert in the area for this JEP, volunteers to be the <<BDFL Delegate>> for this JEP.
 
 . **<<submission, Submission>>** - Andrea writes up the proposal using the JEP document template as a guide.
   She includes supporting documentation
   and a minimal prototype implementation sufficient to convey the viability of the design.
-  She submits the JEP to the JEP editors for
+  She submits the JEP to the <<editor, JEP editors>> for
   <<approval, approval as a Draft JEP>>.
-  An editor checks the submission and determines it is ready to considered as a JEP.
-  They "approve" the submission, assigning the JEP a number, and the submission becomes a "Draft" JEP.
+  One of the editors checks the submission and determines it is ready to considered as a JEP.
+  They "approve" the submission, assigning the JEP a number,
+  and the submission becomes a "<<draft, Draft>>" JEP.
 
 . **<<draft, Draft Status>>** - While the JEP is a "<<draft, Draft>>", Andrea continues to gather
   feedback, change the proposal, and record the reasoning and differing views.
-  At the same time, she and other contributors continue working on the prototype implementation,
-  expanding and modifying it as needed to match the current state of the JEP.
-    When Andrea believes the JEP is stable,
+  At the same time, she and other contributors continue expanding and refining
+  the prototype implementation as needed to match the current state of the JEP.
+  When Andrea believes the JEP is stable,
   addresses all major design and scope questions,
   and represents the consensus of the community,
-  she then asks the <<Reviewer>> to review the JEP for Acceptance.
+  she then asks the <<Reviewer>>, in this case the <<BDFL Delegate>> Kelly,
+  to review the JEP for Acceptance.
 
-. **<<review, Review>>** - The <<Reviewer>> considers the JEP
+. **<<review, Review>>** - Kelly reviews the JEP
   and any related discussions and implementation.
-  They agree with Andrea that consensus has been reached regarding the JEP
+  Kelly agrees with Andrea that consensus has been reached regarding the JEP
   and that the implementation is far enough along to enusure that
   the design is stable and complete.
-  They mark the JEP as an "<<accepted, Accepted>>" JEP.
+  Kelly marks the JEP as an "<<accepted, Accepted>>" JEP.
 
 . **<<accepted, Accepted Status>>** - Andrea and other contributors
   complete all remaining implementation related to the
@@ -291,9 +293,9 @@ let's take a high-level look at how JEP might go.
 
 . **<<maintenance, Maintenance>>** - At some later date,
   the JEP may need to be updated with minor changes and clarifications.
-  As "Sponsor" of the JEP, Andrea makes changes as needed or hands off sponsorship to someone else.
+  As <<Sponsor>> of the JEP, Andrea makes changes as needed or hands off sponsorship to someone else.
   Updates follow the same basic JEP workflow.
-  For major changes or additions,
+  For extensive changes or additions,
   Andrea will start a whole new JEP instead of updating the original JEP.
   This new JEP might expand on the orginal or might <<replaced, replace>> it.
 
@@ -330,7 +332,8 @@ In such a case be sure to specify a "<<header-jira, JIRA>>" section.
 
 Each JEP must have a "<<Sponsor>>" -- someone who writes the JEP using the style and
 format described below, shepherds the discussions in the appropriate forums,
-and attempts to build community consensus around the idea. The JEP Sponsor should first attempt to ascertain whether the idea is JEP-able.
+and attempts to build community consensus around the idea.
+The JEP Sponsor should first attempt to ascertain whether the idea is JEP-able.
 Posting to the jenkinsci-dev@googlegroups.com mailing list is the best way to
 go about this.
 
@@ -489,7 +492,7 @@ It must:
 
 * provide a net improvement.
 * represent the consensus of the community,
-  including documentation of disenting opions.
+  including documentation of dissenting opions.
 * clearly define the scope and features of the proposed enhancement.
 * describe a completed design that addesses any major design questions.
 
@@ -500,9 +503,9 @@ It must:
 * be solid and have progressed enough to resolve major design or scope questions.
 * not complicate Jenkins unduly.
 * have the same license as the component the
-  proposal is meant to added to (or MIT licensed by default).
+  proposal is meant to be added to (or MIT licensed by default).
 
-By marking a JEP as "Accepted" the Reviewer says they believe that the JEP has
+By marking a JEP as "Accepted" the Reviewer indicates they believe that the JEP has
 clear scope, design completeness, community consensus, and in-progress implementation.
 Without all of these a JEP cannot be accepted.
 For this reason, it is not unusual for JEPs to remain in "Draft" state
@@ -565,8 +568,9 @@ This is intended for Informational JEPs, where version 2 of an API can replace v
 Not all JEPs will be accepted and finalized.
 
 Rejected:: [[rejected]]
-A JEP can also be "Rejected" by the <<Reviewer>>.
-Perhaps after all is said and done it was not a good idea.
+A JEP <<Reviewer>> may choose to reject a JEP.
+Perhaps after all is said and done it was not a good idea
+or perhaps a competing proposal is a better alternative.
 It is still important to have a record of this fact.
 +
 Rejecting a JEP is a very strong statement.
@@ -574,15 +578,16 @@ If the reviewer believes the JEP might eventually be accepted with sufficient mo
 the reviewer will not reject the JEP.
 If a reviewer is confident JEP will never be accepted,
 they should inform the JEP sponsor sooner rather than later to prevent wasted effort.
-On the other hand, even an <<Accepted, Accepted>> JEP may ultimately be Rejected
-at some point before it reaches "Final" status,
+On the other hand, even an <<accepted, Accepted>> JEP may ultimately be rejected
+at some point before it reaches "<<final, Final>>" status,
 due to factors not known at the time it was Accepted.
 +
 Upon the request of the sponsor, the reviewer may choose to return a
 Rejected JEP to Draft status, but this is at the discretion of the reviewer.
 
 Withdrawn:: [[withdrawn]]
-The "Withdrawn" status is similar to "Rejected" - it means that the JEP sponsor
+A JEP <<Sponsor>> may choose to withdraw a JEP.
+Similar to "Rejected", "Withdrawn" means that the JEP sponsor
 themselves has decided that the JEP is actually a bad idea,
 or agrees that a competing proposal is a better alternative.
 
@@ -620,7 +625,7 @@ they should document that choice in the "<<Reasoning>>" section of the JEP.
 
 ==== Resolving Disputes
 
-Except for decisions by a JEP's <<Reviewer>> to accept or reject a JEP,
+Except for decisions by a JEP's <<Reviewer>>,
 the JEP process is run by
 link:https://en.wikipedia.org/wiki/Consensus_decision-making[consensus].
 It is the responsibility of every contributor to respect other contributors,
@@ -631,11 +636,12 @@ contributors may request that the <<Reviewer>> for that JEP intervene.
 The reviewer will consider the matter, and render their decision,
 including describing what actions will be taken and documenting their reasoning.
 
-For disputes over JEP process or decisions made by a <<BDFL Delegate>>,
+If the <<Reviewer>> for a JEP is a <<BDFL Delegate>> or
+for disputes around the overall JEP process (rather than one specific JEP),
 contributors may request that the <<BDFL>> intervene.
 The BDFL will consider the matter, and render their decision,
 including describing what actions will be taken and documenting their reasoning.
-The BDFL's decision may include technical and other specific instructions to the BDFL Delegate.
+The BDFL's decision may include technical direction and other specific instructions as needed.
 
 If contributors believe a decision made by the BDFL runs counter to the best interests to Jenkins project,
 they may request the Governance meeting review the BDFL's decision.
