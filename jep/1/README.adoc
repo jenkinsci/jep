@@ -65,7 +65,7 @@ coordinating contributors work, and generally ensuring the JEP
 meets the style, format, and quality guidelines described below.
 A JEP may also have any number of <<Contributor, Contributors>> who
 help write, implement, discussion, or offer feedback about the JEP.
-One contributor might do only one or any combination of these
+One contributor might do only one or any combination
 of these things during any part of the life of a JEP.
 
 Because the JEPs are maintained as text files in a versioned
@@ -506,7 +506,7 @@ It must:
   proposal is meant to be added to (or MIT licensed by default).
 
 By marking a JEP as "Accepted" the Reviewer indicates they believe that the JEP has
-clear scope, design completeness, community consensus, and in-progress implementation.
+clear scope, design completeness, community consensus, and (if applicable) in-progress implementation.
 Without all of these a JEP cannot be accepted.
 For this reason, it is not unusual for JEPs to remain in "Draft" state
 even after they have strong community support and progressing implementation.
@@ -562,6 +562,8 @@ Replaced:: [[replaced]]
 Final JEPs may eventually also be "Replaced" - superseded by a different JEP -
 rendering the original obsolete.
 This is intended for Informational JEPs, where version 2 of an API can replace version 1.
+When a JEP is marked as replaced, the <<header-superseded-by, Superseded-by>> header
+must be filled in with a link to the new JEP.
 
 ==== Other JEP Outcomes
 
@@ -676,8 +678,8 @@ All JEPs MUST have the following parts to be "approved as Draft":
   It should describe alternate designs that were considered and related work,
   e.g. how the feature is supported in other systems.
 +
-The reasoning should provide evidence of consensus within the
-community and discuss important objections or concerns raised
+The reasoning section provides evidence of consensus within the
+community and describes important objections or concerns raised
 during discussion.
 
 . **Backwards Compatibility** - All JEPs must include a section describing
@@ -920,7 +922,6 @@ footnote:[https://groups.google.com/d/msg/jenkinsci-dev/vbXK7JJekFw/BlEvO0UxBgAJ
 which ballooned into threads with 100+ replies and sufficient chaos to be very
 difficult for those who weren't full-time Jenkins developers to understand.
 
-
 The Jenkins Enhancement Proposal aims to address both of these major issues by
 providing an understood process for making sizable, but understandable,
 enhancements to Jenkins.
@@ -1058,7 +1059,6 @@ There are currently no Asciidoc linters.
 Should one be found, we will evaluate it for automated checking of
 <<JEP File Format>> for syntax or structural errors
 (or for style guidelines once they are established).
-
 
 == Backwards Compatibility
 
