@@ -16,7 +16,7 @@
 | Final :lock:
 | link:200/[JEP-200: Switch Remoting/XStream blacklist to a whitelist]
 
-| Accepted :ok_hand:
+| Draft :speech_balloon:
 | link:201/[JEP-201: Jenkins Configuration as Code]
 
 | Accepted :ok_hand:
