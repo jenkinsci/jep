@@ -119,6 +119,7 @@ The formatting is done by a `JSONFormatter` extending link:https://docs.oracle.c
 {
   "version": 1,
   "timestamp": 1522840762769,
+  "name": "io.jenkins.plugins.SomeTypicalClass",
   "level": "WARNING",
   "message": "the message\nand another line"
 }
@@ -126,6 +127,8 @@ The formatting is done by a `JSONFormatter` extending link:https://docs.oracle.c
 version:: Initially `1`.
 Will be used in case we need to evolve the format.
 timestamp:: Timestamp for the log in Epoch format
+name:: The logger name.
+It is generally the name of the emitting class, but can be any text or even the empty string.
 level:: The level of criticality of the log.
 In practice, should always be `SEVERE` or `WARNING`.
 But it is expected that this could be any value of the `java.util.logging.Level` class, if this proves necessary in the future.
