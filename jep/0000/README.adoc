@@ -173,13 +173,28 @@ There are no backwards compatibility concerns related to this proposal.
 
 == Security
 
-=== Accessing the /metrics/evergreen/healthcheck URL from outside the container
+[[metrics-endpoint-access]]
+=== Accessing the `/metrics/evergreen/healthcheck` URL from outside the container
+
+Though this is probably not a problematic data leak that it is accessible to anyone who would already be able to reach the server, we plan to use the `origins` field to restrict requesters to be `localhost` so that only the _evergreen-client_ can access it.
+
+FIXME: this field seems to have an issue.
+Saving it to anything from the UI seems to have no effect at all.
+
+=== Using `evergreen` as the metrics access key
+
+Normally, a `metrics` plugin healthcheck URL is of the format `SERVER/metrics/<access-key>/healthcheck`.
+
+We set the the accesskey value for clarity and simplicity: this makes it unnecessary to write some logic to initialize a random access key, and have the client store or access it from somewhere.
+
+Once the healthcheck endpoint access will be <<metrics-endpoint-access,restricted to localhost only>>, that is deemed to not an issue anymore.
 
 === Absence of the `metrics` plugin
 
+An attacker could try to make the plugin fail, for instance by implementing an extension in a bad way.
 
+If this ends up making the plugin fail to start, this should be detected by the _evergreen-client_ and it will fall back to the simpler mode when only the `/login` URL is checked.
 
-TODO
 
 == Infrastructure Requirements
 
