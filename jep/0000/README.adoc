@@ -80,7 +80,7 @@ Once we deem to have learned enough, we will create new proposals to discuss and
 
 We will check two URLs:
 
-* the `/instance-identity` page
+* the `/instance-identity/` page
 * the `/metrics/evergreen/healthcheck`
 
 === Instance Identity URL
