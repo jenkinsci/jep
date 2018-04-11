@@ -80,10 +80,10 @@ Once we deem to have learned enough, we will create new proposals to discuss and
 
 We will check two URLs:
 
-* the `/login` page
+* the `/instance-identity` page
 * the `/metrics/evergreen/healthcheck`
 
-=== Login URL
+=== Instance Identity URL
 
 We check that:
 
@@ -132,7 +132,7 @@ Making this plugin a part of the healthchecking story obviously makes it a *requ
 So the _evergreen-client_ should make sure it is always present and active when upgrading.
 For instance, if it is disabled, or removed from the disk, it *must* be forcefully reinstalled and enabled automatically next time.
 
-If for some reason, the plugin fails to start, then the healthcheck should fall back to only check the `/login`, and report this issue as critical to the backend.
+If for some reason, the plugin fails to start, then the healthcheck should fall back to only check the `/instance-identity`, and report this issue as critical to the backend.
 
 ==== Metrics plugin Configuration
 
@@ -193,7 +193,7 @@ Once the healthcheck endpoint access will be <<metrics-endpoint-access,restricte
 
 An attacker could try to make the plugin fail, for instance by implementing an extension in a bad way.
 
-If this ends up making the plugin fail to start, this should be detected by the _evergreen-client_ and it will fall back to the simpler mode when only the `/login` URL is checked.
+If this ends up making the plugin fail to start, this should be detected by the _evergreen-client_ and it will fall back to the simpler mode when only the `/instance-identity/` URL is checked.
 
 
 == Infrastructure Requirements
