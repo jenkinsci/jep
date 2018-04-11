@@ -68,7 +68,7 @@ endif::[]
 
 The first pillar of _Jenkins Essentials_ is that it is an link:https://github.com/jenkinsci/jep/tree/master/jep/300#auto-update[Automatically Updated Distribution].
 
-To be able to achieve this goal in a durable way, we need to be able to _automatically assess the health_ of a a *given* instance.
+To be able to achieve this goal in a durable way, we need to be able to _automatically assess the health_ of a *given* instance.
 The scope of this proposal is to design the way we decide if we link:https://github.com/jenkinsci/jep/tree/master/jep/302[automatically roll back] or not.
 
 It will also regularly be fed back to the backend so that we can compute global health statistics for a given setup, but that is out of scope for the current document.
