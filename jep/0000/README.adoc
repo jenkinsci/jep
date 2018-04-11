@@ -132,7 +132,7 @@ Making this plugin a part of the healthchecking story obviously makes it a *requ
 So the _evergreen-client_ should make sure it is always present and active when upgrading.
 For instance, if it is disabled, or removed from the disk, it *must* be forcefully reinstalled and enabled automatically next time.
 
-If for some reason, the plugin fails to start, then the healthcheck should fall back to only check the `/instance-identity`, and report this issue as critical to the backend.
+If for some reason, the plugin fails to start, then the healthcheck should fall back to only check the `/instance-identity/`, and report this issue as critical to the backend.
 
 ==== Metrics plugin Configuration
 
