@@ -93,6 +93,7 @@ It is left to the consumer to decide how to know where to start from in case of 
 Though it is a subject for another design document, it is suggested to:
 *** store the last timestamp that was read ;
 *** be able to idempotently send everything to the backend (in case of a fresh startup, or a missing value for the last read and sent timestamp), and that already sent logs are deduplicated or ignored there.
+* in _UTF-8_ (The _JSON_ specification allows some other encodings. We restrict it to _UTF-8_ only)
 ** 5 files maximum ;
 ** Approximately 10 MB maximum per file.
 ** This should give largely enough time for the client to parse and send everything before it gets rotated, even more because only logs ≥ `WARNING` will be sent.
