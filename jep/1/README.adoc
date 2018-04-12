@@ -352,10 +352,18 @@ because an idea sounds good to the sponsor does not mean it will work for most
 people in most areas where Jenkins is used.
 
 Once the sponsor has asked the Jenkins community as to whether an idea has any
-chance of acceptance, a draft JEP should be presented to jenkinsci-dev@. This
-gives the sponsor a chance to flesh out the draft JEP to make sure it is
+chance of acceptance, a "pre-Draft" JEP should be presented to jenkinsci-dev@.
+This gives the sponsor a chance to flesh out the JEP to make sure it is
 properly formatted, of high quality, and to address initial concerns about the
 proposal.
+
+Even for "pre-Draft" discussion, sponsors may find it convient to follow the
+<<submission, JEP Submission>> steps below, including creating a PR,
+but state in PR comments that they not yet ready to submit the JEP.
+This allows them to use the PR request tools for discussion and modification right away,
+and sets them up for a smooth submission process.
+In this case, the sponsor only needs to notify `@jenkinsci/jep-editors` when they are ready to
+submit the JEP for <<approval, approval as Draft>>.
 
 [[submission]]
 ==== Creating a JEP Submission
@@ -363,11 +371,12 @@ proposal.
 Following a discussion on jenkinsci-dev@,
 the proposal should be turned into as a JEP submission and submitted
 via a GitHub pull request to this repository footnoteref:[repo].
-The submission must be written in JEP style as described below,
-otherwise, it will fail review immediately
-(although minor errors may be corrected by the editors).
 
-To submit a JEP for approval as Draft, the JEP sponsor should:
+IMPORTANT: All submissions must go through pull request,
+even those by editors or contributors with "git push" privileges
+for the JEP repository footnoteref:[repo].
+
+To submit a JEP for <<approval, approval as Draft>>, the JEP sponsor should:
 
 . Fork the JEP repository footnoteref:[repo].
 . Clone their forked repository locally.
@@ -381,7 +390,7 @@ To submit a JEP for approval as Draft, the JEP sponsor should:
 . Commit and push the changes to their fork
   and submit a pull request targeting the `jenkinsci/master` branch.
 
-NOTE: The sponsor may alter the steps above or do something else entirely
+The sponsor may alter the steps above or do something else entirely
 as long the result is a PR with a submission in the appropriate format.
 
 A JEP editor will check the submission for conformance with
@@ -391,17 +400,20 @@ the requirements for approval as a Draft JEP.
 If a JEP requires major changes, editors will add specific feedback
 and send the submission back to the sponsor for revision.
 
-IMPORTANT: All submissions must go through pull request,
-even those by editors or contributors with "git push" privileges
-for the JEP repository footnoteref:[repo].
+IMPORTANT: "Approval as Draft" is an initial conformance and viability check.
+When a sponsor submits a JEP for approval, Editors and contributors
+should restrict their feedback to issues which would cause the JEP
+to be denied <<draft, Draft>> status.
+This keeps the approval process from bogging down in details that are outside
+the scope of the evaluating whether a JEP is ready for "Draft" status.
 
 The JEP editors will not unreasonably deny a JEP.
 Reasons for denying JEP "Draft" status include:
 
 * duplication of effort
 * being technically unsound
-* not providing enough information in the
-  "Motivation" or "Backwards Compatibility" sections
+* not providing enough information in all <<Required Sections>>
+  ("Motivation", "Backwards Compatibility", etc)
 * not in keeping with the link:https://jenkins.io/project/governance/[Jenkins philosophy].
 
 The <<Reviewer>> for this JEP may be consulted during the approval phase,
@@ -422,10 +434,10 @@ in the `master` branch.
 
 IMPORTANT: "Approval as Draft" is *not* the same as <<accepted, accepting the JEP>>.
 
-Editors are not the only ones who can approve as submission.
+Editors are not the only ones who can approve a submission.
 Non-editor contributors who have "git push" privileges for the
 JEP repository footnoteref:[repo] may also approve submissions.
-When doing so, the developer must handle the tasks
+When doing so, that contributor must handle the tasks
 that would normally be taken care of by the JEP editors
 (see <<editor-responsibilities, JEP Editor Responsibilities & Workflow>>).
 This includes ensuring the initial version meets the expected standards
