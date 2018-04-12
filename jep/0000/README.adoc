@@ -1,0 +1,225 @@
+= JEP-0000: External Artifact Storage
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.**JEP Template**
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 0000
+
+| Title
+| External Artifact Storage
+
+| Sponsor
+| https://github.com/carlossg[@carlossg]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2018 Apr 11
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+Jenkins uses the master filesystem to store all generated artifacts, unless explicitly using a plugin that archives somewhere else.
+
+There are serious drawbacks to use filesystem when running in cloud or containerized environments:
+
+* Preventing easy scalability as big disks are expensive to move around vms
+* Causing all sorts of issues due to usage of remoting for file transfer.
+Going through the master as files are copied from/to the agent cause load, cpu, network issues that are hard to diagnose and recover from.
+* Causing a big performance hit due to the traffic and disk access, preventing the usage of distributed filesystems such as NFS, GlusterFS,...
+* Providing limited functionality compared to a first class blob store (AWS S3, Azure Blob Storage, Google Blobstore) or artifact repository (Nexus, Artifactory).
+Organizations may have some requirements that are not available today: auditability, sophisticated retention policies, versioning,...
+
+This proposal provides the APIs needed to store all artifacts in an external location without going through the master, and a initial implementation using AWS S3
+
+== Specification
+
+Jenkins agents upload and download artifacts directly to the external location using HTTP, no content traffic is sent over the remoting channel.
+
+All external store operations except upload/download are executed from the master, so the agent does not need any permissions other than HTTP upload/download. Pre-signed urls with expiration can be used so the agent does not have access to the full store.
+
+Stashes are stored as tarballs to ensure permissions and links are preserved.
+
+Any operations using `ArtifactManager` remain unaffected and will transparently use the chosen implementation.
+
+The flow looks like
+
+* Upload:
+** master creates blob metadata in external location
+** master gets pre-signed url for blob upload operation
+** url is sent to agent
+** agent creates a tarball in case of stashing
+** agent does the actual file upload through HTTP
+* Download:
+** master gets pre-signed url for blob download operation
+** url is sent to agent
+** agent does the actual file download through HTTP
+** agent unpacks the tarball in case of unstashing
+* Browser:
+** user clicks on artifact download link
+** master gets pre-signed url for blob download operation
+** browser is sent a HTTP redirect to that url so download is between external store and browser
+
+
+This change adds more methods to the VirtualFile API to support this flow.
+
+The `VirtualFile.run(Callable)` method, that already existed to optimize Workspace link browsing on agents, is now being used in artifact-related code in Jenkins core.
+It was important to implement this in the S3 plugin in order to ensure that Classic or Blue Ocean UI flows relating to artifacts, including simply opening the index page of a build, did not make a large number of network calls.
+The cache system allows a single S3 metadata call (possibly one HTTP request, depending on page size) to retrieve sufficient information for a complete page render of some or all of the artifact tree, without the rendering code (e.g., in Jenkins core) knowing anything about the storage system.
+
+
+== Motivation
+
+As mentioned in the abstract, running in a containerized environment is challenging due to the excessive use of the file system. Plus the lack of functionality provided by files vs dedicated artifact or blob store (versioning, permissions, cold store,...)
+
+From the usability point of view, currently a Jenkins installation sizing has to have into account the expected amount of disk needed or a restart, disk reprovisioning, disk swap,... instead of a infinite scale, pay per use that a blob store can offer. Cloud installations can automatically configure the blob store to use offering a much better first time user experience.
+
+Several alternatives exist today but they all require changes to all the pipelines and job definitions to explicitly choose the backend to send artifacts to.
+
+* https://plugins.jenkins.io/s3[S3 plugin]
+* https://github.com/jenkinsci/pipeline-aws-plugin[pipeline-aws-plugin]
+* https://github.com/jenkinsci/windows-azure-storage-plugin[windows-azure-storage-plugin]
+* https://github.com/jenkinsci/google-storage-plugin[google-storage-plugin]
+
+Even without this JEP people can use things like the S3 plugin to upload and download artifacts.
+But since the use of S3, and details about location, are baked into the script, we cannot publish general examples like https://jenkins.io/doc/pipeline/tour/tests-and-artifacts/[tests-and-artifacts] that are actually ready for people to use.
+That would contradict one of the goals of Essentials, that you can get a reasonable workflow going in a few minutes.
+
+Without `ArtifactManager` and `VirtualFile` integration, a number of integrations between plugins are impossible.
+For example, using only the S3 plugin, if you wish to copy artifacts from an upstream build, you cannot use the Copy Artifact plugin; you would need to devise your own system for passing an S3 bucket/path from the upstream build to the downstream build.
+When https://issues.jenkins-ci.org/browse/JENKINS-45455[JENKINS-45455] is implemented, unstash from S3 will work automatically in a restarted Pipeline build to copy files stashed by the original build.
+Using only the S3 plugin, you would need to think about saving bucket/path to a variable that could be read by the restarted build.
+Blue Ocean will display an Artifacts tab for files uploaded to S3 via `archiveArtifacts`; with only the S3 plugin, you would need to go to Classic UI.
+
+Core APIs already existed for customized artifact storage, but lacked the crucial capability to offer pre-signed URLs, making it impossible to provide a satisfactory S3 implementation.
+Only customized master-side storage (such as with Compress Artifacts) was really practical.
+
+== Reasoning
+
+AWS is the focus as it is the most widely used cloud provider, S3 being the prevalent blob store.
+Equivalent features to S3 exist in other cloud providers and artifact repositories.
+
+The S3 implementation also uses http://jclouds.apache.org[Apache JClouds] that abstracts most of the implementation from the underlying blob store.
+
+== Backwards Compatibility
+
+Existing plugins using `ArtifactManager` API will continue to work using the new selected implementation.
+
+However:
+
+* Various plugins call `Run.getArtifactsDir` and similar deprecated APIs.
+These would already have been broken for users of the Compress Artifacts plugin, but that is rarely used, whereas we are proposing lots of people run with the S3 artifact manager.
+Calls to the deprecated APIs will behave as if there were no artifacts in the build.
+We could add telemetry so that such calls produce a warning in the system log, at least when the build actually does have a custom artifact manager selected.
+
+* Some plugins using `VirtualFile` may still be calling open and then passing the stream to an agent.
+This will work, but will be very expensive when using S3 storage. They need to be updated to call `VirtualFile.toExternalURL`.
+
+== Security
+
+Security considerations make agents need to be restricted to only access the artifacts needed. Having access to the blob store would mean access to other jobs artifacts. Two possible implementations were considered:
+
+=== Agents only need upload/download permissions
+
+If agents only do upload/download operations we can use pre-signed urls so they will not be able to access other jobs artifacts.
+Other operations (list, create, delete,...) would run on the master, which would be a performance hit for builds with many artifacts
+
+=== Passing limited credentials to each agent
+
+Masters need to run with elevated permissions to be able to create new roles and permissions on the fly for each job (`AssumeRole` in AWS).
+Those limited credentials would be passed on to the agent, who would use them to talk to the external store.
+All operations would run on agents, with less load on the master, although with extra role creation operations.
+But the configuration and setup would be considerably more complex, as well as the agent side download code, requiring larger refactorings and a more complicated core API.
+This temporary role creation does not exist in all clouds nor other artifact repositories. For instance, https://docs.microsoft.com/en-us/azure/active-directory/active-directory-configurable-token-lifetimes[Azure Active Directory token lifetime] is on public preview, and in Google Cloud ACLs are not temporary.
+
+We opted for the first, simpler option.
+
+Extra care needs to be taken so agents do not have any access to the blob store.
+
+In the common case where the vm instances are assigned roles (`IAM role` in AWS) the instance where the master runs should have access to the blob store but the agents should run in a different instance where its role does not allow it.
+
+In a Kubernetes environment this means either using different node pools for masters or agents or using something like https://github.com/jtblin/kube2iam[kube2iam] to have different roles per pod.
+
+
+== Infrastructure Requirements
+
+Ideally we could use Jenkins infrastructure to do live testing with S3, which is not currently possible due to lack of AWS account.
+
+== Testing
+
+Automated tests for the common archive/unarchive and stash/unstash flow have been added to the `ArtifactManager` API to ensure all implementations comply.
+
+The AWS S3 implementation tests exercise this flow plus add some extra S3 specific tests.
+They require an AWS account and S3 permissions and can be run from a EC2 instance or a local machine.
+Some mock testing can be added in the future.
+
+== Prototype Implementation
+
+https://github.com/jenkinsci/artifact-manager-s3-plugin[artifact-manager-s3-plugin]
+
+
+== References
+
+Relevant issues and PRs
+
+* https://issues.jenkins-ci.org/browse/JENKINS-26810[JENKINS-26810]
+File attribute/symlink support in VirtualFile
+* https://issues.jenkins-ci.org/browse/JENKINS-49635[JENKINS-49635]
+Permit VirtualFile to serve external file contents
+* https://github.com/jenkinsci/jenkins/pull/3302[Jenkins core PR-3302]
+
+Downstream
+
+* https://github.com/jenkinsci/workflow-api-plugin/pull/67[workflow-api-plugin PR-67]
+* https://github.com/jenkinsci/workflow-basic-steps-plugin/pull/60[workflow-basic-steps-plugin PR-60]
+* https://github.com/jenkinsci/copyartifact-plugin/pull/100[copyartifact-plugin PR-100]
+* https://github.com/jenkinsci/compress-artifacts-plugin/pull/1[compress-artifacts-plugin PR-1]
