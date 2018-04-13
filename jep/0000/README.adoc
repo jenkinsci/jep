@@ -193,6 +193,7 @@ In a Kubernetes environment this means either using different node pools for mas
 == Infrastructure Requirements
 
 Ideally we could use Jenkins infrastructure to do live testing with S3, which is not currently possible due to lack of AWS account.
+But tests can be run from a EC2 instance or a local machine.
 
 == Testing
 
