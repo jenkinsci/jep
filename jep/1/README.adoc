@@ -203,7 +203,7 @@ The BDFL Delegate for a JEP will be recorded in the
 A JEP's <<Sponsor>> may also be the BDFL Delegate for that JEP,
 taking on the responsibilities of both roles.
 
-If a Delegate wishes to leave a JEP, they may do so at any time by emailing jenkinsci-dev@.
+If a Delegate wishes to leave a JEP, they may do so at any time by emailing jenkinsci-dev@googlegroups.com.
 They can also be removed from a JEP by the BDFL.
 When a BDFL Delegate leaves or is removed from a JEP,
 the BDFL becomes the reviewer again and may ask someone else to be the BDFL Delegate for that JEP.
@@ -351,8 +351,8 @@ the idea is applicable to the entire community and not just the sponsor. Just
 because an idea sounds good to the sponsor does not mean it will work for most
 people in most areas where Jenkins is used.
 
-Once the sponsor has asked the Jenkins community as to whether an idea has any
-chance of acceptance, a "pre-Draft" JEP should be presented to jenkinsci-dev@.
+Once the sponsor has asked the Jenkins community whether an idea has any
+chance of acceptance, a "pre-Draft" JEP should be presented to jenkinsci-dev@googlegroups.com.
 This gives the sponsor a chance to flesh out the JEP to make sure it is
 properly formatted, of high quality, and to address initial concerns about the
 proposal.
@@ -368,7 +368,7 @@ submit the JEP for <<approval, approval as Draft>>.
 [[submission]]
 ==== Creating a JEP Submission
 
-Following a discussion on jenkinsci-dev@,
+Following a discussion on jenkinsci-dev@googlegroups.com,
 the proposal should be turned into as a JEP submission and submitted
 via a GitHub pull request to this repository footnoteref:[repo].
 
@@ -405,7 +405,7 @@ When a sponsor submits a JEP for approval, Editors and contributors
 should restrict their feedback to issues which would cause the JEP
 to be denied <<draft, Draft>> status.
 This keeps the approval process from bogging down in details that are outside
-the scope of the evaluating whether a JEP is ready for "Draft" status.
+the scope of evaluating whether a JEP is ready for "Draft" status.
 
 The JEP editors will not unreasonably deny a JEP.
 Reasons for denying JEP "Draft" status include:
@@ -459,7 +459,7 @@ when subjected to the test of implementation.
 
 A JEP's sponsor is responsible for collecting community feedback on a JEP
 before submitting it for review.
-Potential changes to a draft JEP may be discussed further on jenkinsci-dev@.
+Potential changes to a draft JEP may be discussed further on jenkinsci-dev@googlegroups.com.
 However, long open-ended discussions are not recommended on mailing lists.
 Strategies to keep the discussion efficient include:
 
@@ -484,14 +484,14 @@ and submit pull requests targeting the `master` branch.
 
 Once the sponsor believes a JEP meets at least the minimum criteria to be "<<Accepted, Accepted>>",
 they request the JEP be reviewed for acceptance, usually via
-an email to the jenkinsci-dev@ mailing list.
+an email to the jenkinsci-dev@googlegroups.com mailing list.
 The JEP <<Reviewer>> and their chosen consultants then review the JEP.
 If the Reviewer agrees that JEP is ready, they mark the JEP as "<<Accepted, Accepted>>".
 If they do not agree, they leave the JEP as a "Draft", awaiting further revision.
 In either case, the reviewer must send a detailed response
-to the jenkinsci-dev@ mailing list explaining their decision.
+to the jenkinsci-dev@googlegroups.com mailing list explaining their decision.
 
-JEP review and resolution may also occur on a list other than jenkinsci-dev@.
+JEP review and resolution may also occur on a list other than jenkinsci-dev@googlegroups.com.
 In this case, the "Discussions-To" header in the JEP will identify the
 appropriate alternative list where discussion, review and pronouncement on the
 JEP will occur.
@@ -539,13 +539,12 @@ which would alter the intent, scope, API, or core behavior of the JEP.
 All changes to an already "Accepted" JEP, must be submitted via PR as usual.
 In the case of major changes,
 the Sponsor should also communicate those changes on the mailing list
-and take sufficient time to ensure consensus is maintained before merging those changes.
+and take sufficient time to ensure there is consensus on the changes before merging them.
 A link to any discussion should be added to the PR for the change
 and to the <<Required Sections, References>> section.
 If there are significant objections or questions around proposed changes,
 the JEP Sponsor or Reviewer may choose to return the JEP to a "Draft" status
-for more extensive discussion and re-review.
-
+for more extensive discussion and eventual <<review, review again for acceptance>>.
 
 [[final]]
 ==== Finalizing a JEP
@@ -591,7 +590,7 @@ Rejecting a JEP is a very strong statement.
 If the reviewer believes the JEP might eventually be accepted with sufficient modification,
 the reviewer will not reject the JEP.
 If a reviewer is confident JEP will never be accepted,
-they should inform the JEP sponsor sooner rather than later to prevent wasted effort.
+they should inform the JEP sponsor as soon as possible to prevent wasted effort.
 On the other hand, even an <<accepted, Accepted>> JEP may ultimately be rejected
 at some point before it reaches "<<final, Final>>" status,
 due to factors not known at the time it was Accepted.
@@ -622,7 +621,7 @@ image::workflow.png[JEP Workflow]
 
 When a JEP is Accepted, Rejected or Withdrawn,
 a "<<header-resolution, Resolution>>" section must be added to the JEP Header
-with a link to the relevant post in the jenkinsci-dev@ mailing list archives.
+with a link to the relevant post in the jenkinsci-dev@googlegroups.com mailing list archives.
 
 ==== Scheduling and timeframes
 
@@ -646,14 +645,14 @@ It is the responsibility of every contributor to respect other contributors,
 listen to their perspectives, and attempt to find solutions that work for everyone.
 
 If consensus cannot be achieved on a JEP,
-contributors may request that the <<Reviewer>> for that JEP intervene.
+contributors may request that the <<reviewer, JEP Reviewer>> intervene.
 The reviewer will consider the matter, and render their decision,
 including describing what actions will be taken and documenting their reasoning.
 
-If the <<Reviewer>> for a JEP is a <<BDFL Delegate>> or
-for disputes around the overall JEP process (rather than one specific JEP),
+For disputes involving a decision by a <<BDFL Delegate>>
+or the overall JEP process (rather than one specific JEP),
 contributors may request that the <<BDFL>> intervene.
-The BDFL will consider the matter, and render their decision,
+The BDFL will consider the matter and render their decision,
 including describing what actions will be taken and documenting their reasoning.
 The BDFL's decision may include technical direction and other specific instructions as needed.
 
@@ -801,7 +800,7 @@ If this row is not included, the BDFL will make the decision.
 
 Discussions-To:: [[header-discussions-to]]
 For a JEP where final pronouncement will be made on a list other than
-jenkinsci-dev@, a **Discussions-To** row will indicate the mailing list
+jenkinsci-dev@googlegroups.com, a **Discussions-To** row will indicate the mailing list
 or URL where the pronouncement will occur. A temporary Discussions-To header
 may also be used when a draft JEP is being discussed prior to submission for
 pronouncement.
@@ -819,7 +818,8 @@ containing the number of the JEP that it rendered obsolete.
 Resolution:: [[header-resolution]]
 A **Resolution** section will be added to JEPs when their status is set to
 Accepted, Rejected or Withdrawn.
-It will include a link to the relevant post in the jenkinsci-dev@ mailing list archives.
+It will include a link to the relevant post in the
+jenkinsci-dev@googlegroups.com mailing list archives.
 
 
 ==== Auxiliary Files
@@ -868,7 +868,7 @@ Ownership of a JEP may also be assumed via pull request.
 Fork the JEP repository, footnoteref:[repo] make the sponsorship
 modification, and submit a pull request. At the same time, send a message asking
 to take over, addressed to both the original sponsor and the JEP editors via
-jenkinsci-dev@.  If the original sponsor doesn't respond to email in a timely
+jenkinsci-dev@googlegroups.com.  If the original sponsor doesn't respond to email in a timely
 manner, the JEP editors will make a unilateral decision (it's not like such
 decisions can't be reversed :).
 
@@ -1036,7 +1036,6 @@ and not to set specific timeframes for action or response.
 Attempting to set exact limits on a volunteer organization could lead to more
 difficulties than leaving the timing up to the contributors to each JEP.
 
-
 === Requiring same license
 
 Some contributors were concerned that changes to a component
@@ -1095,7 +1094,7 @@ This JEP leverages existing infrastructure.
 
 === Discussion threads
 
-* link:https://groups.google.com/d/msg/jenkinsci-dev/spDAr8EJm3c/T9Nmhn-fAQAJ[jenkinsci-dev@]
+* link:https://groups.google.com/d/msg/jenkinsci-dev/spDAr8EJm3c/T9Nmhn-fAQAJ[Request for feedback: Jenkins Enhancement Proposal]
 * link:https://groups.google.com/d/topic/jenkinsci-dev/tw0ETwvboAM/discussion[Modification of "Accepted" JEPs]
 
 === Pull Requests
