@@ -1,0 +1,850 @@
+= JEP-0000: Publishing incremental commits as Maven releases
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 0000
+
+| Title
+| Publishing incremental commits as Maven releases
+
+| Sponsor
+| https://github.com/jglick[@jglick]
+
+| Status
+// Uncomment the appropriate line.
+| Not Submitted :information_source:
+//| Draft :speech_balloon:
+//| Deferred :hourglass:
+//| Accepted :ok_hand:
+//| Rejected :no_entry:
+//| Withdrawn :hand:
+//| Final :lock:
+//| Replaced :dagger:
+//| Active :smile:
+
+| Type
+| Process
+
+| Created
+| :bulb: Date :bulb:
+
+| JIRA
+| link:https://issues.jenkins-ci.org/browse/JENKINS-50686[JENKINS-50686]
+
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDLF-Delegate
+//| :bulb: Link to github user page :bulb:
+
+| Requires
+| :bulb: IEP-9 :bulb:
+
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+The Jenkins source base is spread across numerous GitHub repositories:
+`jenkinsci/jenkins` itself for the core;
+a number of libraries or components like Stapler and Remoting;
+several modules;
+and of course the ~1700 plugins.
+Contributions which can be limited to a single repository can be built, tested, merged, and released entirely in isolation.
+
+However, when a proposed change requires patches to multiple repositories (such as new APIs), the process becomes much more complicated.
+Multiple pull requests are involved, and special procedures are needed to allow Maven to make sense of which versions of which components are required.
+
+Further issues arise when changes are accepted and proposed for release.
+Publishing a change to users requires a separate step using the Maven Release plugin and special credentials;
+then an update center process runs at intervals searching for new releases.
+
+While this process has always been cumbersome,
+it is particularly onerous for use from
+link:https://github.com/jenkinsci/jep/blob/master/jep/301/README.adoc[JEP-301 “Evergreen”]
+as laid out in
+link:https://github.com/jenkinsci/jep/blob/master/jep/300/README.adoc#auto-update[JEP-300 “Essentials”]:
+
+[quote]
+____
+Greatly reduced time between core and "foundational" plugin changes landing, and being adoptable by downstream components.
+
+…
+
+Small-batch changes, automatically distributed to Jenkins instances…
+____
+
+This proposal suggests a streamlined approach whereby the existence of a suitably published Git commit suffices to identify a component version.
+The version identifier is insensitive to the build environment;
+yet increases monotonically and so is suitable for use in version comparison logic.
+Decisions about whether and how to expose changes to users are made at a separate level, without touching the component repository.
+
+A previously submitted
+link:https://github.com/jenkins-infra/iep/blob/master/iep-009/README.adoc#specification[IEP-9]
+paved the way for an `incrementals` repository to be hosted on Jenkins infrastructure,
+but was silent on how it was to be actually used:
+
+[quote]
+____
+Plugin and core tooling should use a consistent format for defining incremental built versions,
+such as: `<artifactId>-<major>.<minor>.<patch>-<sha1>.jar`.
+The specific format is not required for this document.
+____
+
+This JEP proposes to specify that format, and the accompanying tooling.
+
+== Specification
+
+Most Jenkins component repositories in GitHub are built via Maven,
+either as a single module or as a multimodule reactor starting at the repository root.
+In either case, we assume that a single reactor `mvn install` produces some set of artifacts with the same version number.
+
+=== Setup
+
+To work with the Incrementals repository, three (versioned) Maven profiles should be defined,
+typically in a parent POM in a separate repository:
+
+`consume-incrementals`::
+This component might depend on artifacts deployed to Incrementals, so should look in that repository.
+Activated unconditionally, typically in `.mvn/maven.config`.
+`might-produce-incrementals`::
+This component is prepared to deploy to Incrementals.
+Activated unconditionally, typically in `.mvn/maven.config`.
+Runs `flatten-maven-plugin` (see below).
+On its own, has no further effect:
+`install` will produce regular snapshot artifacts,
+and `deploy` will send timestamped snapshots to the regular snapshot repository.
+`produce-incrementals`::
+This component is actively producing incremental artifacts.
+Activated implicitly by the `-Dset.changelist` user option;
+presumes that `might-produce-incrementals` is also activated.
+Like the `jenkins-release` profile used by `maven-release-plugin`,
+produces `+*-sources.jar+` and `+*-javadoc.jar+` artifacts.
+Switches the deployment repository to `incrementals`.
+
+(The reference implementation currently sets these profiles up only for plugins/modules,
+but the same could likely be done for Jenkins core and non-module components.)
+
+Nothing interesting need to be done to use the `consume-incrementals` repository:
+if the `<version>` of some declared dependency happens to be an incremental commit,
+Maven will treat it like any release version.
+
+Producing incremental versions is more complex.
+Rather than declaring
+
+[source,xml]
+----
+<version>1.23-SNAPSHOT</version>
+----
+
+in the project’s `pom.xml`, you must use a setup as described in
+link:https://maven.apache.org/maven-ci-friendly.html[Maven CI Friendly Versions]:
+
+[source,xml]
+----
+<version>${revision}${changelist}</version>
+<properties>
+  <revision>1.23</revision>
+  <changelist>-SNAPSHOT</changelist>
+</properties>
+----
+
+The `changelist` property can then be overridden for each Maven command.
+
+=== Basic usage
+
+In order to ensure a consistent and reproducible version for Incrementals,
+a special Maven extension has been developed which is configured in `.mvn/extensions.xml`.
+When the switch `-Dset.changelist` is included in the command,
+the effect is equivalent to including the options:
+
+[source,bash]
+----
+-Pproduce-incrementals -Dchangelist=-rc$(git rev-list --first-parent --count HEAD).$(git rev-parse --short=12 HEAD)
+----
+
+You will then see output like this:
+
+....
+git-plugin$ mvn -DskipTests clean install -Dset.changelist
+[INFO] Setting: -Dchangelist=-rc1652.cd45427eb4e2
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< org.jenkins-ci.plugins:git >---------------------
+[INFO] Building Jenkins Git plugin 3.8.1-rc1652.cd45427eb4e2
+[INFO] --------------------------------[ hpi ]---------------------------------
+…
+[INFO] --- maven-install-plugin:2.5.2:install (default-install) @ git ---
+[INFO] Installing …/git-plugin/target/git.hpi to …/.m2/repository/org/jenkins-ci/plugins/git/3.8.1-rc1652.cd45427eb4e2/git-3.8.1-rc1652.cd45427eb4e2.hpi
+[INFO] Installing …/git-plugin/.flattened-pom.xml to …/.m2/repository/org/jenkins-ci/plugins/git/3.8.1-rc1652.cd45427eb4e2/git-3.8.1-rc1652.cd45427eb4e2.pom
+[INFO] Installing …/git-plugin/target/git.jar to …/.m2/repository/org/jenkins-ci/plugins/git/3.8.1-rc1652.cd45427eb4e2/git-3.8.1-rc1652.cd45427eb4e2.jar
+[INFO] Installing …/git-plugin/target/git-tests.jar to …/.m2/repository/org/jenkins-ci/plugins/git/3.8.1-rc1652.cd45427eb4e2/git-3.8.1-rc1652.cd45427eb4e2-tests.jar
+[INFO] Installing …/git-plugin/target/git-sources.jar to …/.m2/repository/org/jenkins-ci/plugins/git/3.8.1-rc1652.cd45427eb4e2/git-3.8.1-rc1652.cd45427eb4e2-sources.jar
+[INFO] Installing …/git-plugin/target/git-test-sources.jar to …/.m2/repository/org/jenkins-ci/plugins/git/3.8.1-rc1652.cd45427eb4e2/git-3.8.1-rc1652.cd45427eb4e2-test-sources.jar
+[INFO] Installing …/git-plugin/target/git-javadoc.jar to …/.m2/repository/org/jenkins-ci/plugins/git/3.8.1-rc1652.cd45427eb4e2/git-3.8.1-rc1652.cd45427eb4e2-javadoc.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+…
+....
+
+As far as the Maven build is concerned, this was a _release_ version build, not a snapshot version.
+(An error is signaled if there were any local modifications since the `cd45427eb4e2` commit.)
+
+Since this incremental release is in your local repository,
+you are free to begin using it from downstream components immediately (with `consume-incrementals` configured):
+
+[source,xml]
+----
+<dependency>
+  <groupId>org.jenkins-ci.plugins</groupId>
+  <artifactId>git</artifactId>
+  <version>3.8.1-rc1652.cd45427eb4e2</version>
+</dependency>
+----
+
+Note that this workflow requires no Internet connection.
+Of course the upstream commit should be pushed,
+and preferably deployed to `incrementals`,
+before you share this dependency with others.
+
+=== Relationship to snapshot dependencies
+
+While actively developing changes coördinated between repositories,
+you should use Maven snapshot dependencies.
+Incremental releases allow you to make a downstream commit which atomically consumes one or more upstream commits.
+If further upstream changes are needed,
+and these need to be used or tested downstream,
+then the dependency should be switched back to a snapshot.
+
+There is expected to be tooling,
+in a format to be determined but easily run by developers,
+which would help automate routine workflows such as:
+
+* commit upstream; push upstream; build upstream incremental artifacts; switch downstream dependency from snapshot to incremental
+* build upstream snapshot artifacts; switch downstream dependency from incremental to snapshot
+
+=== Interaction with `maven-release-plugin`
+
+Since `maven-release-plugin` (MRP) continues to be a required part of the workflow for most components,
+interoperability with it is important.
+
+A repository activating `consume-incrementals` should pose no issues for MRP.
+Note that the standard MRP behavior of aborting when snapshot dependencies are detected
+will _not_ detect accidental inclusion of incremental dependencies in a formal release.
+If necessary, this could become a custom Maven Enforcer rule activated in the `jenkins-release` profile.
+
+A repository activating `might-produce-incrementals` is more trouble due to the `<version>` declaration.
+MRP _can_ be run, and produces a valid release with the expected number (`1.23` in the example above).
+However the “prepare for next development iteration” commit just sets
+
+[source,xml]
+----
+<version>1.24-SNAPSHOT</version>
+----
+
+since MRP does not understand the “CI-friendly” versions.
+Thus, it is necessary to fix up the POM to read
+
+[source,xml]
+----
+<version>${revision}${changelist}</version>
+<properties>
+  <revision>1.24</revision>
+  <changelist>-SNAPSHOT</changelist>
+</properties>
+----
+
+There is expected to be a tool to “reincrementalify” the POM after using MRP.
+Note that there is no harm done if this is forgotten for a while;
+it is just not possible to make incremental releases until it is.
+(`-Dset.changelist` will define `changelist` but the version will still be `1.24-SNAPSHOT`.)
+
+=== Deployment to Artifactory
+
+To be available for use by other people or CI processes,
+incremental releases must be deployed to
+link:https://repo.jenkins-ci.org/incrementals/[this repository]
+somehow.
+The security section discusses several possible approaches to automating this (or not).
+
+=== Usage from the update center
+
+The current
+link:https://github.com/jenkins-infra/update-center2[Jenkins update center generator]
+consumes artifacts from the `releases` repository,
+and automatically selects the latest versions to publish based on scanning the Artifactory index.
+
+For Essentials/Evergreen, some “bill of materials” to be determined will determine exact versions of components.
+For plugins, the
+link:https://github.com/jenkins-infra/evergreen/blob/288dc51fa5d169124caf7034a5e43191fa0702b3/configuration/essentials.yaml#L21-L23[current prototype]
+merely refers to traditional releases.
+This format could be interpreted to allow incremental releases merely by including the `incrementals` repository in the download path.
+
+It may also be desirable to publish incremental releases to the regular Jenkins update center.
+If so, `update-center2` could be modified to include a static list of plugin versions permitting incremental versions,
+much as there are already
+link:https://github.com/jenkins-infra/update-center2/blob/137eb8f62652a66cc835a5113bbc4b7f4f9f6e75/src/main/resources/wiki-overrides.properties#L45[manual overrides]
+for some configuration.
+
+In that scenario, a developer would publish a plugin “release” not by running MRP and waiting for repository reindexing,
+but by filing a pull request to the update center repository specifying the desired version.
+This would align with the
+link:https://github.com/jenkinsci/jep/tree/master/jep/400#environment-model[JEP-400 “Jenkins-X” environment model]
+and allow a more “GitOps” workflow, with several advantages:
+
+* Simultaneous (atomic) release of large feature sets becomes possible, simply by filing one larger PR.
+* There is a clear audit trail of who requested an update, when, why, and who approved it, when.
+* Emergency rollbacks are as simple as `git revert`.
+* A PR builder could perform unlimited sanity and consistency checks on the proposed update, even running acceptance tests.
+* There is no need for the Artifactory index, which has been a source of performance issues.
+
+If _all_ releases of a component like a plugin were switched to the new system,
+dropping support for MRP entirely,
+then the `${version}` could even be omitted and the Maven version become something like simply `1652.cd45427eb4e2`.
+This of course drops any pretense of supporting
+link:https://semver.org/[SemVer]
+in component versions,
+though in practice SemVer has never been used consistently in core areas of Jenkins anyway.
+
+Since broad adoption of such a workflow would require extensive communication and testing,
+it is _not_ proposed in this JEP but left for experimentation and a possible future follow-up.
+Nonetheless, this JEP is designed to create the infrastructure that would make it possible,
+with Essentials/Evergreen exercising the concepts initially.
+
+== Motivation
+
+The status quo is a combination of `maven-release-plugin` (MRP) for component versions delivered to users,
+and Maven timestamped snapshots for advance integration testing.
+
+=== MRP issues
+
+The problems with MRP are exhaustively enumerated on the Internet, but several are notable for Jenkins.
+
+Most obviously, every release produce two dummy commits:
+“preparing for release” and “preparing for next development iteration”.
+These add noise to Git history and can trigger spurious Jenkins CI builds as well.
+Currently that is not a big issue but if we wanted to deploy much finer-grained releases for Evergreen
+this could be magnified greatly, as the MRP commits could outnumber real development commits!
+
+MRP is not atomic.
+Tests are run, commits are created, then pushed, then more building is done, then artifacts are deployed.
+An error or even WiFi outage occurring any time after the initial phase
+can leave things in an inconsistent state that must be manually cleaned up.
+In particular, artifact deployment is quite likely to fail for various reasons:
+a stale password, or a missing entry in `repository-permissions-updater`.
+There is a constant stream of requests to the Jenkins developer list asking for assistance with MRP.
+
+=== Timestamped snapshot issues
+
+Unlike the `foo-SNAPSHOT.jar` artifacts ``install``ed into the local repository
+(and constantly being overwritten with rebuilds),
+when you `mvn deploy` a project with a snapshot version,
+Maven will upload an artifact with a unique version such as `2.27-20180402.200639-11`.
+This may be consumed as a dependency in a downstream POM,
+supposedly ensuring a reproducible build.
+
+However, there are several problems with this system.
+First of all, the timestamped artifact is _not_ installed into the local repository!
+It is only uploaded to the remote repository.
+If you declare a dependency on it in a downstream POM and then do a downstream build,
+Maven will download the same bits.
+Thus if you rename one method in Jenkins core and wish to make a plugin commit matching that rename refactoring,
+you must first upload around 95Mb of artifacts (perhaps from Starbucks),
+then download the same 95Mb before you can compile again.
+
+In a multimodule reactor, Maven will pick a different timestamp for each module
+(link:https://issues.apache.org/jira/browse/MNG-6274[MNG-6274]),
+forcing downstream POMs to use a cumbersome idiom like
+
+[source,xml]
+----
+<jenkins.version>2.107.2</jenkins.version>
+<jenkins-core.version>${jenkins.version}</jenkins-core.version>
+<jenkins-war.version>${jenkins.version}</jenkins-war.version>
+----
+
+to allow each module’s version to be overridden separately.
+You must also scroll back into the `deploy` log to even find the selected timestamps
+so that they can be copied and pasted into the downstream POM;
+in a large reactor build there could be several to find.
+
+Java IDEs generally have solid support for plain snapshot dependencies
+(since this is so critical for incremental development of cross-module changes),
+but timestamped snapshots are less commonly used and understood and so support can be spotty.
+
+Finally, there are simply various outstanding bugs related to timestamped snapshots.
+Maven treats them specially in numerous places deep within its code,
+and the behavior has changed historically for example with the switch to Aether,
+so support is not a trivial matter.
+link:https://issues.apache.org/jira/browse/MENFORCER-298[MENFORCER-298]
+in particular affects Jenkins badly:
+when using a common Enforcer rule,
+Maven compilation will occasionally pick up the wrong snapshot,
+causing perplexing build errors that are sometimes not easy to reproduce locally.
+
+=== Cross-repository complexity
+
+Jenkins development has historically suffered when changes needed to be coördinated across repositories.
+
+==== Pipeline
+
+One example is the former Pipeline repository, housing around a dozen plugins.
+Publishing the smallest changes from this monolithic repository was very slow and tedious,
+and would result in no-op updates to most of the plugins.
+
+As of 2.0 and
+link:https://github.com/jenkinsci/pipeline-plugin/pull/369[PR 369]
+this was split up so that each plugin gets its own repository.
+The upside is that it became much simpler to develop and deploy isolated changes.
+The downside was that deeper changes such as API refactorings became more logistically complex,
+particularly due to the problems outlined above with timestamped snapshots.
+
+==== CERT
+
+The Jenkins CERT team has also struggled with cross-repository changes,
+made worse by the need to keep all changes out of public view until the day of the security advisory.
+Timestamped snapshots are used, but need to be converted to release versions when staging fixes.
+This brings up another conceptual flaw of MRP:
+the _definition_ of release artifacts is entangled with their _deployment_.
+Thus, specialized (and error-prone) workflows are needed to stage artifacts to nondefault repositories.
+The extra pair of commits created by MRP must be specially managed as well.
+A workflow in which every commit is treated as a release candidate would be considerably simpler for CERT.
+However, any changes to CERT workflow would be discussed within that team rather than in this JEP.
+
+==== SCM API 2.0
+
+In January 2017 there was a major refactoring of the APIs underlying multibranch projects and SCM access.
+link:https://jenkins.io/blog/2017/01/17/scm-api-2/[This blog post]
+lays out the overview and notes that some changes were incompatible and thus forced a simultaneous update.
+A particular logistical problem encountered during development
+was that care needed to be taken to deploy (MRP) all related plugins within the same time window,
+before Artifactory indexing ran and started to pick up and publish updates.
+
+== Reasoning
+
+=== Alternatives based on IEP-9
+
+Since IEP-9 merely offers an upload location and a suggestion on artifact format, various options were investigated.
+
+==== Other tools
+
+A number of tools exist to somehow bake a Git commit
+(and/or other metadata like timestamps and CI build numbers)
+into a Maven artifact when it is built.
+link:https://github.com/ktoso/maven-git-commit-id-plugin[`maven-git-commit-id-plugin`],
+link:https://github.com/stephenc/git-timestamp-maven-plugin[`git-timestamp-maven-plugin`],
+and
+link:http://www.mojohaus.org/buildnumber-maven-plugin/usage.html[`buildnumber-maven-plugin`]
+are examples.
+
+These have the issue that they do not actually affect the `${project.version}` as Maven understands it;
+they merely offer some metadata for inclusion ad-hoc inside the artifact.
+That is fine for simply recording what a binary was built from,
+say for purposes of logging or display of system information;
+but it does nothing to help with the _retrieval_ of specific artifacts, especially given a known commit.
+
+Some other schemes like
+link:https://www.cloudbees.com/blog/new-way-do-continuous-delivery-maven-and-jenkins-pipeline[this post]
+suggest ways to automatically deploy for CD,
+but do not address local development workflows.
+
+To fix that root problem you need to use
+link:https://maven.apache.org/maven-ci-friendly.html[“CI Friendly Versions”]
+introduced in Maven 3.3.1,
+as this JEP proposes.
+link:https://axelfontaine.com/blog/dead-burried.html[This popular post]
+gives an example of switching to that system,
+but declines to talk much about how the version should actually be picked,
+and does not seem to discuss multi-module reactors, 
+much less cross-repository development.
+
+==== Other version schemes
+
+The current proposal sets the `changelist` variable during Incrementals builds to
+
+[source,bash]
+----
+-rc$(git rev-list --first-parent --count HEAD).$(git rev-parse --short=12 HEAD)
+----
+
+This format has two key advantages:
+
+* It is completely reproducible for a given commit, regardless of how the repository was cloned or is managed.
+  (The commit can also be reconstructed from the version.)
+* Pushing subsequent commits to a line of development results in strictly “greater” version numbers (see below for details).
+
+Experiments were run with alternate schemes.
+Including a Git branch name in the version was quickly rejected,
+as Git (unlike, say, Mercurial) does not consider branches to be intrinsic to the commit:
+it is perfectly legitimate (and not so uncommon) for different people or tools to check out the same commit using different references.
+It would be very confusing for two different artifacts to be published which were built from the same commit.
+For the same reason, including a timestamp in the hash was rejected for builds of “clean” commits.
+
+`$BUILD_NUMBER` (the Jenkins build number) is also undesirable:
+not only is no such metadata available for local developer builds;
+but any time a Jenkins service is restored from backup,
+the build history could easily be reset and numbering restart from 1.
+
+A slight variant to the `rev-list` setup:
+
+[source,bash]
+----
+-rc$(git rev-list --first-parent --no-merges --count HEAD).$(git rev-parse --short=12 HEAD)
+----
+
+would pick identical counts even after nontrivial merges from the target branch.
+While the commit hash would still disambiguate the commits,
+it would be harder to tell that the commit after the merge was newer.
+
+(Note that with or without the `--no-merges` option,
+`checkout scm` for pull request “merge” builds will merge the base branch into the head commit if it is not up to date,
+producing an unpredictable commit hash and (in the current proposal) incrementing the count by one.
+Therefore deployment is most useful from origin branch builds, or at least PR head builds.)
+
+The `--first-parent` option is not strictly necessary,
+but otherwise you wind up counting far too many commits when there have been lots of merges.
+
+It is possible to differentiate the count of commits made in the `master` branch from those in an (unnamed) side branch.
+This even works naturally after performing “ladder” merges to bring a branch up to date with `master`:
+
+[source,bash]
+----
+-rc$(git rev-list --first-parent --count $(git merge-base master HEAD)).$(git rev-list --first-parent --count ^master HEAD).$(git rev-parse --short=12 HEAD)
+----
+
+That scheme behaves better with respect to the Versions Maven plugin and so on.
+Unfortunately it does not work after `checkout scm` in a Pipeline branch project build,
+since the `master` ref is unresolvable:
+the checkout will normally be a “detached HEAD” and no other refs will be defined.
+Worse, after a fast-forward merge to `master`, the same commit will switch from `200.4.abc123` to `204.0.abc123`.
+
+Other formats like
+
+[source,bash]
+----
+-rc$(git rev-parse --abbrev-ref HEAD)
+----
+
+are readable but nondeterministic.
+
+The `rc` component is included to make sure that incremental versions sort before regular releases.
+According to `hudson.util.VersionNumber`, used in the Jenkins plugin manager and associated tooling:
+
+* `1.1`
+* `1.2-SNAPSHOT`
+* `1.2-rc13.8ab`
+* `1.2-rc14.de3`
+* `1.2-rc15.6a6`
+* `1.2-rc100.ab1`
+* `1.2`
+
+`org.apache.maven.artifact.versioning.ComparableVersion`, used throughout Maven,
+sorts similarly except for `-SNAPSHOT` handling:
+
+* `1.1`
+* `1.2-rc13.8ab`
+* `1.2-rc14.de3`
+* `1.2-rc15.6a6`
+* `1.2-rc100.ab1`
+* `1.2-SNAPSHOT`
+* `1.2`
+
+=== Systems not based on IEP-9
+
+Some other approaches to the problems of cross-repository coördination and incremental releasing were considered.
+
+==== JitPack
+
+An ingenious service
+https://jitpack.io/[JitPack]
+exists to allow any commit of a Git/Maven project to be treated as a release artifact.
+After adding a special source repository to a downstream POM,
+you can simply refer to an upstream component via a special version scheme
+and the service will build it for you and serve it as a Maven artifact.
+
+Some support for JitPack
+link:https://github.com/jenkinsci/plugin-pom/pull/37[already exists]
+in the Jenkins plugin parent POM.
+Unfortunately, some experiments with this system quickly pointed to a number of issues.
+
+First, running upstream builds is very slow.
+This makes downstream builds wait for a long time, opaquely in the Maven download phase.
+This delay can also block local/offline development, as there is no simple way to create an equivalent artifact locally.
+
+Little about the build environment can be customized.
+For Jenkins components, which tend to use generic Maven idioms, this is not a critical problem.
+
+The free service will only build public repositories.
+For companies wishing to integrate incremental releases into their own workflow for proprietary components,
+that presents a boundary between two systems.
+
+Most of the above issues could be addressed by purchasing a commercial subscription or even hosting the service on jenkins.io.
+The most intrusive aspect of the service, however, is part of its core behavior:
+it requires that the `groupId` and `artifactId` of upstream artifacts
+be modified to point to GitHub coördinates when referred to downstream.
+When regular and “jitpacked” artifacts are mixed together in complex applications, as Jenkins does,
+mayhem can result since Maven does not think of these artifacts as comparable.
+In particular, Jenkins plugin infrastructure normally treats `artifactId` as the plugin `shortName`.
+Many of these issues can be worked around, as was done in the experimental support linked above,
+but at the cost of a lot of confusing behavior and extra work when switching versions back and forth.
+
+==== SCM-level aggregation
+
+A radically different approach to some of the problems outlined here
+is to move component sources into a single Git monorepo;
+or to simulate such an arrangement using Git submodules.
+
+Either mode certainly makes some development logistics conceptually simpler:
+for example, a rename refactoring across components just becomes a single commit
+(or an aggregation commit faking it using a set of submodule commits).
+Targeting plugin versions for deployment to Essentials would cease to exist as a concept:
+the manifest (if in the same monorepo) would not need to specify versions at all;
+it would simply pick up whatever sources were in the same mono-revision.
+`git bisect` works across everything at once.
+
+Besides the dramatic change in workflow, such a system introduces its own set of thorny problems.
+Running integration tests on the monorepo is theoretically very simple:
+just run an overall test suite command at the root
+and you will see if any changes in one area broke another.
+In practice, this would be intolerably slow (or expensive, with parallel hardware),
+so some sort of build system with smart incremental build features is needed.
+Somehow or another, this winds up creating a kind of cache system,
+which is basically an opaque version of what we already know as an artifact repository.
+If you just want to casually check out and try patching one plugin,
+you are pretty much out of luck: you need to download a massive repository
+and run a long build.
+
+On that note, it is only safe to assume that every downstream component in a given mono-revision
+should be considered to depend on _at least_ (if not exactly) that same mono-revision
+of all of its upstream components;
+making up version numbers for the components will not work too well since they are no longer enforced.
+(The NetBeans project tries to do that, and it is a failure.)
+But then you have created a monolithic _system_ to be deployed as a unit.
+While this might suit Essentials fine (that is its goal),
+it would potentially cause problems for other Jenkins deployment modes and OEM products,
+as components get otherwise gratuitous dependencies on the newest version of absolutely everything.
+
+Deciding what exactly to include in a monorepo would be a tough call.
+Out of the hundreds of plugins, which make the cut?
+The set to be included in Essentials would be a reasonable choice,
+but then you are back to square one when developing changes
+targeted in part to plugins currently outside the set
+(including OEM and proprietary extensions).
+And a true monorepo would make it very awkward to add or remove components
+as policies change over time (submodules would presumably be easier).
+
+Finally, a monorepo pushes developer social behavior into a different mode, for better or worse.
+While GitHub offers some features to require approval from specific people for changes to a given subdirectory,
+the overall experience is of lots of people simultaneously patching things across a sprawling directory tree;
+it would be difficult to visually or conceptually filter the thousands of open pull requests
+to see what is relevant and who is in charge.
+All of these process changes are feasible, but at the cost of a major migration.
+
+== Backwards Compatibility
+
+Relationship to `maven-release-plugin` workflows has already been discussed.
+The proposed version number scheme appears to be treated sanely by both Maven and Jenkins code.
+
+== Security
+
+=== Automated deployment to the `incrementals` repository
+
+As tracked in link:https://issues.jenkins-ci.org/browse/INFRA-1571[INFRA-1571]
+we would like to have at least origin branch project builds inside
+link:https://ci.jenkins.io/job/Plugins/[ci.jenkins.io/Plugins]
+deploy into
+link:https://repo.jenkins-ci.org/incrementals/[`incrementals`]
+so that all successful builds are consumable without requiring developers to upload personal builds.
+Several approaches were considered for this.
+
+First, some background on the security requirements.
+Nothing from `incrementals` gets deployed to “production” merely by virtue of appearing there:
+it is only available for _possible_ consumption.
+Before an artifact is used anywhere, some other versioned metadata must be edited to specifically request it.
+That author should then only be requesting a commit which has already been pushed to GitHub,
+and thus automatically built and (if successful) deployed to `incrementals`.
+
+There is some risk would a developer would blindly run `versions:display-dependency-updates`
+and accept the newest available artifact,
+but this could be mitigated for example in Essentials quality gates
+by verifying that the commit hashes of all proposed components are in fact ancestors of the current `master` heads.
+
+==== Maven deployment from `buildPlugin`
+
+The most straightforward approach would be to keep Artifactory credentials
+either at global scope or in the `Plugins` organization folder.
+The standard `buildPlugin` library function would,
+under certain circumstances including at least a check that the author of a PR is a trusted committer
+(but more likely just restricted to origin branches),
+run a `deploy` goal with these credentials.
+
+The risk here is that a committer to some minor repository
+could edit `Jenkinsfile` and/or `pom.xml` to deploy phony artifacts:
+say, something claiming to be `jenkins-core` but in fact malware.
+We could accept that risk for this repository
+(whereas the regular
+link:https://repo.jenkins-ci.org/releases/[`releases`]
+repo is governed by
+link:https://github.com/jenkins-infra/repository-permissions-updater/blob/master/README.md#about[`repository-permissions-updater`]
+controls),
+since at least the attacks are limited to registered Jenkins committers,
+and they would need to push a malicious commit to some public @jenkinsci repository
+(or a public pull request to it).
+
+Attempts to delete an audit trail using force-push (or deleting a fork)
+would not be fully successful due to organization-wide email notifications, Jenkins event hook logs, and the like.
+
+A random person with a GitHub account could file a (forked) pull request
+which tries to use `withCredentials` from the `Jenkinsfile`,
+but this will not be honored anyway:
+Jenkins will use the target branch’s version instead.
+
+The service account credentials to deploy from `buildPlugin` should be denied redeploy permissions,
+so once the official artifact has been uploaded,
+no one could replace it.
+There is still a window of vulnerability after the commit has been pushed (so its hash is known)
+but it has not yet been deployed;
+but if a malicious actor deploys that GAV first,
+the official CI build will later fail,
+leaving a visible mark that something is wrong.
+(Note that denying redeploy means that a `master` build will fail after a fast-forward merge of a branch.)
+
+Somehow limiting access to the deploy credentials to a trusted library would not really help here.
+Setting aside `Jenkinsfile` edits, a committer could simply make the `pom.xml` do something strange.
+
+==== REST deployment from a downstream job
+
+In this approach the entire repository contents (including `Jenkinsfile` and `pom.xml`) are considered untrusted,
+so `mvn deploy` is not be an option.
+Instead, the main CI build for the plugin or other component (hereafter “upstream”)
+runs a simple `mvn install` to generate artifacts in the local repository.
+It then `archiveArtifacts` the `~/.m2/repository/io/jenkins/plugins/myplugin/1.23-rc999.abc123def456/` directory
+and uses `build` to trigger a deployment job (“downstream”).
+
+The downstream job lives in a separate location with a trusted Pipeline script and access to deployment credentials.
+When run, it uses the Jenkins REST API to inspect its own metadata and find the upstream build;
+it then again uses the Jenkins REST API to inspect the upstream build and find the associated commit.
+
+(Note: traditional metadata from the Git plugin does _not_ suffice for this purpose,
+as that merely records whatever happened in various `checkout` steps,
+which are under the control of the `Jenkinsfile` and potentially unrelated to the component supposedly being built!
+link:https://issues.jenkins-ci.org/browse/JENKINS-50777[JENKINS-50777]
+is needed to determine the actual commit linked to this branch project build, which `checkout scm` would offer.)
+
+After finding the commit hash, it retrieves only those artifacts from the upstream build
+which mention that hash.
+Then it uploads them to Artifactory using its REST API.
+
+link:https://github.com/jglick/incrementals-downstream-publisher[incrementals-downstream-publisher]
+offers a prototype of this system.
+
+Two vulnerabilities remain here.
+First, a malicious commit could generate artifacts of names unrelated to what it is supposed to be:
+for example, `org/jenkins-ci/main/jenkins-war/2.199-rc999.abc123def456/jenkins-war-2.199-rc999.abc123def456.war`.
+The artifact could include any contents not approved by the actual owners of the `jenkinsci/jenkins` repository.
+As above, the risk is mitigated by the fact that someone would need to explicitly consume this artifact.
+
+Using `repository-permissions-updater/permissions/plugin-*.yml` as a reference to block such attempts was prototyped.
+Unfortunately, the current metadata in this repository are not sufficient:
+for example, the downstream build knows it is processing something from `jenkinsci/structs-plugin`,
+but this actually deploys to three separate repository paths,
+controlled separately by `plugin-structs.yml`, `pom-structs-parent.yml`, and `component-symbol-annotation.yml`;
+nowhere is there an indication that `structs-plugin` is the intended source repository for these.
+So the metadata would need to be extended to cover this use case; for example:
+
+[source,yaml]
+----
+github: "jenkinsci/structs-plugin"
+----
+
+The second vulnerability compounds the first:
+the commit hash could be maliciously chosen to look like an actual (say, `master`) commit to the victim repository.
+Since currently Incrementals releases use a 12-digit prefix of the commit hash,
+this could be forged for example with
+link:https://github.com/franckverrot/git-mine-commit[git-mine-commit].
+Using a complete commit hash would be much harder to forge.
+`repository-permissions-updater` would also help here,
+but with an abbreviated hash, a “mined” commit to a fork of a victim repository
+could be submitted for CI in the hopes of being deployed first
+and being picked up in the place of the genuine commit.
+One full defense would be to use complete hashes (assuming SHA-1 is not easily compromised),
+which would be awkward to use in version numbers due to their length (40 digits);
+alternately, some process could detect prefix collisions in the repository and alert administrators.
+
+An alternative defense would be to deploy only _signed_ commits.
+The downstream job could use GitHub’s
+link:https://developer.github.com/v3/repos/commits/#commit-signature-verification[commit signature verification]
+API to check that the commit was indeed signed.
+This can also be used to extract the committer,
+which could then be mapped to a Jenkins LDAP user ID
+and the existing metadata in `repository-permissions-updater` used to gate deployment.
+This would however mean that only people who would be permitted to perform regular releases
+would also be able to deploy to Incrementals,
+blocking certain legitimate use cases when preparing cross-component features.
+(That said, it may be desirable to only deploy signed commits,
+without checking the actual committer.)
+
+==== Status quo
+
+The alternative to all this is a policy more like what the Jenkins project currently has for formal releases:
+the release must be uploaded from the personal computer of a committer,
+whose credentials are then verified by `repository-permissions-updater`
+(assuming that tool applies the same controls to the `incrementals` repository as it does now to `releases`).
+This is possible but less comfortable for developers
+(who are likely to take shortcuts such as deploying commits without running tests),
+and has its own vulnerability (admittedly shared with `releases`)
+that there is nothing preventing a developer from uploading something not built from the published source code.
+
+==== Recommendation
+
+The current candidate approach is to use a downstream deployment job checking `repository-permissions-updater`.
+
+== Infrastructure Requirements
+
+The main requirement on Jenkins infrastructure has already been covered by
+link:https://github.com/jenkins-infra/iep/blob/master/iep-009/README.adoc[IEP-9].
+
+== Reference Implementation
+
+link:https://github.com/jenkinsci/plugin-pom/pull/100[`plugin-pom` PR 100]
+is the starting point for the reference implementation;
+this links to examples of converting some widely used plugins
+to consume Incrementals, produce Incrementals, or both.
+An analogous change to
+link:https://github.com/jenkinsci/pom[`jenkinsci/pom`]
+is expected later.
+link:https://github.com/jglick/git-changelist-maven-extension[`git-changelist-maven-extension`]
+is the Maven extension needed to make it work.
+link:https://github.com/jglick/incrementals-downstream-publisher[`incrementals-downstream-publisher`]
+is a proposed publishing tool.
+
+== References
+
+link:https://groups.google.com/d/topic/jenkinsci-dev/ee3B2ivIgms/discussion[Mailing list kickoff]
+
+link:https://issues.jenkins-ci.org/browse/JENKINS-50686[JENKINS-50686]
+
+link:https://maven.apache.org/maven-ci-friendly.html[Maven CI Friendly Versions]
+
+link:https://github.com/jenkinsci/plugin-pom/pull/100[`plugin-pom` PR 100]
+
+link:https://github.com/jglick/git-changelist-maven-extension[`git-changelist-maven-extension`]
+
+link:https://github.com/jenkins-infra/iep/blob/master/iep-009/README.adoc[IEP-9]
