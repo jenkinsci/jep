@@ -216,6 +216,7 @@ File attribute/symlink support in VirtualFile
 * https://issues.jenkins-ci.org/browse/JENKINS-49635[JENKINS-49635]
 Permit VirtualFile to serve external file contents
 * https://github.com/jenkinsci/jenkins/pull/3302[Jenkins core PR-3302]
+* https://github.com/oleg-nenashev/jenkins-custom-war-packager-ci-demo[WAR packaging implementation for the reference implementation]
 
 Downstream
 
