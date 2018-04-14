@@ -19,6 +19,9 @@
 | Accepted :ok_hand:
 | link:201/[JEP-201: Jenkins Configuration as Code]
 
+| Draft :speech_balloon:
+| link:202/[JEP-202: External Artifact Storage]
+
 | Accepted :ok_hand:
 | link:300/[JEP-300: Jenkins Essentials]
 

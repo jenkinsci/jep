@@ -1,4 +1,4 @@
-= JEP-0000: External Artifact Storage
+= JEP-202: External Artifact Storage
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -13,7 +13,7 @@ endif::[]
 [cols="2"]
 |===
 | JEP
-| 0000
+| 202
 
 | Title
 | External Artifact Storage
@@ -144,7 +144,7 @@ Only customized master-side storage (such as with Compress Artifacts) was really
 
 == Reasoning
 
-=== Initial implementation in AWS S3 
+=== Initial implementation in AWS S3
 
 AWS is the focus as it is the most widely used cloud provider, S3 being the prevalent blob store.
 Equivalent features to S3 exist in other cloud providers and artifact repositories.
@@ -167,8 +167,8 @@ This will work, but will be very expensive when using S3 storage. They need to b
 
 == Security
 
-Security considerations make agents need to be restricted to only access the artifacts needed. 
-Having access to the blob store would mean access to other jobs artifacts. 
+Security considerations make agents need to be restricted to only access the artifacts needed.
+Having access to the blob store would mean access to other jobs artifacts.
 Two possible implementations were considered:
 
 === Agents only need upload/download permissions
