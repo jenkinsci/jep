@@ -9,8 +9,6 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-.**JEP Template**
-
 .Metadata
 [cols="2"]
 |===
@@ -31,7 +29,7 @@ endif::[]
 | Standards
 
 | Created
-| 2018 Apr 11
+| 2018 Apr 13
 //
 //
 // Uncomment if there is an associated placeholder JIRA issue.
@@ -69,17 +67,9 @@ endif::[]
 == Abstract
 
 Jenkins uses the master filesystem to store all generated artifacts, unless explicitly using a plugin that archives somewhere else.
-
-There are serious drawbacks to use filesystem when running in cloud or containerized environments:
-
-* Preventing easy scalability as big disks are expensive to move around vms
-* Causing all sorts of issues due to usage of remoting for file transfer.
-Going through the master as files are copied from/to the agent cause load, cpu, network issues that are hard to diagnose and recover from.
-* Causing a big performance hit due to the traffic and disk access, preventing the usage of distributed filesystems such as NFS, GlusterFS,...
-* Providing limited functionality compared to a first class blob store (AWS S3, Azure Blob Storage, Google Blobstore) or artifact repository (Nexus, Artifactory).
-Organizations may have some requirements that are not available today: auditability, sophisticated retention policies, versioning,...
-
-This proposal provides the APIs needed to store all artifacts in an external location without going through the master, and a initial implementation using AWS S3
+There are serious drawbacks to use filesystem when running in cloud or containerized environments.
+This proposal provides the APIs needed to store all artifacts in an external location without going through the master.
+It includes an initial implementation using AWS S3.
 
 == Specification
 
@@ -119,7 +109,16 @@ The cache system allows a single S3 metadata call (possibly one HTTP request, de
 
 == Motivation
 
-As mentioned in the abstract, running in a containerized environment is challenging due to the excessive use of the file system. Plus the lack of functionality provided by files vs dedicated artifact or blob store (versioning, permissions, cold store,...)
+Jenkins uses the master filesystem to store all generated artifacts, unless explicitly using a plugin that archives somewhere else.
+
+There are serious drawbacks to use filesystem when running in cloud or containerized environments:
+
+* Preventing easy scalability as big disks are expensive to move around vms
+* Causing all sorts of issues due to usage of remoting for file transfer.
+Going through the master as files are copied from/to the agent cause load, cpu, network issues that are hard to diagnose and recover from.
+* Causing a big performance hit due to the traffic and disk access, preventing the usage of distributed filesystems such as NFS, GlusterFS,...
+* Providing limited functionality compared to a first class blob store (AWS S3, Azure Blob Storage, Google Blobstore) or artifact repository (Nexus, Artifactory).
+Organizations may have some requirements that are not available today: auditability, sophisticated retention policies, versioning,...
 
 From the usability point of view, currently a Jenkins installation sizing has to have into account the expected amount of disk needed or a restart, disk reprovisioning, disk swap,... instead of a infinite scale, pay per use that a blob store can offer. Cloud installations can automatically configure the blob store to use offering a much better first time user experience.
 
@@ -145,6 +144,8 @@ Only customized master-side storage (such as with Compress Artifacts) was really
 
 == Reasoning
 
+=== Initial implementation in AWS S3 
+
 AWS is the focus as it is the most widely used cloud provider, S3 being the prevalent blob store.
 Equivalent features to S3 exist in other cloud providers and artifact repositories.
 
@@ -166,7 +167,9 @@ This will work, but will be very expensive when using S3 storage. They need to b
 
 == Security
 
-Security considerations make agents need to be restricted to only access the artifacts needed. Having access to the blob store would mean access to other jobs artifacts. Two possible implementations were considered:
+Security considerations make agents need to be restricted to only access the artifacts needed. 
+Having access to the blob store would mean access to other jobs artifacts. 
+Two possible implementations were considered:
 
 === Agents only need upload/download permissions
 
