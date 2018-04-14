@@ -37,7 +37,7 @@ endif::[]
 | Process
 
 | Created
-| :bulb: Date :bulb:
+| 2018-04-13
 
 | JIRA
 | link:https://issues.jenkins-ci.org/browse/JENKINS-50686[JENKINS-50686]
@@ -47,7 +47,7 @@ endif::[]
 //| :bulb: Link to github user page :bulb:
 
 | Requires
-| :bulb: IEP-9 :bulb:
+| https://github.com/jenkins-infra/iep/blob/master/iep-009/README.adoc[IEP-9]
 
 // Uncomment and fill if this JEP is rendered obsolete by a later JEP
 //| Superseded-By
@@ -62,55 +62,26 @@ endif::[]
 
 == Abstract
 
-The Jenkins source base is spread across numerous GitHub repositories:
-`jenkinsci/jenkins` itself for the core;
-a number of libraries or components like Stapler and Remoting;
-several modules;
-and of course the ~1700 plugins.
-Contributions which can be limited to a single repository can be built, tested, merged, and released entirely in isolation.
+In order to support more rapid continuous delivery models, such as that
+described by
+link:https://github.com/jenkinsci/jep/tree/master/jep/300[Jenkins Essentials],
+Jenkins core and plugin builds must be deployed into a Maven repository much
+more incrementally rather than waiting for a developer to manually deploy a
+release to the existing `releases` footnote:[https://repo.jenkins-ci.org/releases/]
+repository.
 
-However, when a proposed change requires patches to multiple repositories (such as new APIs), the process becomes much more complicated.
-Multiple pull requests are involved, and special procedures are needed to allow Maven to make sense of which versions of which components are required.
+A previously submitted
+link:https://github.com/jenkins-infra/iep/blob/master/iep-009/README.adoc#specification[IEP-9]
+paved the way for an `incrementals` repository to be hosted on Jenkins infrastructure,
+but was silent on how it was to be actually used.
+This JEP specifies that format and the accompanying tooling.
 
-Further issues arise when changes are accepted and proposed for release.
-Publishing a change to users requires a separate step using the Maven Release plugin and special credentials;
-then an update center process runs at intervals searching for new releases.
-
-While this process has always been cumbersome,
-it is particularly onerous for use from
-link:https://github.com/jenkinsci/jep/blob/master/jep/301/README.adoc[JEP-301 “Evergreen”]
-as laid out in
-link:https://github.com/jenkinsci/jep/blob/master/jep/300/README.adoc#auto-update[JEP-300 “Essentials”]:
-
-[quote]
-____
-Greatly reduced time between core and "foundational" plugin changes landing, and being adoptable by downstream components.
-
-…
-
-Small-batch changes, automatically distributed to Jenkins instances…
-____
+== Specification
 
 This proposal suggests a streamlined approach whereby the existence of a suitably published Git commit suffices to identify a component version.
 The version identifier is insensitive to the build environment;
 yet increases monotonically and so is suitable for use in version comparison logic.
 Decisions about whether and how to expose changes to users are made at a separate level, without touching the component repository.
-
-A previously submitted
-link:https://github.com/jenkins-infra/iep/blob/master/iep-009/README.adoc#specification[IEP-9]
-paved the way for an `incrementals` repository to be hosted on Jenkins infrastructure,
-but was silent on how it was to be actually used:
-
-[quote]
-____
-Plugin and core tooling should use a consistent format for defining incremental built versions,
-such as: `<artifactId>-<major>.<minor>.<patch>-<sha1>.jar`.
-The specific format is not required for this document.
-____
-
-This JEP proposes to specify that format, and the accompanying tooling.
-
-== Specification
 
 Most Jenkins component repositories in GitHub are built via Maven,
 either as a single module or as a multimodule reactor starting at the repository root.
@@ -186,7 +157,7 @@ You will then see output like this:
 git-plugin$ mvn -DskipTests clean install -Dset.changelist
 [INFO] Setting: -Dchangelist=-rc1652.cd45427eb4e2
 [INFO] Scanning for projects...
-[INFO] 
+[INFO]
 [INFO] ---------------------< org.jenkins-ci.plugins:git >---------------------
 [INFO] Building Jenkins Git plugin 3.8.1-rc1652.cd45427eb4e2
 [INFO] --------------------------------[ hpi ]---------------------------------
@@ -330,6 +301,36 @@ with Essentials/Evergreen exercising the concepts initially.
 
 == Motivation
 
+The Jenkins source base is spread across numerous GitHub repositories:
+`jenkinsci/jenkins` itself for the core;
+a number of libraries or components like Stapler and Remoting;
+several modules;
+and of course the ~1700 plugins.
+Contributions which can be limited to a single repository can be built, tested, merged, and released entirely in isolation.
+
+However, when a proposed change requires patches to multiple repositories (such as new APIs), the process becomes much more complicated.
+Multiple pull requests are involved, and special procedures are needed to allow Maven to make sense of which versions of which components are required.
+
+Further issues arise when changes are accepted and proposed for release.
+Publishing a change to users requires a separate step using the Maven Release plugin and special credentials;
+then an update center process runs at intervals searching for new releases.
+
+While this process has always been cumbersome,
+it is particularly onerous for use from
+link:https://github.com/jenkinsci/jep/blob/master/jep/301/README.adoc[JEP-301 “Evergreen”]
+as laid out in
+link:https://github.com/jenkinsci/jep/blob/master/jep/300/README.adoc#auto-update[JEP-300 “Essentials”]:
+
+[quote]
+____
+Greatly reduced time between core and "foundational" plugin changes landing, and being adoptable by downstream components.
+
+…
+
+Small-batch changes, automatically distributed to Jenkins instances…
+____
+
+
 The status quo is a combination of `maven-release-plugin` (MRP) for component versions delivered to users,
 and Maven timestamped snapshots for advance integration testing.
 
@@ -472,7 +473,7 @@ as this JEP proposes.
 link:https://axelfontaine.com/blog/dead-burried.html[This popular post]
 gives an example of switching to that system,
 but declines to talk much about how the version should actually be picked,
-and does not seem to discuss multi-module reactors, 
+and does not seem to discuss multi-module reactors,
 much less cross-repository development.
 
 ==== Other version schemes
@@ -823,28 +824,23 @@ link:https://github.com/jenkins-infra/iep/blob/master/iep-009/README.adoc[IEP-9]
 
 == Reference Implementation
 
-link:https://github.com/jenkinsci/plugin-pom/pull/100[`plugin-pom` PR 100]
+* link:https://github.com/jenkinsci/plugin-pom/pull/100[`plugin-pom` PR 100]
 is the starting point for the reference implementation;
 this links to examples of converting some widely used plugins
 to consume Incrementals, produce Incrementals, or both.
 An analogous change to
-link:https://github.com/jenkinsci/pom[`jenkinsci/pom`]
+* link:https://github.com/jenkinsci/pom[`jenkinsci/pom`]
 is expected later.
-link:https://github.com/jglick/git-changelist-maven-extension[`git-changelist-maven-extension`]
+* link:https://github.com/jglick/git-changelist-maven-extension[`git-changelist-maven-extension`]
 is the Maven extension needed to make it work.
-link:https://github.com/jglick/incrementals-downstream-publisher[`incrementals-downstream-publisher`]
+* link:https://github.com/jglick/incrementals-downstream-publisher[`incrementals-downstream-publisher`]
 is a proposed publishing tool.
 
 == References
 
-link:https://groups.google.com/d/topic/jenkinsci-dev/ee3B2ivIgms/discussion[Mailing list kickoff]
-
-link:https://issues.jenkins-ci.org/browse/JENKINS-50686[JENKINS-50686]
-
-link:https://maven.apache.org/maven-ci-friendly.html[Maven CI Friendly Versions]
-
-link:https://github.com/jenkinsci/plugin-pom/pull/100[`plugin-pom` PR 100]
-
-link:https://github.com/jglick/git-changelist-maven-extension[`git-changelist-maven-extension`]
-
-link:https://github.com/jenkins-infra/iep/blob/master/iep-009/README.adoc[IEP-9]
+* link:https://groups.google.com/d/topic/jenkinsci-dev/ee3B2ivIgms/discussion[Mailing list kickoff]
+* link:https://issues.jenkins-ci.org/browse/JENKINS-50686[JENKINS-50686]
+* link:https://maven.apache.org/maven-ci-friendly.html[Maven CI Friendly Versions]
+* link:https://github.com/jenkinsci/plugin-pom/pull/100[`plugin-pom` PR 100]
+* link:https://github.com/jglick/git-changelist-maven-extension[`git-changelist-maven-extension`]
+* link:https://github.com/jenkins-infra/iep/blob/master/iep-009/README.adoc[IEP-9]
