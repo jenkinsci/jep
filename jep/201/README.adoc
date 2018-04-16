@@ -22,7 +22,7 @@ endif::[]
 | https://github.com/ewelinawilkosz2[Ewelina Wilkosz] from https://github.com/praqma[Praqma]
 
 | Status
-| Accepted :ok_hand:
+| Draft :speech_balloon:
 //| Rejected :no_entry:
 //| Withdrawn :hand:
 //| Final :lock:
