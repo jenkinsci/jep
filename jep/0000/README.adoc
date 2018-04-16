@@ -23,7 +23,7 @@ endif::[]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
-| Not Submitted :information_source:
+| Draft :speech_balloon:
 
 | Type
 | Process
@@ -87,11 +87,12 @@ the guidelines stated below:
 * Meet regularly, at least for 30 minutes every 3 weeks, except November and December
 * Keep up-to-date meeting notes, somewhere publicly linked from the SIG's page on jenkins.io
 * Announce meeting agenda and minutes after each meeting, on their SIG mailing list
-* Record SIG meeting, such as via <<video, YouTube Live Streaming>>, and make
-  it publicly available. Text-based meetings can use `#jenkins-meeting` on
-  Freenode..
+* Record SIG meeting, either via <<video, YouTube Live Streaming>>, or via
+  text-based meetings which can use `#jenkins-meeting` on
+  Freenode. SIG meetings must be public and should have their meeting recorded
+  (video or text) or the meeting minutes published afterwards.
 * Ensure the SIG's mailing list, and optional chat channel are archived
-* Report activity in the weekly community meeting at least once every 6 weeks
+* Report activity in the link:https://wiki.jenkins.io/display/JENKINS/Governance+Meeting+Agenda?cache[bi-weekly Governance Meeting] at least once every 6 weeks
 * Participate in release planning meetings and retrospectives, and burndown
   meetings, as needed.
 * Ensure related work happens in a project-owned GitHub org and repository,
@@ -122,7 +123,9 @@ link:https://jenkins.io/conduct[Code of Conduct].
   summary of ad hoc SIG meetings to the the SIG mailing list.
 * Use existing proposal and <<pull-request, PR process>>
 * Announce new SIG on jenkinsci-dev@googlegroups.com
-* Submit a PR to add a row for the SIG to the table in the kubernetes/community README.md file, to create a kubernetes/community directory, and to add any SIG-related docs, schedules, roadmaps, etc. to your new kubernetes/community/SIG-foo directory.
+* Submit a PR to add a row for the SIG to the table in the jenkins.io/sigs
+  page, to create a kubernetes/community directory, and to add any SIG-related
+  docs, schedules, roadmaps, etc. to your new jenkins.io/sig/foo directory
 
 === Creating service accounts for the SIG
 
@@ -130,7 +133,13 @@ With a purpose to distribute the channels of notification and discussion of the
 various topics, every SIG has to use multiple accounts to GitHub mentioning and
 notifications. Below the procedure is explained step-by-step.
 
-NOTE: This procedure is managed and maintained by **[@idvoretskyi](https://github.com/idvoretskyi)**; please, reach him directly in case of any questions/suggestions.
+[NOTE]
+====
+This procedure is largely maintained by link:https://github.com[R Tyler Croy]
+on the Jenkins Infrastructure team, please file INFRA tickets in JIRAs or post
+to the link:http://lists.jenkins-ci.org/mailman/listinfo/jenkins-infra[Infra mailing list]
+in case of questions or suggestions.
+====
 
 ==== Google Groups creation
 
@@ -142,22 +151,15 @@ Create Google Groups at [https://groups.google.com/forum/#!creategroup](https://
   (including tyler at monkeypox.org and verninol at gmail.com to ensure SIG
   continuity);
 * To add the owners, visit the Group Settings (drop-down menu on the right
-  side), select Direct Add Members on the left side and add Sarah and Ihor via
-  email address (with a suitable welcome message); in Members/All Members
-  select Ihor and Sarah and assign to an "owner role";
+  side), select Direct Add Members on the left side and add Tyler and Olivier
+  via email address (with a suitable welcome message); in Members/All Members
+  select Tyler and Olivier and assign t hem to an "owner role" for long term
+  maintenance.
 * Set "View topics", "Post", "Join the Group" permissions to be "Public"
 
 Name convention:
 
-* jenkinsci-foo (the discussion group)
-* jenkinsci-foo-leads (list for the leads, to be used with Zoom and Calendars)
-* jenkinsci-foo-misc
-* jenkinsci-foo-test-failures
-* jenkinsci-foo-bugs
-* jenkinsci-foo-feature-requests
-* jenkinsci-foo-proposals
-* jenkinsci-foo-pr-reviews
-* jenkinsci-foo-api-reviews
+* jenkins-foo (the discussion group)
 
 [[video]]
 ==== Recorded Video Meetings
@@ -180,7 +182,7 @@ Meetings" to keep the YouTube channel properly organized.
 [[irc]]
 ==== Recorded IRC Meetings
 
-THe Jenkins project already operates a `#jenkins-meeting` channel on the
+The Jenkins project already operates a `#jenkins-meeting` channel on the
 Freenode network which can be used for recording IRC-based meetings. While
 <<video, Video Meetings>> are preferred, text-based meetings are also
 allowed.
@@ -200,13 +202,7 @@ which GitHub organizations in which the team should be created.
 
 Name convention:
 
-* sig-foo-misc
-* sig-foo-test-failures
-* sig-foo-bugs
-* sig-foo-feature-requests
-* sig-foo-proposals
-* sig-foo-pr-reviews
-* sig-foo-api-reviews
+* sig-foo
 
 [NOTE]
 ====
