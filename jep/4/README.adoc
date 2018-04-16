@@ -1,4 +1,4 @@
-= JEP-0000: Special Interest Groups
+= JEP-4: Special Interest Groups
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -13,7 +13,7 @@ endif::[]
 [cols="2"]
 |===
 | JEP
-| 0000
+| 4
 
 | Title
 | Special Interest Groups
@@ -136,7 +136,7 @@ notifications. Below the procedure is explained step-by-step.
 [NOTE]
 ====
 This procedure is largely maintained by link:https://github.com[R Tyler Croy]
-on the Jenkins Infrastructure team, please file INFRA tickets in 
+on the Jenkins Infrastructure team, please file INFRA tickets in
 link:https://issues.jenkins-ci.org/[JIRA] or post
 to the link:http://lists.jenkins-ci.org/mailman/listinfo/jenkins-infra[Infra mailing list]
 in case of questions or suggestions.
@@ -144,7 +144,7 @@ in case of questions or suggestions.
 
 ==== Google Groups creation
 
-Create Google Groups at 
+Create Google Groups at
 link:https://groups.google.com/forum/#!creategroup[],
 following the procedure:
 

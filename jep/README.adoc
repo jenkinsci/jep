@@ -13,6 +13,9 @@
 | Accepted :ok_hand:
 | link:3/[JEP-3: Adding the "Released As" field and "Ready for Release" status to Jenkins JIRA]
 
+| Draft :speech_balloon:
+| link:4/[JEP-4: Special Interest Groups]
+
 | Final :lock:
 | link:200/[JEP-200: Switch Remoting/XStream blacklist to a whitelist]
 
