@@ -45,7 +45,7 @@ endif::[]
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
 | Discussions-To
 |
-link:https://groups.google.com/d/msgid/jenkinsci-dev/20180322210421.4ikcudf7m65yilvo%40blackberry.coupleofllamas.com]jenkinsci-dev@ thread]
+link:https://groups.google.com/d/msgid/jenkinsci-dev/20180322210421.4ikcudf7m65yilvo%40blackberry.coupleofllamas.com[jenkinsci-dev@ thread]
 //
 //
 // Uncomment if this JEP depends on one or more other JEPs.
@@ -136,14 +136,17 @@ notifications. Below the procedure is explained step-by-step.
 [NOTE]
 ====
 This procedure is largely maintained by link:https://github.com[R Tyler Croy]
-on the Jenkins Infrastructure team, please file INFRA tickets in JIRAs or post
+on the Jenkins Infrastructure team, please file INFRA tickets in 
+link:https://issues.jenkins-ci.org/[JIRA] or post
 to the link:http://lists.jenkins-ci.org/mailman/listinfo/jenkins-infra[Infra mailing list]
 in case of questions or suggestions.
 ====
 
 ==== Google Groups creation
 
-Create Google Groups at [https://groups.google.com/forum/#!creategroup](https://groups.google.com/forum/#!creategroup), following the procedure:
+Create Google Groups at 
+link:https://groups.google.com/forum/#!creategroup[],
+following the procedure:
 
 * Each SIG should have one discussion groups, and a number of groups for mirroring relevant github notifications;
 * Create groups using the name conventions below;
