@@ -1,0 +1,284 @@
+= JEP-4: Special Interest Groups
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 4
+
+| Title
+| Special Interest Groups
+
+| Sponsor
+| link:https://github.com/rtyler[R Tyler Croy]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Process
+
+| Created
+| 2018-04-09
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+| Discussions-To
+|
+link:https://groups.google.com/d/msgid/jenkinsci-dev/20180322210421.4ikcudf7m65yilvo%40blackberry.coupleofllamas.com[jenkinsci-dev@ thread]
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+As the Jenkins community has grown, there have been ad hoc groups sprouting up
+to tackle specific areas of focus within the project. This proposal describes a
+"Special Interest Group" (SIG) model to provide structure so that these groups can
+become more formalized, with consistent expectations of their operation, to
+help new contributors join areas of effort which align with their interests.
+
+[[specification]]
+== Specification
+
+Much of this specification is modeled after the Kubernetes project's "SIG"
+model. footnoteref:[sig-governance, https://github.com/kubernetes/community/blob/master/sig-governance.md]
+
+
+In order to standardize Special Interest Group efforts, create maximum
+transparency, and route contributors to the appropriate SIG, SIGs should follow
+the guidelines stated below:
+
+* Meet regularly, at least for 30 minutes every 3 weeks, except November and December
+* Keep up-to-date meeting notes, somewhere publicly linked from the SIG's page on jenkins.io
+* Announce meeting agenda and minutes after each meeting, on their SIG mailing list
+* Record SIG meeting, either via <<video, YouTube Live Streaming>>, or via
+  text-based meetings which can use `#jenkins-meeting` on
+  Freenode. SIG meetings must be public and should have their meeting recorded
+  (video or text) or the meeting minutes published afterwards.
+* Ensure the SIG's mailing list, and optional chat channel are archived
+* Report activity in the link:https://wiki.jenkins.io/display/JENKINS/Governance+Meeting+Agenda?cache[bi-weekly Governance Meeting] at least once every 6 weeks
+* Participate in release planning meetings and retrospectives, and burndown
+  meetings, as needed.
+* Ensure related work happens in a project-owned GitHub org and repository,
+  with code and tests explicitly owned and supported by the SIG, including issue
+  triage, PR reviews, test-failure response, bug fixes, etc.
+* Use the above forums as the primary means of working, communicating, and
+  collaborating, as opposed to private emails and meetings
+
+
+All Special Interest Groups are subject to the Jenkins project
+link:https://jenkins.io/conduct[Code of Conduct].
+
+=== Roles
+
+- **SIG Participant**: active in one or more areas of the project; wide
+  variety of roles are represented
+- **SIG Lead**: SIG organizer
+
+=== Creation and Maintenance
+
+==== Prerequisites
+
+* Propose the new SIG publicly, including a brief mission statement, by
+  emailing jenkinsci-dev@googlegroups.com and jenkinsci-users@googlegroups.com,
+  then wait a couple of days for feedback
+* Organize meetings using video or text as needed. No need to wait for the a
+  regularly scheduled Jenkins Governance meeting to discuss. Please report
+  summary of ad hoc SIG meetings to the the SIG mailing list.
+* Use existing proposal and <<pull-request, PR process>>
+* Announce new SIG on jenkinsci-dev@googlegroups.com
+* Submit a PR to add a row for the SIG to the table in the jenkins.io/sigs
+  page, to create a kubernetes/community directory, and to add any SIG-related
+  docs, schedules, roadmaps, etc. to your new jenkins.io/sig/foo directory
+
+=== Creating service accounts for the SIG
+
+With a purpose to distribute the channels of notification and discussion of the
+various topics, every SIG has to use multiple accounts to GitHub mentioning and
+notifications. Below the procedure is explained step-by-step.
+
+[NOTE]
+====
+This procedure is largely maintained by link:https://github.com[R Tyler Croy]
+on the Jenkins Infrastructure team, please file INFRA tickets in
+link:https://issues.jenkins-ci.org/[JIRA] or post
+to the link:http://lists.jenkins-ci.org/mailman/listinfo/jenkins-infra[Infra mailing list]
+in case of questions or suggestions.
+====
+
+==== Google Groups creation
+
+Create Google Groups at
+link:https://groups.google.com/forum/#!creategroup[],
+following the procedure:
+
+* Each SIG should have one discussion groups, and a number of groups for mirroring relevant github notifications;
+* Create groups using the name conventions below;
+* Groups should be created as e-mail lists with at least three owners
+  (including tyler at monkeypox.org and verninol at gmail.com to ensure SIG
+  continuity);
+* To add the owners, visit the Group Settings (drop-down menu on the right
+  side), select Direct Add Members on the left side and add Tyler and Olivier
+  via email address (with a suitable welcome message); in Members/All Members
+  select Tyler and Olivier and assign t hem to an "owner role" for long term
+  maintenance.
+* Set "View topics", "Post", "Join the Group" permissions to be "Public"
+
+Name convention:
+
+* jenkins-foo (the discussion group)
+
+[[video]]
+==== Recorded Video Meetings
+
+Video meetings should be recorded with Hangouts on Air via the Jenkins projects
+link:https://www.youtube.com/c/jenkinscicd[YouTube Channel].
+
+Each SIG Lead wishing to host video meetings should file an INFRA ticket to
+request
+link:https://support.google.com/accounts/answer/7311601?visit_id=1-636590077002254769-397511081&p=brand_accounts_managers&rd=1[Manager access]
+to the YouTube channel. Manager access allows SIG Leads to schedule a
+link:https://www.youtube.com/my_live_events[Live Streaming Event]
+which will allow meeting contributors to use Google Hangouts to discuss, while
+allowing participants to view the YouTube live stream, or after the fact, the
+recording.
+
+All recorded events should be filed into a YouTube Playlist titled "SIG <Name>
+Meetings" to keep the YouTube channel properly organized.
+
+[[irc]]
+==== Recorded IRC Meetings
+
+The Jenkins project already operates a `#jenkins-meeting` channel on the
+Freenode network which can be used for recording IRC-based meetings. While
+<<video, Video Meetings>> are preferred, text-based meetings are also
+allowed.
+
+SIG Leads should request operator status for the `#jenkins-meeting` channel,
+and should consult the link:https://jenkins.io/event-calendar/[Jenkins Event
+Calendar] to make sure their meetings do not overlap with those already
+scheduled.
+
+
+==== Create the GitHub teams
+
+GitHub teams for the SIG should following the naming convention listed below.
+To create a team, a SIG lead should file an INFRA ticket linking to the SIG
+proposal on the jenkinsci-dev@googlegroups.com mailing list with a mention of
+which GitHub organizations in which the team should be created.
+
+Name convention:
+
+* sig-foo
+
+[NOTE]
+====
+There should not be a sig-foo team. We want to encourage contributors to select
+the most appropriate team to notify.
+====
+
+
+== Motivation
+
+
+As link:https://jenkins.io/blog/2018/03/20/evolving-mission-of-jenkins/[Jenkins continues to grow and evolve]
+the "main" community discussion forums and channels have become increasingly
+busy, causing contributor fatigue and unproductive discussions for more
+specialized focus areas.
+
+The Jenkins project already has _some_ loose conventional structure around
+groups with specialization such as:
+
+* **Infrastructure**: group responsible for maintaining the Jenkins project's
+  primary infrastructure.
+* **Google Summer of Code**: group of organizers and mentors for the Jenkins
+  project's participation in link:https://summerofcode.withgoogle.com/[Google Summer of Code].
+* **LTS**: group led by the Release Office organizing the Long Term Support
+  release line.
+
+These groups have vaguely consistent structure but lack consistent
+representation and process which leads to confusion about how these groups
+should be operated, what qualifies as a "group", and how new-comers should
+participate.
+
+
+== Reasoning
+
+As mentioned in the <<specification>>, much of this is modeled after the
+Kubernetes SIG process footnoteref:[sig-governance], which is a *much* larger
+open source community at this point than the Jenkins project. This design is
+well-tested and provides a reasonable middle-ground between flexibility for SIG
+Leads, without encouraging each SIG to reinvent their own bespoke process.
+
+
+== Backwards Compatibility
+
+Nothing relevant for this JEP.
+
+
+== Security
+
+Nothing relevant for this JEP.
+
+== Infrastructure Requirements
+
+This document describes avenues for many more Jenkins contributors to have
+access to resources which have traditionally only been accessed by
+infrastructure administrators.
+
+This requires that access control must be shared for:
+
+* the YouTube channel, via the
+  link:https://support.google.com/accounts/answer/7001996[Brand account]
+* Newly created Google Groups.
+* `#jenkins-meeting` on Freenode.
+
+
+== Testing
+
+Nothing relevant for this JEP.
+
+== Prototype Implementation
+
+Nothing relevant for this JEP.
+
+== References
+
+* Much of the "SIG" concept has been borrowed heavily from the
+  link:https://github.com/kubernetes/community/blob/master/governance.md#sigs[Kubernetes community].
