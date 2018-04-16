@@ -227,4 +227,4 @@ Downstream
 * https://github.com/jenkinsci/workflow-api-plugin/pull/67[workflow-api-plugin PR-67]
 * https://github.com/jenkinsci/workflow-basic-steps-plugin/pull/60[workflow-basic-steps-plugin PR-60]
 * https://github.com/jenkinsci/copyartifact-plugin/pull/100[copyartifact-plugin PR-100]
-* https://github.com/jenkinsci/compress-artifacts-plugin/pull/1[compress-artifacts-plugin PR-1]
+* https://github.com/jenkinsci/compress-artifacts-plugin/pull/7[compress-artifacts-plugin PR-7]
