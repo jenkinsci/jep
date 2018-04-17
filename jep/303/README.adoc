@@ -124,6 +124,29 @@ request consists of the UUID footnoteref:[uuid], signed by the client's private
 key. This provides the Authentication Service enough information to verify that
 the client is authentic.
 
+.Registration Payload
+[source,json]
+----
+{
+    "pubKey" : "my amazing example ECDSA key",
+    "curve"  : "secp256k1"
+}
+----
+
+.Registration Headers
+[source]
+----
+Content-Type: application/json
+----
+
+
+
+[NOTE]
+====
+Both fields are required and the registration request will fail if they are not
+provided
+====
+
 Once the client has been deemed authentic, the Authentication Service will
 generate a link:https://jwt.io[JSON Web Token] (JWT) which must be encrypted
 with a pre-shared key (PSK), known to the other backend services, but not the
@@ -164,6 +187,21 @@ handle expired tokens. In the case of an expired JWT, the client must repeat
 the <<login-diagram, Login flow>> once again, before re-attempting its original
 request.
 
+.Authentication Payload
+[source,json]
+----
+{
+    "uuid" : "uuidv4-provided-in-registration",
+    "signature" : "hex-encoded-signature-of-uuid-signed-by-private-key"
+}
+----
+
+.Authentication Headers
+[source]
+----
+Content-Type: application/json
+----
+
 The client should perform an exponential backoff if it is unable to
 successfully repeat the Login flow in order to avoid client or service-side
 errors leading to cascading failures.
@@ -201,6 +239,17 @@ database         service           service              client
    |               |                  o------------------->|
    |               |                  |                    |
 -----
+
+
+Making authenticated requests requires simply using the `Authorization` with
+subsequent HTTP requests, for example:
+
+.Headers for Authenticated Requests
+[source]
+----
+Content-Type: application/json
+Authorization: <jwt-token>
+----
 
 [[claims]]
 === Claims
