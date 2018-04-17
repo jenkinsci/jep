@@ -1,4 +1,4 @@
-= JEP-0000: :bulb: Title :bulb:
+= JEP-0000: Evergreen Update Client/Server Lifecycle
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -9,18 +9,6 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-.**JEP Template**
-[TIP]
-====
-In this document, all text in a "Tip" block (or inline text with with a ":bulb:" on either side)
-MUST be removed and/or replaced with text appropriate to this JEP before submission.
-
-Sections may include aditional help and advice in comments.
-":bulb:" entries in comments only need to be filled in if that text is uncommented.
-
-See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for full and accurate description of the JEP process and what is required in each section.
-====
-
 .Metadata
 [cols="2"]
 |===
@@ -28,20 +16,20 @@ See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for fu
 | 0000
 
 | Title
-| :bulb: Title :bulb:
+| Evergreen Update Client/Server Lifecycle
 
 | Sponsor
-| :bulb: Link to github user page :bulb:
+| link:https://github.com/rtyler[R. Tyler Croy]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
 | Not Submitted :information_source:
 
 | Type
-| :bulb: Standards, Informational, or Process :bulb:
+| Standards
 
 | Created
-| :bulb: Date :bulb:
+| 2018-04-17
 //
 //
 // Uncomment if there is an associated placeholder JIRA issue.
@@ -60,8 +48,8 @@ See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for fu
 //
 //
 // Uncomment if this JEP depends on one or more other JEPs.
-//| Requires
-//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+| Requires
+| JEP-300, JEP-303
 //
 //
 // Uncomment and fill if this JEP is rendered obsolete by a later JEP
@@ -78,19 +66,47 @@ See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for fu
 
 == Abstract
 
-[TIP]
-====
-Give a short (200 word) description of the technical issue addressed.
-====
+Integral to link:https://github.com/jenkinsci/jep/tree/master/jep/300[Jenkins
+Essentials] is the client's update lifecycle with the Evergreen hosted service
+layer. Starting for the first boot, the client must frequently inform the
+client of its current versions, retrieve new versions, and apply updates. This
+document specifies those API interactions and expectations to allow this update
+lifecycle to be performed correctly.
 
 == Specification
 
-[TIP]
-====
-Provide a detailed specification what is being proposed.
-Be as technical and detailed as needed to allow new or existing Jenkins developers
-to reasonably understand the scope/impact of an implementation.
-====
+The role of the versions service is simply to maintain an audit trail of sorts
+for the versions of sofware that each client has installed locally.
+
+
+The role of the update service is to use the `essentials.yaml` and retriev the
+latest versions of software for a given client UUID and compute the appropriate
+update response by the client
+
+.Bootstrapping Instance
+[source]
+----
+
+  update                     versions                    evergreen
+  service                    service                      client
+     |                           |                           |
+     |                           |     POST version manifest |
+     |                           |     from local hpis/core  |
+     |                           |<--------------------------o
+     |                           o-----------/ok/----------->|
+     |                           |                           |
+     |                     GET /update                       |
+     |<------------------------------------------------------o
+     |    GET /versions for uuid |                           |
+     o-------------------------->|                           |
+     |<-----/200 json payload/---o                           |
+     |                           |                           |
+     |                 200 with computed JSON payload        |
+     |                 indicating what files should          |
+     |                 be downloaded                         |
+     o------------------------------------------------------>|
+     |                           |                           |
+----
 
 == Motivation
 
