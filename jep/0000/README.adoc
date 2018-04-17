@@ -101,12 +101,80 @@ update response by the client
      o-------------------------->|                           |
      |<-----/200 json payload/---o                           |
      |                           |                           |
-     |                 200 with computed JSON payload        |
-     |                 indicating what files should          |
-     |                 be downloaded                         |
+     |            200 with computed JSON update manifest     |
+     |            indicating what files should               |
+     |            be downloaded                              |
      o------------------------------------------------------>|
      |                           |                           |
 ----
+
+=== Update Manifest
+
+The responses sent to the client must be well-formed JSON documents, referred
+to as "update manifests" which the client must understand. The Update Manifest
+should have a consistent structure but will be dynamically generated _per
+client_ in order to ensure that the client is only downloading what is
+necessary to update that specific client.
+
+.Example Update Manifest
+[source,json]
+----
+{
+    "core" : {
+        "uri" : "https://updates.jenkins.io/some/path/to/a/jenkins.war",
+        "checksum" : {
+            "type" : "sha256",
+            "signature" : "somechecksumforthefile"
+        }
+    },
+    "plugins" : {
+        "updates" : [
+            {
+                "uri" : "https://updates.jenkins.io/some/path/to/a/plugin.hpi",
+                "checksum" : {
+                    "type" : "sha256",
+                    "signature" : "somechecksumforthefile"
+                }
+            },
+            {
+                "uri" : "https://updates.jenkins.io/some/path/to/another/plugin.hpi",
+                "checksum" : {
+                    "type" : "sha256",
+                    "signature" : "somechecksumforthefile"
+                }
+            }
+        ]
+    },
+    "client" : {
+        "uri" : "https://updates.jenkins.io/some/path/to/a/evergreen-client.tar.gz",
+        "checksum" : {
+            "type" : "sha256",
+            "signature" : "somechecksumforthefile"
+        }
+    }
+}
+----
+
+The three primary keys of the update manifest are:
+
+* `core` which indicates that a new jenkins.war is necessary.
+* `plugins` which will include a list of `updates` for plugins. This is an
+  object within the JSON structure rather than a flat array as it is expected
+  that at some point in the future we  may require a `removes` list to properly
+  unpublish legacy or out-dated plugins from instances.
+* `client` which incidates a new tarball for upgrading the `evergreen-client`
+  itself.
+
+Additional keys should be ignored by clients not supporting them to allow the
+Update Manifest to safely include things which are not yet supported.
+
+[NOTE]
+====
+There _may_ be opportunities to cache the Update Manifest in the future, but
+this is considered a potential optimization which will be contingent on
+observation of real world usage for Jenkins Essentials.
+====
+
 
 == Motivation
 
