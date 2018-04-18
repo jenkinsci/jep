@@ -108,6 +108,7 @@ update response by the client
      |                           |                           |
 ----
 
+[[update-manifest]]
 === Update Manifest
 
 The responses sent to the client must be well-formed JSON documents, referred
@@ -176,6 +177,17 @@ observation of real world usage for Jenkins Essentials.
 ====
 
 
+=== Client Update Behavior
+
+The client should perform the necessary downloading of items
+referenced in the <<update-manifest>> before initiating an client update
+process, which is itself outside of the scope of this document.
+
+The client should also update the "versions" service once an update has
+successfully completed to ensure that subsequent checking in for updates
+results in accurate manifests.
+
+
 == Motivation
 
 [TIP]
@@ -194,84 +206,27 @@ Provide evidence of consensus within the community and discuss important objecti
 
 == Backwards Compatibility
 
-[TIP]
-====
-Describe any incompatibilities and their severity.
-Describe how the JEP proposes to deal with these incompatibilities.
-If there are no backwards compatibility concerns, this section may simply say:
-There are no backwards compatibility concerns related to this proposal.
-====
+Not necessary as there is no pre-existing implemntation.
 
 == Security
 
-[TIP]
-====
-Describe the security impact of this proposal.
-Outline what was done to identify and evaluate security issues,
-discuss of potential security issues and how they are mitigated or prevented,
-and how the JEP interacts with existing permissions, authentication, authorization, etc.
-If this proposal will have no impact on security, this section may simply say:
-There are no security risks related to this proposal.
-====
+
+=== Update Manifest Authenticity
 
 == Infrastructure Requirements
 
-[TIP]
-====
-Describing any impact on Jenkins project infrastructure.
-
-Include any additions or changes, interactions with exiting components,
-potential instabilities, service-level agreements,
-and responsibilities for continuing maintenance.
-Explain the scope of infrastructure changes with sufficient detail
-to allow initial and on-going cost (in both time and money) to be estimated.
-If this proposal will have no impact on infrastructure, this section may simply say:
-There are no new infrastructure requirements related to this proposal.
-====
+Nothing additional outside of the existing requirements already for the
+Evergreen hosted service layer.
 
 == Testing
 
-[TIP]
-====
-If the JEP involves any kind of behavioral change to code
-(whether in a Jenkins product or backend infrastructure),
-give a summary of how its correctness (and, if applicable, compatibility, security, etc.) can be tested.
-
-In the preferred case that automated tests can be developed to cover all significant changes, simply give a short summary of the nature of these tests.
-
-If some or all of changes will require human interaction to verify, explain why automated tests are considered impractical.
-Then summarize what kinds of test cases might be required: user scenarios with action steps and expected outcomes.
-Might behavior vary by platform (operating system, servlet container, web browser, etc.)?
-Are there foreseeable interactions between different permissible versions of components (Jenkins core, plugins, etc.)?
-Are any special tools, proprietary software, or online service accounts required to exercise a related code path (Active Directory server, GitHub login, etc.)?
-When will testing take place relative to merging code changes, and might retesting be required if other changes are made to this area in the future?
-
-If this proposal requires no testing, this section may simply say:
-There are no testing issues related to this proposal.
-====
+Outside of the scope of this documentation
 
 == Prototype Implementation
 
-[TIP]
-====
-Link to any open source reference implementation of code changes for this proposal.
-The reference implementation need not be completed before the JEP is <<accepted>>,
-but must be completed before any JEP is given "Final" status.
-JEPs which will not include code changes may omit this section.
-====
+
+The prototype and _actual_ implementation of this work is being performed in
+the link:https://github.com/jenkins-infra/evergreen[jenkins-infra/evergreen]
+repository.
 
 == References
-
-[TIP]
-====
-Provide links to any related documents.
-====
-
-[IMPORTANT]
-====
-When moving this JEP from a Draft to "Accepted" or "Final" state,
-include links to the pull requests and mailing list discussions which were involved in the process.
-====
-
-
-
