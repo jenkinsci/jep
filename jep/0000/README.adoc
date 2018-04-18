@@ -76,10 +76,10 @@ lifecycle to be performed correctly.
 == Specification
 
 The role of the versions service is simply to maintain an audit trail of sorts
-for the versions of sofware that each client has installed locally.
+for the versions of software that each client has installed locally.
 
 
-The role of the update service is to use the `essentials.yaml` and retriev the
+The role of the update service is to use the `essentials.yaml` and retrieve the
 latest versions of software for a given client UUID and compute the appropriate
 update response by the client
 
@@ -122,7 +122,7 @@ necessary to update that specific client.
 ----
 {
     "core" : {
-        "uri" : "https://updates.jenkins.io/some/path/to/a/jenkins.war",
+        "uri" : "https://update-cdn.example.com/some/path/to/a/jenkins.war",
         "checksum" : {
             "type" : "sha256",
             "signature" : "somechecksumforthefile"
@@ -131,14 +131,14 @@ necessary to update that specific client.
     "plugins" : {
         "updates" : [
             {
-                "uri" : "https://updates.jenkins.io/some/path/to/a/plugin.hpi",
+                "uri" : "https://update-cdn.example.com/some/path/to/a/plugin.hpi",
                 "checksum" : {
                     "type" : "sha256",
                     "signature" : "somechecksumforthefile"
                 }
             },
             {
-                "uri" : "https://updates.jenkins.io/some/path/to/another/plugin.hpi",
+                "uri" : "https://update-cdn.example.com/some/path/to/another/plugin.hpi",
                 "checksum" : {
                     "type" : "sha256",
                     "signature" : "somechecksumforthefile"
@@ -147,7 +147,7 @@ necessary to update that specific client.
         ]
     },
     "client" : {
-        "uri" : "https://updates.jenkins.io/some/path/to/a/evergreen-client.tar.gz",
+        "uri" : "https://update-cdn.example.com/some/path/to/a/evergreen-client.tar.gz",
         "checksum" : {
             "type" : "sha256",
             "signature" : "somechecksumforthefile"
@@ -163,7 +163,7 @@ The three primary keys of the update manifest are:
   object within the JSON structure rather than a flat array as it is expected
   that at some point in the future we  may require a `removes` list to properly
   unpublish legacy or out-dated plugins from instances.
-* `client` which incidates a new tarball for upgrading the `evergreen-client`
+* `client` which indicates a new tarball for upgrading the `evergreen-client`
   itself.
 
 Additional keys should be ignored by clients not supporting them to allow the
@@ -206,7 +206,7 @@ Provide evidence of consensus within the community and discuss important objecti
 
 == Backwards Compatibility
 
-Not necessary as there is no pre-existing implemntation.
+Not necessary as there is no pre-existing implementation.
 
 == Security
 
