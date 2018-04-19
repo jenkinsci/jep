@@ -389,9 +389,15 @@ To submit a JEP for <<approval, approval as Draft>>, the JEP sponsor should:
   per the instructions in this JEP (which are also outlined in the template).
 . Commit and push the changes to their fork
   and submit a pull request targeting the `jenkinsci/master` branch.
+. Add the following line to the description of the PR to indicate that the JEP 
+  is being submitted for approval as draft: 
+  "Submitted for approval as draft JEP by `@jenkinsci/jep-editors`."
+  If this is a PR that was created earlier to gather feedback,
+  the line requesting approval should be added as a comment when the JEP is ready.
 
 The sponsor may alter the steps above or do something else entirely
-as long the result is a PR with a submission in the appropriate format.
+as long the result is a PR with a submission in the appropriate format
+with a c.
 
 A JEP editor will check the submission for conformance with
 JEP structure and formatting guidelines.
@@ -407,7 +413,7 @@ to be denied <<draft, Draft>> status.
 This keeps the approval process from bogging down in details that are outside
 the scope of evaluating whether a JEP is ready for "Draft" status.
 
-The JEP editors will not unreasonably deny a JEP.
+The JEP editors will not unreasonably deny a JEP "Draft" status.
 Reasons for denying JEP "Draft" status include:
 
 * duplication of effort
