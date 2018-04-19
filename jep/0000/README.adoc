@@ -178,8 +178,8 @@ There are no backwards compatibility concerns related to this proposal.
 
 Though this is probably not a problematic data leak that it is accessible to anyone who would already be able to reach the server, we plan to use the `origins` field to restrict requesters to be `localhost` so that only the _evergreen-client_ can access it.
 
-FIXME: this field seems to have an issue.
-Saving it to anything from the UI seems to have no effect at all.
+CAUTION: Seems like this field is actually not designed for source IP filtering.
+If so, we will either add this feature to the metrics plugin or adjust the proposal to confirm the sentence above: that we don't deem it critical that this URL is accessible from outside the container for security.
 
 === Using `evergreen` as the metrics access key
 
