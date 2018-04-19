@@ -674,7 +674,7 @@ Before an artifact is used anywhere, some other versioned metadata must be edite
 That author should then only be requesting a commit which has already been pushed to GitHub,
 and thus automatically built and (if successful) deployed to `incrementals`.
 
-There is some risk would a developer would blindly run `versions:display-dependency-updates`
+There is some risk that a developer would blindly run `versions:display-dependency-updates`
 and accept the newest available artifact,
 but this could be mitigated for example in Essentials quality gates
 by verifying that the commit hashes of all proposed components are in fact ancestors of the current `master` heads.
