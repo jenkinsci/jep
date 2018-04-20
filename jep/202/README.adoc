@@ -38,8 +38,8 @@ endif::[]
 //
 //
 // Uncomment if there will be a BDFL delegate for this JEP.
-//| BDFL-Delegate
-//| :bulb: Link to github user page :bulb:
+| BDFL-Delegate
+| https://github.com/jglick[Jesse Glick]
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
