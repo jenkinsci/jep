@@ -35,8 +35,8 @@ endif::[]
 | link:https://issues.jenkins-ci.org/browse/JENKINS-50686[JENKINS-50686]
 
 // Uncomment if there will be a BDFL delegate for this JEP.
-//| BDLF-Delegate
-//| :bulb: Link to github user page :bulb:
+| BDLF-Delegate
+| https://github.com/rtyler[R. Tyler Croy]
 
 | Requires
 | https://github.com/jenkins-infra/iep/blob/master/iep-009/README.adoc[IEP-9]
