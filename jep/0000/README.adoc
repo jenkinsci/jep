@@ -216,12 +216,6 @@ There should particularly be a testcase to check the behaviour <<metrics-absence
 * See also link:https://github.com/jenkinsci/jep/tree/master/jep/302[JEP-302: Evergreen snapshotting data safety system] as the _evergreen-client_ will use the current proposal to trigger or not a rollback using the specification in _JEP-302_.
 * link:https://groups.google.com/forum/#!msg/jenkinsci-dev/9YNUJyE5WGE/pbOEzWz4BgAJ[Thread on the developer mailing list].
 
-
-[TIP]
-====
-Provide links to any related documents.
-====
-
 [IMPORTANT]
 ====
 When moving this JEP from a Draft to "Accepted" or "Final" state,
