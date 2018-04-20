@@ -39,8 +39,7 @@ endif::[]
 //
 
 | BDFL-Delegate
-| https://github.com/jglick[@jglick]
-
+| https://github.com/jglick[Jesse Glick]
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
