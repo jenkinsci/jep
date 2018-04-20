@@ -68,8 +68,8 @@ endif::[]
 
 Integral to link:https://github.com/jenkinsci/jep/tree/master/jep/300[Jenkins
 Essentials] is the client's update lifecycle with the Evergreen hosted service
-layer. Starting for the first boot, the client must frequently inform the
-client of its current versions, retrieve new versions, and apply updates. This
+layer. Starting with the first boot, the client must frequently inform the
+server of its current versions, retrieve new versions, and apply updates. This
 document specifies those API interactions and expectations to allow this update
 lifecycle to be performed correctly.
 
@@ -180,7 +180,7 @@ observation of real world usage for Jenkins Essentials.
 === Client Update Behavior
 
 The client should perform the necessary downloading of items
-referenced in the <<update-manifest>> before initiating an client update
+referenced in the <<update-manifest>> before initiating a client update
 process, which is itself outside of the scope of this document.
 
 The client should also update the "versions" service once an update has
