@@ -39,8 +39,8 @@ endif::[]
 //
 //
 // Uncomment if there will be a BDFL delegate for this JEP.
-//| BDFL-Delegate
-//| :bulb: Link to github user page :bulb:
+| BDLF-Delegate
+| https://github.com/rtyler[R. Tyler Croy]
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
