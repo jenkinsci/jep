@@ -189,6 +189,7 @@ We set the the accesskey value for clarity and simplicity: this makes it unneces
 
 Once the healthcheck endpoint access will be <<metrics-endpoint-access,restricted to localhost only>>, that is deemed to not an issue anymore.
 
+[[metrics-absence]]
 === Absence of the `metrics` plugin
 
 An attacker could try to make the plugin fail, for instance by implementing an extension in a bad way.
@@ -202,24 +203,9 @@ There are no new infrastructure requirements related to this proposal.
 
 == Testing
 
-[TIP]
-====
-If the JEP involves any kind of behavioral change to code
-(whether in a Jenkins product or backend infrastructure),
-give a summary of how its correctness (and, if applicable, compatibility, security, etc.) can be tested.
+This component and any change to it should be tested very aggressively, as it could trigger unneeded rollbacks in production or worse if broken.
 
-In the preferred case that automated tests can be developed to cover all significant changes, simply give a short summary of the nature of these tests.
-
-If some or all of changes will require human interaction to verify, explain why automated tests are considered impractical.
-Then summarize what kinds of test cases might be required: user scenarios with action steps and expected outcomes.
-Might behavior vary by platform (operating system, servlet container, web browser, etc.)?
-Are there foreseeable interactions between different permissible versions of components (Jenkins core, plugins, etc.)?
-Are any special tools, proprietary software, or online service accounts required to exercise a related code path (Active Directory server, GitHub login, etc.)?
-When will testing take place relative to merging code changes, and might retesting be required if other changes are made to this area in the future?
-
-If this proposal requires no testing, this section may simply say:
-There are no testing issues related to this proposal.
-====
+There should particularly be a testcase to check the behaviour <<metrics-absence,in absence of the _Metrics_ plugin>>, or generally with failed plugins.
 
 == Prototype Implementation
 
