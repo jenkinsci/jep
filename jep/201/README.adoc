@@ -209,6 +209,10 @@ In some circumstances the Java codebase doesn’t match the web UI forms and rel
 object is such a component. For those, we need to provide some dedicated configuration adapter code. Some plugins might need the same.
 We have identified credentials-plugin as such a component.
 
+This document do describe the general mechanism but won't get into details for plugin-specific implementations.
+We expect plugin which require some custom adapter code to host such a component, and the discussion on the
+right model to expose to end user to take place there.
+
 === Documentation / Schema generation
 
 As configuration-as-code mechanism relies on data-binding mechanism, we can construct a full data model from a live jenkins instance, and
@@ -258,6 +262,11 @@ As `plugins.shrinkwrap` computation is executed outside Jenkins, we can offer an
 Configuration-as-Code is intended to run as an additional Jenkins component (most probably: a plugin) and not require dedicated extension
 integrated in Jenkins-core nor specific API implemented by plugins. We only require them to follow some convention in the way they expose
 configuration attributes (i.e +DataBoundSetter|Constructor+)
+
+As Configuration-as-Code model is directly compute based on exposed API, this model might change with
+jenkins-core or plugin upgrades. We don't offer any backward compatibility support. As a user wants
+to upgrade Jenkins or plugins, he has to run a test master to confirm his yaml configuration is still
+valid. Or he can rely on generated schema for target core+plugin version to validate this file.
 
 == Security
 
