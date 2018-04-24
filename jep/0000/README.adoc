@@ -177,7 +177,10 @@ necessary to update that specific client.
 [source,json]
 ----
 {
-    "level" : 4,
+    "meta" : {
+        "level" : 4,
+        "channel" : 'general"
+    },
     "core" : {
         "uri" : "https://update-cdn.example.com/some/path/to/a/jenkins.war",
         "checksum" : {
@@ -213,8 +216,10 @@ necessary to update that specific client.
 }
 ----
 
-The three primary keys of the update manifest are:
+The four primary keys of the update manifest are:
 
+* `meta` is an object which contains information about the instance's update
+  cycle itself, such as the `channel` and `level`.of the enclosed manifest.
 * `core` which indicates that a new jenkins.war is necessary.
 * `plugins` which will include a list of `updates` for plugins. This is an
   object within the JSON structure rather than a flat array as it is expected
@@ -233,27 +238,51 @@ this is considered a potential optimization which will be contingent on
 observation of real world usage for Jenkins Essentials.
 ====
 
+
+==== Checksums
+
+The checksums provided in the Update Manifest are not generated or validated by
+Jenkins Essentials but rather the Artifactory instance from which plugin, core,
+and other binaries are pulled.
+
+In essence, every `foo-1.2.3.hpi` has a corresponding `foo-1.2.3.hpi.sha256`
+file, the contents of which will be included as the checksum in the Update
+Manifest to enable clients to perform archive integrity validation.
+
+
 === Client Update Behavior
 
-The client should perform the necessary downloading of items
-referenced in the <<update-manifest>> before initiating a client update
-process, which is itself outside of the scope of this document.
+The client must perform the necessary downloading of items referenced in the
+<<update-manifest>> and perform checksum validation before initiating a client
+update process. The exact sequence of events and what machinery must execute
+on the client is considered outside of the scope of this document.
 
-The client should also update the "versions" service once an update has
-successfully completed to ensure that subsequent checking in for updates
-results in accurate manifests.
-
+The client should also post a new <<version-manifest>> once an update lifecycle
+successfully completed to ensure that subsequent update check-ins result in
+accurate generated Update Manifest.
 
 [[version-manifest]]
 === Version Manifest
 
+A version manifest is the symmetrically opposite of the <<update-manifest>> in
+that it should include the actual versions of software present on a Jenkins
+Essentials instance. This may include software which is outside of the update
+lifecycle.
+
+
+.Version Manifest
+[source,json]
+----
+----
+
 
 == Motivation
 
-[TIP]
-====
-Explain why the existing code base or process is inadequate to address the problem that the JEP solves.
-====
+The motivation for the Jenkins Essentials distribution using this update
+lifecycle is largerly driven by the goal for Jenkins Essentials to be
+self-updating, which necessitates a different approach to code distribution
+compared to the conventional Update Center process.
+
 
 == Reasoning
 
@@ -286,7 +315,6 @@ Our state is now:
     Alpha: UL14
     Bravo: UL1
 
-
 The first idea was to dry to have Bravo jump from UL1 -> UL14 but with Jenkins
 Essentials' testing process, this would effectively be a completely untested
 upgrade jump. This approach was considered **too risky**.
@@ -311,7 +339,12 @@ Not necessary as there is no pre-existing implementation.
 == Security
 
 
+TODO
+
+
 === Update Manifest Authenticity
+
+TODO
 
 == Infrastructure Requirements
 
@@ -324,10 +357,10 @@ Outside of the scope of this documentation
 
 == Prototype Implementation
 
-
 The prototype and _actual_ implementation of this work is being performed in
 the link:https://github.com/jenkins-infra/evergreen[jenkins-infra/evergreen]
 repository.
 
 == References
 
+* link:https://groups.google.com/d/msgid/jenkinsci-dev/20180418142050.GT1836%40grape.lasagna.io[Discussion on the jenkinsci-dev mailing list]
