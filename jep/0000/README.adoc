@@ -177,6 +177,7 @@ necessary to update that specific client.
 [source,json]
 ----
 {
+    "schema" : 1,
     "meta" : {
         "level" : 4,
         "channel" : 'general"
@@ -269,12 +270,41 @@ that it should include the actual versions of software present on a Jenkins
 Essentials instance. This may include software which is outside of the update
 lifecycle.
 
+The purpose of the purpose of the version manifest is primarily for the client
+to report to the serve a fairly accurate state of the installed software in
+the instance.
+
 
 .Version Manifest
 [source,json]
 ----
+{
+    "schema" : 1,
+    "container" : {
+        "commit" : "sha1 of the built container",
+        "tools" : {
+            "node" : "output of node --version",
+            "npm" : "output of npm --version",
+            "java"  : "output of java -version"
+        }
+    },
+    "client" : {
+        "version" : "version of evergreen-client"
+    },
+    "jenkins" : {
+        "core" : "jenkins.awr embedded version",
+        "plugins" : {
+            "git" : "git.hpi embedded version",
+            "workflow-aggregator" : "workflow-aggregator.hpi embedded version"
+        }
+    }
+}
 ----
 
+The client should also report `container` information, which is informational
+rather than critical to the operation of the update lifecycle. This will be
+used at a future point in time to better understand the runtime environments
+for the Jenkins and evergreen-client processes.
 
 == Motivation
 
