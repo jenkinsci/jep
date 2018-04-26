@@ -61,6 +61,10 @@
 | _not specified_
 
 | Draft :speech_balloon:
+| link:307/[JEP-307: Evergreen Update Client/Server Lifecycle]
+| _not specified_
+
+| Draft :speech_balloon:
 | link:400/[JEP-400: Jenkins X: Jenkins for Kubernetes CD]
 | _not specified_
 
