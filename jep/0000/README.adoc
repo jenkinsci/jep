@@ -316,11 +316,19 @@ compared to the conventional Update Center process.
 
 == Reasoning
 
-https://theupdateframework.github.io/
+The design described above is intended to be succinct enough to drive updates
+to Jenkins Essentials, of which all instances are expected to be running the
+same approximate set of software. Contrasted to the Jenkins "Update Center"
+which provides much more metadata to provide user-visible information.
+
+As Jenkins Essentials is intended to update automatically, the metadata
+(<<update-manifest>>), only needs to contain the URLs for packages and a
+checksum for validation. There are additional <<security>> concerns and
+reasoning discussed below.
 
 
-=== Update Levels
-
+The Update Levels are a consideration to ensure that clients which have
+differeing levels of connectivity consistency can be safely updated.
 Considering the following problem posed by
 link:https://github.com/olblak[Olivier]:
 
@@ -365,10 +373,12 @@ restarting, at the present stage of development, this is considered an
 acceptable trade-off, safety rather than performance.
 
 
+
 == Backwards Compatibility
 
 Not necessary as there is no pre-existing implementation.
 
+[[security]]
 == Security
 
 When considering security for Update Manifests, much of the research which was
