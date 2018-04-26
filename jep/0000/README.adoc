@@ -316,6 +316,9 @@ compared to the conventional Update Center process.
 
 == Reasoning
 
+https://theupdateframework.github.io/
+
+
 === Update Levels
 
 Considering the following problem posed by
@@ -368,22 +371,82 @@ Not necessary as there is no pre-existing implementation.
 
 == Security
 
+When considering security for Update Manifests, much of the research which was
+considered was around how traditional package managers consider their security
+challenges, such as the paper "A Look In the Mirror: Attacks on Package
+Managers" footnote:[https://isis.poly.edu/~jcappos/papers/cappos_mirror_ccs_08.pdf]
+and the design work done as part of "The Update Framework." footnote:[https://theupdateframework.github.io/]
 
-TODO
+The two major areas of concern for security with the update lifecycle are
+ensuring:
+
+. Update Manifests retrieved by the clients are themselves deemed authentic.
+. Packages suggested for the client to download are valid and legitimate.
+
+For Update Manifests to be deemed authentic they must **only** be served over
+TLS encrypted HTTP connections. Relying on the
+link:https://letsencrypt.org[Let's Encrypt] certificates provisioned for all
+`jenkins.io` services.
+
+To provide additional security, and protect against poisoned or fraudulent
+`jenkins.io` certificates being used to distribute false Update Manifests, the
+Jenkins Essentials container will have a **restricted set of trusted root
+certificates**. Trusting only the
+link:https://letsencrypt.org/certificates/[root certificates used by Let's
+Encrypt], which are presently:
+
+* `DST_Root_CA_X3.crt`
+* `IdenTrust_Public_Sector_Root_CA_1.crt`
+* `IdenTrust_Commercial_Root_CA_1.crt`
+
+(provided by the `ca-certificates` package on Debian 9 "Stretch")
 
 
-=== Update Manifest Authenticity
+The second concern is remedied by providing checksums from the distribution site
+in the <<update-manifest>>. By ensuring that the client can trust the
+authenticity of the Update Manifest, the checksums will be trustworthy even in
+cases where the packages themselves are served through a CDN or mirror network.
 
-TODO
+
+=== Alternative Appraches
+
+The initial thinking relied on Public Key Pinning (PKP, also referred to as
+"pinning leaf certificates") in the client for the Update services. After
+cursory amounts of research, it is apparent that this approach is falling out
+of favor with leaders in this space such as Chromium
+link:https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/he9tr7p3rZ8[moving away from PKP].
+
+==== HTTP-PKP
+
+Another, related approach is referred to as
+link:https://tools.ietf.org/html/rfc7469[HTTP-PKP]. Which while it is possible
+to implement
+link:https://community.letsencrypt.org/t/hpkp-best-practices-if-you-choose-to-implement/4625[HTTP-PKP
+with Let's Encrypt] (also see
+link:https://lilleengen.io/blog/posts/activating-http-public-key-pinning-hpkp-on-lets-encrypt[this
+blog post]). This approach was discarded as unnecessarily complex considering
+the client environment which is under control by Jenkins Essentials.
+
+==== GPG key exchange
+
+GPG key exchange is a common approach used by package managers such as Apt and
+Yum. This approach was not strongly considered as the tooling for managing GPG
+keys from link:https://nodejs.org[Node.js] is lacking, and the use of such keys
+would add non-trivial amounts of complexity to the client/server design to
+accomodate proper key rotation and revocation.
+
 
 == Infrastructure Requirements
 
 Nothing additional outside of the existing requirements already for the
 Evergreen hosted service layer.
 
+
 == Testing
 
-Outside of the scope of this documentation
+Outside of the scope of this document and subject to the implementation linked
+below.
+
 
 == Prototype Implementation
 
