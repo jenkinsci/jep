@@ -292,7 +292,7 @@ the instance.
         "version" : "version of evergreen-client"
     },
     "jenkins" : {
-        "core" : "jenkins.awr embedded version",
+        "core" : "jenkins.war embedded version",
         "plugins" : {
             "git" : "git.hpi embedded version",
             "workflow-aggregator" : "workflow-aggregator.hpi embedded version"
@@ -309,7 +309,7 @@ for the Jenkins and evergreen-client processes.
 == Motivation
 
 The motivation for the Jenkins Essentials distribution using this update
-lifecycle is largerly driven by the goal for Jenkins Essentials to be
+lifecycle is largely driven by the goal for Jenkins Essentials to be
 self-updating, which necessitates a different approach to code distribution
 compared to the conventional Update Center process.
 
@@ -328,7 +328,7 @@ reasoning discussed below.
 
 
 The Update Levels are a consideration to ensure that clients which have
-differeing levels of connectivity consistency can be safely updated.
+differing levels of connectivity consistency can be safely updated.
 Considering the following problem posed by
 link:https://github.com/olblak[Olivier]:
 
@@ -418,7 +418,7 @@ authenticity of the Update Manifest, the checksums will be trustworthy even in
 cases where the packages themselves are served through a CDN or mirror network.
 
 
-=== Alternative Appraches
+=== Alternative Approaches
 
 The initial thinking relied on Public Key Pinning (PKP, also referred to as
 "pinning leaf certificates") in the client for the Update services. After
@@ -443,7 +443,7 @@ GPG key exchange is a common approach used by package managers such as Apt and
 Yum. This approach was not strongly considered as the tooling for managing GPG
 keys from link:https://nodejs.org[Node.js] is lacking, and the use of such keys
 would add non-trivial amounts of complexity to the client/server design to
-accomodate proper key rotation and revocation.
+accommodate proper key rotation and revocation.
 
 
 == Infrastructure Requirements
