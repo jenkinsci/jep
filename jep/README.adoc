@@ -30,7 +30,7 @@
 
 | Accepted :ok_hand:
 | link:202/[JEP-202: External Artifact Storage]
-| https://github.com/jglick[@jglick]
+| https://github.com/jglick[Jesse Glick]
 
 | Accepted :ok_hand:
 | link:300/[JEP-300: Jenkins Essentials]
@@ -54,6 +54,14 @@
 
 | Draft :speech_balloon:
 | link:305/[JEP-305: Publishing incremental commits as Maven releases]
+| _not specified_
+
+| Draft :speech_balloon:
+| link:306/[JEP-306: Essentials Instance Client Health Checking]
+| _not specified_
+
+| Draft :speech_balloon:
+| link:307/[JEP-307: Evergreen Update Client/Server Lifecycle]
 | _not specified_
 
 | Draft :speech_balloon:

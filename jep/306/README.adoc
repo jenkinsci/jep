@@ -1,0 +1,223 @@
+= JEP-306: Essentials Instance Client Health Checking
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 306
+
+| Title
+| Essentials Instance Client Health Checking
+
+| Sponsor
+| https://github.com/batmat[Baptiste Mathus]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2018-04-05
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+| JIRA
+| https://issues.jenkins-ci.org/browse/JENKINS-50294[JENKINS-50294]
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+| Requires
+| link:https://github.com/jenkinsci/jep/tree/master/jep/300[JEP-300]
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+The first pillar of _Jenkins Essentials_ is that it is an link:https://github.com/jenkinsci/jep/tree/master/jep/300#auto-update[Automatically Updated Distribution].
+
+To be able to achieve this goal in a durable way, we need to be able to _automatically assess the health_ of a *given* instance.
+The scope of this proposal is to design the way we decide if we link:https://github.com/jenkinsci/jep/tree/master/jep/302[automatically roll back] or not.
+
+It will also regularly be fed back to the backend so that we can compute global health statistics for a given setup, but that is out of scope for the current document.
+
+== Specification
+
+We do expect to evolve the health-checking process as we learn, but as the local healthcheck is a critical part of the overall _Essentials_ story, we want to start _small_ on purpose.
+Once we deem to have learned enough, we will create new proposals to discuss and document the new checks we want to add.
+
+We will check two URLs:
+
+* the `/instance-identity/` page
+* the `/metrics/evergreen/healthcheck`
+
+=== Instance Identity URL
+
+We check that:
+
+* it is reachable,
+* and returns a 200 HTTP status code.
+
+=== `/metrics/evergreen/healthcheck` URL
+
+We configure the link:https://github.com/jenkinsci/metrics-plugin/[Metrics Jenkins plugin] to provide a healthcheck under the specified URL.
+The prettified returned format is the following
+
+[source,json,title=`/metrics/evergreen/healthcheck` URL output]
+{
+  "disk-space": {
+    "healthy": true
+  },
+  "plugins": {
+    "healthy": true,
+    "message": "No failed plugins"
+  },
+  "temporary-space": {
+    "healthy": true
+  },
+  "thread-deadlock": {
+    "healthy": true
+  }
+}
+
+From this URL, we check that:
+
+* it returns a 200 HTTP status code
+* On the produced JSON
+** it is valid JSON
+** `plugins.healthy` attribute is `true`
+** `thread-deadlock.healthy` attribute is `true`
+
+We are *not* checking the space related attributes on purpose, at least for now.
+The rationale being that the upgrade to a new _Essentials_ BOM
+footnote:[Bill Of Materials: the configuration file describing what an Essentials release is made of: what exact WAR version, which plugins, etc.]
+ could consume a bit more disk space, and trigger a disk space warning.
+We probably do not want to wholly revert an upgrade because of this.
+
+==== Absence of the `metrics` plugin
+
+Making this plugin a part of the healthchecking story obviously makes it a *required* plugin.
+So the _evergreen-client_ should make sure it is always present and active when upgrading.
+For instance, if it is disabled, or removed from the disk, it *must* be forcefully reinstalled and enabled automatically next time.
+
+If for some reason, the plugin fails to start, then the healthcheck should fall back to only check the `/instance-identity/`, and report this issue as critical to the backend.
+
+==== Metrics plugin Configuration
+
+The plugin is configured using the link:https://github.com/jenkinsci/configuration-as-code-plugin[Configuration As Code] Jenkins plugin, using the following syntax:
+
+[source,yaml,title=Essentials Configuration-as-code file]
+---
+jenkins:
+  # [snip other configurations]
+  metricsaccesskey:
+    accessKeys:
+      - key:            "evergreen"
+        description:    "Key for evergreen health-check"
+        canHealthCheck: true
+        canPing:        false
+        canThreadDump:  false
+        canMetrics:     false
+        origins:        "*"
+
+== Motivation
+
+There is nothing existing in this area.
+
+== Reasoning
+
+=== Why not leverage the error logging
+
+In the link:https://github.com/jenkinsci/jep/tree/master/jep/304[JEP-304 on _Essentials Client Error Telemetry Logging_], we describe how the Jenkins instance is _publishing_ its error logging.
+
+We are not going to use those logs for now for the reason stated previously: we do no think we know enough how to use them correctly yet.
+So we are taking a careful path here: anyway, those logs are going to be sent to the backend as a one of the data points for assessing quality of given releases.
+
+Over time, once we have a better idea of what they typically are, and how to use them, this is likely we will design a new proposal to enrich the way we do the healthchecking process from the _evergreen-client_.
+
+== Backwards Compatibility
+
+There are no backwards compatibility concerns related to this proposal.
+
+== Security
+
+[[metrics-endpoint-access]]
+=== Accessing the `/metrics/evergreen/healthcheck` URL from outside the container
+
+Though this is probably not a problematic data leak that it is accessible to anyone who would already be able to reach the server, we plan to use the `origins` field to restrict requesters to be `localhost` so that only the _evergreen-client_ can access it.
+
+CAUTION: Seems like this field is actually not designed for source IP filtering.
+If so, we will either add this feature to the metrics plugin or adjust the proposal to confirm the sentence above: that we don't deem it critical that this URL is accessible from outside the container for security.
+
+=== Using `evergreen` as the metrics access key
+
+Normally, a `metrics` plugin healthcheck URL is of the format `SERVER/metrics/<access-key>/healthcheck`.
+
+We set the the accesskey value for clarity and simplicity: this makes it unnecessary to write some logic to initialize a random access key, and have the client store or access it from somewhere.
+
+Once the healthcheck endpoint access will be <<metrics-endpoint-access,restricted to localhost only>>, that is deemed to not an issue anymore.
+
+[[metrics-absence]]
+=== Absence of the `metrics` plugin
+
+An attacker could try to make the plugin fail, for instance by implementing an extension in a bad way.
+
+If this ends up making the plugin fail to start, this should be detected by the _evergreen-client_ and it will fall back to the simpler mode when only the `/instance-identity/` URL is checked.
+
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+This component and any change to it should be tested very aggressively, as it could trigger unneeded rollbacks in production or worse if broken.
+
+There should particularly be a testcase to check the behaviour <<metrics-absence,in absence of the _Metrics_ plugin>>, or generally with failed plugins.
+
+== Prototype Implementation
+
+* https://github.com/jenkins-infra/evergreen and more specifically the link:https://github.com/jenkins-infra/evergreen/pull/44[PR-44].
+
+== References
+
+* See also link:https://github.com/jenkinsci/jep/tree/master/jep/302[JEP-302: Evergreen snapshotting data safety system] as the _evergreen-client_ will use the current proposal to trigger or not a rollback using the specification in _JEP-302_.
+* link:https://groups.google.com/forum/#!msg/jenkinsci-dev/9YNUJyE5WGE/pbOEzWz4BgAJ[Thread on the developer mailing list].
+
+[IMPORTANT]
+====
+When moving this JEP from a Draft to "Accepted" or "Final" state,
+include links to the pull requests and mailing list discussions which were involved in the process.
+====
