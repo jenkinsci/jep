@@ -198,10 +198,10 @@ necessary to update that specific client.
     "schema" : 1,
     "meta" : {
         "level" : 4,
-        "channel" : 'general"
+        "channel" : "general"
     },
     "core" : {
-        "uri" : "https://update-cdn.example.com/some/path/to/a/jenkins.war",
+        "url" : "https://update-cdn.example.com/some/path/to/a/jenkins.war",
         "checksum" : {
             "type" : "sha256",
             "signature" : "somechecksumforthefile"
@@ -210,14 +210,14 @@ necessary to update that specific client.
     "plugins" : {
         "updates" : [
             {
-                "uri" : "https://update-cdn.example.com/some/path/to/a/plugin.hpi",
+                "url" : "https://update-cdn.example.com/some/path/to/a/plugin.hpi",
                 "checksum" : {
                     "type" : "sha256",
                     "signature" : "somechecksumforthefile"
                 }
             },
             {
-                "uri" : "https://update-cdn.example.com/some/path/to/another/plugin.hpi",
+                "url" : "https://update-cdn.example.com/some/path/to/another/plugin.hpi",
                 "checksum" : {
                     "type" : "sha256",
                     "signature" : "somechecksumforthefile"
@@ -226,7 +226,7 @@ necessary to update that specific client.
         ]
     },
     "client" : {
-        "uri" : "https://update-cdn.example.com/some/path/to/a/evergreen-client.tar.gz",
+        "url" : "https://update-cdn.example.com/some/path/to/a/evergreen-client.tar.gz",
         "checksum" : {
             "type" : "sha256",
             "signature" : "somechecksumforthefile"
