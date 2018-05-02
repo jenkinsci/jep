@@ -113,6 +113,24 @@ update response to be sent to the client.
      |                           |                           |
 ----
 
+.Client up to date
+[source]
+----
+
+  update                     versions                    evergreen
+  service                    service                      client
+     |                           |                           |
+     |                     GET /update                       |
+     |<------------------------------------------------------o
+     |    GET /versions for uuid |                           |
+     o-------------------------->|                           |
+     |<-----/200 json payload/---o                           |
+     |                           |                           |
+     |                   304 Not Modified                    |
+     o------------------------------------------------------>|
+     |                           |                           |
+----
+
 [[update-levels]]
 === Update Levels
 
