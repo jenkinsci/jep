@@ -124,7 +124,6 @@ they help make Jenkins better.
 * Recognition via jenkins.io
 * “Ambassador” blog highlighting their accomplishments
 * Free ticket to Jenkins World, JUC Israel
-* Staff Ask the Expert booth @ Jenkins World
 * Free access to certifications
 * Special Ambassador gift
 
@@ -134,6 +133,7 @@ A Jenkins Ambassador responsibility include any of the following:
 * Minimum requirements:
 ** Author two (2) Jenkins blogs on jenkins.io during the one year term
 ** Host at least 2 Jenkins meetups
+** Adhere to the the link:https://jenkins.io/project/conduct/[Jenkins Code of Conduct]
 * Provide feedback, ideas, and direction that will help to improve the Jenkins project.
   This involvement may be in the form of technical discussions, contributor summits,
   and or community building events/activities.
@@ -147,8 +147,6 @@ A Jenkins Ambassador responsibility include any of the following:
 === Term
 
 * This is an annual position
-
-
 
 
 === How are Jenkins Ambassador selected?
@@ -165,7 +163,7 @@ All communication and discussion are conducted via the TBD (a public) mailing li
 Jenkins Ambassadors receive via an email, the nominee's information based on the criteria above.
 Voting to select the nominee happens via the mailing list with either +1 or -1 from the peer group over a two-week period.
 If the nominee receives three +1 votes and zero negative votes by the end of two weeks then that person is confirmed as a Jenkins Ambassador.
-If there is a -1 vote then this triggers a discussion after which the negative vote may or may be changed. If the negative vote remains, the nominee cannot be confirmed.
+If there is a -1 vote then this triggers a discussion after which the negative vote may or may not be changed. If the negative vote remains, the nominee cannot be confirmed.
 If there are less than three +1 votes during the two-week voting period then further discussion needs to be encouraged.
 
 If there are less than three Ambassadors, the following Jenkins project contributors may cast votes:
@@ -200,11 +198,12 @@ but rejected due to concerns about fairness and added complexity.
 
 ==== Should there be a limit of certain # of ambassadors at a given time? Maybe 20 Ambassadors a year?
 
+==== What if Ambassador(s) do not vote in good faith or otherwise act to exclude candidates on personal grounds? 
 
 ==== How are potential Ambassadors found and nominated?
 
 Ideas:
-* Look at JAM Oranizer list?
+* Look at JAM Organizer list?
 * Ask contributors during IRC meeting for suggestions
 * Once there is a group of Jenkins Ambassadors in place those Ambassadors can
 decide for themselves?
