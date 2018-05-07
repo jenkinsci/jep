@@ -200,6 +200,13 @@ but rejected due to concerns about fairness and added complexity.
 
 ==== What if Ambassador(s) do not vote in good faith or otherwise act to exclude candidates on personal grounds? 
 
+Does it mean that any Jenkins Ambassador can block all candidates from being elected during his/her term? Does not look good, people may go negative and toxic sometimes. I would rather prefer to see a vote override engine in this JEP.
+
+==== Which certifications? Jenkins ones or what?
+
+==== Use the term "Jenkins Board members and officers" instead of specific list of back vote casters?
+
+
 ==== How are potential Ambassadors found and nominated?
 
 Ideas:
