@@ -180,7 +180,7 @@ necessary to update that specific client.
     "schema" : 1,
     "meta" : {
         "level" : 4,
-        "channel" : 'general"
+        "channel" : "general"
     },
     "core" : {
         "uri" : "https://update-cdn.example.com/some/path/to/a/jenkins.war",
