@@ -173,27 +173,6 @@ If there are less than three Ambassadors, the following Jenkins project contribu
 * Alyssa Tong
 * Daniel Beck
 
-
-
-== Motivation
-
-With the establishment of Jenkins Area meetup (JAMs),
-the Jenkins community has grown vastly all over the world.
-This growth has brought together novice, intermediate, to advanced users.
-Each level of users has a unique need for Jenkins knowledge
-and there aren’t enough Jenkins ‘educators’.
-The document creates a program foster a stronger Jenkins community by recognizing
-contributors that are both experts in one or more topics related to Jenkins
-and active members of the community who make the effort to help the community.
-
-== Reasoning
-
-=== No hard limit on CloudBees employees
-
-A hard limit of 10% or less are CB employees was considered,
-but rejected due to concerns about fairness and added complexity.
-
-
 === Open Questions
 
 ==== Should there be a limit of certain # of ambassadors at a given time? Maybe 20 Ambassadors a year?
@@ -214,6 +193,26 @@ Ideas:
 * Ask contributors during IRC meeting for suggestions
 * Once there is a group of Jenkins Ambassadors in place those Ambassadors can
 decide for themselves?
+
+
+
+== Motivation
+
+With the establishment of Jenkins Area meetup (JAMs),
+the Jenkins community has grown vastly all over the world.
+This growth has brought together novice, intermediate, to advanced users.
+Each level of users has a unique need for Jenkins knowledge
+and there aren’t enough Jenkins ‘educators’.
+The document creates a program foster a stronger Jenkins community by recognizing
+contributors that are both experts in one or more topics related to Jenkins
+and active members of the community who make the effort to help the community.
+
+== Reasoning
+
+=== No hard limit on CloudBees employees
+
+A hard limit of 10% or less are CB employees was considered,
+but rejected due to concerns about fairness and added complexity.
 
 
 == Backwards Compatibility
