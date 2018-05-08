@@ -1,0 +1,164 @@
+= JEP-0000: Essentials Error Telemetry API
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 0000
+
+| Title
+| Essentials Error Telemetry API
+
+| Sponsor
+| https://github.com/batmat
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2018-06-07
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+| JIRA
+| https://issues.jenkins-ci.org/browse/JENKINS-51140[JENKINS-51140]
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+| Requires
+| link:https://github.com/jenkinsci/jep/tree/master/jep/300[JEP-300], link:https://github.com/jenkinsci/jep/tree/master/jep/307[JEP-307].
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+One critical aspect of Jenkins Essentials is that the connected instances must be upgraded automatically in a safe way.
+To that end, we detect the errors that occur in these instance, and push those to a central place to participate to the assessment of the health level of a given instance, and by transitivity of a given link:https://github.com/jenkinsci/jep/tree/master/jep/307#update-levels[_Essentials_ update level].
+
+The current document describes what the server side API for this error logging looks like
+footnote:[Basically sending the Jenkins logs defined in the link:https://github.com/jenkinsci/jep/tree/master/jep/304[JEP-304]].
+
+== Specification
+
+=== Endpoint and expected format
+We are taking a simplistic approach defining a single endpoint for error logging.
+
+The `errorTelemetry` endpoint will simply receive a JSON message, with a single log entry, containing in turn the `JSON` emitted locally as defined in link:https://github.com/jenkinsci/jep/tree/master/jep/304#logging-format[JEP-304].
+
+[source,json]
+{
+  "log": "{\"timestamp\":1525701119133,\"name\":\"jenkins.model.Jenkins\",\"level\":\"WARNING\",\"message\":\"Changing builds directories from ${ITEM_ROOTDIR}/builds to /evergreen/jenkins/var/jobs/${ITEM_FULL_NAME}/builds. Beware that no automated data migration will occur.\"}"
+}
+
+==== Maximum message size
+
+The maximum size of a the global JSON message is 10k characters (ten thousands).
+This should be enough to allow receiving enough information when a stack trace is included, and defining a maximum size seems critical to operate the service.
+Hence the sender is expected to truncate the message if it is larger than this.
+
+=== Linking log entry to an instance
+
+It is obviously required that the instance is registered and authenticated to be allowed to push data to this endpoint, as described in link:https://github.com/jenkinsci/jep/tree/master/jep/307[JEP-307].
+
+=== Meta Error Logging because of rejected data
+
+If the endpoint rejects data: be it because of exceeded message size, or malformed message, it should reject it in some *non silent* way.
+The message can be dropped, but the fact there was a rejection shall be logged.
+
+This is important to detect attacks, but also more simply bugs that might have made the reporting system broken and we need to fix expeditely.
+
+== Motivation
+
+There is no existing code base or process for this feature.
+
+== Reasoning
+
+=== A dedicated `/errorTelemetry` endpoint only for *error* logging
+
+Despite we will define in the future endpoints for reporting other telemetry types, like metrics telemetry, for instance like link:https://issues.jenkins-ci.org/browse/JENKINS-49852[Pipeline related metrics], we are defining a dedicated entrypoint for error logging, and will define others for other types.
+
+We are **not** using the same endpoint, for instance using a `type` field as those different Telemetry _communications_ are very likely to be very different, and it will make this easier to define router-level rules if needed.
+
+== Backwards Compatibility
+
+As the `log` field is somehow an opaque blob content, the compatibility concerns are more the same as defined in the link:https://github.com/jenkinsci/jep/tree/master/jep/304#logging-format[JEP 304 logging format section].
+But as also discussed there, using the `version` field of the message should be enough to accomadate any schema evolution.
+
+== Security
+
+There are no security risks related to this proposal.
+
+////
+Could stack traces leak private data?
+////
+
+== Infrastructure Requirements
+
+That service will need to be integrated and operated in the current Jenkins Infrastructure.
+
+This will most likely be integrated with the existing setup for error logging, but that aspect will need more prototyping to make this clearer.
+
+== Testing
+
+=== Rejecting bad data
+
+We must check that the backend does reject exceedingly big messages, or malformed logs.
+
+=== Load Testing
+
+The system must be tested against a reasonable amount of data, by evaluating the expected volume in 3 to 6 months that the service is likely to receive.
+This should especially be done by sending the right amount in number, but also in sizes (mimicking clients that would be sending a lot of stack traces for example).
+
+////
+Probably the _load projection_ should be made here, and tentative numbers written here as a starting point.
+////
+
+== Prototype Implementation
+
+* https://github.com/jenkins-infra/evergreen
+
+== References
+
+* link:https://github.com/jenkins-infra/evergreen/tree/master/docs/meetings/2018-05-07-existing-telemetry-setup-on-jenkins-io[Meeting notes about existing setup for Error Logging in the Kubernetes cluster in the Jenkins Infrastructure].
+
+
+[IMPORTANT]
+====
+When moving this JEP from a Draft to "Accepted" or "Final" state,
+include links to the pull requests and mailing list discussions which were involved in the process.
+====
