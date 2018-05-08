@@ -1,4 +1,4 @@
-= JEP-0000: Jenkins Ambassador Program
+= JEP-5: Jenkins Ambassador Program
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
