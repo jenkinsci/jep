@@ -917,7 +917,6 @@ Once the JEP is ready for the repository, a JEP editor will:
 
 . Assign a JEP number (almost always just the next available number, but
   may also be a special/joke number, like 666 or 3141).
-. Push commits with the changes above into your branch
 . Squash the commit(s) into the `master` branch.
 . Update the folder number to match the JEP number
 . Update the JEP number in the document.
