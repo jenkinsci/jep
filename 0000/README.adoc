@@ -50,7 +50,7 @@ endif::[]
 //
 // Uncomment if this JEP depends on one or more other JEPs.
 | Requires
-| link:https://github.com/jenkinsci/jep/tree/master/jep/300[JEP-300], link:https://github.com/jenkinsci/jep/tree/master/jep/307[JEP-307].
+| link:https://github.com/jenkinsci/jep/tree/master/jep/300[JEP-300], link:https://github.com/jenkinsci/jep/tree/master/jep/303[JEP-303].
 //
 //
 // Uncomment and fill if this JEP is rendered obsolete by a later JEP
@@ -75,32 +75,83 @@ footnote:[Basically sending the Jenkins logs defined in the link:https://github.
 
 == Specification
 
+=== Authentication and linking log entries to an instance
+
+It is obviously required that the instance is registered and authenticated to be allowed to push data to this endpoint, as described in link:https://github.com/jenkinsci/jep/tree/master/jep/303[JEP-303].
+
+HTTP status code will hence be the ones defines in that specification.
+
 === Endpoint and expected format
+
 We are taking a simplistic approach defining a single endpoint for error logging.
 
 The `errorTelemetry` endpoint will simply receive a JSON message, with a single log entry, containing in turn the `JSON` emitted locally as defined in link:https://github.com/jenkinsci/jep/tree/master/jep/304#logging-format[JEP-304].
 
+.Error telemetry payload
 [source,json]
 {
   "log": "{\"timestamp\":1525701119133,\"name\":\"jenkins.model.Jenkins\",\"level\":\"WARNING\",\"message\":\"Changing builds directories from ${ITEM_ROOTDIR}/builds to /evergreen/jenkins/var/jobs/${ITEM_FULL_NAME}/builds. Beware that no automated data migration will occur.\"}"
 }
 
-==== Maximum message size
+.Registration Headers
+[source]
+----
+Content-Type: application/json
+----
+
+When things are sent as expected, then the endpoint will answer with an _HTTP-201_ and the following payload:
+
+.Error Telemetry successful creation payload
+[source,json]
+{
+  "status": "OK"
+}
+
+NOTE: the log is *not* sent back as this often can be seen to avoid sending big logs back and forth when the client is most likely not interested by what it just sent.
+
+////
+Should we compute a hash or something to be able to uniquely reference/find a log in the system between client and server if needed?
+////
+
+=== Maximum message size
 
 The maximum size of a the global JSON message is 10k characters (ten thousands).
 This should be enough to allow receiving enough information when a stack trace is included, and defining a maximum size seems critical to operate the service.
 Hence the sender is expected to truncate the message if it is larger than this.
 
-=== Linking log entry to an instance
+In that case, the HTTP status code will be an _HTTP-413_.
 
-It is obviously required that the instance is registered and authenticated to be allowed to push data to this endpoint, as described in link:https://github.com/jenkinsci/jep/tree/master/jep/307[JEP-307].
+.Error Telemetry failed creation payload
+[source,json]
+{
+  "status": "KO"
+}
 
-=== Meta Error Logging because of rejected data
+=== Malformed data
 
-If the endpoint rejects data: be it because of exceeded message size, or malformed message, it should reject it in some *non silent* way.
-The message can be dropped, but the fact there was a rejection shall be logged.
+The client will receive a more generic _HTTP-400_.
+An optional `message` field can be provided by the server in the payload to help understand what is wrong.
+
+.Error Telemetry failed creation payload
+[source,json]
+{
+  "status": "KO",
+  "message": "(optional) message to explain what made the server reject this message."
+}
+
+==== Meta Error Logging
+
+When the server rejects data, be it because of exceeded message size, or malformed message, it should reject it in some *non silent* way.
+The message can be dropped, but the fact there was a rejection shall be logged on the server side.
 
 This is important to detect attacks, but also more simply bugs that might have made the reporting system broken and we need to fix expeditely.
+
+=== Rate limiting
+
+We may define in the future the use of rate limiting.
+In that case, the server will send an _HTTP-429_.
+
+If so, the client is expected to retry _later_ (the exact meaning of _later_ will be clarified if we decide to go that path).
 
 == Motivation
 
