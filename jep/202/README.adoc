@@ -169,7 +169,7 @@ The S3 implementation also uses http://jclouds.apache.org[Apache JClouds] that a
 Current implementation for S3 uses a master wide config option to set the name of the container (S3 bucket) and path inside.
 Currently this is a environment variable but could be a system property or a config section in the UI.
 
-This means that different runs can not store the artifacts in different buckets or paths, as we don't expect that to be a common use case.
+This means that different runs cannot store the artifacts in different buckets or paths, as we don't expect that to be a common use case.
 It would be more common to move all the artifacts from one location to another and that could be easily achieved by moving the blobs in S3 and changing the master wide configuration parameters.
 
 === Interruptions
@@ -277,7 +277,6 @@ Security considerations make agents need to be restricted to only access the art
 Having access to the blob store would mean access to other jobs artifacts.
 
 Agents only do URL based upload/download operations and get the correct url to do so from the master.
-Extra care needs to be taken so agents do not have any access to the blob store.
 
 In the common case where the vm instances are assigned roles (`IAM role` in AWS) the instance where the master runs should have access to the blob store but the agents should run in a different instance where its role does not allow it.
 
