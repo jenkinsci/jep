@@ -199,16 +199,77 @@ We opted for the first, simpler option.
 == Backwards Compatibility
 
 Existing plugins using `ArtifactManager` API will continue to work using the new selected implementation.
+However, there are two classes of potential incompatibility.
 
-However:
+=== File-oriented artifact reference
 
-* Various plugins call `Run.getArtifactsDir` and similar deprecated APIs.
-These would already have been broken for users of the Compress Artifacts plugin, but that is rarely used, whereas we are proposing lots of people run with the S3 artifact manager.
-Calls to the deprecated APIs will behave as if there were no artifacts in the build.
+Various plugins call deprecated APIs which assume that build artifacts are stored as files inside the master’s build directory.
+These would already have been broken for users of the _Compress Artifacts_ plugin, but that is rarely used, whereas we are proposing lots of people run with the S3 artifact manager.
 We could add telemetry so that such calls produce a warning in the system log, at least when the build actually does have a custom artifact manager selected.
 
-* Some plugins using `VirtualFile` may still be calling open and then passing the stream to an agent.
+As seen in
+link:https://ci.jenkins.io/job/Infra/job/deprecated-usage-in-plugins/job/master/lastSuccessfulBuild/artifact/output/usage-by-api.html#hudson_model_Run_getArtifactsDir__Ljava_io_File_[this report],
+there are a number of plugins on the usual update center still calling `Run.getArtifactsDir()` and/or `Run.Artifact.getFile()`,
+despite the fact that these methods were deprecated in Jenkins 1.531 in 2013 as part of
+link:https://issues.jenkins-ci.org/browse/JENKINS-17236[JENKINS-17236].
+These include:
+
+[cols="5,>",options="header",width="50%"]
+|============================
+|Plugin|Installations
+|link:https://plugins.jenkins.io/allure-jenkins-plugin[Allure]|2593
+|link:https://plugins.jenkins.io/artifact-diff-plugin[Artifact diff]|433
+|link:https://plugins.jenkins.io/copyartifact[Copy Artifact]|36641
+|link:https://plugins.jenkins.io/cucumber-perf[cucumber-perf]|919
+|link:https://plugins.jenkins.io/deployer-framework[Deployer Framework]|703
+|link:https://plugins.jenkins.io/weblogic-deployer-plugin[Deploy WebLogic]|1250
+|link:https://plugins.jenkins.io/http-post[HTTP POST]|1498
+|link:https://plugins.jenkins.io/repository[Maven Repository Server]|2023
+|link:https://plugins.jenkins.io/mdt-deployment[MDT Deployment]|80
+|link:https://plugins.jenkins.io/neoload-jenkins-plugin[NeoLoad]|163
+|link:https://plugins.jenkins.io/perfectomobile[Perfecto Mobile]|174
+|link:https://plugins.jenkins.io/protecode-sc[Protecode SC]|26
+|link:https://plugins.jenkins.io/summary_report[Summary Display]|1714
+|link:https://plugins.jenkins.io/webload[WebLOAD Load Testing]|34
+|============================
+
+By far the most popular of these, _Copy Artifact_,
+is scheduled to be made compatible with this JEP as part of the reference implementation.
+(The first stage of that fix implements a longstanding RFE
+link:https://issues.jenkins-ci.org/browse/JENKINS-22637[JENKINS-22637],
+originally filed for interoperability with _Compress Artifacts_.
+The second stage of the fix makes use of core APIs introduced in this JEP.)
+
+The effect of calling the deprecated APIs when a cloud-based artifact manager is in use
+will vary by the plugin’s particular logic.
+In some cases, it may simply appear as if the build had no artifacts.
+JENKINS-22637 describes an error message when attempting to use _Copy Artifact_.
+As another example, _Artifact diff_ will display a sidebar link as usual,
+but when clicked the rendered diff is empty, and the system log reports:
+
+----
+… org.jenkinsci.plugins.artifactdiff.FilePathDiff$Entry getStream
+INFO: java.nio.file.NoSuchFileException: /var/jenkins_home/jobs/someproject/builds/123/archive/somefile.txt
+----
+
+=== Master-based file streaming
+
+Some plugins using ``VirtualFile``s corresponding to build artifacts are still calling `open`
+and then passing the stream to an agent or copying it to an HTTP response.
 This will work, but will be very expensive when using S3 storage. They need to be updated to call `VirtualFile.toExternalURL`.
+Finding a list of such plugins is more difficult since `open` is not deprecated.
+(Its use is appropriate as a fallback when `toExternalURL` is unavailable,
+or when the desired behavior is for artifact contents to be read by the Jenkins master process anyway.)
+Code inspection from
+link:https://github.com/search?q=user%3Ajenkinsci+VirtualFile&type=Code[this search]
+turns up the following possible issues:
+
+[cols="5,>",options="header",width="50%"]
+|============================
+|Plugin|Installations
+|link:https://plugins.jenkins.io/maven-plugin[Maven Integration]|124783
+|============================
+
 
 == Security
 

@@ -20,6 +20,10 @@
 | link:4/[JEP-4: Special Interest Groups]
 | _not specified_
 
+| Draft :speech_balloon:
+| link:5/[JEP-5: Jenkins Ambassador Program]
+| _not specified_
+
 | Final :lock:
 | link:200/[JEP-200: Switch Remoting/XStream blacklist to a whitelist]
 | https://github.com/oleg-nenashev[@oleg-nenashev]
@@ -58,6 +62,10 @@
 
 | Draft :speech_balloon:
 | link:306/[JEP-306: Essentials Instance Client Health Checking]
+| _not specified_
+
+| Draft :speech_balloon:
+| link:307/[JEP-307: Evergreen Update Client/Server Lifecycle]
 | _not specified_
 
 | Draft :speech_balloon:

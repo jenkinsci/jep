@@ -836,4 +836,4 @@ is a proposed publishing tool.
 * link:https://github.com/jenkinsci/plugin-pom/pull/100[`plugin-pom` PR 100]
 * link:https://github.com/jglick/git-changelist-maven-extension[`git-changelist-maven-extension`]
 * link:https://github.com/jenkins-infra/iep/blob/master/iep-009/README.adoc[IEP-9]
-* link:https://github.com/jglick/pom-1/blob/incrementals/incrementals.md[Draft usage guide]
+* link:https://github.com/jenkinsci/incrementals-tools/blob/master/README.md[Usage guide]
