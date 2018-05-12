@@ -124,7 +124,7 @@ The formatting is done by a `JSONFormatter` extending link:https://docs.oracle.c
   "level": "WARNING",
   "message": "the message\nand another line",
   "exception": {
-    "raw": "serialized exception"
+    "raw": "serialized exception\n many \n many \n lines"
   }
 }
 
