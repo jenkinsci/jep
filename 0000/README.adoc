@@ -85,12 +85,21 @@ HTTP status code will hence be the ones defines in that specification.
 
 We are taking a simplistic approach defining a single endpoint for error logging.
 
-The `errorTelemetry` endpoint will simply receive a JSON message, with a single log entry, containing in turn the `JSON` emitted locally as defined in link:https://github.com/jenkinsci/jep/tree/master/jep/304#logging-format[JEP-304].
+The `errorTelemetry` endpoint will simply receive a JSON message, with a single log entry, containing in turn the `JSON` structure emitted locally as defined in link:https://github.com/jenkinsci/jep/tree/master/jep/304#logging-format[JEP-304].
 
 .Error telemetry payload
 [source,json]
 {
-  "log": "{\"timestamp\":1525701119133,\"name\":\"jenkins.model.Jenkins\",\"level\":\"WARNING\",\"message\":\"Changing builds directories from ${ITEM_ROOTDIR}/builds to /evergreen/jenkins/var/jobs/${ITEM_FULL_NAME}/builds. Beware that no automated data migration will occur.\"}"
+  "log": {
+    "version": 1,
+    "timestamp": 1522840762769,
+    "name": "io.jenkins.plugins.SomeTypicalClass",
+    "level": "WARNING",
+    "message": "the message\nand another line",
+    "exception": {
+      "raw": "serialized exception\n many \n many \n lines"
+    }
+  }
 }
 
 .Registration Headers
