@@ -168,7 +168,7 @@ There is no existing code base or process for this feature.
 
 == Reasoning
 
-=== A dedicated `/errorTelemetry` endpoint only for *error* logging
+=== A dedicated `/telemetry/error` endpoint only for *error* logging
 
 Despite we will define in the future endpoints for reporting other telemetry types, like metrics telemetry, for instance like link:https://issues.jenkins-ci.org/browse/JENKINS-49852[Pipeline related metrics], we are defining a dedicated entrypoint for error logging, and will define others for other types.
 
