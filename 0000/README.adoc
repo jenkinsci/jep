@@ -176,6 +176,10 @@ Despite we will define in the future endpoints for reporting other telemetry typ
 
 We are **not** using the same endpoint, for instance using a `type` field as those different Telemetry _communications_ are very likely to be very different, and it will make this easier to define router-level rules if needed.
 
+=== Reliability concerns
+
+Though the service is expected to be always available, the client should be designed to handle a temporary unavailability.
+
 === Send logs one by one
 
 For the current design, the client will use a single `POST` HTTP request for each log entry to send.
