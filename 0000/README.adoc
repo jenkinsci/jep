@@ -124,11 +124,11 @@ Should we compute a hash or something to be able to uniquely reference/find a lo
 
 === Maximum message size
 
-The maximum size of a the global JSON message is 10k characters (ten thousands).
+The maximum size of a the global JSON message is 1 million characters (~1 MB).
 This should be enough to allow receiving enough information when a stack trace is included, and defining a maximum size seems critical to operate the service.
 Hence the sender is expected to truncate the message if it is larger than this.
 
-In that case, the HTTP status code will be an _HTTP-413_.
+If the received message exceeds that maximum, the HTTP status code will be an _HTTP-413_.
 
 .Error Telemetry failed creation payload
 [source,json]
