@@ -209,6 +209,10 @@ In some circumstances the Java codebase doesn’t match the web UI forms and rel
 object is such a component. For those, we need to provide some dedicated configuration adapter code. Some plugins might need the same.
 We have identified credentials-plugin as such a component.
 
+This document do describe the general mechanism but won't get into details for plugin-specific implementations.
+We expect plugin which require some custom adapter code to host such a component, and the discussion on the
+right model to expose to end user to take place there.
+
 === Documentation / Schema generation
 
 As configuration-as-code mechanism relies on data-binding mechanism, we can construct a full data model from a live jenkins instance, and
@@ -230,12 +234,39 @@ The former just uses the configuration-as-code mechanism for initial setup.
 The latter would apply the configuration when updates are detected on file. It could benefit some way to lock down configuration for
 components configured by the configuration-as-code mechanism to be read-only on web UI.
 
+=== Plugin management
+As part of configuring the Jenkins Master we support plugin installation and management. The Configuration-as-Code plugin itself is out-of-scope, it has to be bundled with Jenkins so it can take control on the master. But for all other plugins we want configuration-as-code to offer :
+
+- a high-level, user-friendly way to define "feature" plugins to be installed. Typically, end users want to build GitHub pull requests, they don't care that this will required `token-macro` for some low-level implementation reasons.
+- a fully reproducible way to setup a master. Relying on `latest` for transitive dependencies is _not_ an acceptable solution. Upgrades should also be tracked as configuration changes.
+- ability to configure infrastructure : private update sites and http proxy to download plugins.
+
+==== Shrink wrap
+`npm` is a typical example of a dependency manager which has to support comparable requirements : provide reproducible dependency management in a moving javascript ecosystem. It supports a [`shrinkwrap` file](https://docs.npmjs.com/cli/shrinkwrap) to compute a dependency list from a higher-level definition, and be able to exactly reproduce this setup later.
+
+The Configuration-as-Code plugin can offer plugin management _outside_ Jenkins as a standalone java executable. It can then consume a `plugins.yaml` file, provided as part of the configuraiton, to resolve plugin dependencies and compute a full list of plugins to be installed, which would be stored as `plugins.shrinkwrap` file. This later file can be used to automate plugin installation.
+
+==== Plugin installation
+The Configuration-as-Code can consume this shrinkwrap file and compare the requested state _vs_ actual master installation. If some extra plugins have to be installed, it can then setup pluginManager and trigger plugin installation, then restart Jenkins. 
+As the yaml configuration may have references to plugin components, this process has to be executed _before_ any other configuration.
+
+For flexibility and convenience, the `plugins.shrinkwrap` file is optional, and plugin installation would then just rely on PluginManager to manage transitive dependencies. Configuration-as-Code would then just log a warning about reproducibility.
+
+==== Dependency management
+As `plugins.shrinkwrap` computation is executed outside Jenkins, we can offer an alternate implementation for transitive dependency management and dependency resolution. With extra metadata exposed in the Update Center, we could offer some more advanced logic in dependency resolution, not just getting `latest` of all plugins. Such metadata would express known compatibility-breaks, synchronized releases for highly dependent plugins, recommended version, etc. This is typically what Linux package management systems do.
+
+
 
 == Backwards Compatibility
 
 Configuration-as-Code is intended to run as an additional Jenkins component (most probably: a plugin) and not require dedicated extension
 integrated in Jenkins-core nor specific API implemented by plugins. We only require them to follow some convention in the way they expose
 configuration attributes (i.e +DataBoundSetter|Constructor+)
+
+As Configuration-as-Code model is directly compute based on exposed API, this model might change with
+jenkins-core or plugin upgrades. We don't offer any backward compatibility support. As a user wants
+to upgrade Jenkins or plugins, he has to run a test master to confirm his yaml configuration is still
+valid. Or he can rely on generated schema for target core+plugin version to validate this file.
 
 == Security
 
