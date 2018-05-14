@@ -85,7 +85,9 @@ HTTP status code will hence be the ones defines in that specification.
 
 We are taking a simplistic approach defining a single endpoint for error logging.
 
-The `errorTelemetry` endpoint will simply receive a JSON message, with a single log entry, containing in turn the `JSON` structure emitted locally as defined in link:https://github.com/jenkinsci/jep/tree/master/jep/304#logging-format[JEP-304].
+The `/telemetry/error` endpoint will simply receive a JSON message sent via a `POST` request, with a single log entry, containing in turn the `JSON` structure emitted locally as defined in link:https://github.com/jenkinsci/jep/tree/master/jep/304#logging-format[JEP-304].
+
+No other verb than `POST` will be accepted.
 
 .Error telemetry payload
 [source,json]
@@ -176,7 +178,7 @@ We are **not** using the same endpoint, for instance using a `type` field as tho
 
 === Send logs one by one
 
-For the current design, the client will use a single HTTP request for each log entry to send.
+For the current design, the client will use a single `POST` HTTP request for each log entry to send.
 We expect that the number of error or warning logs emitted from the Jenkins instance to be rare (i.e. less than a few dozens per day).
 
 So, at that stage of the project, we keep things simple.
