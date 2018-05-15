@@ -229,6 +229,7 @@ Probably the _load projection_ should be made here, and tentative numbers writte
 == References
 
 * link:https://github.com/jenkins-infra/evergreen/tree/master/docs/meetings/2018-05-07-existing-telemetry-setup-on-jenkins-io[Meeting notes about existing setup for Error Logging in the Kubernetes cluster in the Jenkins Infrastructure].
+* link:https://groups.google.com/d/msg/jenkinsci-dev/ql9iX06IdGw/AJxFcGK5BgAJ[Thread on the Jenkins Developers Mailing List].
 
 
 [IMPORTANT]
