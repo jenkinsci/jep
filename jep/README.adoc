@@ -28,7 +28,7 @@
 | link:200/[JEP-200: Switch Remoting/XStream blacklist to a whitelist]
 | https://github.com/oleg-nenashev[@oleg-nenashev]
 
-| Draft :speech_balloon:
+| Accepted :ok_hand:
 | link:201/[JEP-201: Jenkins Configuration as Code]
 | _not specified_
 
