@@ -222,6 +222,15 @@ This should especially be done by sending the right amount in number, but also i
 Probably the _load projection_ should be made here, and tentative numbers written here as a starting point.
 ////
 
+== Store UUID with logs
+
+It is critical to the quality of the telemetry system to be able to find and remove some logs originating from a rogue instance.
+Be it because it is controlled by an attacker, or for any other valid reasons.
+
+So, though not a pure API contract concern, it is important that the API stores a way to link back a log entry to its origin.
+
+It is recommended to store the UUID, so that the log can be linked back to not only a given instance, but a period of time where that instance was connected.
+
 == Prototype Implementation
 
 * https://github.com/jenkins-infra/evergreen
