@@ -1,4 +1,4 @@
-= JEP-0000: Essentials Error Telemetry API
+= JEP-308: Essentials Error Telemetry API
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -14,7 +14,7 @@ endif::[]
 [cols="2"]
 |===
 | JEP
-| 0000
+| 308
 
 | Title
 | Essentials Error Telemetry API
