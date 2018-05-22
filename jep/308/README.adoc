@@ -147,7 +147,7 @@ If the received message exceeds that maximum, the HTTP status code will be an _H
 .Error Telemetry failed creation payload
 [source,json]
 {
-  "status": "KO"
+  "status": "ERROR"
 }
 
 === Malformed data
@@ -159,7 +159,7 @@ to help understand what is wrong.
 .Error Telemetry failed creation payload
 [source,json]
 {
-  "status": "KO",
+  "status": "ERROR",
   "message": "(optional) message to explain what made the server reject this message."
 }
 
