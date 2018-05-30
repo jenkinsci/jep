@@ -324,6 +324,104 @@ rather than critical to the operation of the update lifecycle. This will be
 used at a future point in time to better understand the runtime environments
 for the Jenkins and evergreen-client processes.
 
+
+=== Adding new Update Levels
+
+In order for client to receive new <<update-levels>>, an automated backend
+process should generating an `ingest.yaml` to be sent to the Evergreen backend
+service layer.
+
+==== `ingest.yaml`
+
+The `ingest.yaml` file should be machine-generated from the `essentials.yaml`
+with URLs and checksums for artifacts at specific point in time.  This provides
+the raw data which the Update service should use to create
+<<update-levels>>. The file should be checked into source control and managed
+via pull requests and automated changes to allow for thorough testing of the
+set time-based snapshot of artifacts.
+
+.ingest.yaml
+[source,yaml]
+----
+---
+# This is an example of the output expected for incremental build information
+# for consumption by the Evergreen backend service layer
+##############################################################
+# ISO-8601 timestmap for when this document was generated. This is to be used
+# by the upload to the Evergreen backend services to understand when the ingest
+# manifest was actually created (rather than commmitted to source control, for
+# example)
+timestamp: '2018-05-21T21:40:17+00:00'
+
+# Core defines the latest incremental jenkins.war artifact.
+core:
+  # The URL referenced doesn't need to be sourced through a CDN, Artifactory is
+  # suitable. Future versions of the Evergreen backend will need to point to a
+  # CDN automatically anyways.
+  urL: 'http://mirrors.jenkins.io/war/latest/jenkins.war'
+  # The checksum is important for the Evergreen backend services, and client,
+  # to verify the artifact but also to distinguish effectively between two
+  # files which might be referenced in multiple ingest manifests which are in
+  # fact the same.
+  checksum:
+    # The type of supported checksum will need to be negotiated with the
+    # client-side support. Currently only sha256 is supported.
+    type: 'sha256'
+    signature: '246c298e9f9158f21b931e9781555ae83fcd7a46e509522e3770b9d5bdc88628'
+
+# Plugins is an array of plugin records which represent the essential group of
+# plugins to be distributed.
+plugins:
+  - groupId: 'org.jenkins-ci.plugins'
+    artifactId: 'buildtriggerbadge'
+    url: 'https://updates.jenkins.io/download/plugins/buildtriggerbadge/2.9/buildtriggerbadge.hpi'
+    checksum:
+      type: 'sha256'
+      signature: '246c298e9f9158f21b931e9781555ae83fcd7a46e509522e3770b9d5bdc88628'
+
+# Plugins defined under `environments` are expected to come from the
+# `environments` key in the essentials.yaml. These plugins will follow the same
+# structure as above and are intended to be joined with the "essential" group
+# of plugins above for clients.
+environments:
+  aws:
+    plugins:
+      - groupId: 'org.jenkins-ci.plugins'
+        artifactId: 'ec2'
+        url: 'https://updates.jenkins.io/download/plugins/ec2/1.39/ec2.hpi'
+        checksum:
+          type: 'sha256'
+          signature: '246c298e9f9158f21b931e9781555ae83fcd7a46e509522e3770b9d5bdc88628'
+----
+
+.Adding a new Update Level
+[source]
+----
+
+  update                      backend
+  service                    automation
+     |                           |
+     |                    [load ingest.yaml]
+     |                           |
+     |                    [convert to JSON]
+     |                           |
+     |        PUT /update        |
+     |      with ingest JSON     |
+     |<--------------------------o
+     o------/200 with JSON/----->|
+     |                           |
+----
+
+.Expected response
+[source, json]
+----
+{
+    "status" : "OK",
+    "id" : 4
+}
+----
+
+
 == Motivation
 
 The motivation for the Jenkins Essentials distribution using this update
