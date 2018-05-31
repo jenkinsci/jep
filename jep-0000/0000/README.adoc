@@ -1,0 +1,170 @@
+= JEP-0000: Jenkins CVE Numbering Authority
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.**JEP Template**
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 0000
+
+| Title
+| Jenkins CVE Numbering Authority
+
+| Sponsor
+| link:https://github.com/daniel-beck/[Daniel Beck]
+
+| Status
+// Uncomment the appropriate line.
+| Not Submitted :information_source:
+//| Draft :speech_balloon:
+//| Deferred :hourglass:
+//| Accepted :ok_hand:
+//| Rejected :no_entry:
+//| Withdrawn :hand:
+//| Final :lock:
+//| Replaced :dagger:
+//| Active :smile:
+
+| Type
+| Process
+
+| Created
+| 2018-05-31
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+| BDFL-Delegate
+| Undetermined
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+The Jenkins project wants to allow its users to refer to security vulnerabilities in Jenkins and Jenkins plugins using CVE identifiers.
+To allow for timely assignment of CVE identifiers for vulnerabilities, the Jenkins project needs to become a CVE Numbering Authority, or CNA.
+
+== Specification
+
+The Jenkins project will apply to become a "Sub CNA" CVE numbering authority under the Distributed Weakness Filing (DWF) federated CNA as described in
+link:https://github.com/distributedweaknessfiling/DWF-Documentation#becoming-an-open-source-cna-cve-numbering-authority[this GitHub repository of the DWF Project].
+
+Three documents we need to abide by are being provided by the DWF project:
+
+. To be able to submit data to CVE, every individual involved in providing that data (i.e. the authors of the CVE description, not the reporter(s) of the vulnerability, not the developer(s) fixing it, not the author(s) of the Jenkins security advisory) will need to agree to the https://cve.mitre.org/about/termsofuse.html[MITRE CVE Terms of service].
+. As a CNA operating under the DWF project, the Jenkins project will need to agree to the http://contributor-covenant.org/version/1/4/[DWF Contributor Agreement], which is based on Contributor Covenant 1.4.
+. The Jenkins project will need to agree to the http://cve.mitre.org/cve/cna/rules.html[MITRE CNA rules] that outlines the rules and processes the Jenkins project will need to follow and implement. The following sections apply to the Jenkins project:
+.. Chapter 2 outlines the responsibilities of all CNA, which applies to us.
+.. Chapter 4 outlines the CNA candidate process that includes onboarding.
+
+The Distributed Weakness Filing Project splits the CNA responsibilities into two parts:
+
+* The Jenkins Project, as CNA, will own blocks of CVE numbers.
+* Individuals working with the Jenkins Project, the CVE mentors, will assign CVE numbers and write issue descriptions in the required format.
+
+To start this process, an individual associated with the Jenkins project will need to become a CVE mentor.
+Once they are a CVE mentor, the Jenkins project can apply to become a CNA.
+
+
+== Motivation
+
+CVE, or Common Vulnerabilities and Exposures, is a system to unambiguously identify security vulnerabilities in software. Quoting link:https://en.wikipedia.org/wiki/Common_Vulnerabilities_and_Exposures#CVE_Usage[Wikipedia]:
+
+____
+Common Vulnerabilities and Exposures (CVE®) is a dictionary of common names (i.e., CVE Identifiers) for publicly known information security vulnerabilities. CVE’s common identifiers make it easier to share data across separate network security databases and tools, and provide a baseline for evaluating the coverage of an organization’s security tools. If a report from one of your security tools incorporates CVE Identifiers, you may then quickly and accurately access fix information in one or more separate CVE-compatible databases to remediate the problem.
+____
+
+The Jenkins project has used CVE Identifiers for security vulnerabilities since 2013, after Kurt Seifried of Red Hat, Inc. requested we do so.
+Since then we've been providing advance information about soon-to-be-fixed security vulnerabilities to the private link:http://oss-security.openwall.org/wiki/mailing-lists/distros[distros mailing list] whose members are various Linux and BSD distributions.
+Most of those CVEs were assigned by Kurt Seifried.
+In early 2017, the list owner requested that these CVE assignments be handled elsewhere due to the lack of relevant of advance information about Jenkins vulnerabilities to the regular list recipients.
+From that point on, the Jenkins project requested CVE IDs from Kurt Seifried/the Distributed Weakness Filing Project directly.
+However, handling of those requests is irregular, and could sometimes be delayed up to multiple months.
+
+In addition, without a dedicated project-specific CNA, other CNAs are free to assign CVE IDs, and provide the descriptions.
+In the past, this has resulted in badly described or completely incorrect issue descriptions, which took time to clean up.
+
+== Reasoning
+
+Requesting CVE IDs from MITRE (the primary CNA) is out of scope as per link:http://cve.mitre.org/cve/request_id.html[the request form]:
+
+____
+For open source software products not listed below, request a CVE ID through the Distributed Weakness Filing Project CNA.
+____
+
+We are currently using the Distributed Weakness Filing Project. This has the downsides of delays and non-exclusivity described above.
+
+
+== Backwards Compatibility
+
+Not applicable, as this is a process.
+
+
+== Security
+
+We are already using the jenkinsci-cert Google Group and the issues.jenkins-ci.org Jira to receive and track vulnerabilities in Jenkins before becoming a CNA, so there are no new security concerns.
+
+
+== Infrastructure Requirements
+
+Requirements for being a CNA that are related to infrastructure are the following:
+
+* Points of contact, both for other CNAs, as well as the general public, for which we can use the jenkinsci-cert mailing list we already publish as security contact.
+* Publish a disclosure and embargo policy, which we can do via the jenkins.io/security URL space.
+* Distribution point for vulnerability disclosures that is freely available to the general public, which already exists at jenkins.io/security/advisories.
+* Provide a list of products that are in scope (and possibly lists of what is not in scope).
+
+All of these are trivial to implement.
+
+
+== Testing
+
+There are no testing issues related to this proposal.
+
+== References
+
+n/a
+
+[IMPORTANT]
+====
+When moving this JEP from a Draft to "Accepted" or "Final" state,
+include links to the pull requests and mailing list discussions which were involved in the process.
+====
+
+
+
