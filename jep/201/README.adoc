@@ -270,6 +270,11 @@ So compatibility on version upgrade cannot be expected. But with JCasC we can pr
 issue and let end-user know before they apply to production. Also, binary compatibility requirement in Jenkins ecosystem will significantly
 limit the risk for a broken configuration.
 
+All this being said, we fully understand the concerns about backward compatibility and risk to get a Jenkins installation broken after some
+upgrade and Configuration-as-Code to reject the yaml file. To address this we will define a dedicated JEP on Configuration-as-Code tooling
+to provide necessary tools to both detect such breaking changes during jenkins-core and plugins development, and report such breaking
+changes to end user before configuration is actually applied on master, so yaml file can be updated accordingly.
+
 
 == Security
 
