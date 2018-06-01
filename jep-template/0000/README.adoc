@@ -180,13 +180,8 @@ JEPs which will not include code changes may omit this section.
 
 [TIP]
 ====
-Provide links to any related documents.
-====
-
-[IMPORTANT]
-====
-When moving this JEP from a Draft to "Accepted" or "Final" state,
-include links to the pull requests and mailing list discussions which were involved in the process.
+Provide links to any related documents. 
+This will include links to discussions on the mailing list, pull requests, and meeting notes. 
 ====
 
 
