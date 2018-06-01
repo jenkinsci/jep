@@ -159,12 +159,3 @@ There are no testing issues related to this proposal.
 == References
 
 n/a
-
-[IMPORTANT]
-====
-When moving this JEP from a Draft to "Accepted" or "Final" state,
-include links to the pull requests and mailing list discussions which were involved in the process.
-====
-
-
-
