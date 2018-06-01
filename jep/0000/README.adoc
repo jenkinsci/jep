@@ -26,7 +26,7 @@ endif::[]
 | Not Submitted :information_source:
 
 | Type
-| :bulb: Informational :bulb:
+| :bulb: Standards :bulb:
 
 | Created
 | :bulb: May 30th 2018 :bulb:
@@ -66,12 +66,12 @@ endif::[]
 
 == Abstract
 
-Configuration-as-Code (JEP-201) do describe the mechanisms used to configure a Jenkins master based
+Configuration-as-Code (JEP-201) describes the mechanisms used to configure a Jenkins master based
 on yaml file(s), by discovering the data model from Java API, without the need to write any "glue-code"
 for each and every supported plugin.
 
 This approach comes with some drawback: Any update to Jenkins master's core or plugins will change the
-inferred model, and as such a yaml configuration used a t time might not be valid a t+1. This concern
+inferred model, and as such a yaml configuration used a `t` time might not be valid at `t+1`. This concern
 has been raised by many early-adopters.
 
 This proposal is about defining the adequate tooling to balance this limitation, so both end-users
@@ -83,7 +83,7 @@ resolution hints.
 Configuration-as-Code tooling is designed to fill the gap between the raw mechanism defined by JEP-201
 to configure a specific jenkins-core + plugins combination, and the need to keep this configuration
 stable during core or plugin upgrades, or at least detect breaking changes and provide hints to manage
-upgreade.
+upgrade.
 
 This includes:
 
@@ -99,7 +99,7 @@ on this, when yaml validation do detect a configuration mismatch it can offer mi
 == Motivation
 
 Configuration-as-Code doesn't define a data model to setup jenkins, it's based on inferring a model
-from live jenkins instance from it's Java API, especially UI data-binding mechanisms. Based on this,
+from live jenkins instance from its Java API, especially UI data-binding mechanisms. Based on this,
 changes made to core or a plugin _might_ change this model and a configuration file _could_ not be
 valid after upgrade.
 
@@ -109,7 +109,7 @@ distinct models, as we only know about the live, inferred one.
 
 Configuration-as-Code tooling is defined to workaround this limitation by providing a toolset to
 discover such breaking changes early, before the actual production configuration is updated.
-It will help detect breaking changes during jenkins and plugins developement, offer an option for
+It will help detect breaking changes during jenkins and plugins development, offer an option for
 plugin developers to document required breaking changes, and validate a configuration for a specific
 jenkins instance before it get actually applied.
 
@@ -186,7 +186,7 @@ On end-user side we want ot offer a validation toolkit to be used when applying 
 instance. This toolkit do parse the yaml configuration, try to apply configuration on the inferred model,
 and will report issue detected during this dry-run configuration process.
 
-It would rely on breaking changes metadata to offer end-user some guidance on way to address repoerted
+It would rely on breaking changes metadata to offer end-user some guidance on way to address reported
 backward compatibility issues.
 
 
