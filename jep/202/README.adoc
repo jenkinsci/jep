@@ -107,10 +107,6 @@ This change adds more methods to the http://javadoc.jenkins.io/jenkins/util/Virt
 * `readLink()` If this file is a symlink, returns the link target.
 * `list(String, String, boolean)` Lists recursive files of this directory with pattern matching
 
-http://javadoc.jenkins.io/hudson/FilePath.html[`FilePath`]
-
-* `copyFromRemotely(URL)` Copies the content of a URL to a remote file without transferring content over a Remoting channel
-
 
 In https://github.com/jenkinsci/workflow-api-plugin[workflow-api-plugin] a new  https://github.com/jglick/workflow-api-plugin/blob/44bc9985b0aa1fb9407b5c78be6b429ad29af2d8/src/main/java/org/jenkinsci/plugins/workflow/flow/StashManager.java#L292-L315[`StashAwareArtifactManager`] is also added, a mixin interface for an `ArtifactManager` which supports specialized stash behavior as well.
 
