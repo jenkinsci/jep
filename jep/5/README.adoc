@@ -104,37 +104,40 @@ they help make Jenkins better.
 
 === Responsiblities of Ambassadors
 
-Jenkins Ambassador responsibilities include the following:
+Jenkins Ambassador minimum responsibilities include at least 2 of the following items:
 
-* Provide feedback, ideas, and direction that will help to improve the Jenkins project.
-  This involvement may be in the form of technical discussions, contributor summits,
-  and or community building events/activities.
-* Write blog(s) on jenkins.io, speaking engagements at local events, run workshops,
-  develop or contribute to the development of tutorials, participate in
-  and/or organize local events.
-* Staff Jenkins World "Ask the Experts" booth or Jenkins booths at other events such as FOSDEM and ScaLE.
-* TODO More here...  
+* Publish 3 or more blog posts on jenkins.io
+* Give 3 or more Jenkins public presentations
+* Organize 4 or more Jenkins events
 
 Ambassadors must always adhere to the the 
 link:https://jenkins.io/project/conduct/[Jenkins Code of Conduct].
 
+Additional responsiblities include the following:
+
+* Provide feedback, ideas, and direction that will help to improve the Jenkins project.
+  This involvement may be in the form of technical discussions, contributor summits,
+  and or community building events/activities.
+* Run workshops, develop or contribute to the development of tutorials, participate in
+  and/or organize local events.
+* Staff Jenkins World "Ask the Experts" booth or Jenkins booths at other events such as FOSDEM and ScaLE.
+
+
 === Nomination
 
-TODO: more here. 
+Those who wish to become Jenkins Ambassadors may nominate themselves by filling out the 
+link:https://docs.google.com/forms/d/e/1FAIpQLSfswl1auVMC_ay0Y2xMw70tKK2j2IQevtGVSV9I0SQWbXW7mQ/viewform[Jenkins Ambassador Application] 
+form listing their qualifications.  
+The Events Officer or other board members may invite people to apply but the form will still need to be completed. 
 
-Ideas:
-* Look at JAM Organizer list?
-* Ask contributors during IRC meeting for suggestions
-* Once there is a group of Jenkins Ambassadors in place those Ambassadors can
-decide for themselves?
+=== Acceptance
 
-=== Approval
-
-Approval of new Jenkins Ambassadors will be done by Jenkins Board members and officers. 
+Approval of new Jenkins Ambassadors will be given based on the consensus of the Jenkins Board members and officers. 
+Meeting the minimum requirements does not guarantee that an application will be accepted, but applications that meet the requirements will not be rejected without an explanation.
 
 === Term
 
-Jenkins Ambassadors are annual positions.  
+Jenkins Ambassadors memberships are annual positions.  
 Current Ambassadors' accomplishments will be reviewed each year to reconfirm their Jenkins Ambassadors membership. 
 There is no set limit on the number of Jenkins Ambassadors.
 
@@ -207,6 +210,8 @@ There are no testing issues related to this proposal.
 
 * link:https://wiki.jenkins.io/display/JENKINS/Jenkins+Ambassador[Original Proposal from 2017]
 * link:https://groups.google.com/d/topic/jenkinsci-dev/12D2tWxO6mM/discussion[jenkinsci-dev@ discussion]
+
+
 
 
 
