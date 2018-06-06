@@ -73,29 +73,49 @@ The BlueOcean extensiblity api is the way in which Jenkins plugin developers ext
 === Extension Store
 This is the only global object exposed by the extension system; it stores Extension Points and Extensions implementing it. This is where an extension registry is stored and during javascript execution offers lookup capability to apply the Extension Points or call the rendering function.
 
-==== Registering extensions
+==== Registering Extensions
 
 Extensions in Jenkins are normally discovered with the `@Extension` annotation. Javascript has no runtime methods to discover extensions automatically, so an explicit call to `register()` is needed.
 
 [source,javascript]
 ----
-window.extensionStore.register(extensionPointId, callbackFn)<1>
+/**
+ * @param {string} extensionPointId - Unique string that idenifies the extension point.
+ * @param {function} callbackFn - Extension function<1>
+ */
+window.extensionStore.register(extensionPointId, callbackFn)
 ----
-<1> Parameters
-* extensionPointId - Unique string that idenifies the extension point.
-* callbackFn - <<extensionfunction>>
+<1> <<extensionfunction>>
 
-==== Listing extensions
+===== Registration Event Listener
+
 [source,javascript]
 ----
+/**
+ * @param {string} event - The event to register a callback against.
+ * @param {function} callbackFn - Callback function to be executed on event  
+ */
+window.extensionStore.registerListener(event, callbackFn)
+----
+
+==== List of Extension Points
+
+[source,javascript]
+----
+/**
+ * @returns {string[]} List of extension point ids that are registered. 
+ */
+window.extensionStore.getExtensionPointIds()
+----
+
+==== Listing of Extensions for a Extension Point
+
+[source,javascript]
+----
+/** 
+ * @param {string} [extensionPointId] - Extension point to get registered extensions for. If not provided return all extensions.
+ */
 window.extensionStore.getExtensions(extensionPointId)
-----
-
-Jenkins relies on reflection to find extensions. This is not possible in Javascript and therefore extensions need to be explicitly registered during the loading of the application. The above example is equivalent to doing the following in Jenkins
-
-[source,java]
-----
-Jenkins.getExtensionList(<Extension.class>)
 ----
 
 [#extensionfunction]
