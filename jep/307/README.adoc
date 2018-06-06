@@ -412,12 +412,26 @@ environments:
      |                           |
 ----
 
+
+.Expected request
+[source, json]
+----
+{
+    "commit" : "0xdeadbeef",
+    "manifest" : "<ingest JSON>"
+}
+----
+
 .Expected response
 [source, json]
 ----
 {
-    "status" : "OK",
-    "id" : 4
+    "id" : 4,
+    "channel" : "general",
+    "tainted" : false,
+    "createdAt" : "<ISO 8601 timestamp>",
+    "manifest" : "<ingest JSON>",
+    "commit" : "<sha1>"
 }
 ----
 
