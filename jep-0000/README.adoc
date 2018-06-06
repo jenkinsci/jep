@@ -1,0 +1,153 @@
+= JEP-0000: Deprecation of ruby-runtime
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 0000
+
+| Title
+| Deprecation of ruby-runtime
+
+| Sponsor
+| https://github.com/daniel-beck
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Process
+
+| Created
+| 2018-06-06
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+Due to its negative impact on core maintenance, distribution of the unmaintained `ruby-runtime` plugin will be suspended.
+Distribution of plugins depending on it will be suspended until their dependency is removed.
+
+
+== Specification
+
+`ruby-runtime` will be added to the `artifact-ignores` file of the update center generator so it is no longer available for download on update sites.
+// Perhaps: Add security warning?
+
+Plugins with a mandatory dependency on `ruby-runtime` will be added to the same file, as they will not be installable without `ruby-runtime` being available.
+
+The multiple Git repositories holding the `ruby-runtime` source code will be archived on GitHub.
+
+Workarounds in Jenkins core implemented specifically to enable `ruby-runtime` will be reviewed and considered for reversal.
+No future core development will consider the impact on `ruby-runtime` and plugins based on it, and bug reports to core and related components about their impact on `ruby-runtime` and plugins based on it will be closed as *Won't Fix*.
+
+
+== Motivation
+
+ruby-runtime allows plugins to be written in Ruby, rather than the usual Java/Groovy.
+Development of ruby-runtime stopped around 2013.
+There are currently two Git repositories holding different states of its source code: jenkinsci/ruby-runtime-plugin and jenkinsci/jenkins.rb.
+It is unmaintained and the changelog mentions a version 0.13 that has never actually been released.
+
+Over the past year, multiple changes to core negatively impacted ruby-runtime based plugins, and core maintainers had to implement workarounds to address these problems.
+Due to its design, it is not always possible to apply corresponding changes to ruby-runtime itself.
+Instead, every dependent plugin may need to be adapted individually, if a change to core results in problems to ruby-runtime.
+
+There currently are no plugins based on ruby-runtime that are both actively maintained (a release in the last two years, i.e. since June 2016) and popular (>2500 reported installations).
+In a Jenkins developers mailing list thread proposing the deprecation of `ruby-runtime` in May 2018, nobody volunteered to maintain `ruby-runtime` and address its problems.
+
+Therefore this JEP proposed the deprecation of ruby-runtime, and to suspend its distribution via Jenkins project update sites.
+
+
+== Reasoning
+
+We have a limited set of tools available to deal with problems like this.
+
+* Security warnings don't really apply here, as UI labels specifically mention 'security'.
+* Wiki pages and other plugin documentation is easy to overlook, especially in automated deployments.
+* There are no ways for users to provide feedback for plugins like there is for core (via changelog 'weather').
+* There are no ways to mark plugins as incompatible and, for example, warn users on upgrade, other than to suspend distribution. Additionally, we'd need to test every core change for ruby-runtime impact to know of the problem in advance.
+
+So the viable options are the following:
+
+* We could continue to distribute ruby-runtime while reverting the changes in Jenkins core that make it work. This will just result in a bad user experience, as ruby-runtime based plugins remain available while not working with new Jenkins releases.
+* We could continue to distribute ruby-runtime and keep the already implemented changes to core around, hoping no further problems occur. If they do, we can still implement this proposed deprecation of ruby-runtime. In this case, there would be no advance warning of current ruby-runtime users, and the number of users may increase in the mean time, making it more difficult to justify such a change.
+* We could continue to distribute ruby-runtime, keep the already implemented changes to core around, and fix any future problems. This option comes with potentially significant work with very little benefit, as ruby-runtime based plugins are neither very popular, nor actively maintained.
+
+
+== Backwards Compatibility
+
+Existing users can continue to use ruby-runtime based plugins.
+ruby-runtime and plugins depending on it can still be downloaded from Artifactory to support legacy environments.
+
+If previous core compatibility fixes are reverted, or future core changes break ruby-runtime, users of those plugins will be impacted.
+
+
+== Security
+
+There are no security risks related to this proposal.
+
+
+== Infrastructure Requirements
+
+This JEP will be implemented by using a well established feature of the update center generator.
+
+There are no new infrastructure requirements related to this proposal.
+
+
+== Testing
+
+There are no testing issues related to this proposal.
+
+
+== Prototype Implementation
+
+n/a
+
+
+== References
+
+https://groups.google.com/d/msg/jenkinsci-dev/Ve0fqAud3Mk/MTIxw6ZyBwAJ
+
