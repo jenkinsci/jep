@@ -129,3 +129,5 @@ There are no new infrastructure requirements related to this proposal.
 There are no testing issues related to this proposal.
 
 == References
+
+* link:https://groups.google.com/d/topic/jenkinsci-dev/urbEsaAjbVw/discussion[Initial discussion]
