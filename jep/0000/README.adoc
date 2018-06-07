@@ -257,8 +257,8 @@ There are no testing issues related to this proposal.
 
 == References
 
-* https://github.com/jenkinsci/acceptance-test-harness[Jenkins acceptance test harness]
-* https://github.com/jenkinsci/blueocean-acceptance-test[Blue Ocean acceptance test]
-* https://github.com/jenkinsci/plugin-compat-tester[Jenkins plugin compat tester]
-* https://github.com/jenkins-infra/evergreen[Essentials evergreen draft]
-* https://github.com/jenkinsci/jenkins-war-packager[Jenkins WAR packager]
+* link:https://github.com/jenkinsci/acceptance-test-harness[Jenkins acceptance test harness]
+* link:https://github.com/jenkinsci/blueocean-acceptance-test[Blue Ocean acceptance test]
+* link:https://github.com/jenkinsci/plugin-compat-tester[Jenkins plugin compat tester]
+* link:https://github.com/jenkins-infra/evergreen[Essentials evergreen draft]
+* link:https://github.com/jenkinsci/custom-war-packager[Jenkins WAR packager]
