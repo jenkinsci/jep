@@ -1,4 +1,4 @@
-= JEP-0000: Deprecation of ruby-runtime
+= JEP-7: Deprecation of ruby-runtime
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -13,7 +13,7 @@ endif::[]
 [cols="2"]
 |===
 | JEP
-| 0000
+| 7
 
 | Title
 | Deprecation of ruby-runtime
@@ -86,7 +86,7 @@ No future core development will consider the impact on `ruby-runtime` and plugin
 
 == Motivation
 
-ruby-runtime allows plugins to be written in Ruby, rather than the usual Java/Groovy.
+The `ruby-runtime` plugin allows plugins to be written in Ruby, rather than the usual Java/Groovy.
 Development of ruby-runtime stopped around 2013.
 There are currently two Git repositories holding different states of its source code: jenkinsci/ruby-runtime-plugin and jenkinsci/jenkins.rb.
 It is unmaintained and the changelog mentions a version 0.13 that has never actually been released.
