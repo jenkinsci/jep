@@ -28,6 +28,10 @@
 | link:6/[JEP-6: Jenkins CVE Numbering Authority]
 | Undetermined
 
+| Draft :speech_balloon:
+| link:7/[JEP-7: Deprecation of ruby-runtime]
+| _not specified_
+
 | Final :lock:
 | link:200/[JEP-200: Switch Remoting/XStream blacklist to a whitelist]
 | https://github.com/oleg-nenashev[@oleg-nenashev]
