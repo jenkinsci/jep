@@ -115,6 +115,8 @@ The `VirtualFile.run(Callable)` method, that already existed to optimize Workspa
 It was important to implement this in the S3 plugin in order to ensure that Classic or Blue Ocean UI flows relating to artifacts, including simply opening the index page of a build, did not make a large number of network calls.
 The cache system allows a single S3 metadata call (possibly one HTTP request, depending on page size) to retrieve sufficient information for a complete page render of some or all of the artifact tree, without the rendering code (e.g., in Jenkins core) knowing anything about the storage system.
 
+The `apache-httpcomponents-client-4-api` plugin is extended with a `RobustHTTPClient`
+which standardizes handling of blob upload and download operations.
 
 == Motivation
 
@@ -126,7 +128,7 @@ There are serious drawbacks to use filesystem when running in cloud or container
 * Causing all sorts of issues due to usage of remoting for file transfer.
 Going through the master as files are copied from/to the agent cause load, cpu, network issues that are hard to diagnose and recover from.
 * Causing a big performance hit due to the traffic and disk access, preventing the usage of distributed filesystems such as NFS, GlusterFS,...
-* Providing limited functionality compared to a first class blob store (AWS S3, Azure Blob Storage, Google Blobstore) or artifact repository (Nexus, Artifactory).
+* Providing limited functionality compared to a first class blob store (AWS S3, Azure Blob Storage, Google Blobstore).
 Organizations may have some requirements that are not available today: auditability, sophisticated retention policies, versioning,...
 
 From the usability point of view, currently a Jenkins installation sizing has to have into account the expected amount of disk needed or a restart, disk reprovisioning, disk swap,... instead of a infinite scale, pay per use that a blob store can offer. Cloud installations can automatically configure the blob store to use offering a much better first time user experience.
@@ -162,16 +164,16 @@ The S3 implementation also uses http://jclouds.apache.org[Apache JClouds] that a
 
 === Container (Bucket) and Path References
 
-Current implementation for S3 uses a master wide config option to set the name of the container (S3 bucket) and path inside.
-Currently this is a environment variable but could be a system property or a config section in the UI.
+The implementation for S3 uses a master-wide configuration option to set the name of the container (S3 bucket) and path inside.
+(AWS-specific installers for Jenkins, such as for Essentials, could preconfigure these fields.)
 
 This means that different runs cannot store the artifacts in different buckets or paths, as we don't expect that to be a common use case.
 It would be more common to move all the artifacts from one location to another and that could be easily achieved by moving the blobs in S3 and changing the master wide configuration parameters.
 
 === Interruptions
 
-The API does not support `InterruptedException`, but we do not see any evidence that it may cause integration issues with other plugins like Build Timeout.
-Follow up work as part of https://issues.jenkins-ci.org/browse/JENKINS-50597[JENKINS-50597] will verify this.
+The `VirtualFile` API does not support `InterruptedException`, but there is no evidence that it matters.
+Test coverage confirms reasonable handling of error conditions including build timeouts and user aborts.
 
 === Security
 
@@ -290,7 +292,9 @@ Automated tests for the common archive/unarchive and stash/unstash flow have bee
 
 The AWS S3 implementation tests exercise this flow plus add some extra S3 specific tests.
 They require an AWS account and S3 permissions and can be run from a EC2 instance or a local machine.
-Some mock testing can be added in the future.
+
+There is an abstraction layer allowing use of any blob store supported by Apache jclouds.
+This layer has its own mock tests confirming general behaviors.
 
 == Prototype Implementation
 
