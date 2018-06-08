@@ -210,7 +210,7 @@ There are no testing issues related to this proposal.
 
 * link:https://wiki.jenkins.io/display/JENKINS/Jenkins+Ambassador[Original Proposal from 2017]
 * link:https://groups.google.com/d/topic/jenkinsci-dev/12D2tWxO6mM/discussion[jenkinsci-dev@ discussion]
-
+* link:https://docs.google.com/forms/d/e/1FAIpQLSfswl1auVMC_ay0Y2xMw70tKK2j2IQevtGVSV9I0SQWbXW7mQ/viewform[Jenkins Ambassador Application] 
 
 
 
