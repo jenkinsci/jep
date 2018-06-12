@@ -20,7 +20,7 @@
 | link:4/[JEP-4: Special Interest Groups]
 | _not specified_
 
-| Draft :speech_balloon:
+| Accepted :ok_hand:
 | link:5/[JEP-5: Jenkins Ambassador Program]
 | _not specified_
 
