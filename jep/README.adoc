@@ -48,6 +48,10 @@
 | link:203/[JEP-203: BlueOcean Extensibility]
 | _not specified_
 
+| Draft :speech_balloon:
+| link:204/[JEP-204: BlueOcean Extensibility API]
+| _not specified_
+
 | Accepted :ok_hand:
 | link:300/[JEP-300: Jenkins Essentials]
 | _not specified_
