@@ -66,7 +66,9 @@ endif::[]
 
 == Abstract
 
-The Blue Ocean plugin uses modern design concepts to visualize Jenkins pipelines. However, while the user experience and visual design are optimized for continuous delivery workflows, it is not easy for plugin developers to add value to those visualizations. This JEP details the proposal for improving the support for developers to extend the Blue Ocean user interface so that they can provide key information for indicating status and other information about Jenkins pipelines.
+The Blue Ocean plugin uses modern design concepts to visualize Jenkins pipelines.
+However, while the user experience and visual design are optimized for continuous delivery workflows, it is not easy for plugin developers to add value to those visualizations.
+This JEP details the proposal for improving the support for developers to extend the Blue Ocean user interface so that they can provide key information for indicating status and other information about Jenkins pipelines.
 
 == Specification
 
@@ -78,15 +80,19 @@ Blue Ocean Extensibility is targeted at Jenkins plugin developers who want to ex
 
 === Scope of Blue Ocean (Pipeline UX) Extensbility
 
-This section provides a cursory overview of the support for extensibility in Blue Ocean. Subsequent documents will provide more detail.
+This section provides a cursory overview of the support for extensibility in Blue Ocean.
+Subsequent documents will provide more detail.
 
 ==== Blue Ocean Extensibility API
 
-The Blue Ocean Extensbility API is the general mechanism that plugin developers will use to write, register, and lookup extensions. This solution will be designed to be as simple as possible and will only rely on ES5 to allow flexibility in the tooling that plugin developers can use to extend Blue Ocean.
+The Blue Ocean Extensbility API is the general mechanism that plugin developers will use to write, register, and lookup extensions.
+This solution will be designed to be as simple as possible and will only rely on ES5 to allow flexibility in the tooling that plugin developers can use to extend Blue Ocean.
 
 ==== Blue Ocean REST API Extensibility
 
-The BlueOcean REST API uses stapler to provide data for BlueOceans UI. While the technical work has been completed for this, documentation on how plugins can use it to provide data to BlueOcean is missing. This documentation will be provided through the SDK, which will include examples of migrated plugins, documentation, and reusable code examples. 
+The BlueOcean REST API uses stapler to provide data for BlueOceans UI.
+While the technical work has been completed for this, documentation on how plugins can use it to provide data to BlueOcean is missing.
+This documentation will be provided through the SDK, which will include examples of migrated plugins, documentation, and reusable code examples.
 
 ==== Blue Ocean Plugin Packaging
 
@@ -100,25 +106,31 @@ There are several areas to be explored here:
 
 ==== Blue Ocean SDK
 
-The BlueOcean SDK will provide a component library to developers to help them develop UI with the same look and feel as Blue Ocean. It will also document the above areas as it pertains to developers, as well as providing best practises for developers. This SDK will be in development alongside the extensibility feature so that the community can provide feedback and recommendations.
+The BlueOcean SDK will provide a component library to developers to help them develop UI with the same look and feel as Blue Ocean.
+It will also document the above areas as it pertains to developers, as well as providing best practises for developers.
+This SDK will be in development alongside the extensibility feature so that the community can provide feedback and recommendations.
 
 == Motivation
 
 Jenkins has a vibrant and active ecosystem of developers across the globe; however, this ecosystem is currently not present in the modern Blue Ocean pipeline visualization. The goal of this JEP is to provide a solution that is easy for plugin developers to use.
- 
+
 == Reasoning
 
-While Blue Ocean has some support for extensibility today, there a some problems that need to be addressed. The subsequent JEPs will explain why design decisions have been made as they relate to the current extensbility system.
+While Blue Ocean has some support for extensibility today, there a some problems that need to be addressed.
+The subsequent JEPs will explain why design decisions have been made as they relate to the current extensbility system.
 
 == Backwards Compatibility
 
 This JEP will break current Blue Ocean extensibility; however, there are few plugins external to Blue Ocean, so this is most likely a minor issue.
 
-An exact list of plugins affected needs to be compiled. Plugins will either need to be updated at the same time this new extensibility model is released, or another interim solution will need to be found. The team working on this effort will help provide guidance to plugin developers as part of the development process.
+An exact list of plugins affected needs to be compiled.
+Plugins will either need to be updated at the same time this new extensibility model is released, or another interim solution will need to be found.
+The team working on this effort will help provide guidance to plugin developers as part of the development process.
 
 == Security
 
-There are no security implications outside of what exists in current Jenkins plugins. Specificially, Jenkins plugins are assumed not to be bad actors with regards to the JavaScript that they contribute to the user interface.
+There are no security implications outside of what exists in current Jenkins plugins.
+Specificially, Jenkins plugins are assumed not to be bad actors with regards to the JavaScript that they contribute to the user interface.
 
 == Infrastructure Requirements
 
