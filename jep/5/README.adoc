@@ -132,13 +132,13 @@ The Events Officer or other board members may invite people to apply but the for
 
 === Acceptance
 
-Approval of new Jenkins Ambassadors will be given based on the consensus of the Jenkins Board members and officers.
+Jenkins Ambassador membership will be granted based on the consensus of the Jenkins Board members and officers.
 Meeting the minimum requirements does not guarantee that an application will be accepted, but applications that meet the requirements will not be rejected without an explanation.
 
 === Term
 
-Jenkins Ambassadors memberships are annual positions.
-Current Ambassadors' accomplishments will be reviewed each year to reconfirm their Jenkins Ambassadors membership.
+Jenkins Ambassador memberships are annual positions.
+Current Ambassadors' accomplishments will be reviewed each year to reconfirm their Jenkins Ambassador membership.
 There is no set limit on the number of Jenkins Ambassadors.
 
 === Relationship to CloudBees
@@ -184,7 +184,7 @@ It was determined that these other names each had issues that made them less acc
 
 === Voting
 
-We decided against having ambassadors voting to for or against the addition of other ambassadors.
+We decided against having ambassadors voting for or against the addition of other ambassadors.
 This would reduce the sense of team and community in among members.
 Voting could also result in cliques and exlusionary behavior.
 Having a clear set of guidelines and final approval made by the Jenkins Events Officer and Board members
