@@ -24,7 +24,7 @@
 | link:5/[JEP-5: Jenkins Ambassador Program]
 | _not specified_
 
-| Draft :speech_balloon:
+| Accepted :ok_hand:
 | link:6/[JEP-6: Jenkins CVE Numbering Authority]
 | Undetermined
 
