@@ -1,4 +1,4 @@
-= JEP-0000: Declarative Data Binding
+= JEP-205: Declarative Data Binding
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -13,7 +13,7 @@ endif::[]
 [cols="2"]
 |===
 | JEP
-| 0000
+| 205
 
 | Title
 | Declarative Data Binding
@@ -23,7 +23,7 @@ endif::[]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
-| Not Submitted :information_source:
+| Draft :speech_balloon:
 
 | Type
 | Standards
