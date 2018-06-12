@@ -73,34 +73,9 @@ Ambassadors help to further the project by helping the community to understand h
 This document describes the "Jenkins Ambassador" program,
 including how the program will be governed, how Ambassadors are selected, and the duties and benefits of being a Jenkins Ambassador.
 
-
 == Specification
 
-[IMPORTANT]
-====
-The final name of this program has not been decided yet.
-This document use the phrase "Jenkins Ambassador" as a place holder for the actual name.
-The final name will need to be selected before this JEP is accepted, of course.
-
-A sample of names proposed so far:
-
-* Jenkins Ambassador
-* Jenkins Steward
-* Jenkins Advocate
-* Jenkins Special Agent
-* Jenkins Prefect
-
-====
-
-[IMPORTANT]
-====
-The first set of Ambassadors should be selected before this JEP is accepted
-and should be involved in figuring out the details of this JEP.
-====
-
-
 === Ambassador Program Goals
-
 
 * Empower community leaders to talk, write, organize community building activities and or educate others about Jenkins.
 * Cultivate the people whose efforts and commitment play an integral part in the growth of the Jenkins platform.
@@ -124,77 +99,56 @@ they help make Jenkins better.
 * Recognition via jenkins.io
 * “Ambassador” blog highlighting their accomplishments
 * Free ticket to Jenkins World, JUC Israel
-* Free access to certifications
-* Special Ambassador gift
+* Free access to Jenkins certification courses offered by CloudBees
+* Special Ambassador gift 
 
 === Responsiblities of Ambassadors
-A Jenkins Ambassador responsibility include any of the following:
 
-* Minimum requirements:
-** Author two (2) Jenkins blogs on jenkins.io during the one year term
-** Host at least 2 Jenkins meetups
-** Adhere to the the link:https://jenkins.io/project/conduct/[Jenkins Code of Conduct]
+Jenkins Ambassador minimum responsibilities include at least 2 of the following items:
+
+* Publish 3 or more blog posts on jenkins.io
+* Give 3 or more Jenkins public presentations
+* Organize 4 or more Jenkins events
+
+Ambassadors must always adhere to the the 
+link:https://jenkins.io/project/conduct/[Jenkins Code of Conduct].
+
+Additional responsiblities include the following:
+
 * Provide feedback, ideas, and direction that will help to improve the Jenkins project.
   This involvement may be in the form of technical discussions, contributor summits,
   and or community building events/activities.
-* Write blog(s) on jenkins.io, speaking engagements at local events, run workshops,
-  develop or contribute to the development of tutorials, participate in
+* Run workshops, develop or contribute to the development of tutorials, participate in
   and/or organize local events.
-* Staff Jenkins World Ask the Expert booth and booths at other events organized
-  by Jenkins project, is FOSDEM, ScaLE (if local)
+* Staff Jenkins World "Ask the Experts" booth or Jenkins booths at other events such as FOSDEM and ScaLE.
 
+
+=== Nomination
+
+Those who wish to become Jenkins Ambassadors may nominate themselves by filling out the 
+link:https://docs.google.com/forms/d/e/1FAIpQLSfswl1auVMC_ay0Y2xMw70tKK2j2IQevtGVSV9I0SQWbXW7mQ/viewform[Jenkins Ambassador Application] 
+form listing their qualifications.  
+The Events Officer or other board members may invite people to apply but the form will still need to be completed. 
+
+=== Acceptance
+
+Approval of new Jenkins Ambassadors will be given based on the consensus of the Jenkins Board members and officers. 
+Meeting the minimum requirements does not guarantee that an application will be accepted, but applications that meet the requirements will not be rejected without an explanation.
 
 === Term
 
-* This is an annual position
+Jenkins Ambassadors memberships are annual positions.  
+Current Ambassadors' accomplishments will be reviewed each year to reconfirm their Jenkins Ambassadors membership. 
+There is no set limit on the number of Jenkins Ambassadors.
 
-
-=== How are Jenkins Ambassador selected?
+=== Relationship to CloudBees
 
 The Jenkins Ambassador program is Jenkins Community program sponsored by CloudBees.
 However, the program is not a CloudBees promotional program.
 Care will be taken to avoid CloudBees favoritism or even the appearance of such.
-The program will be largely self-governing with members making most decisions.
 CloudBees employees may be Ambassadors.
-There is no set limit to the number or percentage of CB employees that can be Ambassadors (however, see avoiding favoritism above).
-
-Jenkins Ambassadors operate as an independent group who use a consensus review process to select new members.
-All communication and discussion are conducted via the TBD (a public) mailing list.
-Jenkins Ambassadors receive via an email, the nominee's information based on the criteria above.
-Voting to select the nominee happens via the mailing list with either +1 or -1 from the peer group over a two-week period.
-If the nominee receives three +1 votes and zero negative votes by the end of two weeks then that person is confirmed as a Jenkins Ambassador.
-If there is a -1 vote then this triggers a discussion after which the negative vote may or may not be changed. If the negative vote remains, the nominee cannot be confirmed.
-If there are less than three +1 votes during the two-week voting period then further discussion needs to be encouraged.
-
-If there are less than three Ambassadors, the following Jenkins project contributors may cast votes:
-
-* Kohsuke Kawaguchi
-* R. Tyler Croy
-* Alyssa Tong
-* Daniel Beck
-
-=== Open Questions
-
-==== Should there be a limit of certain # of ambassadors at a given time? Maybe 20 Ambassadors a year?
-
-==== What if Ambassador(s) do not vote in good faith or otherwise act to exclude candidates on personal grounds? 
-
-Does it mean that any Jenkins Ambassador can block all candidates from being elected during his/her term? Does not look good, people may go negative and toxic sometimes. I would rather prefer to see a vote override engine in this JEP.
-
-==== Which certifications? Jenkins ones or what?
-
-==== Use the term "Jenkins Board members and officers" instead of specific list of back vote casters?
-
-
-==== How are potential Ambassadors found and nominated?
-
-Ideas:
-* Look at JAM Organizer list?
-* Ask contributors during IRC meeting for suggestions
-* Once there is a group of Jenkins Ambassadors in place those Ambassadors can
-decide for themselves?
-
-
+There is no set limit to the number or percentage of CB employees that can be Ambassadors 
+(however, see avoiding favoritism above).
 
 == Motivation
 
@@ -214,6 +168,27 @@ and active members of the community who make the effort to help the community.
 A hard limit of 10% or less are CB employees was considered,
 but rejected due to concerns about fairness and added complexity.
 
+=== Naming 
+
+A number of other names were considered for this program: 
+
+* Jenkins Steward
+* Jenkins Advocate
+* Jenkins Special Agent
+* Jenkins Prefect
+
+It was determined that these other names each had issues that made them less acceptable than "Jenkins Ambassador". 
+"Jenkins Special Agent" is too cutesy.
+"Jenkins Steward" and "Jenkins Prefect" were a bit esoteric.
+"Jenkins Advocate" would also work, but was kept in reserve for a future program. 
+
+=== Voting
+
+We decided against having ambassadors voting to for or against the addition of other ambassadors. 
+This would reduce the sense of team and community in among members.  
+Voting could also result in cliques and exlusionary behavior.
+Having a clear set of guidelines and final approval made by the Jenkins Events Officer and Board members
+seemed fairer and less prone to issues.
 
 == Backwards Compatibility
 
@@ -226,8 +201,6 @@ There are no security risks related to this proposal.
 == Infrastructure Requirements
 
 There are no new infrastructure requirements related to this proposal.
-It uses
-
 
 == Testing
 
@@ -236,13 +209,9 @@ There are no testing issues related to this proposal.
 == References
 
 * link:https://wiki.jenkins.io/display/JENKINS/Jenkins+Ambassador[Original Proposal from 2017]
+* link:https://groups.google.com/d/topic/jenkinsci-dev/12D2tWxO6mM/discussion[jenkinsci-dev@ discussion]
+* link:https://docs.google.com/forms/d/e/1FAIpQLSfswl1auVMC_ay0Y2xMw70tKK2j2IQevtGVSV9I0SQWbXW7mQ/viewform[Jenkins Ambassador Application] 
 
-
-[IMPORTANT]
-====
-When moving this JEP from a Draft to "Accepted" or "Final" state,
-include links to the pull requests and mailing list discussions which were involved in the process.
-====
 
 
 
