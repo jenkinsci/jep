@@ -44,6 +44,10 @@
 | link:202/[JEP-202: External Artifact Storage]
 | https://github.com/jglick[Jesse Glick]
 
+| Draft :speech_balloon:
+| link:203/[JEP-203: BlueOcean Extensibility]
+| _not specified_
+
 | Accepted :ok_hand:
 | link:300/[JEP-300: Jenkins Essentials]
 | _not specified_
