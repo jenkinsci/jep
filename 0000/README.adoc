@@ -29,7 +29,7 @@ endif::[]
 | Standards
 
 | Created
-| June 8th 2018
+| 2018-06-08
 
 // Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
 //| Resolution
@@ -42,7 +42,7 @@ endif::[]
 
 Jenkins web UI relies on Stapler framework, which uses a JSON payload to bind web form inputs
 to Java model. Processing this payload to match Java model constraint use to be implemented with
-human written code. This is both annoying to write and prevent automatic discovery of this model
+human written code. This is both annoying to write and prevents automatic discovery of this model
 by third party tools, like Jenkins Pipeline or Configuration-as-Code (JEP-201).
 
 This document describe how we can rely on annotation on code to implement those exact same
@@ -50,12 +50,12 @@ constraints in a declarative way, making developer life easier, and enabling bet
 
 == Specification
 
-Declarative Data Binding do define annotations to enable data-binding. This is an opt-in mechanism, an
+Declarative Data Binding defines annotations for data-binding. This is an opt-in mechanism, an
 arbitrary class can't be used for DataBinding.
 
-`@DataBound` can be applied to class, method or filed. Annotated element has to be public, but
+`@DataBound` can be applied to class, method or field. Annotated element has to be public, but
 using this annotation will mark it `@Restricted(NoExternalUse)` to avoid direct (mis)use by third party components,
-as a DataBound component do expect a specific lifecycle (instanciation, data injection, validation, post-construction).
+as a DataBound component expects a specific lifecycle (instanciation, data injection, validation, post-construction).
 
 `@Trim` annotation is defined to handle a common development pattern to trim strings and convert empty strings
 to null (or the opposite) as in most cases they actually reflect unset values. This annotation enable
@@ -64,9 +64,9 @@ and `TO_EMPTY`.
 
 == Motivation
 
-http://stapler.kohsuke.org/[Stapler] framework is the backbone of Jenkins web UI. It is designed to
+link:http://stapler.kohsuke.org/[Stapler] framework is the backbone of Jenkins web UI. It is designed to
 offer data-binding from a (jelly or groovy) web view to Java model. For this purpose, a JSON payload
-is sent when a configuration form is submitted, and Stapler do convert this back to java model classes
+is sent when a configuration form is submitted, and Stapler converts this back to java model classes
 using a "DataBound" constructor and optional setters.
 
 This mechanism offers some discoverable data model on the Java API : the DataBound constructor and setters
@@ -75,59 +75,60 @@ let us know about the name and types of the expected payload. This is the basis 
 In many cases, some additional requirement are checked with human-written code. Typically, parameters get
 trimmed, checked for being empty or null, ensure value belongs to some range or match a pattern, etc.
 
-On the other way, the web UI form is build by accessing live Java model data using read methods, being
+On the other hand, the web UI form is built by accessing live Java model data using read methods, being
 converted to plain strings. It's up to the plugin developer to define constraints on the html elements
 so they reflect the data model.
 
 Generally speaking, with every single line of human-written code to handle data binding we introduce
-development effort / risk to introduce bugs, an we block opportunity for third-party component to discover
+development effort / risk to introduce bugs, and we block opportunity for third-party components to discover
 the underlying data model.
 
 
 == Reasoning
 
-Annotations have been used intensively by many frameworks to define metadata on data model expressed as
-Java classes. Typically, https://jcp.org/en/jsr/detail?id=338[Java Persistence API] allows to define
-how a Java object can be mapped to a database, while https://jcp.org/en/jsr/detail?id=222[JAXB] define
-annotations to customize how java attribute will be mapped to xml elements.
+Annotations have been used extensively by many frameworks to define metadata on data models expressed as
+Java classes. Typically, link:https://jcp.org/en/jsr/detail?id=338[Java Persistence API] defines
+how a Java object can be mapped to a database, while link:https://jcp.org/en/jsr/detail?id=222[JAXB] defines
+annotations to customize how java attributes will be mapped to xml elements.
 
-This JEP is about introducing support for annotation-based declarative data binding. A DataBound jenkins
-component would only rely on annotation to define how attributes are bound to JSON payload from web forms,
-including validation constraints. We consider this would have two major benefits :
+This JEP is about introducing support for annotation-based declarative data binding. A DataBound Jenkins
+component would only rely on annotations to define how attributes are bound to JSON payload from web forms,
+including validation constraints. This would have two major benefits:
 
-1. Plugin developers will need to write less code, and use standard annotations they probably already know
-from other Java related developments.
+1. Plugin developers would need to write less code, and use standard annotations they probably already know
+from other Java related projects.
 
 2. Constraints on the data model can be introspected. This will allow third party tools to adjust their
-behavior accordingly. A good candidates for this is Configuration-as-Code (JEP-201). Jelly tags use to
-compose the web UI also could introspect those annotations. Typically, if some attribute is a number and
+behavior accordingly. A good candidate for this is Configuration-as-Code (JEP-201). Jelly tags used to
+compose the web UI also could introspect those annotations. For example, if some attribute is a number and
 has to be positive, `<input type='number' 'min=0'>` html 5 element would be automatically generated.
 
 ==== Relying on Bean Validation
 
-https://jcp.org/en/jsr/detail?id=222[Bean Validation] is an annotation-based framework designed for
+link:http://beanvalidation.org/2.0/spec/[Bean Validation] is an annotation-based framework designed for
 generic usage defining constraints validation on data in a Java model. It allows definition of model
-constraints in a fully declarative way, and define the mechanism to run validation and discover violations.
+constraints in a fully declarative way, and defines the mechanism to run validation and discover violations.
 
 Bean Validation also is extensible by developers who can define custom annotations and rules to implement
 them.
 
 ==== Relying on JSON-B
 
-http://json-b.net/[Json-B] (JSR 367) is the approved specification for JSON binding. It has been highly
-inspired by https://github.com/FasterXML/jackson[Jackson] and do define the exact binding requirements
-Stapler do implement, but relying on standard annotations (vs custom `@DataBoundConstructor`.
+link:http://json-b.net/[Json-B] (JSR 367) is the approved specification for JSON binding. It has been highly
+inspired by link:https://github.com/FasterXML/jackson[Jackson] and defines the exact binding requirements
+Stapler implement, but relying on standard annotations (vs custom `@DataBoundConstructor`.
 
 As Stapler will still need to support legacy data-binding for backward compatibility, we can't just replace
 it with a Json-B implementation. We could consider adding support for such standard annotations as
 alternatives to stapler specific ones. But on the other way a Jenkins databound component is nothing like
-a reusable piece of software, and the https://javadoc.io/doc/javax.json.bind/javax.json.bind-api/1.0[Json-B annotations]
+a reusable piece of software, and the
+link:https://javadoc.io/doc/javax.json.bind/javax.json.bind-api/1.0[Json-B annotations]
 are mostly designed to tune Java to Json conversion, not providing huge benefits.
 
-==== Filed vs Setter injection
+==== Field vs Setter injection
 
 An endless debate for annotation based framework is about using annotations on private fields, vs using them
-on accessors. Most frameworks do support both as there's no single answer to this debate.
+on accessors. Most frameworks support both as there's no single answer to this debate.
 
 On one side, injection on private field require Java reflexion to unlock private field accessibility (or
 use Variable Handles on java 9+). It makes testing harder as there's no trivial way to mock or instantiate
@@ -144,8 +145,8 @@ very specific context.
 
 Based on this:
 
-1. databinding annotations can be used both on fields and accessors
-1. elements annotated databinding annotation will be automatically marked a restricted so they are not exposed as
+. databinding annotations can be used both on fields and accessors
+. elements annotated databinding annotation will be automatically marked a restricted so they are not exposed as
 "public API" whatever their Java visibility is.
 
 == Backwards Compatibility
@@ -166,10 +167,11 @@ N/A
 
 == Prototype Implementation
 
-https://github.com/stapler/stapler/pull/140
+* link:https://github.com/stapler/stapler/pull/140[Stapler PR 140]
 
 == References
 
-N/A
+
+* link:https://groups.google.com/d/topic/jenkinsci-dev/Bb4pIdpMMIY/discussion[Initial discussion]
 
 
