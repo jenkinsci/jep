@@ -93,6 +93,10 @@
 | _not specified_
 
 | Draft :speech_balloon:
+| link:309/[JEP-309: Bill of Materials]
+| _not specified_
+
+| Draft :speech_balloon:
 | link:400/[JEP-400: Jenkins X: Jenkins for Kubernetes CD]
 | _not specified_
 

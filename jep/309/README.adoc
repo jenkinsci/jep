@@ -1,4 +1,4 @@
-= JEP-0000: Bill of Materials
+= JEP-309: Bill of Materials
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -13,7 +13,7 @@ endif::[]
 [cols="2"]
 |===
 | JEP
-| 0000
+| 309
 
 | Title
 | Bill of Materials
@@ -29,7 +29,7 @@ endif::[]
 | Standards
 
 | Created
-| 2018 Apr 16
+| 2018-04-16
 //
 //
 // Uncomment if there is an associated placeholder JIRA issue.
@@ -69,7 +69,7 @@ endif::[]
 There are multiple ways of defining packaging and what combinations of core, modules, libraries and plugins to test from multiple repositories, forks and PRs.
 The Bill of Materials (**BoM**) aims to set a common language that can be reused across them.
 
-The BoM is trying to be a cornerstone to enable these other goals:
+The BoM is a cornerstone to enable these other goals:
 
 * Ensure value gets delivered while quality is continuously improved
 * Do not go down the rabbit hole of spending weeks without delivering value
@@ -257,6 +257,7 @@ There are no testing issues related to this proposal.
 
 == References
 
+* link:https://groups.google.com/d/topic/jenkinsci-dev/pR2ZQMj95Zc/discussion[design discussion]
 * link:https://github.com/jenkinsci/acceptance-test-harness[Jenkins acceptance test harness]
 * link:https://github.com/jenkinsci/blueocean-acceptance-test[Blue Ocean acceptance test]
 * link:https://github.com/jenkinsci/plugin-compat-tester[Jenkins plugin compat tester]
