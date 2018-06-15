@@ -38,8 +38,8 @@ endif::[]
 //
 //
 // Uncomment if there will be a BDFL delegate for this JEP.
-//| BDFL-Delegate
-//| :bulb: Link to github user page :bulb:
+| BDFL-Delegate
+| https://github.com/jglick[Jesse Glick]
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
@@ -100,7 +100,20 @@ The flow looks like
 ** browser is sent a HTTP redirect to that url so download is between external store and browser
 
 
-This change adds more methods to the VirtualFile API to support this flow.
+This change adds more methods to the http://javadoc.jenkins.io/jenkins/util/VirtualFile.html[`VirtualFile`] API to support this flow.
+
+* `toExternalURL()` Optionally obtains a URL which may be used to retrieve file contents from any process on any node.
+* `mode()` Gets the file Unix mode, if meaningful
+* `readLink()` If this file is a symlink, returns the link target.
+* `list(String, String, boolean)` Lists recursive files of this directory with pattern matching
+
+http://javadoc.jenkins.io/hudson/FilePath.html[`FilePath`]
+
+* `copyFromRemotely(URL)` Copies the content of a URL to a remote file without transferring content over a Remoting channel
+
+
+In https://github.com/jenkinsci/workflow-api-plugin[workflow-api-plugin] a new  https://github.com/jglick/workflow-api-plugin/blob/44bc9985b0aa1fb9407b5c78be6b429ad29af2d8/src/main/java/org/jenkinsci/plugins/workflow/flow/StashManager.java#L292-L315[`StashAwareArtifactManager`] is also added, a mixin interface for an `ArtifactManager` which supports specialized stash behavior as well.
+
 
 The `VirtualFile.run(Callable)` method, that already existed to optimize Workspace link browsing on agents, is now being used in artifact-related code in Jenkins core.
 It was important to implement this in the S3 plugin in order to ensure that Classic or Blue Ocean UI flows relating to artifacts, including simply opening the index page of a build, did not make a large number of network calls.
@@ -131,7 +144,7 @@ Several alternatives exist today but they all require changes to all the pipelin
 
 Even without this JEP people can use things like the S3 plugin to upload and download artifacts.
 But since the use of S3, and details about location, are baked into the script, we cannot publish general examples like https://jenkins.io/doc/pipeline/tour/tests-and-artifacts/[tests-and-artifacts] that are actually ready for people to use.
-That would contradict one of the goals of Essentials, that you can get a reasonable workflow going in a few minutes.
+That would contradict one of the goals of link:https://github.com/jenkinsci/jep/tree/master/jep/300[Essentials], that you can get a reasonable workflow going in a few minutes.
 
 Without `ArtifactManager` and `VirtualFile` integration, a number of integrations between plugins are impossible.
 For example, using only the S3 plugin, if you wish to copy artifacts from an upstream build, you cannot use the Copy Artifact plugin; you would need to devise your own system for passing an S3 bucket/path from the upstream build to the downstream build.
@@ -151,32 +164,29 @@ Equivalent features to S3 exist in other cloud providers and artifact repositori
 
 The S3 implementation also uses http://jclouds.apache.org[Apache JClouds] that abstracts most of the implementation from the underlying blob store.
 
-== Backwards Compatibility
+=== Container (Bucket) and Path References
 
-Existing plugins using `ArtifactManager` API will continue to work using the new selected implementation.
+Current implementation for S3 uses a master wide config option to set the name of the container (S3 bucket) and path inside.
+Currently this is a environment variable but could be a system property or a config section in the UI.
 
-However:
+This means that different runs cannot store the artifacts in different buckets or paths, as we don't expect that to be a common use case.
+It would be more common to move all the artifacts from one location to another and that could be easily achieved by moving the blobs in S3 and changing the master wide configuration parameters.
 
-* Various plugins call `Run.getArtifactsDir` and similar deprecated APIs.
-These would already have been broken for users of the Compress Artifacts plugin, but that is rarely used, whereas we are proposing lots of people run with the S3 artifact manager.
-Calls to the deprecated APIs will behave as if there were no artifacts in the build.
-We could add telemetry so that such calls produce a warning in the system log, at least when the build actually does have a custom artifact manager selected.
+=== Interruptions
 
-* Some plugins using `VirtualFile` may still be calling open and then passing the stream to an agent.
-This will work, but will be very expensive when using S3 storage. They need to be updated to call `VirtualFile.toExternalURL`.
+The API does not support `InterruptedException`, but we do not see any evidence that it may cause integration issues with other plugins like Build Timeout.
+Follow up work as part of https://issues.jenkins-ci.org/browse/JENKINS-50597[JENKINS-50597] will verify this.
 
-== Security
+=== Security
 
-Security considerations make agents need to be restricted to only access the artifacts needed.
-Having access to the blob store would mean access to other jobs artifacts.
 Two possible implementations were considered:
 
-=== Agents only need upload/download permissions
+==== Agents only need upload/download permissions
 
 If agents only do upload/download operations we can use pre-signed urls so they will not be able to access other jobs artifacts.
 Other operations (list, create, delete,...) would run on the master, which would be a performance hit for builds with many artifacts
 
-=== Passing limited credentials to each agent
+==== Passing limited credentials to each agent
 
 Masters need to run with elevated permissions to be able to create new roles and permissions on the fly for each job (`AssumeRole` in AWS).
 Those limited credentials would be passed on to the agent, who would use them to talk to the external store.
@@ -186,7 +196,87 @@ This temporary role creation does not exist in all clouds nor other artifact rep
 
 We opted for the first, simpler option.
 
-Extra care needs to be taken so agents do not have any access to the blob store.
+== Backwards Compatibility
+
+Existing plugins using `ArtifactManager` API will continue to work using the new selected implementation.
+However, there are two classes of potential incompatibility.
+
+=== File-oriented artifact reference
+
+Various plugins call deprecated APIs which assume that build artifacts are stored as files inside the master’s build directory.
+These would already have been broken for users of the _Compress Artifacts_ plugin, but that is rarely used, whereas we are proposing lots of people run with the S3 artifact manager.
+We could add telemetry so that such calls produce a warning in the system log, at least when the build actually does have a custom artifact manager selected.
+
+As seen in
+link:https://ci.jenkins.io/job/Infra/job/deprecated-usage-in-plugins/job/master/lastSuccessfulBuild/artifact/output/usage-by-api.html#hudson_model_Run_getArtifactsDir__Ljava_io_File_[this report],
+there are a number of plugins on the usual update center still calling `Run.getArtifactsDir()` and/or `Run.Artifact.getFile()`,
+despite the fact that these methods were deprecated in Jenkins 1.531 in 2013 as part of
+link:https://issues.jenkins-ci.org/browse/JENKINS-17236[JENKINS-17236].
+These include:
+
+[cols="5,>",options="header",width="50%"]
+|============================
+|Plugin|Installations
+|link:https://plugins.jenkins.io/allure-jenkins-plugin[Allure]|2593
+|link:https://plugins.jenkins.io/artifact-diff-plugin[Artifact diff]|433
+|link:https://plugins.jenkins.io/copyartifact[Copy Artifact]|36641
+|link:https://plugins.jenkins.io/cucumber-perf[cucumber-perf]|919
+|link:https://plugins.jenkins.io/deployer-framework[Deployer Framework]|703
+|link:https://plugins.jenkins.io/weblogic-deployer-plugin[Deploy WebLogic]|1250
+|link:https://plugins.jenkins.io/http-post[HTTP POST]|1498
+|link:https://plugins.jenkins.io/repository[Maven Repository Server]|2023
+|link:https://plugins.jenkins.io/mdt-deployment[MDT Deployment]|80
+|link:https://plugins.jenkins.io/neoload-jenkins-plugin[NeoLoad]|163
+|link:https://plugins.jenkins.io/perfectomobile[Perfecto Mobile]|174
+|link:https://plugins.jenkins.io/protecode-sc[Protecode SC]|26
+|link:https://plugins.jenkins.io/summary_report[Summary Display]|1714
+|link:https://plugins.jenkins.io/webload[WebLOAD Load Testing]|34
+|============================
+
+By far the most popular of these, _Copy Artifact_,
+is scheduled to be made compatible with this JEP as part of the reference implementation.
+(The first stage of that fix implements a longstanding RFE
+link:https://issues.jenkins-ci.org/browse/JENKINS-22637[JENKINS-22637],
+originally filed for interoperability with _Compress Artifacts_.
+The second stage of the fix makes use of core APIs introduced in this JEP.)
+
+The effect of calling the deprecated APIs when a cloud-based artifact manager is in use
+will vary by the plugin’s particular logic.
+In some cases, it may simply appear as if the build had no artifacts.
+JENKINS-22637 describes an error message when attempting to use _Copy Artifact_.
+As another example, _Artifact diff_ will display a sidebar link as usual,
+but when clicked the rendered diff is empty, and the system log reports:
+
+----
+… org.jenkinsci.plugins.artifactdiff.FilePathDiff$Entry getStream
+INFO: java.nio.file.NoSuchFileException: /var/jenkins_home/jobs/someproject/builds/123/archive/somefile.txt
+----
+
+=== Master-based file streaming
+
+Some plugins using ``VirtualFile``s corresponding to build artifacts are still calling `open`
+and then passing the stream to an agent or copying it to an HTTP response.
+This will work, but will be very expensive when using S3 storage. They need to be updated to call `VirtualFile.toExternalURL`.
+Finding a list of such plugins is more difficult since `open` is not deprecated.
+(Its use is appropriate as a fallback when `toExternalURL` is unavailable,
+or when the desired behavior is for artifact contents to be read by the Jenkins master process anyway.)
+Code inspection from
+link:https://github.com/search?q=user%3Ajenkinsci+VirtualFile&type=Code[this search]
+turns up the following possible issues:
+
+[cols="5,>",options="header",width="50%"]
+|============================
+|Plugin|Installations
+|link:https://plugins.jenkins.io/maven-plugin[Maven Integration]|124783
+|============================
+
+
+== Security
+
+Security considerations make agents need to be restricted to only access the artifacts needed.
+Having access to the blob store would mean access to other jobs artifacts.
+
+Agents only do URL based upload/download operations and get the correct url to do so from the master.
 
 In the common case where the vm instances are assigned roles (`IAM role` in AWS) the instance where the master runs should have access to the blob store but the agents should run in a different instance where its role does not allow it.
 
@@ -227,4 +317,4 @@ Downstream
 * https://github.com/jenkinsci/workflow-api-plugin/pull/67[workflow-api-plugin PR-67]
 * https://github.com/jenkinsci/workflow-basic-steps-plugin/pull/60[workflow-basic-steps-plugin PR-60]
 * https://github.com/jenkinsci/copyartifact-plugin/pull/100[copyartifact-plugin PR-100]
-* https://github.com/jenkinsci/compress-artifacts-plugin/pull/1[compress-artifacts-plugin PR-1]
+* https://github.com/jenkinsci/compress-artifacts-plugin/pull/7[compress-artifacts-plugin PR-7]

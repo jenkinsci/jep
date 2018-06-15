@@ -1,0 +1,469 @@
+= JEP-307: Evergreen Update Client/Server Lifecycle
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 307
+
+| Title
+| Evergreen Update Client/Server Lifecycle
+
+| Sponsor
+| link:https://github.com/rtyler[R. Tyler Croy]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2018-04-17
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+| Requires
+| JEP-300, JEP-303
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+Integral to link:https://github.com/jenkinsci/jep/tree/master/jep/300[Jenkins
+Essentials] is the client's update lifecycle with the Evergreen hosted service
+layer. Starting with the first boot, the client must frequently inform the
+server of its current versions, retrieve new versions, and apply updates. This
+document specifies those API interactions and expectations to allow this update
+lifecycle to be performed correctly.
+
+== Specification
+
+There are two services involved behind the scenes which are responsible for
+facilitating the client's update lifecycle: `updates` and `versions`.
+
+The role of the versions service is simply to maintain an audit trail
+for the versions of software that each client has installed locally. As clients
+go through various upgrade processes, they will periodically `POST`
+<<version-manifest>> records which are stored in the Evergreen hosted service
+layer's storage.
+
+The role of the update service is to use the `essentials.yaml` and retrieve the
+latest versions of software for a given client UUID and compute the appropriate
+update response to be sent to the client.
+
+.Bootstrapping Instance
+[source]
+----
+
+  update                     versions                    evergreen
+  service                    service                      client
+     |                           |                           |
+     |                           |     POST version manifest |
+     |                           |     from local hpis/core  |
+     |                           |<--------------------------o
+     |                           o-----------/ok/----------->|
+     |                           |                           |
+     |                     GET /update                       |
+     |<------------------------------------------------------o
+     |    GET /versions for uuid |                           |
+     o-------------------------->|                           |
+     |<-----/200 json payload/---o                           |
+     |                           |                           |
+     |            200 with computed JSON update manifest     |
+     |            indicating what files should               |
+     |            be downloaded                              |
+     o------------------------------------------------------>|
+     |                           |                           |
+----
+
+[[update-levels]]
+=== Update Levels
+
+In the backend datastore, updates must be considered immutable and sequential.
+These are referred to hereafter as "Update Levels". A single update record
+must have the following data structure:
+
+* `id`: Numerical sequential integer to identify the update
+* `commit`: a Git commit corresponding to a change of `essentials.yaml` in the
+  link:https://github.com/jenkins-infra/evergreen[jenkins-infra/evergreen]
+  repository
+* `channel`: String denoting the <<channel>> for the update.
+* `manifest`: JSON formatted representation of `essentials.yaml` for ease of
+  storage and query in PostgreSQL
+* `tainted`: Boolean to indicate whether this update should be considered
+  tainted and therefore not offered to clients.
+* `createdAt`: Timestamp when this update was created.
+
+For a given <<channel>>, it is expected that each client "experiences" each
+Update Level as time goes on, excepting `tainted` records.
+
+in order to track a given update across the different channels, records should
+be duplicated between different channels while maintaining the same `commit`.
+For example, given an Update Level 1 (UL1) for the 'canary" channel. Once UL1
+has been deemed safe to deploy to the next channel, "beta", a new Update record
+will be created with all the same information as UL1, with except with a
+differing `id` and `channel`. Thus allowing clients to enter a different
+channel if desired, without re-installation.
+
+[[channel]]
+=== Update Channel
+
+The Update Channel is simply a means of segmenting updates to different types
+of clients. For example, testing or "dogfood" infrastructure would reasonably
+use a "canary" channel, receiving updates first, before they are added  to
+subsequent channels.
+
+The Update Channels are:
+
+* `canary`: bleeding edge updates, initial channel for all updates.
+* `beta`: secondary channel for updates after `canary`, recommended for Jenkins
+  contributors and other power-users.
+* `general`: general use channel, with updates deployed after deemed
+  sufficiently stable in previous channels.
+
+While most users should default to the `general` channel, each instance must be
+able to select its own channel via a user-supplied argument.
+
+
+[[update-manifest]]
+=== Update Manifest
+
+The responses sent to the client must be well-formed JSON documents, referred
+to as "update manifests" which the client must understand.
+
+The Update Manifest
+should have a consistent structure which is given to but will be dynamically generated _per
+client_ in order to ensure that the client is only downloading what is
+necessary to update that specific client.
+
+.Example Update Manifest
+[source,json]
+----
+{
+    "schema" : 1,
+    "meta" : {
+        "level" : 4,
+        "channel" : "general"
+    },
+    "core" : {
+        "uri" : "https://update-cdn.example.com/some/path/to/a/jenkins.war",
+        "checksum" : {
+            "type" : "sha256",
+            "signature" : "somechecksumforthefile"
+        }
+    },
+    "plugins" : {
+        "updates" : [
+            {
+                "uri" : "https://update-cdn.example.com/some/path/to/a/plugin.hpi",
+                "checksum" : {
+                    "type" : "sha256",
+                    "signature" : "somechecksumforthefile"
+                }
+            },
+            {
+                "uri" : "https://update-cdn.example.com/some/path/to/another/plugin.hpi",
+                "checksum" : {
+                    "type" : "sha256",
+                    "signature" : "somechecksumforthefile"
+                }
+            }
+        ]
+    },
+    "client" : {
+        "uri" : "https://update-cdn.example.com/some/path/to/a/evergreen-client.tar.gz",
+        "checksum" : {
+            "type" : "sha256",
+            "signature" : "somechecksumforthefile"
+        }
+    }
+}
+----
+
+The four primary keys of the update manifest are:
+
+* `meta` is an object which contains information about the instance's update
+  cycle itself, such as the `channel` and `level`.of the enclosed manifest.
+* `core` which indicates that a new jenkins.war is necessary.
+* `plugins` which will include a list of `updates` for plugins. This is an
+  object within the JSON structure rather than a flat array as it is expected
+  that at some point in the future we  may require a `removes` list to properly
+  unpublish legacy or out-dated plugins from instances.
+* `client` which indicates a new tarball for upgrading the `evergreen-client`
+  itself.
+
+Additional keys should be ignored by clients not supporting them to allow the
+Update Manifest to safely include things which are not yet supported.
+
+[NOTE]
+====
+There _may_ be opportunities to cache the Update Manifest in the future, but
+this is considered a potential optimization which will be contingent on
+observation of real world usage for Jenkins Essentials.
+====
+
+
+==== Checksums
+
+The checksums provided in the Update Manifest are not generated or validated by
+Jenkins Essentials but rather the Artifactory instance from which plugin, core,
+and other binaries are pulled.
+
+In essence, every `foo-1.2.3.hpi` has a corresponding `foo-1.2.3.hpi.sha256`
+file, the contents of which will be included as the checksum in the Update
+Manifest to enable clients to perform archive integrity validation.
+
+
+=== Client Update Behavior
+
+The client must perform the necessary downloading of items referenced in the
+<<update-manifest>> and perform checksum validation before initiating a client
+update process. The exact sequence of events and what machinery must execute
+on the client is considered outside of the scope of this document.
+
+The client should also post a new <<version-manifest>> once an update lifecycle
+successfully completed to ensure that subsequent update check-ins result in
+accurate generated Update Manifest.
+
+[[version-manifest]]
+=== Version Manifest
+
+A version manifest is the symmetrically opposite of the <<update-manifest>> in
+that it should include the actual versions of software present on a Jenkins
+Essentials instance. This may include software which is outside of the update
+lifecycle.
+
+The purpose of the purpose of the version manifest is primarily for the client
+to report to the serve a fairly accurate state of the installed software in
+the instance.
+
+
+.Version Manifest
+[source,json]
+----
+{
+    "schema" : 1,
+    "container" : {
+        "commit" : "sha1 of the built container",
+        "tools" : {
+            "node" : "output of node --version",
+            "npm" : "output of npm --version",
+            "java"  : "output of java -version"
+        }
+    },
+    "client" : {
+        "version" : "version of evergreen-client"
+    },
+    "jenkins" : {
+        "core" : "jenkins.war embedded version",
+        "plugins" : {
+            "git" : "git.hpi embedded version",
+            "workflow-aggregator" : "workflow-aggregator.hpi embedded version"
+        }
+    }
+}
+----
+
+The client should also report `container` information, which is informational
+rather than critical to the operation of the update lifecycle. This will be
+used at a future point in time to better understand the runtime environments
+for the Jenkins and evergreen-client processes.
+
+== Motivation
+
+The motivation for the Jenkins Essentials distribution using this update
+lifecycle is largely driven by the goal for Jenkins Essentials to be
+self-updating, which necessitates a different approach to code distribution
+compared to the conventional Update Center process.
+
+
+== Reasoning
+
+The design described above is intended to be succinct enough to drive updates
+to Jenkins Essentials, of which all instances are expected to be running the
+same approximate set of software. Contrasted to the Jenkins "Update Center"
+which provides much more metadata to provide user-visible information.
+
+As Jenkins Essentials is intended to update automatically, the metadata
+(<<update-manifest>>), only needs to contain the URLs for packages and a
+checksum for validation. There are additional <<security>> concerns and
+reasoning discussed below.
+
+
+The Update Levels are a consideration to ensure that clients which have
+differing levels of connectivity consistency can be safely updated.
+Considering the following problem posed by
+link:https://github.com/olblak[Olivier]:
+
+.
+[quote]
+____
+Do you consider all updates as 'safe'?
+What happened if a client didn't connect to the update service for month?
+Is it an information that would be useful in the update manifest?
+____
+
+One of the challenges for Jenkins Essentials is determining how to handle
+updates for clients which are not consistently connected. If for example, a
+client is only _connected_ to the Evergreen backend services layer once a week
+due to network misconfiguration, outages in the Evergreen services layer, or
+infrequent internet access, these instances should still be capable of safely
+updating their software.
+
+Consider two instances, Alpha and Bravo. They both are created at the same
+time, at Update Level (UL) 1. Alpha stays online, and connected, for the next
+14 days, while Bravo is disconnected until day 14.
+
+Our state is now:
+
+    Alpha: UL14
+    Bravo: UL1
+
+The first idea was to dry to have Bravo jump from UL1 -> UL14 but with Jenkins
+Essentials' testing process, this would effectively be a completely untested
+upgrade jump. This approach was considered **too risky**.
+
+Another idea which was discussed was to use a git-bisect(1) type approach, trying UL14,
+if that fails, try UL7, and so on. This was also discarded as it would result
+in instances using completely untested upgrade paths, therefore **too risky**.
+
+(contrary to what the JEP presently describes), and staggar the upgrade logic
+Bravo to where it can successfully go from UL1->UL2, then UL2->UL3, etc.
+
+
+While there ome user experience concerns with downloading updates and
+restarting, at the present stage of development, this is considered an
+acceptable trade-off, safety rather than performance.
+
+
+
+== Backwards Compatibility
+
+Not necessary as there is no pre-existing implementation.
+
+[[security]]
+== Security
+
+When considering security for Update Manifests, much of the research which was
+considered was around how traditional package managers consider their security
+challenges, such as the paper "A Look In the Mirror: Attacks on Package
+Managers" footnote:[https://isis.poly.edu/~jcappos/papers/cappos_mirror_ccs_08.pdf]
+and the design work done as part of "The Update Framework." footnote:[https://theupdateframework.github.io/]
+
+The two major areas of concern for security with the update lifecycle are
+ensuring:
+
+. Update Manifests retrieved by the clients are themselves deemed authentic.
+. Packages suggested for the client to download are valid and legitimate.
+
+For Update Manifests to be deemed authentic they must **only** be served over
+TLS encrypted HTTP connections. Relying on the
+link:https://letsencrypt.org[Let's Encrypt] certificates provisioned for all
+`jenkins.io` services.
+
+To provide additional security, and protect against poisoned or fraudulent
+`jenkins.io` certificates being used to distribute false Update Manifests, the
+Jenkins Essentials container will have a **restricted set of trusted root
+certificates**. Trusting only the
+link:https://letsencrypt.org/certificates/[root certificates used by Let's
+Encrypt], which are presently:
+
+* `DST_Root_CA_X3.crt`
+* `IdenTrust_Public_Sector_Root_CA_1.crt`
+* `IdenTrust_Commercial_Root_CA_1.crt`
+
+(provided by the `ca-certificates` package on Debian 9 "Stretch")
+
+
+The second concern is remedied by providing checksums from the distribution site
+in the <<update-manifest>>. By ensuring that the client can trust the
+authenticity of the Update Manifest, the checksums will be trustworthy even in
+cases where the packages themselves are served through a CDN or mirror network.
+
+
+=== Alternative Approaches
+
+The initial thinking relied on Public Key Pinning (PKP, also referred to as
+"pinning leaf certificates") in the client for the Update services. After
+cursory amounts of research, it is apparent that this approach is falling out
+of favor with leaders in this space such as Chromium
+link:https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/he9tr7p3rZ8[moving away from PKP].
+
+==== HTTP-PKP
+
+Another, related approach is referred to as
+link:https://tools.ietf.org/html/rfc7469[HTTP-PKP]. Which while it is possible
+to implement
+link:https://community.letsencrypt.org/t/hpkp-best-practices-if-you-choose-to-implement/4625[HTTP-PKP
+with Let's Encrypt] (also see
+link:https://lilleengen.io/blog/posts/activating-http-public-key-pinning-hpkp-on-lets-encrypt[this
+blog post]). This approach was discarded as unnecessarily complex considering
+the client environment which is under control by Jenkins Essentials.
+
+==== GPG key exchange
+
+GPG key exchange is a common approach used by package managers such as Apt and
+Yum. This approach was not strongly considered as the tooling for managing GPG
+keys from link:https://nodejs.org[Node.js] is lacking, and the use of such keys
+would add non-trivial amounts of complexity to the client/server design to
+accommodate proper key rotation and revocation.
+
+
+== Infrastructure Requirements
+
+Nothing additional outside of the existing requirements already for the
+Evergreen hosted service layer.
+
+
+== Testing
+
+Outside of the scope of this document and subject to the implementation linked
+below.
+
+
+== Prototype Implementation
+
+The prototype and _actual_ implementation of this work is being performed in
+the link:https://github.com/jenkins-infra/evergreen[jenkins-infra/evergreen]
+repository.
+
+== References
+
+* link:https://groups.google.com/d/msgid/jenkinsci-dev/20180418142050.GT1836%40grape.lasagna.io[Discussion on the jenkinsci-dev mailing list]

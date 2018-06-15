@@ -1,46 +1,99 @@
 = Index of Jenkins Enhancement Proposals
 
-[cols="^,>"]
+[cols="^,>,^"]
 |===
-| Status | Title
+| Status | Title | BDFL Delegate
 
 | Active :smile:
 | link:1/[JEP-1: Jenkins Enhancement Proposal Format]
+| _not specified_
 
 | Draft :speech_balloon:
 | link:2/[JEP-2: Criteria for selecting "Suggested Plugins"]
+| _not specified_
 
 | Accepted :ok_hand:
 | link:3/[JEP-3: Adding the "Released As" field and "Ready for Release" status to Jenkins JIRA]
+| _not specified_
+
+| Draft :speech_balloon:
+| link:4/[JEP-4: Special Interest Groups]
+| _not specified_
+
+| Draft :speech_balloon:
+| link:5/[JEP-5: Jenkins Ambassador Program]
+| _not specified_
+
+| Draft :speech_balloon:
+| link:6/[JEP-6: Jenkins CVE Numbering Authority]
+| Undetermined
+
+| Draft :speech_balloon:
+| link:7/[JEP-7: Deprecation of ruby-runtime]
+| _not specified_
 
 | Final :lock:
 | link:200/[JEP-200: Switch Remoting/XStream blacklist to a whitelist]
+| https://github.com/oleg-nenashev[@oleg-nenashev]
 
-| Accepted :ok_hand:
+| Draft :speech_balloon:
 | link:201/[JEP-201: Jenkins Configuration as Code]
+| _not specified_
 
 | Draft :speech_balloon:
 | link:202/[JEP-202: External Artifact Storage]
+| https://github.com/jglick[Jesse Glick]
+
+| Draft :speech_balloon:
+| link:203/[JEP-203: BlueOcean Extensibility]
+| _not specified_
+
+| Draft :speech_balloon:
+| link:204/[JEP-204: BlueOcean Extensibility API]
+| _not specified_
+
+| Draft :speech_balloon:
+| link:205/[JEP-205: Declarative Data Binding]
+| _not specified_
 
 | Accepted :ok_hand:
 | link:300/[JEP-300: Jenkins Essentials]
+| _not specified_
 
 | Draft :speech_balloon:
 | link:301/[JEP-301: Evergreen packaging for Jenkins Essentials]
+| https://github.com/rtyler[R. Tyler Croy]
 
 | Draft :speech_balloon:
 | link:302/[JEP-302: Evergreen snapshotting data safety system]
+| https://github.com/rtyler[R. Tyler Croy]
 
 | Draft :speech_balloon:
 | link:303/[JEP-303: Evergreen Client Registration and Authentication]
+| link:https://github.com/rtyler[R. Tyler Croy]
 
 | Draft :speech_balloon:
 | link:304/[JEP-304: Essentials Client Error Telemetry Logging]
+| _not specified_
 
 | Draft :speech_balloon:
 | link:305/[JEP-305: Publishing incremental commits as Maven releases]
+| https://github.com/rtyler[R. Tyler Croy]
+
+| Draft :speech_balloon:
+| link:306/[JEP-306: Essentials Instance Client Health Checking]
+| _not specified_
+
+| Draft :speech_balloon:
+| link:307/[JEP-307: Evergreen Update Client/Server Lifecycle]
+| _not specified_
+
+| Draft :speech_balloon:
+| link:308/[JEP-308: Essentials Error Telemetry API]
+| _not specified_
 
 | Draft :speech_balloon:
 | link:400/[JEP-400: Jenkins X: Jenkins for Kubernetes CD]
+| _not specified_
 
 |===

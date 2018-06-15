@@ -35,8 +35,8 @@ endif::[]
 | link:https://issues.jenkins-ci.org/browse/JENKINS-50686[JENKINS-50686]
 
 // Uncomment if there will be a BDFL delegate for this JEP.
-//| BDLF-Delegate
-//| :bulb: Link to github user page :bulb:
+| BDFL-Delegate
+| https://github.com/rtyler[R. Tyler Croy]
 
 | Requires
 | https://github.com/jenkins-infra/iep/blob/master/iep-009/README.adoc[IEP-9]
@@ -674,7 +674,7 @@ Before an artifact is used anywhere, some other versioned metadata must be edite
 That author should then only be requesting a commit which has already been pushed to GitHub,
 and thus automatically built and (if successful) deployed to `incrementals`.
 
-There is some risk would a developer would blindly run `versions:display-dependency-updates`
+There is some risk that a developer would blindly run `versions:display-dependency-updates`
 and accept the newest available artifact,
 but this could be mitigated for example in Essentials quality gates
 by verifying that the commit hashes of all proposed components are in fact ancestors of the current `master` heads.
@@ -836,3 +836,4 @@ is a proposed publishing tool.
 * link:https://github.com/jenkinsci/plugin-pom/pull/100[`plugin-pom` PR 100]
 * link:https://github.com/jglick/git-changelist-maven-extension[`git-changelist-maven-extension`]
 * link:https://github.com/jenkins-infra/iep/blob/master/iep-009/README.adoc[IEP-9]
+* link:https://github.com/jenkinsci/incrementals-tools/blob/master/README.md[Usage guide]

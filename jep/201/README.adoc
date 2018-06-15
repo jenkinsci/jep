@@ -22,7 +22,7 @@ endif::[]
 | https://github.com/ewelinawilkosz2[Ewelina Wilkosz] from https://github.com/praqma[Praqma]
 
 | Status
-| Accepted :ok_hand:
+| Draft :speech_balloon:
 //| Rejected :no_entry:
 //| Withdrawn :hand:
 //| Final :lock:
@@ -165,6 +165,21 @@ YAML allows us to :
 
 === Configuration mechanism
 
+==== Yaml syntax
+
+Yaml do support complex data structures, like Maps, nested yaml, merges ... but initial alpha release demonstrate this isn't well
+understood by end users which mostly expect a simple tree syntax, comparable to `json`.
+
+For this reason Configuration-as-Code do only support a subset of Yaml syntax:
+
+* http://yaml.org/type/map.html[Mapping] with String keys
+* http://yaml.org/type/seq.html[Sequences]
+* basic Scalar types
+
+This restriction allows to keep the yaml file simple and readable even by newcomers. Jenkins plugins which internal design would
+require more complex models will have to provide a dedicated "simplified" model object with custom adapter code. Option for a plugin
+to provide a customized adapter is part of Configuration-as-Code design to support such corner-cases.
+
 ==== Component names
 
 Configuration files define a tree model.
@@ -192,12 +207,12 @@ Most plugin do already have setters for descriptor's attribte, designed to enabl
 
 ===== Aliases
 In few cases attribute and accessors names do no match the UI labels, either for legacy reasons ("slave" vs "agent") or for technical databinding implementation details ("lavelString" vs "label"). As we want the configuration-as-code model to mimic web UI, considering this one is "natural documentation" for most users, we need to fix this.
-We propose to document in setters the attribute preferred name using an ++@Symbol++ annotation (see https://github.com/jenkinsci/structs-plugin/pull/18[structs-plugin#18]). 
+We propose to document in setters the attribute preferred name using an ++@Symbol++ annotation (see https://github.com/jenkinsci/structs-plugin/pull/18[structs-plugin#18]).
 
 We consider this to be a **must have** feature
 
 ===== Delegate
-There's other places where attribute are managed within web UI by a dedicated compoment. ++Jenkins.securityRealm++ for sample is managed by ++GlobalSecurityConfiguration++ component, which doesn't have any attribute by himself. 
+There's other places where attribute are managed within web UI by a dedicated compoment. ++Jenkins.securityRealm++ for sample is managed by ++GlobalSecurityConfiguration++ component, which doesn't have any attribute by himself.
 
 We propose to declare such management delegation as annotations on the attribute owner. So Jenkins.securityRealm would document attribute is actually managed by ++GlobalSecurityConfiguration++, and the later would offer setters for securityRealm, to actually configure Jenkins owning component.
 
@@ -237,9 +252,30 @@ Configuration-as-Code is intended to run as an additional Jenkins component (mos
 integrated in Jenkins-core nor specific API implemented by plugins. We only require them to follow some convention in the way they expose
 configuration attributes (i.e +DataBoundSetter|Constructor+)
 
+== Versioning
+
+Configuration-as-Code doesn't define a model for the configuration expressed in Yaml file. The yaml schema will depend on a specific
+versions of jenkins-core and plugins being used at runtime. Any change to a plugin will change this model, this will happen any time a
+`DataBoundConstructor` is modified, setter added or renamed, etc. This is the price to pay for alignment with UI databinding and support
+for any plugin out of the box ("no glue code").
+
+For the same reason, Configuration-as-Code way to infer the configuration model from a live instance will depend on Configuration-as-Code
+plugin version being used, and the resulting model could change when updating plugin version.
+Genrally speaking, there's no such thing like a `version` we could define
+to offer backward compatibility and load a yaml file defined for a previous version of Configuration-as-Code or for a distinct combination
+of jenkins-core + plugins.
+
+So compatibility on version upgrade cannot be expected. But with JCasC we can produce a schema and tooling to discover such compatibility
+issue and let end-user know before they apply to production. Also, binary compatibility requirement in Jenkins ecosystem will significantly
+limit the risk for a broken configuration.
+
+
 == Security
 
-N/A
+Sensible informations should _not_ be exposed directly within the yaml configuration file.
+Configuration-as-Code do support string expansion using a bash-like `${KEY}` syntax for string based values. Configuration-as-Code do also define
+an API to connect with third-party secret-sources. Out of the box we do support environment variable expansion, which should only be considered
+for testing purpose, as well as file-based secret source (docker-secret, kubernetes-secret) and a Vault connector. Third party plugins can be developped to offer comparable support with other secret providers.
 
 == Infrastructure Requirements
 
