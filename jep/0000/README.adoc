@@ -1,4 +1,4 @@
-= JEP-0000: :bulb: Configuration as Code tooling :bulb:
+= JEP-0000: Configuration as Code Tooling
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -16,7 +16,7 @@ endif::[]
 | 0000
 
 | Title
-| :bulb: Configuration as Code tooling :bulb:
+| Configuration as Code tooling
 
 | Sponsor
 | :bulb: TBD :bulb:
@@ -26,10 +26,10 @@ endif::[]
 | Not Submitted :information_source:
 
 | Type
-| :bulb: Standards :bulb:
+| Standards
 
 | Created
-| :bulb: May 30th 2018 :bulb:
+| 2018-05-30
 //
 //
 // Uncomment if there is an associated placeholder JIRA issue.
@@ -49,7 +49,7 @@ endif::[]
 //
 // Uncomment if this JEP depends on one or more other JEPs.
 | Requires
-| :bulb: JEP-201 :bulb:
+| JEP-201
 //
 //
 // Uncomment and fill if this JEP is rendered obsolete by a later JEP
@@ -107,7 +107,7 @@ There's not so much cases where such compatibility breaks could happen, but ther
 Compared to other tools, like `docker-compose`, we can't provide a `version` attribute and accept
 distinct models, as we only know about the live, inferred one.
 
-Configuration-as-Code tooling is defined to workaround this limitation by providing a toolset to
+Configuration-as-Code tooling is defined to work around this limitation by providing a toolset to
 discover such breaking changes early, before the actual production configuration is updated.
 It will help detect breaking changes during jenkins and plugins development, offer an option for
 plugin developers to document required breaking changes, and validate a configuration for a specific
@@ -122,7 +122,7 @@ can rely offer some minimal backward compatibility.
 === Relax Configuration-asCode for backward compatibility ?
 
 There's few circumstances where we have options
-to workaround a technical change in Jenkins or plugin codebase as the technical bits are still available,
+to work around a technical change in Jenkins or plugin codebase as the technical bits are still available,
 just hidden by the default "model inference" mechanism.
 
 A typical sample for this has been debated on
@@ -141,6 +141,7 @@ to invoke, without a deterministic way to select the adequate one.
 
 To follow-up with this specific sample, JNLPLauncher do define (at time writing) two deprecated constructors
 and another non-deprecated one :
+
 ```java
 @Deprecated
 public JNLPLauncher(String tunnel, String vmargs) { ... }
@@ -149,8 +150,8 @@ public JNLPLauncher(String tunnel, String vmargs) { ... }
 public JNLPLauncher() { ... }
 
 public JNLPLauncher(boolean enableWorkDir) { ... }
-
 ```
+
 The sole one we can guarantee is designed to submit configuration is the @DataBound one. For others
 there's no deterministic way to choose one. Even considering the configuration attributes we have from
 yaml file, which one should we use if configuration doesn't define `enableWorkDir`, `tunnel` nor `vmargs`?
@@ -200,7 +201,7 @@ N/A
 
 == Infrastructure Requirements
 
-If approved, Configuration-as-Code tooling to check for API backward compatibility will need to be
+Configuration-as-Code tooling to check for API backward compatibility will need to be
 included in the CI process, so it can inform plugin developers and contributors on breaking changes
 detection.
 
@@ -215,6 +216,6 @@ This JEP submission is only informative so far about our intents to address this
 
 == References
 
-https://groups.google.com/forum/#!msg/jenkinsci-dev/nnfreZqwIJ4/XVRM_NZfBwAJ
+* https://groups.google.com/forum/#!msg/jenkinsci-dev/nnfreZqwIJ4/XVRM_NZfBwAJ
 
 
