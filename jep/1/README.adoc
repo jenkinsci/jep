@@ -917,10 +917,11 @@ Once the JEP is ready for the repository, a JEP editor will:
 
 . Assign a JEP number (almost always just the next available number, but
   may also be a special/joke number, like 666 or 3141).
-. Squash the commit(s) into the `master` branch.
 . Update the folder number to match the JEP number
 . Update the JEP number in the document.
-
+. Update the JEP status using the `./set-jep-status <JEP number> draft` command (script is located in the root)
+. Commit all changes and push them to the branch in the PR
+. "Squash and merge" the PR into the `master` branch.
 
 == Motivation
 

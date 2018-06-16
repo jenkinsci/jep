@@ -20,6 +20,18 @@
 | link:4/[JEP-4: Special Interest Groups]
 | _not specified_
 
+| Draft :speech_balloon:
+| link:5/[JEP-5: Jenkins Ambassador Program]
+| _not specified_
+
+| Draft :speech_balloon:
+| link:6/[JEP-6: Jenkins CVE Numbering Authority]
+| Undetermined
+
+| Draft :speech_balloon:
+| link:7/[JEP-7: Deprecation of ruby-runtime]
+| _not specified_
+
 | Final :lock:
 | link:200/[JEP-200: Switch Remoting/XStream blacklist to a whitelist]
 | https://github.com/oleg-nenashev[@oleg-nenashev]
@@ -31,6 +43,18 @@
 | Draft :speech_balloon:
 | link:202/[JEP-202: External Artifact Storage]
 | https://github.com/jglick[Jesse Glick]
+
+| Draft :speech_balloon:
+| link:203/[JEP-203: BlueOcean Extensibility]
+| _not specified_
+
+| Draft :speech_balloon:
+| link:204/[JEP-204: BlueOcean Extensibility API]
+| _not specified_
+
+| Draft :speech_balloon:
+| link:205/[JEP-205: Declarative Data Binding]
+| _not specified_
 
 | Accepted :ok_hand:
 | link:300/[JEP-300: Jenkins Essentials]
@@ -54,7 +78,7 @@
 
 | Draft :speech_balloon:
 | link:305/[JEP-305: Publishing incremental commits as Maven releases]
-| _not specified_
+| https://github.com/rtyler[R. Tyler Croy]
 
 | Draft :speech_balloon:
 | link:306/[JEP-306: Essentials Instance Client Health Checking]
@@ -62,6 +86,14 @@
 
 | Draft :speech_balloon:
 | link:307/[JEP-307: Evergreen Update Client/Server Lifecycle]
+| _not specified_
+
+| Draft :speech_balloon:
+| link:308/[JEP-308: Essentials Error Telemetry API]
+| _not specified_
+
+| Draft :speech_balloon:
+| link:309/[JEP-309: Bill of Materials]
 | _not specified_
 
 | Draft :speech_balloon:

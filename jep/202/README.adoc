@@ -100,7 +100,20 @@ The flow looks like
 ** browser is sent a HTTP redirect to that url so download is between external store and browser
 
 
-This change adds more methods to the VirtualFile API to support this flow.
+This change adds more methods to the http://javadoc.jenkins.io/jenkins/util/VirtualFile.html[`VirtualFile`] API to support this flow.
+
+* `toExternalURL()` Optionally obtains a URL which may be used to retrieve file contents from any process on any node.
+* `mode()` Gets the file Unix mode, if meaningful
+* `readLink()` If this file is a symlink, returns the link target.
+* `list(String, String, boolean)` Lists recursive files of this directory with pattern matching
+
+http://javadoc.jenkins.io/hudson/FilePath.html[`FilePath`]
+
+* `copyFromRemotely(URL)` Copies the content of a URL to a remote file without transferring content over a Remoting channel
+
+
+In https://github.com/jenkinsci/workflow-api-plugin[workflow-api-plugin] a new  https://github.com/jglick/workflow-api-plugin/blob/44bc9985b0aa1fb9407b5c78be6b429ad29af2d8/src/main/java/org/jenkinsci/plugins/workflow/flow/StashManager.java#L292-L315[`StashAwareArtifactManager`] is also added, a mixin interface for an `ArtifactManager` which supports specialized stash behavior as well.
+
 
 The `VirtualFile.run(Callable)` method, that already existed to optimize Workspace link browsing on agents, is now being used in artifact-related code in Jenkins core.
 It was important to implement this in the S3 plugin in order to ensure that Classic or Blue Ocean UI flows relating to artifacts, including simply opening the index page of a build, did not make a large number of network calls.
@@ -150,6 +163,38 @@ AWS is the focus as it is the most widely used cloud provider, S3 being the prev
 Equivalent features to S3 exist in other cloud providers and artifact repositories.
 
 The S3 implementation also uses http://jclouds.apache.org[Apache JClouds] that abstracts most of the implementation from the underlying blob store.
+
+=== Container (Bucket) and Path References
+
+Current implementation for S3 uses a master wide config option to set the name of the container (S3 bucket) and path inside.
+Currently this is a environment variable but could be a system property or a config section in the UI.
+
+This means that different runs cannot store the artifacts in different buckets or paths, as we don't expect that to be a common use case.
+It would be more common to move all the artifacts from one location to another and that could be easily achieved by moving the blobs in S3 and changing the master wide configuration parameters.
+
+=== Interruptions
+
+The API does not support `InterruptedException`, but we do not see any evidence that it may cause integration issues with other plugins like Build Timeout.
+Follow up work as part of https://issues.jenkins-ci.org/browse/JENKINS-50597[JENKINS-50597] will verify this.
+
+=== Security
+
+Two possible implementations were considered:
+
+==== Agents only need upload/download permissions
+
+If agents only do upload/download operations we can use pre-signed urls so they will not be able to access other jobs artifacts.
+Other operations (list, create, delete,...) would run on the master, which would be a performance hit for builds with many artifacts
+
+==== Passing limited credentials to each agent
+
+Masters need to run with elevated permissions to be able to create new roles and permissions on the fly for each job (`AssumeRole` in AWS).
+Those limited credentials would be passed on to the agent, who would use them to talk to the external store.
+All operations would run on agents, with less load on the master, although with extra role creation operations.
+But the configuration and setup would be considerably more complex, as well as the agent side download code, requiring larger refactorings and a more complicated core API.
+This temporary role creation does not exist in all clouds nor other artifact repositories. For instance, https://docs.microsoft.com/en-us/azure/active-directory/active-directory-configurable-token-lifetimes[Azure Active Directory token lifetime] is on public preview, and in Google Cloud ACLs are not temporary.
+
+We opted for the first, simpler option.
 
 == Backwards Compatibility
 
@@ -225,28 +270,13 @@ turns up the following possible issues:
 |link:https://plugins.jenkins.io/maven-plugin[Maven Integration]|124783
 |============================
 
+
 == Security
 
 Security considerations make agents need to be restricted to only access the artifacts needed.
 Having access to the blob store would mean access to other jobs artifacts.
-Two possible implementations were considered:
 
-=== Agents only need upload/download permissions
-
-If agents only do upload/download operations we can use pre-signed urls so they will not be able to access other jobs artifacts.
-Other operations (list, create, delete,...) would run on the master, which would be a performance hit for builds with many artifacts
-
-=== Passing limited credentials to each agent
-
-Masters need to run with elevated permissions to be able to create new roles and permissions on the fly for each job (`AssumeRole` in AWS).
-Those limited credentials would be passed on to the agent, who would use them to talk to the external store.
-All operations would run on agents, with less load on the master, although with extra role creation operations.
-But the configuration and setup would be considerably more complex, as well as the agent side download code, requiring larger refactorings and a more complicated core API.
-This temporary role creation does not exist in all clouds nor other artifact repositories. For instance, https://docs.microsoft.com/en-us/azure/active-directory/active-directory-configurable-token-lifetimes[Azure Active Directory token lifetime] is on public preview, and in Google Cloud ACLs are not temporary.
-
-We opted for the first, simpler option.
-
-Extra care needs to be taken so agents do not have any access to the blob store.
+Agents only do URL based upload/download operations and get the correct url to do so from the master.
 
 In the common case where the vm instances are assigned roles (`IAM role` in AWS) the instance where the master runs should have access to the blob store but the agents should run in a different instance where its role does not allow it.
 
