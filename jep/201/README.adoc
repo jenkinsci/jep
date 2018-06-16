@@ -250,7 +250,7 @@ implementation.
 
 == Prototype Implementation
 
-https://github.com/jenkinsci/configuration-as-code-plugin
+* https://github.com/jenkinsci/configuration-as-code-plugin
 
 == References
 
