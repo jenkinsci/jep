@@ -1,0 +1,246 @@
+= JEP-0000: Use UTF-8 for Pipeline build logs
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 0000
+
+| Title
+| Use UTF-8 for Pipeline build logs
+
+| Sponsor
+| link:https://github.com/jglick[Jesse Glick]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| :bulb: Date (YYYY-MM-DD) :bulb:
+
+| BDFL-Delegate
+| :bulb: Link to github user page :bulb:
+
+| JIRA
+| link:https://issues.jenkins-ci.org/browse/JENKINS-31096[JENKINS-31096]
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+All Jenkins Pipeline build logs are stored internally in UTF-8 encoding.
+(The log can be seen by users from the *Console* link,
+but also from Blue Ocean, *Pipeline Steps*, and REST and CLI.)
+
+Text produced by Jenkins (Java) code is intrinsically Unicode.
+Output from external processes which was not already in UTF-8 is converted to UTF-8 as it is produced.
+
+The scope does not include other project types (freestyle),
+or other types of logging (system, branch indexing).
+
+== Specification
+
+Newly created Pipeline build logs use UTF-8 encoding for all text.
+This is hard-coded in the `charset` field in `build.xml`.
+The `TaskListener` associated with the build as a whole (`FlowExecutionOwner.getListener`),
+and with individual steps (`StepContext.get(TaskListener.class)`),
+will thus be using UTF-8 encoding.
+
+When output is produced by `DurableTaskStep` (`sh`, `bat`, `powershell`),
+it is transcoded to UTF-8 where necessary by `FileMonitoringController`.
+The API methods `charset` and `defaultCharset` in the `DurableTask` interface support this.
+The source encoding defaults to the system default encoding of the node (`Charset.defaultCharset`),
+but may be explicitly specified with a `encoding` parameter.
+
+== Motivation
+
+Jenkins freestyle build records retain a character encoding field `charset`,
+which may vary from build to build.
+Since a freestyle build always allocates exactly one node,
+the encoding is just the system default encoding of that node,
+and the build log is understood to use that encoding.
+Output from build steps (external processes)
+is copied directly to the build log as a bytestream.
+Content rendered over HTTP is always sent in UTF-8 encoding.
+
+When Pipeline was introduced,
+this system could not applied as is
+since a Pipeline build could use many nodes, or none.
+The build log was just left in the _master_’s system default encoding;
+if that encoding happens to be identical to that used by an agent,
+then process output will be encoded directly,
+otherwise you get mojibake.
+
+Pipeline also suffered from a problem that continues to affect freestyle builds:
+non-ASCII text send directly by Java code into the build log
+(for example, `Folder Name » Job Name`)
+may or may not be displayable,
+according to the capacity of the build log encoding.
+
+This proposal solves such issues,
+and simplifies development and debugging generally,
+by forcing every Pipeline build log to be in UTF-8 encoding.
+
+== Reasoning
+
+=== Expanding scope to freestyle builds
+
+link:https://github.com/jenkinsci/jenkins/pull/3231[Jenkins PR 3231]
+proposes switching everything in Jenkins core to UTF-8.
+The proposed change is far from complete, however;
+notably, it does not address encoding of build step output.
+
+This JEP does not attempt to solve those issues,
+but neither does it preclude or impede their solution.
+The bulk of the work here involves the `durable-task` plugin
+which is not used by freestyle builds.
+
+=== Transcoding of process output from `Launcher`
+
+Non-durable task output from external processes
+(using the core `Launcher` interface, such as `checkout` using CLI Git)
+is not transcoded.
+If the process produces non-ASCII, non-UTF-8 output,
+and the process output is streamed to the build log,
+this could result in mojibake in the log.
+
+This likely needs to be addressed in Jenkins core
+by having `ProcStarter.stdout(Listener)` transcode as needed.
+In practice only a small amount of text sent to Pipeline build logs is produced this way,
+and it is particularly unlikely to be produced by user-controlled inputs
+and thus to contain any non-ASCII characters.
+
+Due to the low priority, this JEP does not currently attempt to fix this core issue.
+Addressing it _may_ help apply UTF-8 to freestyle build logs in the future.
+
+=== Default value for `DurableTaskStep.encoding`
+
+The historical default for `encoding` parameter to `sh` and similar steps was UTF-8.
+This did not match the default for `readFile` and `writeFile`,
+and anyway did not apply to output streamed to the build log
+(only to the `returnStdout` option).
+
+Retaining this default would improve compatibility in only limited circumstances,
+at the expense of doing the wrong thing in typical situations
+where a process is printing text in the system default encoding.
+
+=== Use of agent system default encoding
+
+As noted in the historical section,
+it is impossible for Pipeline builds to follow the same policy as freestyle builds
+of using the same encoding as the agent system default for the build log:
+there may be multiple agents in use, or none,
+and the particular agent(s) used are not even known when the build starts.
+
+=== Use of historical non-Unicode encodings
+
+Some users speaking non-English languages, particularly with non-Latin scripts,
+may prefer to work exclusively with text documents in a traditional encoding.
+This seems to be particularly commonplace in Japan.
+@kohsuke (pers. comm.) has mentioned this concern in the past.
+
+Since build logs were already rendered in UTF-8 via HTTP,
+the internal coding system should really only matter
+to users accessing the `$JENKINS_HOME/jobs/*/builds/*/log` file directly.
+While that may have been common in the early days of Hudson,
+this is likely a rare use case today.
+
+In any event, making Jenkins architecture more complex and potentially buggy
+to satisfy a marginal requirement seems a poor trade-off.
+
+== Backwards Compatibility
+
+Jenkins systems running on UTF-8-based computers
+(including virtually all modern Linux installations)
+should see no change in behavior.
+
+=== Historical builds
+
+Historical builds may have recorded a different `charset` in `build.xml`.
+In such a case, their log text will continue to be served in that encoding.
+
+If the build was started before the upgrade but is still running,
+it will continue to use the recorded encoding.
+That may mean that newly produced text contains mojibake.
+
+=== Partial updates
+
+If the Jenkins administrator updates one of `workflow-job` or `workflow-durable-task-step`,
+but not the other,
+there is a possibility of mojibake in log output when non-ASCII text is printed.
+
+The fix is simply to update both plugins.
+(link:https://issues.jenkins-ci.org/browse/JENKINS-49651[JENKINS-49651]
+could be used to enforce that.)
+
+=== Default encoding of durable tasks
+
+If a Pipeline script was running a durable task with no explicit `encoding`,
+there is a possibility of mojibake being _introduced_ by the update.
+This should only happen under some fairly specialized conditions.
+
+The fix is to specify the `encoding` parameter explicitly.
+
+== Security
+
+There are no security risks related to this proposal.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+New test code in `workflow-job` verifies overall behavior.
+
+Test code in `durable-task` verifies all modes of transcoding in detail,
+using a Dockerized agent with ISO-8859-1 encoding.
+Shorter test code in `workflow-durable-task-step` checks the integration into the actual Pipeline step.
+
+Existing test code in `workflow-support` fails as expected,
+pending plugin releases allowing a cyclic dependency to be broken.
+
+== Prototype Implementation
+
+The change is contained in four pull requests to Pipeline plugins, as listed below.
+
+== References
+
+* link:https://issues.jenkins-ci.org/browse/JENKINS-31096[JENKINS-31096]
+* link:https://github.com/jenkinsci/workflow-support-plugin/pull/56[workflow-support PR 56]
+* link:https://github.com/jenkinsci/workflow-job-plugin/pull/89[workflow-job PR 89]
+* link:https://github.com/jenkinsci/durable-task-plugin/pull/61[durable-task PR 61]
+* link:https://github.com/jenkinsci/workflow-durable-task-step-plugin/pull/64[workflow-durable-task-step PR 64]
