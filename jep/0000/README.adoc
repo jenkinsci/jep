@@ -174,7 +174,7 @@ This seems to be particularly commonplace in Japan.
 
 Since build logs were already rendered in UTF-8 via HTTP,
 the internal coding system should really only matter
-to users accessing the `$JENKINS_HOME/jobs/*/builds/*/log` file directly.
+to users accessing the `$JENKINS_HOME/jobs/…/builds/…/log` file directly.
 While that may have been common in the early days of Hudson,
 this is likely a rare use case today.
 
