@@ -101,11 +101,13 @@ this system could not applied as is
 since a Pipeline build could use many nodes, or none.
 The build log was just left in the _master_’s system default encoding;
 if that encoding happens to be identical to that used by an agent,
-then process output will be encoded directly,
-otherwise you get mojibake.
+then process output will be encoded directly.
+Otherwise you get
+link:https://en.wikipedia.org/wiki/Mojibake[mojibake]:
+garbled text caused by bytes being interpreted as the wrong characters.
 
 Pipeline also suffered from a problem that continues to affect freestyle builds:
-non-ASCII text send directly by Java code into the build log
+non-ASCII text sent directly by Java code into the build log
 (for example, `Folder Name » Job Name`)
 may or may not be displayable,
 according to the capacity of the build log encoding.
@@ -183,9 +185,17 @@ to satisfy a marginal requirement seems a poor trade-off.
 
 == Backwards Compatibility
 
-Jenkins systems running on UTF-8-based computers
-(including virtually all modern Linux installations)
+Jenkins clusters running on computers with UTF-8 set as the system encoding
+(including typical modern Linux installations)
 should see no change in behavior.
+
+When the computers hosting Jenkins master and/or agent processes
+have a different system encoding
+(typical on Windows servers for example),
+there _may_ be compatibility issues as described below.
+
+Of course where the contents of build logs were exclusively ASCII to begin with,
+none of this matters.
 
 === Historical builds
 
