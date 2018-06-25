@@ -45,11 +45,6 @@ endif::[]
 //| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
 //
 //
-// Uncomment if there will be a BDFL delegate for this JEP.
-| BDFL-Delegate
-| Undetermined
-//
-//
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
 //| Discussions-To
 //| :bulb: Link to where discussion and final status announcement will occur :bulb:
