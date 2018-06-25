@@ -24,9 +24,9 @@ endif::[]
 | link:https://github.com/daniel-beck/[Daniel Beck]
 
 | Status
-| Draft :speech_balloon:
+//| Draft :speech_balloon:
 //| Deferred :hourglass:
-//| Accepted :ok_hand:
+| Accepted :ok_hand:
 //| Rejected :no_entry:
 //| Withdrawn :hand:
 //| Final :lock:
@@ -43,11 +43,6 @@ endif::[]
 // Uncomment if there is an associated placeholder JIRA issue.
 //| JIRA
 //| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
-//
-//
-// Uncomment if there will be a BDFL delegate for this JEP.
-| BDFL-Delegate
-| Undetermined
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
@@ -156,4 +151,4 @@ There are no testing issues related to this proposal.
 
 == References
 
-n/a
+* link:https://groups.google.com/d/topic/jenkinsci-dev/HaYzG1YVuJI/discussion[dev list thread]
