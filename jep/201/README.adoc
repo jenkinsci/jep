@@ -128,7 +128,7 @@ YAML allows us to:
 
 ==== Per-Instance generated documentation
 
-There needs be easily accessible documentation for the schema.
+There needs to be easily accessible documentation for the schema.
 The configuration file format has to be well documented to assist end-users.
 This documentation is generated based on the live Jenkins instance to ensure it’s in sync,
 similar to what Pipeline DSL documentation does with the Snippet Generator.
@@ -218,7 +218,7 @@ Limiting the scope of this JEP to high-level goals will let us build a solid con
 
 Configuration-as-Code is intended to run as an additional Jenkins component (generally, a plugin) and not require dedicated extension
 integrated in Jenkins-core nor specific API implemented by plugins. We only require them to follow some convention in the way they expose
-configuration attributes (i.e `DataBoundSetter|Constructor``)
+configuration attributes (i.e `DataBoundSetter|Constructor`)
 
 === Schema changes
 
