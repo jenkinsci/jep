@@ -71,7 +71,7 @@ endif::[]
 
 == Abstract
 
-Jenkins installation setup requires various configuration steps users have to handle on the web UI.
+Jenkins installation and setup requires various configuration steps users have to handle on the web UI.
 This provides flexibility for newcomers, but for repeated deployment, users need a way to automate configurating and installation.
 
 Configuration-as-Code is a DevOps practice to manage software configuration as versioned files managed in SCM.
@@ -90,12 +90,12 @@ We have identified two personas as target Audience :
 *Ben* is system administrator in the company, managing services across all teams: LDAP, Mail, but also developers ressources like
 repositories and CI servers. Ben’s favorite IDE is vi, his preferred language is bash (or maybe ruby|python) and only knows Java for the
 amount of memory it requires and the delay to start a JVM. So he’s not a big fan of writing groovy scripts. He mostly knows Jenkins by the
-UI and used to backup for whole JENKINS_HOME folder.
+UI and used to backup for whole `JENKINS_HOME` folder.
 
 *Seb* is working in a startup as DevOps engineer. He’s full time working with product team as a developer and managing development process
 and resources (which makes 2 full times for one guy. This is a startup I said). Seb has deployed kubernetes as general purpose
 infrastructure on the Cloud and deployed a git repo and few other services for his team. A Jenkins master is running there as well. He's used
-to upgrade jenkins by running latest official docker image and re-using previous jenkins-home volume.
+to upgrade Jenkins by running latest official docker image and re-using previous `JENKINS_HOME` volume.
 
 === Goals
 
@@ -148,7 +148,7 @@ The plugin may need to generate some schema that could also be used with an IDE 
 
 Depending on the audience, some users want configuration-as-code to generate a working Jenkins master
 with some initial configuration, but also let the actual administrator make changes.
-Such use case is mostly looking for “recipe for a new jenkins master”.
+Such use case is mostly looking for “recipe for a new Jenkins master”.
 Others want configuration-as-code to fully control the master, and be able to apply updates, comparable to Chef/Puppet/Ansible management.
 Both use cases can be supported (as well as a mix of both).
 The former just uses the configuration-as-code mechanism for initial setup.
@@ -162,7 +162,7 @@ They should only have to include the setting they care about.
 
 ==== Avoid glue-code, support customization
 
-We want configuration-as-code to apply to the majority jenkins components without need for dedicated glue-code.
+We want configuration-as-code to apply to the majority of Jenkins components without need for dedicated glue-code.
 Configuration as Code doesn’t define a model for each and every component it can manage.
 It instead relies on introspection to discover at runtime the data model exposed by a Jenkins instance and installed plugins.
 Some components with more complex or corner-case designs may still need to implement some custom glue code to make it possible to represent their configuration in a sensible fashion.
@@ -217,13 +217,13 @@ Limiting the scope of this JEP to high-level goals will let us build a solid con
 == Backwards Compatibility
 
 Configuration-as-Code is intended to run as an additional Jenkins component (generally, a plugin) and not require dedicated extension
-integrated in Jenkins-core nor specific API implemented by plugins. We only require them to follow some convention in the way they expose
+integrated in `jenkins-core` nor specific API implemented by plugins. We only require them to follow some convention in the way they expose
 configuration attributes (i.e `DataBoundSetter|Constructor`)
 
 === Schema changes
 
 Configuration-as-Code doesn't define the exact model for the configuration expressed in the YAML file.
-The YAML schema will depend on a specific versions of jenkins-core and plugins being used at runtime.
+The YAML schema will depend on a specific versions of `jenkins-core` and plugins being used at runtime.
 This limits the ability of the Configuration-as-Code plugin to ensure schema compatibility between
 different versions of Jenkins Core and plugins.
 Still, schema will be validated before applying it to a Jenking instance,
