@@ -19,7 +19,7 @@ endif::[]
 | Jenkins Configuration as Code
 
 | Sponsor
-| link:https://github.com/ewelinawilkosz2[Ewelina Wilkosz] from https://github.com/praqma[Praqma]
+| link:https://github.com/ewelinawilkosz2[Ewelina Wilkosz] from link:https://github.com/praqma[Praqma]
 
 | Status
 | Draft :speech_balloon:
