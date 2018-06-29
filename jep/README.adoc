@@ -102,22 +102,22 @@
 | Draft :speech_balloon:
 | link:306/[JEP-306: Essentials Instance Client Health Checking]
 | link:https://github.com/batmat[Baptiste Mathus]
-| _not delegated_
+| link:https://github.com/rtyler[R. Tyler Croy]
 
 | Draft :speech_balloon:
 | link:307/[JEP-307: Evergreen Update Client/Server Lifecycle]
 | link:https://github.com/rtyler[R. Tyler Croy]
-| _not delegated_
+| link:https://github.com/rtyler[R. Tyler Croy]
 
 | Draft :speech_balloon:
 | link:308/[JEP-308: Essentials Error Telemetry API]
 | link:https://github.com/batmat[Baptiste Mathus]
-| _not delegated_
+| link:https://github.com/rtyler[R. Tyler Croy]
 
 | Draft :speech_balloon:
 | link:309/[JEP-309: Bill of Materials]
 | link:https://github.com/carlossg[Carlos Sanchez]
-| _not delegated_
+| link:https://github.com/rtyler[R. Tyler Croy]
 
 | Draft :speech_balloon:
 | link:400/[JEP-400: Jenkins X: Jenkins for Kubernetes CD]
