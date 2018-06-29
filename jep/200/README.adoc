@@ -19,30 +19,28 @@ endif::[]
 | Switch Remoting/XStream blacklist to a whitelist
 
 | Sponsor
-| https://github.com/jglick[@jglick]
+| link:https://github.com/jglick[Jesse Glick]
 
 | Status
 | Final :lock:
-//| Replaced :dagger:
-//| Active :smile:
 
 | Type
 | Standards
 
 | Created
-| 2017 Oct 30
+| 2017-10-30
 
 | JIRA
-| https://issues.jenkins-ci.org/browse/JENKINS-47736[JENKINS-47736]
+| link:https://issues.jenkins-ci.org/browse/JENKINS-47736[JENKINS-47736]
 
 | BDFL-Delegate
-| https://github.com/oleg-nenashev[@oleg-nenashev]
+| link:https://github.com/oleg-nenashev[Oleg Nenashev]
 
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
-| Discussions-To
-| https://groups.google.com/forum/#!topic/jenkinsci-dev/hOn7DTGv9tw[jenkinsci-dev mailing list thread]
+// | Discussions-To
+// | https://groups.google.com/forum/#!topic/jenkinsci-dev/hOn7DTGv9tw[jenkinsci-dev mailing list thread]
 //
 //
 // Uncomment if this JEP depends on one or more other JEPs.
@@ -428,3 +426,7 @@ The BDFL delegate agreed with the provided feedback (Jan 03, 2017).
 He would like to see better extensibility in the future, but it does not block delivery of JEP-200.
 It is **NOT** a deferred task, JEP Sponsor has no plan to implement it.
 If a need arises, it can been contributed by somebody else.
+
+== References
+
+* https://groups.google.com/forum/#!topic/jenkinsci-dev/hOn7DTGv9tw[jenkinsci-dev mailing list thread]

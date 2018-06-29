@@ -19,15 +19,10 @@ endif::[]
 | Jenkins Configuration as Code
 
 | Sponsor
-| https://github.com/ewelinawilkosz2[Ewelina Wilkosz] from https://github.com/praqma[Praqma]
+| link:https://github.com/ewelinawilkosz2[Ewelina Wilkosz] from https://github.com/praqma[Praqma]
 
 | Status
 | Draft :speech_balloon:
-//| Rejected :no_entry:
-//| Withdrawn :hand:
-//| Final :lock:
-//| Replaced :dagger:
-//| Active :smile:
 
 | Type
 | Standards

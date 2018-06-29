@@ -19,7 +19,7 @@ endif::[]
 | Essentials Instance Client Health Checking
 
 | Sponsor
-| https://github.com/batmat[Baptiste Mathus]
+| link:https://github.com/batmat[Baptiste Mathus]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
@@ -34,7 +34,7 @@ endif::[]
 //
 // Uncomment if there is an associated placeholder JIRA issue.
 | JIRA
-| https://issues.jenkins-ci.org/browse/JENKINS-50294[JENKINS-50294]
+| link:https://issues.jenkins-ci.org/browse/JENKINS-50294[JENKINS-50294]
 //
 //
 // Uncomment if there will be a BDFL delegate for this JEP.
