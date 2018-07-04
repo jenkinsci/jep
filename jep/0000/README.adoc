@@ -37,9 +37,9 @@ endif::[]
 
 | JIRA
 |
-https://issues.jenkins-ci.org/browse/JENKINS-52012[JENKINS-52012] - Java 10 support in weekly releases
-https://issues.jenkins-ci.org/browse/JENKINS-52284[JENKINS-52284] - Java 10 support in LTS,
-https://issues.jenkins-ci.org/browse/JENKINS-51805[JENKINS-51805] - Java 11 support
+link:https://issues.jenkins-ci.org/browse/JENKINS-52012[JENKINS-52012] - Java 10 support in weekly releases
+link:https://issues.jenkins-ci.org/browse/JENKINS-52284[JENKINS-52284] - Java 10 support in LTS,
+link:https://issues.jenkins-ci.org/browse/JENKINS-51805[JENKINS-51805] - Java 11 support
 
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
 //| Discussions-To
@@ -62,12 +62,17 @@ https://issues.jenkins-ci.org/browse/JENKINS-51805[JENKINS-51805] - Java 11 supp
 
 |===
 
-## Abstract
+== Abstract
 
 In September 2018 we expect Java 11 to be released.
 It will be an LTS version with a long support timeline.
-This jenkins Enhancement Proposal describes actions required in order to make Java 10 and 11 releases publicly available. The specification has been created according to the results of the link:https://jenkins.io/blog/2018/06/08/jenkins-java10-hackathon/[Jenkins and Java 10+ hackathon].
+This jenkins Enhancement Proposal describes actions required in order to make Java 10 and 11 releases publicly available.
 
+
+== Specification
+
+The specification has been created according to the results of the link:https://jenkins.io/blog/2018/06/08/jenkins-java10-hackathon/[Jenkins and Java 10+ hackathon].
+ 
 All stories in this JEP have tickets created in JIRA.
 Stories are aggregated in
 link:https://issues.jenkins-ci.org/browse/JENKINS-40689[JENKINS-40689],
@@ -78,9 +83,7 @@ If the tickets are not linked in the description, they can be found there.
 JENKINS-52012 and JENKINS-52284 EPICs are considered as mandatory in this JEP,
 JENKINS-40689 - nice to have.
 
-### Specification
-
-### Goals and non-goals
+=== Goals and non-goals
 
 Goals:
 
@@ -112,7 +115,7 @@ By default OpenJDK 10 and 11ea just print a warning once on the startup, there i
 *** …
 * There is no plan to remove all functionality as a part of this JEP, but it may be done and included into the release
 
-### Scope of changes
+=== Scope of changes
 
 * Jenkins Core
 * Jenkins Docker Packaging
@@ -120,31 +123,31 @@ By default OpenJDK 10 and 11ea just print a warning once on the startup, there i
 * jenkins.io
 * ci.jenkins.io
 
-### Jenkins core patches
+=== Jenkins core patches
 
 Must-have stories are defined in link:https://issues.jenkins-ci.org/browse/JENKINS-52012[JENKINS-52012].
 All stories in this EPIC need to be completed.
 
-#### Library updates
+==== Library updates
 
 * The JENKINS-52012 EPIC includes a number of library updates in the core we know about: Groovy, ASM, etc.
 * Some updates may require downstream plugin updates.
 ** For Example, Groovy update requires cleanup of the Metaspace leak memory in Script Security
 
-#### Core patches
+==== Core patches
 
 * Jenkins JNLPLauncher built-in documentation will be updated to indicate that Java Web Start feature is not available in Java 10+
 * https://github.com/jenkinsci/docker/tree/java10 is merged into master and deleted
 * Extras Executable WAR patch to permit running with Java 10 is permitted without the “--enable-future-java” flag (JENKINS-52285)
 
-#### Build flow updates (JENKINS-51903)
+==== Build flow updates (JENKINS-51903)
 
 * Jenkinsfile is updated to run tests with JDK 10
 ** It includes Unit tests, JTH and ATH smoke tests
 * It is possible to build Jenkins Core with the release profile on JDK 8
 * Dockerfile images are migrated
 
-#### Plan for other Java 10+ patches
+==== Plan for other Java 10+ patches
 
 There is a number of pending patches and tickets (e.g. detaching of JNA/JNR API, Lib Process Utils Patch, etc.),
 which cleanup Illegal Reflective Access attempts in Jenkins.
@@ -155,9 +158,9 @@ which cleanup Illegal Reflective Access attempts in Jenkins.
 The patches will be tracked in the
 link:https://issues.jenkins-ci.org/browse/JENKINS-40689[JENKINS-40689] EPIC.
 
-### Jenkins Docker packaging
+=== Jenkins Docker packaging
 
-#### Jenkins Master Images (JENKINS-51985)
+==== Jenkins Master Images (JENKINS-51985)
 
 * Official jenkins/jenkins image is available for Java 10. Suggested labels:
 ** latest-jdk10
@@ -168,17 +171,17 @@ link:https://issues.jenkins-ci.org/browse/JENKINS-40689[JENKINS-40689] EPIC.
 * Automatic build flow on Trusted CI is updated to build and release images. Weekly and LTS releases are performed automatically
 * https://github.com/jenkinsci/docker/tree/java10 and https://github.com/jenkinsci/docker/tree/java11 experimental branches are integrated into the master branch and deleted to avoid confusion.
 
-#### Jenkins Agent Images (JENKINS-52279, JENKINS-51986)
+==== Jenkins Agent Images (JENKINS-52279, JENKINS-51986)
 
 * https://github.com/jenkinsci/docker-slave, https://github.com/jenkinsci/docker-ssh-slave and https://github.com/jenkinsci/docker-jnlp-slave are updated to offer JDK 10 builds
 ** Version format is to be determined by the image maintainers
 * DockerHub configurations are updated to automatically build images
 
-#### BlueOcean Docker Image (JENKINS-52280)
+==== BlueOcean Docker Image (JENKINS-52280)
 
 * BlueOcean build for Java 10+ should be made a part of the build/release flow
 
-### Plugins
+=== Plugins
 
 link:https://issues.jenkins-ci.org/browse/JENKINS-52012[JENKINS-52012] tracks updates required in plugins.
 There are the following conditions for the GA release:
@@ -190,7 +193,7 @@ There are the following conditions for the GA release:
 Currently we know about 2 plugins which will need to be updated: “Pipeline: Support” plugin (JENKINS-52187), Monitoring Plugin (JENKINS-52092).
 More plugin compatibility issues may be discovered during testing.
 
-### New policy: Building with JDK 10+
+=== New policy: Building with JDK 10+
 
 The following policy is suggested:
 
@@ -210,38 +213,11 @@ This policy may require patches in parent POMs:
 * For known issues Maven plugin versions should be updated to versions compatible with JDK10+. Support of JDK 8 is a must (see “Building with JDK 10+”)
 * If builds on Java 10 work correctly after the patches, support of JDK 10 can be released for tools
 
-## Motivation
-
-Non-goals in the specification are defined to limit the scope of work.
-The main objective is to get Jenkins running with Java 10+,
-there will be follow-up tasks to cleanup Illegal Reflective Access warnings and to adopt new features.
-
-## Reasoning
-
-Reasoning for the Specification decisions is provided in the “Approach” section above.
-
-## Backwards Compatibility
-
-The following backward compatibility requirements are defined:
-
-* Jenkins Core and Updated plugins should fully support JDK 8
-* In the case of compatibility issues, it is possible to migrate from Java 10+ to Java 8 by replacing Java in PATH or by replacing the official Docker image
-** Java 8 and Java 10 XML formats are similar
-
-## Security
-
-* Only Java 10 with the latest security fixes will be supported at the moment of the public release
-* In particular cases Java 10 may introduce new security defect
-(e.g. Groovy Sandbox escaping in Script Security plugin)
-** In order to mitigate this risk, Groovy will not be updated to 3.x in the incoming GA release.
-It means that Java 9+-alike features will not be available in Groovy DSLs within Jenkins
-** If a security issue is reported, is will be handled with a high priority by “Java 10+ Maintainers” (see below)
-
-## Rollout plan
+=== Rollout plan
 
 The rollout procedure should be coordinated within the Platform SiG (JEP-TODO).
 
-### Timeline
+==== Timeline
 
 * This JEP targets Java 10 support in weekly releases.
 The plan is to announce Java 10 support when it is done, no special timing
@@ -250,7 +226,7 @@ The plan is to announce Java 10 support when it is done, no special timing
 * LTS general availability: Java 10 support will be available in LTS once the LTS baseline updates to the Weekly release.
 ** There is no plan to backport changes required for Java 10+ support
 
-### Website
+==== Website
 
 * link:https://jenkins.io/doc/administration/requirements/java/[Java Support Page] is updated to indicate that Java 10 is supported
 * link:https://jenkins.io/blog/2018/06/17/running-jenkins-with-java10-11/[“Running Jenkins with Java 10 and 11”] blogpost is updated to refer the new guidelines
@@ -259,12 +235,12 @@ The plan is to announce Java 10 support when it is done, no special timing
 ** The blogpost will include upgrade guidelines, “make a backup” will one of the required steps there
 * There is an announcement blogpost for Java 10 support general availability in LTS
 
-### Wiki
+==== Wiki
 
 * There is a Wiki page created to track known Java 10+ incompatibilities in the Jenkins Core and Plugins.
 * The page will have format similar to link:https://wiki.jenkins.io/display/JENKINS/Plugins+affected+by+fix+for+JEP-200[Plugins affected by fix for JEP-200] Wiki
 
-### Post-release support
+==== Post-release support
 
 After the release of Java 10+ support, there may be a number of defects created by early adopters.
 It may cause additional workload on plugin and core maintainers, and this JEP sets sets a requirement to assist with triaging of issues after the release.
@@ -286,14 +262,42 @@ The proposed support model will be in place until “Availability in LTS + 2 mon
 After this period Jenkins component maintainers will be responsible for triaging and fixing issues in their components.
 SECURITY reports will be triaged by Jenkins Security Team.
 
-## Infrastructure Requirements
 
-### ci.jenkins.io
+== Motivation
+
+Non-goals in the specification are defined to limit the scope of work.
+The main objective is to get Jenkins running with Java 10+,
+there will be follow-up tasks to cleanup Illegal Reflective Access warnings and to adopt new features.
+
+== Reasoning
+
+Reasoning for the Specification decisions is provided in the “Approach” section above.
+
+== Backwards Compatibility
+
+The following backward compatibility requirements are defined:
+
+* Jenkins Core and Updated plugins should fully support JDK 8
+* In the case of compatibility issues, it is possible to migrate from Java 10+ to Java 8 by replacing Java in PATH or by replacing the official Docker image
+** Java 8 and Java 10 XML formats are similar
+
+== Security
+
+* Only Java 10 with the latest security fixes will be supported at the moment of the public release
+* In particular cases Java 10 may introduce new security defect
+(e.g. Groovy Sandbox escaping in Script Security plugin)
+** In order to mitigate this risk, Groovy will not be updated to 3.x in the incoming GA release.
+It means that Java 9+-alike features will not be available in Groovy DSLs within Jenkins
+** If a security issue is reported, is will be handled with a high priority by “Java 10+ Maintainers” (see below)
+
+== Infrastructure Requirements
+
+=== ci.jenkins.io
 
 * Tool Infrastructure should offer the latest version of JDK 11 (pre-release one) - INFRA-1688 .
 * JDK 10 is already available in `ci.jenkins.io`
 
-### Jenkins Pipeline Library
+=== Jenkins Pipeline Library
 
 * `buildPlugin()`, `runATH()`, and `runPCT()` should support running tests with Java 10 or 11 (
 link:https://issues.jenkins-ci.org/browse/INFRA-1690[INFRA-1690],
@@ -305,7 +309,7 @@ so we do not run Java 10 tests on core versions which do not support it
 * essentialsTest() should support defining Java version matrix for testing
 (link:https://issues.jenkins-ci.org/browse/INFRA-1693[INFRA-1693])
 
-### DockerHub
+=== DockerHub
 
 * CD Flow for Java 10 / 11 images is updated to support the Master branch with Java 10 and/or 11 packages
 (link:https://issues.jenkins-ci.org/browse/INFRA-1694[INFRA-1694])
@@ -330,7 +334,7 @@ Tests to be performed:
 * PCT is performed on Java 10, at least for the recommended plugins
 (link:https://issues.jenkins-ci.org/browse/JENKINS-52312[JENKINS-52312])
 
-## Prototype Implementation
+== Prototype Implementation
 
 Prototype implementation has been created during Jenkins & Java 10+ hackathon. There is no plans to create additional prototypes.
 These prototypes include Jenkins core, Docker updates and downstream demo patches.
@@ -343,7 +347,7 @@ These prototypes include Jenkins core, Docker updates and downstream demo patche
 * https://github.com/oleg-nenashev/demo-jenkins-config-as-code/pull/6
 * https://github.com/gmacario/easy-jenkins/pull/270
 
-## References
+== References
 
 * http://www.oracle.com/technetwork/java/javase/eol-135779.html
 * https://jenkins.io/blog/2018/06/08/jenkins-java10-hackathon/
