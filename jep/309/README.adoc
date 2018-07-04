@@ -1,0 +1,265 @@
+= JEP-309: Bill of Materials
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 309
+
+| Title
+| Bill of Materials
+
+| Sponsor
+| https://github.com/carlossg[@carlossg]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2018-04-16
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+There are multiple ways of defining packaging and what combinations of core, modules, libraries and plugins to test from multiple repositories, forks and PRs.
+The Bill of Materials (**BoM**) aims to set a common language that can be reused across them.
+
+The BoM is a cornerstone to enable these other goals:
+
+* Ensure value gets delivered while quality is continuously improved
+* Do not go down the rabbit hole of spending weeks without delivering value
+* Increase quality of non-LTS builds
+* Provide an answer to “Is this code ready to be delivered to Jenkins Essentials?”
+* Avoid complex matrix testing that is the objective of Essentials tracing and monitoring
+* Feedback delivered to PR author as soon as possible
+* Automated releases - at least from the perspective of the engineer
+* Reduce code review overheads so that maintainers can process more.
+AKA “I am a plugin maintainer, not a FindBugs robot. Automate checks for me”
+
+
+== Specification
+
+=== What exists today
+
+* https://github.com/jenkinsci/acceptance-test-harness[Jenkins acceptance test harness]
+* https://github.com/jenkinsci/blueocean-acceptance-test[Blue Ocean acceptance test]
+* https://github.com/jenkinsci/plugin-compat-tester[Jenkins plugin compat tester]
+* https://github.com/jenkins-infra/evergreen[Essentials evergreen draft]
+* https://github.com/jenkinsci/jenkins-war-packager[Jenkins WAR packager] recently started
+
+=== What are we missing
+
+* Builds/Tests from master, needed for Essentials
+* Builds/Tests from core, libraries and plugins PRs
+
+These cases are addressed by a Custom WAR Packager prototype for custom WAR Building and testing use-cases.
+That format is narrow focused, and it does not address use-cases like support of custom environments.
+We want to unify the description format across projects within Jenkins (e.g. Jenkins Essentials, Jenkins X, Docker Packaging, etc.).
+
+=== Bill of Materials (BoM)
+
+The BoM defines what commits of core, bundled libraries (stapler, remoting)  and plugins are delivered and tested together.
+They key part is the usage of commit ids and not releases.
+The usage of the maven release plugin does not fit this requirement.
+
+The BoM needs to be trackable in Git.
+
+The BoM needs to have the concept of environments for Essentials. Ie. install different plugins in AWS vs Azure vs...
+
+A requirement for Essentials is that parts of the BoM need to be downloadable.
+Essentials needs to enable selective downloads of core, bundled libraries and plugins for incremental upgrades.
+Pushing into maven repo is fine, although indexing time is big.
+Will need to mirror into Azure CDN at some point.
+
+The BoM needs to be translated to take advantage of existing infrastructure.
+
+* Essentials needs to generate a diff for upgrades and download the bits
+* Existing ATH uses a war binary that can be built from BoM
+
+Packages should be trackable back to a commit id, but during development the BoM should point to branches or tags, so we would have a BoM as input and a effective BoM as output with all the git refs resolved to specific commit ids.
+
+=== Workflow
+
+Core, libraries and plugins could have a BoM in the master branch.
+This BoM should point to master of core, master of libraries.
+There is an implicit dependency to the current branch of the current git repository.
+
+The BoM should be processed to update the Maven pom on change events.
+
+==== Changes to Core
+
+Developer needs some changes to core or Jenkins internal library or component for downstream use.
+
+* Create PR against core/library.
+** PR builder in core/library will publish the artifacts using the git commit id as part of the identifier, for downstream consumption.
+** Would also publish the result BoM with all git references converted to ids.
+* Create PR against a plugin
+** This PR would include a modified BoM pointing to the PR branch of core/library.
+* PR builder for plugin/library would process the BoM, creating as output:
+** A Jenkins package (WAR and/or Docker image) with the dependencies stated in the BoM.
+** The realized BoM, with all git references converted to ids.
+** Dependencies would not need to be rebuilt as they were already published.
+* Tests run against this output
+* Output artifact is published to repository, for downstream consumption in a way that can be fetched by git commmit id.
+
+==== Changes to Plugins
+
+Same as above but instead of pointing to core/library PR, pointing to master.
+
+==== Continuous Delivery
+
+Changes in master of core and libraries should trigger downstream rebuilds of plugins.
+Given the amount of work involved we recommend doing it in phases, targeting core plugins first, as defined in Essentials.
+
+===== BoM Format
+
+A new yaml format based on https://github.com/jenkins-infra/evergreen/blob/master/essentials.yaml[essentials] and https://github.com/oleg-nenashev/jenkins-war-packager[WAR packager] using the Kubernetes format.
+
+```yaml
+metadata:
+  # labels and annotations are key: value string attributes
+  labels:
+    name: myplugin
+    groupId: ...
+    artifactId: ...
+    version: ...
+  annotations:
+    io.jenkins.x: y
+spec:
+  core:
+    # version OR version + ref (version just to keep Maven happy about version order)
+    ref: master
+    version: 1.0
+  components:
+    - groupId: org.acme
+      artifactId: acme-component
+      ref: master
+      version: 1.0
+  plugins:
+    - groupId: org.acme
+      artifactId: acme-plugin
+      ref: master
+      # version: 1.0
+  environments:
+    # environments get added to the other section when enabled
+    - name: aws
+      plugins:
+        - groupId: org.acme
+          artifactId: acme2-plugin
+          ref: master
+          # version: 1.0
+      components: ...
+  # other sections can be added and ignored by default
+# the realized BoM after refs are resolved
+status:
+  core:
+    ref: aaabbb
+    # version: 1.0
+  plugins:
+    - groupId: org.acme
+      artifactId: acme-plugin
+      ref: bbbccc
+      # version: 1.0
+  environments:
+    - name: aws
+      plugins:
+        - groupId: org.acme
+          artifactId: acme2-plugin
+          ref: cccddd
+          # version: 1.0
+```
+
+
+== Motivation
+
+The current approach to make changes in core, libraries and plugins is too cumbersome, far from Continuous Integration and complicated for contributors, due to the usage of multiple repositories.
+
+Changes typically span more than one repository, causing contributors to manually combine different PRs together.
+The goal of this proposal is to move towards a master based delivery process, ensure that core changes don't break plugins and that core changes needed by plugins can be quickly and safely adopted.
+
+This proposal builds on the goals of Essentials. We want to ensure that the Essentials distribution is continuously delivered, off master, and is done safely with a set of checks that run automatically.
+
+== Reasoning
+
+The chosen YAML format is just picked due to the similarities with Kubernetes model objects and has no importance.
+
+For version naming there are other options:
+
+* Use Maven SNAPSHOTS
+** Automatically deploy snapshots using commit ids (ie. jenkins-core:aabbcc-SNAPSHOT)
+** Ensure the commit ids are included in the packaging and visible during builds
+* Use git modules to point to the master and PR commits
+** And build everything every time
+** This would not work for Essentials as the components need to be individually downloadable.
+
+
+
+== Backwards Compatibility
+
+This proposal aims to add new functionality and reuse existing tooling by generating Maven poms and other formats in use today.
+
+== Security
+
+There are no security risks related to this proposal.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+There are no testing issues related to this proposal.
+
+== References
+
+* link:https://groups.google.com/d/topic/jenkinsci-dev/pR2ZQMj95Zc/discussion[design discussion]
+* link:https://github.com/jenkinsci/acceptance-test-harness[Jenkins acceptance test harness]
+* link:https://github.com/jenkinsci/blueocean-acceptance-test[Blue Ocean acceptance test]
+* link:https://github.com/jenkinsci/plugin-compat-tester[Jenkins plugin compat tester]
+* link:https://github.com/jenkins-infra/evergreen[Essentials evergreen draft]
+* link:https://github.com/jenkinsci/custom-war-packager[Jenkins WAR packager]

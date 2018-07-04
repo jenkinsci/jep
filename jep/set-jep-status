@@ -3,12 +3,14 @@
 # `set-jep-status <jep-number> <status>`
 
 if [ -z "$1" ] ; then
-  echo Missing JEP number.
+  echo "Missing JEP number." >&2
+  echo "Usage: $0 <jep-number> <status>" >&2
   exit 1
 fi
 
 if [ -z "$2" ] ; then
-  echo Missing JEP status.
+  echo "Missing JEP status." >&2
+  echo "Usage: $0 <jep-number> <status>" >&2
   exit 1
 fi
 
