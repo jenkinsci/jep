@@ -1,0 +1,165 @@
+= JEP-0000: Platform Special Interest Group
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 0000
+
+| Title
+| Platform Special Interest Group (Platform SiG)
+
+| Sponsor
+| link:https://github.com/oleg-nenashev[Oleg Nenashev]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Informational
+
+| Created
+| 2018-07-04
+
+| BDFL-Delegate
+| :bulb: Link to github user page :bulb:
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+## Abstract
+
+This informational Jenkins Enhancement Proposal describes the Platform Special Interest Group,
+which has been proposed as a part of the Jenkins & Java 10+ Hackathon.
+The Group offers a place for all kinds of platform support discussions:
+Java, Operating Systems, Architectures, Docker, Packaging, Web Containers, etc.
+
+The JEP is documented according to the link:https://groups.google.com/forum/#!msg/jenkinsci-dev/6-1mZoKp4hM/yEria93ZAAAJ[SiG proposal in jenkinsci-dev]
+by link:http://github.com/rtyler[R. Tyler Croy].
+
+## Specification
+
+### Domain/focus area
+
+* Platform SiG focuses on technologies used in Jenkins: Java, Operating Systems, Architectures, Packaging, Web Containers
+* Platform SiG does not focus on Cloud-Native Platforms, there is a separate Cloud-Native SiG for that (JEP-TODO)
+
+Examples of topics:
+
+* Defining platform support policies (e.g. “defining Windows support policy”)
+* Coordinating effort on new platform support (e.g. Java 10 in JEP-TODO)
+* Working with external communities on better platform support and packaging (e.g. improving support of IBM Java, enabling OpenIndiana packaging, ARM Support in Jenkins, adapting RedHat packaging to best practices, etc.)
+* Reviewing JEPs submitted in the area
+
+### Meetings
+
+There will be regular SiG meetings scheduled.
+Initially the meetings will be conducted once per month,
+then they may be adapted according to the activity.
+
+Meetings will be conducted and recorded via Jenkins Hangouts-on-Air.
+
+### Chairs
+
+* Oleg Nenashev
+* TBD
+
+### Channels
+
+* `jenkins-platform-sig` Google group for internal sync-ups
+* Major updates will be reposted in jenkinsci-dev
+* Chat: `jenkinsci/platform-sig` in Gitter
+
+## Motivation
+
+Jenkins is being used in various configurations and environments.
+Although Jenkins is mainly implemented in Java,
+it is not just “write once, run everywhere”.
+It is a complex solution, which includes special packaging and native code in some cases
+(e.g. Windows Service Wrapper, Windows Process Management Lib, LibZFS, etc.).
+The purpose of this SiG is to focus on such platforms and Packaging related to Jenkins core.
+
+The SiG will be cooperating with other SiGs.
+For example, the SiG will be working with Cloud-Native Jenkins SiG (JEP-TODO)
+if there are topics related to Cloud-Native platforms (Kubernetes, Docker, etc.).
+
+## Reasoning
+
+This section will be updated according to the feedback in developer mailing lists.
+
+## Backwards Compatibility
+N/A - Informational JEP
+
+## Security
+
+* No special Security team requirements for the implementation
+* At least one of Platform SiG
+* SiG may be involved into reviews of security issues related to specific platforms
+
+## Infrastructure Requirements
+
+The group will be using the existing Jenkins infrastructure: Jenkins Developer mailing List, etc. New Google groups and channels will be created on-demand. There are the following new requirements:
+
+* New Google group is established: “jenkins-platform-sig”
+* New Gitter chat is created
+* Nice 2 have: jenkins.io should offer a place for documenting SiGs
+
+There are some requirements, which may be implemented as follow-ups:
+
+* Get access to Jenkins usage stats relevant to platform usages
+
+## Rollout plan
+
+* The new SiG will be announced in the developer mailing list
+* JEP Sponsor will invite known contributors from other communities which may be interested
+* Once a first SiG meeting is scheduled, there will be an intro blogpost
+on jenkins.io
+
+## Testing
+
+N/A - Informational JEP
+
+## Prototype Implementation
+
+N/A - Informational JEP
+
+== References
+
+* https://jenkins.io/blog/2018/06/08/jenkins-java10-hackathon/
+* link:https://groups.google.com/forum/#!msg/jenkinsci-dev/6-1mZoKp4hM/yEria93ZAAAJ[SiG thread]
+* TODO: Cloud-Native SiG JEP
