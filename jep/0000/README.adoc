@@ -82,6 +82,17 @@ The scope is more detailed in subsequent JEP documents.
 
 The improvements are targeted at both existing and new Jenkins users that use, or would prefer to use, Jenkins deployed in one of the cloud providers, or using cloud services for their operation.
 
+=== Meetings
+
+There will be regular SiG meetings scheduled.
+Initially the meetings will be conducted once per month, then they may be adapted according to the activity.
+
+Meetings will be conducted and recorded via Jenkins Hangouts-on-Air.
+
+=== Chairs
+
+* Carlos Sanchez
+
 === Areas for Improvement
 
 There are several clear areas open for improvement, which are summarized here and will be detailed in future documents.
