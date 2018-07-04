@@ -1,0 +1,178 @@
+= JEP-0000: Cloud Native Jenkins
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 0000
+
+| Title
+| Cloud Native Jenkins
+
+| Sponsor
+| link:https://github.com/carlossg[Carlos Sanchez]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2018-04-13
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+We see more and more users running Jenkins in the Cloud and containerized environments, and that number is not going down.
+However, we often see Jenkins running as a "legacy" app that does not make use of the advantages provided by a cloud environment.
+
+This JEP is a "stake on the ground" that captures the mission and the general directions.
+
+== Specification
+
+The Cloud Native group of contributors and collaborators focuses on improving Jenkins to run on Cloud environments as a "Cloud Native" application.
+The scope is more detailed in subsequent JEP documents.
+
+[[target-audience]]
+=== Target Audience
+
+The improvements are targeted at both existing and new Jenkins users that use, or would prefer to use, Jenkins deployed in one of the cloud providers, or using cloud services for their operation.
+
+=== Meetings
+
+There will be regular SiG meetings scheduled.
+Initially the meetings will be conducted once per month, then they may be adapted according to the activity.
+
+Meetings will be conducted and recorded via Jenkins Hangouts-on-Air.
+
+=== Chairs
+
+* Carlos Sanchez
+
+=== Areas for Improvement
+
+There are several clear areas open for improvement, which are summarized here and will be detailed in future documents.
+
+A mayor pain point is the usage of local disk as all-purpose storage, which causes issues running on containerized or distributed environments, requiring highly performant filesystems, and all the configuration pain like initial sizing and resizing with downtime.
+
+We believe that by using cloud provided services the overall usability, performance and scalability can be improved while enabling new demanded functionality.
+
+By converting Jenkins to a "stateless" application long awaited features such as high availability and replication would help to operate Jenkins more efficiently, with zero downtime and reducing risk in upgrade operations by using canary or rolling deployments.
+
+==== Artifact Storage
+
+The current approach of storing artifacts in the filesystem prevents users from taking advantage of cloud provided blob stores (ie. AWS S3), which provide a lot more features for this use case.
+
+Sizing becomes a problem as disk usage needs to be accounted for all the future artifacts stored or forces the need for resizing, which causes downtime.
+Typical use cases such as versioning, expiration or pay per use are impossible to implement today.
+
+While currently it is possible to use specific plugins to store artifacts in blob stores such as the https://plugins.jenkins.io/s3[S3 plugin],
+this forces explicit configuration in jobs and makes configuration harder.
+
+==== Log Storage
+
+Logs disk usage causes the same issues previously mentioned for artifacts.
+Plus a external focused log storage such as https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html[AWS CloudWatch Logs] allows demanded features as centralized log management, log retention policies, advanced querying, ...
+
+There are already options to externally ship the logs to a backend, or plugins that would do that like the  https://github.com/jenkinsci/aws-cloudwatch-logs-publisher-plugin[aws-cloudwatch-logs-publisher-plugin], but there is no integrated way to both send and display logs from external log storage.
+
+==== Configuration Storage
+
+While xml files do not typically take a big amount of disk space, they make it really hard to query information about the system.
+This configuration is better suited in a cloud provided database in combination with https://github.com/jenkinsci/configuration-as-code-plugin[Configuration as Code]
+
+==== Replication
+
+If all the data currently stored in the filesystem is moved to external storage a replicated Jenkins service becomes possible, and the next steps are true High Availability, rolling or canary upgrades and zero downtime.
+
+
+== Motivation
+
+The current default approach of storing everything into the filesystem is the main reason why Jenkins does not fit the "Cloud Native" model, with features like HA, zero downtime, or pay per use.
+
+While there are plenty of plugins that implement parts of this vision, this becomes cumbersome to configure and a usability nightmare for users, as the https://github.com/jenkinsci/jep/tree/master/jep/300[Essentials JEP] has pointed out.
+Going towards a model where cloud services are consumed where it makes sense, the overall complexity on operating Jenkins in a cloud or containerized environment is greatly reduced.
+
+Other related projects include https://github.com/jenkinsci/jep/tree/master/jep/400[Jenkins X] which would greatly benefit from a Cloud Native Jenkins inside Kubernetes.
+
+== Reasoning
+
+This document does not  propose a _specific_ design or implementation, as other JEPs might.
+This is intentional.
+Later JEPs in this series will will address design and implementation.
+
+This document just lays down the ideas behind a "Cloud Native" Jenkins to build consensus around them.
+
+== Backwards Compatibility
+
+Backwards compatibility of the specific implementations will be discussed in future documents.
+It is likely that new versions of core will be needed to enable such features, but nothing proposed as part of this goal would prevent the usage of Jenkins in non cloud environments.
+
+== Security
+
+There are no inherent security impacts to discuss in this document, will be discussed in future documents.
+
+== Infrastructure Requirements
+
+Although there are no infrastructure requirements to discuss in this document,
+additional documents which propose new cloud functionality will
+likely request the ability to test that functionality in the target cloud environments.
+
+It is not expected that the Jenkins project would provide all resources needed for such environmental tests.
+
+
+== Testing
+
+There are no testing issues related to this proposal.
+
+== Prototype Implementation
+
+
+== References
+
+* https://github.com/jenkinsci/jep/tree/master/jep/300[Essentials JEP]
+* https://github.com/jenkinsci/jep/tree/master/jep/400[Jenkins X JEP]
