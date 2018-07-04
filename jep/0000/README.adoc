@@ -34,16 +34,11 @@ endif::[]
 | BDFL-Delegate
 | :bulb: Link to github user page :bulb:
 
-//
-//
-// Uncomment if there is an associated placeholder JIRA issue.
-//| JIRA
-//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
-//
-//
-// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
-//| Discussions-To
-//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+| JIRA
+| link:https://issues.jenkins-ci.org/browse/INFRA-1701[INFRA-1701]
+
+| Discussions-To
+| https://groups.google.com/forum/#!topic/jenkinsci-dev/YNZ3DWGY824
 //
 //
 // Uncomment if this JEP depends on one or more other JEPs.
@@ -160,6 +155,7 @@ N/A - Informational JEP
 
 == References
 
+* link:https://groups.google.com/forum/#!topic/jenkinsci-dev/YNZ3DWGY824[Platform SiG discussion]
 * https://jenkins.io/blog/2018/06/08/jenkins-java10-hackathon/
 * link:https://groups.google.com/forum/#!msg/jenkinsci-dev/6-1mZoKp4hM/yEria93ZAAAJ[SiG thread]
 * TODO: Cloud-Native SiG JEP
