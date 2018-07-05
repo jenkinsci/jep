@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
-cat > README.adoc <<EOF
+REL_SCRIPT_DIR="`dirname \"$0\"`"
+SCRIPT_DIR="`( cd \"$REL_SCRIPT_DIR\" && pwd )`"
+PROJECT_ROOT="`( cd \"$SCRIPT_DIR/..\" && pwd )`"
+JEP_DIR="$PROJECT_ROOT/jep"
+JEP_INDEX="$JEP_DIR/README.adoc"
+
+cat > $JEP_INDEX <<EOF
 = Index of Jenkins Enhancement Proposals
 
 [%header, cols="^1,<.^4,^1,^1"]
@@ -12,28 +18,29 @@ cat > README.adoc <<EOF
 
 EOF
 
-for f in $(ls | sort -n); do
-    if [ -f "$f/README.adoc" ]; then
+for f in $(ls $JEP_DIR | sort -n); do
+    JEP_README=$JEP_DIR/$f/README.adoc
+    if [ -f "$JEP_README" ]; then
         echo "> Processing JEP-$f";
-        description=$(head -n 1 $f/README.adoc | sed 's/^=\ //')
+        description=$(head -n 1 $JEP_README | sed 's/^=\ //')
         # grep -A doesn't work on osx grep, use sed instead
-        #jep_status=$(grep -x -m 1 -A 1 -e "| Status" $f/README.adoc | tail -n 1)
-        jep_status=$(sed -n '/| Status/,/|/p' $f/README.adoc | head -n 2 | tail -n 1 | sed 's/\ :/{nbsp}:/')
+        #jep_status=$(grep -x -m 1 -A 1 -e "| Status" $JEP_README | tail -n 1)
+        jep_status=$(sed -n '/| Status/,/|/p' $JEP_README | head -n 2 | tail -n 1 | sed 's/\ :/{nbsp}:/')
 
         if [ $? -ne 0 ]; then
             jep_status="Unknown"
         fi;
 
-        sponsor=$(sed -n '/| Sponsor/,/|/p' $f/README.adoc | head -n 2 | tail -n 1 | sed 's/\([a-zA-Z.]\) /\1{nbsp}/g')
+        sponsor=$(sed -n '/| Sponsor/,/|/p' $JEP_README | head -n 2 | tail -n 1 | sed 's/\([a-zA-Z.]\) /\1{nbsp}/g')
         #sed 's/\(\[[^\]]+\) \([^\]]+\]\)/\1{nbsp\}\2/')
 
 
-        bdfl=$(sed -n '/| BDFL-Delegate/,/|/p' $f/README.adoc | head -n 2 | tail -n 1 | sed 's/\([a-zA-Z.]\) /\1{nbsp}/g' | grep -ve "^//" )
+        bdfl=$(sed -n '/| BDFL-Delegate/,/|/p' $JEP_README | head -n 2 | tail -n 1 | sed 's/\([a-zA-Z.]\) /\1{nbsp}/g' | grep -ve "^//" )
         if [ $? -ne 0 ]; then
             bdfl="| _not{nbsp}delegated_"
         fi;
 
-        cat >> README.adoc <<EOF
+        cat >> $JEP_INDEX <<EOF
 $jep_status
 | link:${f}/[$description]
 $sponsor
@@ -44,4 +51,4 @@ EOF
     fi;
 done;
 
-echo "|===" >> README.adoc
+echo "|===" >> $JEP_INDEX
