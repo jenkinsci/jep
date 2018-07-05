@@ -47,7 +47,7 @@
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 
-| Draft{nbsp}:speech_balloon:
+| Accepted{nbsp}:ok_hand:
 | link:201/[JEP-201: Jenkins Configuration as Code]
 | link:https://github.com/ewelinawilkosz2[Ewelina{nbsp}Wilkosz] from{nbsp}link:https://github.com/praqma[Praqma]
 | _not{nbsp}delegated_
