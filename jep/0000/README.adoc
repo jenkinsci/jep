@@ -212,13 +212,38 @@ This policy may require patches in parent POMs:
 
 ## Motivation
 
+In September 2018 we expect Java 11 to be released.
+It will be an LTS version with a long support timeline.
+Over last year Jenkins project has been receiving many issue reports about Java 9 and then Java 10 compatibility.
+
+* During Jenkins World 2017 hackfest Mark Waite and Baptiste Mathus invested
+some time to explore Jenkins compatibility with Java 9
+* In link:https://jenkins.io/changelog/#v2.111[Jenkins 2.111] we had to
+prevent Jenkins from starting up on unsupported Java versions toprevent false expectations from users.
+* In link:https://jenkins.io/changelog/#v2.127[Jenkins 2.127] we partially re-enabled
+the behavior by offering a new `--enable-future-java` which allowed running with Java 9 and above
+* Before the link:https://jenkins.io/blog/2018/06/08/jenkins-java10-hackathon/[Jenkins & Java 10+ Hackathon]
+we offered preview versions of Jenkins on Java 10 and 11
+(link:https://jenkins.io/blog/2018/06/17/running-jenkins-with-java10-11/[run guidelines])
+* During the hackathon we were able to get major Jenkins features running
+with Java 10 and 11.
+See the summary link:https://docs.google.com/presentation/d/1hWWa6mYv86Kn8Ulu7uGlRJ9h2XTHlvHolO9CeRnnvcI/edit#slide=id.g1a6800f862_0_0[here]
+
+//TODO: replace summary by the blogpost
+
+Taking the success of the Jenkins and Java 10+ hackathon,
+there is an interest to continue working on these stories towards making
+Java 10+ support available in Jenkins releases (weekly and then LTS).
+
+## Reasoning
+
+“Goals and non-goals” section in the specification lists design decisions taken
+to ensure it can be delivered by a small team.
 Non-goals in the specification are defined to limit the scope of work.
 The main objective is to get Jenkins running with Java 10+,
 there will be follow-up tasks to cleanup Illegal Reflective Access warnings and to adopt new features.
 
-## Reasoning
-
-Reasoning for the Specification decisions is provided in the “Approach” section above.
+More reasoning will be added to this section according to the feedback.
 
 ## Backwards Compatibility
 
@@ -345,7 +370,8 @@ These prototypes include Jenkins core, Docker updates and downstream demo patche
 
 ## References
 
-* http://www.oracle.com/technetwork/java/javase/eol-135779.html
-* https://jenkins.io/blog/2018/06/08/jenkins-java10-hackathon/
-* https://jenkins.io/doc/administration/requirements/java/#running-jenkins
-* https://docs.google.com/document/d/1oluVrNVpQhXCIwW9CYVm09Y1vPc3H77d3q92LrzcpDw/edit# - Testing document
+* link:http://www.oracle.com/technetwork/java/javase/eol-135779.html[Oracle Java SE Support Roadmap]
+* link:https://jenkins.io/doc/administration/requirements/java/[Java requirements] in Jenkins
+* link:https://jenkins.io/blog/2018/06/08/jenkins-java10-hackathon/[Jenkins & Java 10+ Hackathon]
+* link:https://jenkins.io/doc/administration/requirements/java/#running-jenkins[Running Jenkins with Java 10 and 11]
+* link:https://docs.google.com/document/d/1oluVrNVpQhXCIwW9CYVm09Y1vPc3H77d3q92LrzcpDw/edit#[Java 10 Testing status document]
