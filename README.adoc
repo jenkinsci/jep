@@ -8,9 +8,18 @@ endif::[]
 
 = Jenkins Enhancement Proposals
 
-See link:jep/1/README.adoc[JEP-1] for a description of JEPs.
+JEP stands for Jenkins Enhancement Proposal.
+A JEP is a design document that describes a new feature or aspect of the core Jenkins code, a plugin, or the Jenkins project, its processes, or its environment.
+A JEP provides a concise technical specification of the feature,
+describes the motivation for the change,
+and discusses the rationale behind the design.
 
-link:jep/[Index of all JEPs] accepted at least as drafts.
+JEPs are the primary mechanism for proposing major new
+features, for collecting community input on an issue, and for
+documenting the design decisions that have gone into Jenkins.
+
+* See link:jep/1/README.adoc[JEP-1] for a description of JEPs and the JEP process.
+* link:https://github.com/jenkinsci/jep/blob/master/jep/README.adoc[Index of all JEPs] approved at least as drafts.
 
 == License
 
