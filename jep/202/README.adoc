@@ -19,7 +19,7 @@ endif::[]
 | External Artifact Storage
 
 | Sponsor
-| https://github.com/carlossg[@carlossg]
+| link:https://github.com/carlossg[Carlos Sanchez]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
@@ -29,7 +29,7 @@ endif::[]
 | Standards
 
 | Created
-| 2018 Apr 13
+| 2018-04-13
 //
 //
 // Uncomment if there is an associated placeholder JIRA issue.
@@ -39,7 +39,7 @@ endif::[]
 //
 // Uncomment if there will be a BDFL delegate for this JEP.
 | BDFL-Delegate
-| https://github.com/jglick[Jesse Glick]
+| link:https://github.com/jglick[Jesse Glick]
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
