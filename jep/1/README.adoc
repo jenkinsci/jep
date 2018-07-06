@@ -389,15 +389,18 @@ To submit a JEP for <<approval, approval as Draft>>, the JEP sponsor should:
   per the instructions in this JEP (which are also outlined in the template).
 . Commit and push the changes to their fork
   and submit a pull request targeting the `jenkinsci/master` branch.
-. Add the following line to the description of the PR to indicate that the JEP 
-  is being submitted for approval as draft: 
+. Add the following line to the description of the PR to indicate that the JEP
+  is being submitted for approval as draft:
   "Submitted for approval as draft JEP by `@jenkinsci/jep-editors`."
   If this is a PR that was created earlier to gather feedback,
   the line requesting approval should be added as a comment when the JEP is ready.
 
 The sponsor may alter the steps above or do something else entirely
 as long the result is a PR with a submission in the appropriate format
-with a c.
+with a comment asking for approval as draft.
+
+[[approval]]
+==== Approval as Draft JEP
 
 A JEP editor will check the submission for conformance with
 JEP structure and formatting guidelines.
@@ -406,7 +409,8 @@ the requirements for approval as a Draft JEP.
 If a JEP requires major changes, editors will add specific feedback
 and send the submission back to the sponsor for revision.
 
-IMPORTANT: "Approval as Draft" is an initial conformance and viability check.
+IMPORTANT: "Approval as Draft" is *not* the same as <<accepted, accepting the JEP>>.
+"Approval as Draft" is an initial conformance and viability check.
 When a sponsor submits a JEP for approval, Editors and contributors
 should restrict their feedback to issues which would cause the JEP
 to be denied <<draft, Draft>> status.
@@ -425,9 +429,6 @@ Reasons for denying JEP "Draft" status include:
 The <<Reviewer>> for this JEP may be consulted during the approval phase,
 and is the final arbiter of a submission's approvability as a Draft JEP.
 
-[[approval]]
-==== Approval as Draft JEP
-
 Once JEP meets requirements for structure and formatting,
 the editors will approve the submission as a draft JEP
 by following the steps outlined in the
@@ -437,8 +438,6 @@ the submission PR will have been merged to a matching folder
 (for example,
 `link:https://github.com/jenkinsci/jep/tree/master/jep/1[jep/1]`)
 in the `master` branch.
-
-IMPORTANT: "Approval as Draft" is *not* the same as <<accepted, accepting the JEP>>.
 
 Editors are not the only ones who can approve a submission.
 Non-editor contributors who have "git push" privileges for the
@@ -917,10 +916,11 @@ Once the JEP is ready for the repository, a JEP editor will:
 
 . Assign a JEP number (almost always just the next available number, but
   may also be a special/joke number, like 666 or 3141).
-. Squash the commit(s) into the `master` branch.
 . Update the folder number to match the JEP number
 . Update the JEP number in the document.
-
+. Update the JEP status using the `./set-jep-status <JEP number> draft` command (script is located in the root)
+. Commit all changes and push them to the branch in the PR
+. "Squash and merge" the PR into the `master` branch.
 
 == Motivation
 

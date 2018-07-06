@@ -21,6 +21,15 @@ Sections may include aditional help and advice in comments.
 See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for full and accurate description of the JEP process and what is required in each section.
 ====
 
+[TIP]
+====
+*BDLF-Delegate* is uncommented by default.
+As part of the in initial conversation or the JEP submission the sponsor should
+look for a BDFL Delegate.
+While not required, it is better for the community if Delegates perform most reviews.
+If no suitable BDFL-Delegate can be found, that row may be commented out.
+====
+
 .Metadata
 [cols="2"]
 |===
@@ -41,17 +50,16 @@ See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for fu
 | :bulb: Standards, Informational, or Process :bulb:
 
 | Created
-| :bulb: Date :bulb:
+| :bulb: Date (YYYY-MM-DD) :bulb:
+
+| BDFL-Delegate
+| :bulb: Link to github user page :bulb:
+
 //
 //
 // Uncomment if there is an associated placeholder JIRA issue.
 //| JIRA
 //| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
-//
-//
-// Uncomment if there will be a BDFL delegate for this JEP.
-//| BDFL-Delegate
-//| :bulb: Link to github user page :bulb:
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
@@ -75,12 +83,15 @@ See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for fu
 
 |===
 
-
 == Abstract
 
 [TIP]
 ====
 Give a short (200 word) description of the technical issue addressed.
+
+* Use present tense - describe what the proposal "does" (as if it were already done) not what it will do.
+* Do not go into technical details, those go in the Specification section.
+* Do not talk about history or why this needs to be done, that is part of Motivation section.
 ====
 
 == Specification
@@ -90,6 +101,10 @@ Give a short (200 word) description of the technical issue addressed.
 Provide a detailed specification what is being proposed.
 Be as technical and detailed as needed to allow new or existing Jenkins developers
 to reasonably understand the scope/impact of an implementation.
+
+* Use present tense - describe what the proposal "does" (as if it were already done) not what it will do.
+* Do not discuss alternative designs that were rejected, those belong in the Reasoning section.
+* Avoid in-depth discussion or justification of design choices, that belongs in the Reasoning section.
 ====
 
 == Motivation
@@ -97,6 +112,9 @@ to reasonably understand the scope/impact of an implementation.
 [TIP]
 ====
 Explain why the existing code base or process is inadequate to address the problem that the JEP solves.
+This section may also contain any historal context such as how things were done before this proposal.
+
+* Do not discuss design choices or alternative designs that were rejected, those belong in the Reasoning section.
 ====
 
 == Reasoning
@@ -106,6 +124,9 @@ Explain why the existing code base or process is inadequate to address the probl
 Explain why particular design decisions were made.
 Describe alternate designs that were considered and related work, e.g. how the feature is supported in other systems.
 Provide evidence of consensus within the community and discuss important objections or concerns raised during discussion.
+
+* Use sub-headings to organize this section for ease of readability.
+* Do not talk about history or why this needs to be done, that is part of Motivation section.
 ====
 
 == Backwards Compatibility
@@ -114,6 +135,7 @@ Provide evidence of consensus within the community and discuss important objecti
 ====
 Describe any incompatibilities and their severity.
 Describe how the JEP proposes to deal with these incompatibilities.
+
 If there are no backwards compatibility concerns, this section may simply say:
 There are no backwards compatibility concerns related to this proposal.
 ====
@@ -126,6 +148,7 @@ Describe the security impact of this proposal.
 Outline what was done to identify and evaluate security issues,
 discuss of potential security issues and how they are mitigated or prevented,
 and how the JEP interacts with existing permissions, authentication, authorization, etc.
+
 If this proposal will have no impact on security, this section may simply say:
 There are no security risks related to this proposal.
 ====
@@ -134,13 +157,14 @@ There are no security risks related to this proposal.
 
 [TIP]
 ====
-Describing any impact on Jenkins project infrastructure.
+Describe any impact on Jenkins project infrastructure.
 
 Include any additions or changes, interactions with exiting components,
 potential instabilities, service-level agreements,
 and responsibilities for continuing maintenance.
 Explain the scope of infrastructure changes with sufficient detail
 to allow initial and on-going cost (in both time and money) to be estimated.
+
 If this proposal will have no impact on infrastructure, this section may simply say:
 There are no new infrastructure requirements related to this proposal.
 ====
@@ -171,8 +195,11 @@ There are no testing issues related to this proposal.
 [TIP]
 ====
 Link to any open source reference implementation of code changes for this proposal.
-The reference implementation need not be completed before the JEP is <<accepted>>,
-but must be completed before any JEP is given "Final" status.
+The implementation need not be completed before the JEP is
+link:https://github.com/jenkinsci/jep/tree/master/jep/1#accepted[accepted],
+but must be completed before any JEP is given
+"link:https://github.com/jenkinsci/jep/tree/master/jep/1#final[Final]" status.
+
 JEPs which will not include code changes may omit this section.
 ====
 
@@ -181,12 +208,7 @@ JEPs which will not include code changes may omit this section.
 [TIP]
 ====
 Provide links to any related documents.
-====
-
-[IMPORTANT]
-====
-When moving this JEP from a Draft to "Accepted" or "Final" state,
-include links to the pull requests and mailing list discussions which were involved in the process.
+This will include links to discussions on the mailing list, pull requests, and meeting notes.
 ====
 
 

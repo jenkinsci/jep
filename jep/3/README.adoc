@@ -19,7 +19,7 @@ endif::[]
 | Adding the "Released As" field and "Ready for Release" status to Jenkins JIRA
 
 | Sponsor
-| link:https://github.com/oleg-nenashev[@oleg-nenashev]
+| link:https://github.com/oleg-nenashev[Oleg Nenashev]
 
 | Status
 | Accepted :ok_hand:
@@ -28,7 +28,7 @@ endif::[]
 | :bulb: Standards, Informational, or Process :bulb:
 
 | Created
-| Jan 29, 2018
+| 2018-01-29
 //
 //
 // Uncomment if there is an associated placeholder JIRA issue.

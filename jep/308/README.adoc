@@ -1,0 +1,281 @@
+= JEP-308: Essentials Error Telemetry API
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 308
+
+| Title
+| Essentials Error Telemetry API
+
+| Sponsor
+| link:https://github.com/batmat[Baptiste Mathus]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2018-06-07
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+| JIRA
+| link:https://issues.jenkins-ci.org/browse/JENKINS-51140[JENKINS-51140]
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+| BDFL-Delegate
+| link:https://github.com/rtyler[R. Tyler Croy]
+
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+| Requires
+| link:https://github.com/jenkinsci/jep/tree/master/jep/300[JEP-300], link:https://github.com/jenkinsci/jep/tree/master/jep/303[JEP-303].
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+One critical aspect of Jenkins Essentials is that the connected instances
+must be upgraded automatically in a safe way.
+To that end, we detect the errors that occur in these instance,
+and push those to a central place to participate to the assessment of
+the health level of a given instance, and by transitivity of a given
+link:https://github.com/jenkinsci/jep/tree/master/jep/307#update-levels[_Essentials_ update level].
+
+The current document describes what the server side API for this error logging looks like
+footnote:[Basically sending the Jenkins logs defined in the link:https://github.com/jenkinsci/jep/tree/master/jep/304[JEP-304]].
+
+== Specification
+
+=== Authentication and linking log entries to an instance
+
+It is obviously required that the instance is registered and authenticated
+to be allowed to push data to this endpoint, as described in
+link:https://github.com/jenkinsci/jep/tree/master/jep/303[JEP-303].
+
+HTTP status code will hence be the ones defines in that specification.
+
+=== Endpoint and expected format
+
+We are taking a simplistic approach defining a single endpoint for error logging.
+
+The `/telemetry/error` endpoint will simply receive a JSON message sent
+via a `POST` request, with a single log entry, containing in turn the `JSON`
+structure emitted locally as defined in
+link:https://github.com/jenkinsci/jep/tree/master/jep/304#logging-format[JEP-304].
+
+No other verb than `POST` will be accepted.
+
+.Error telemetry payload
+[source,json]
+{
+  "log": {
+    "version": 1,
+    "timestamp": 1522840762769,
+    "name": "io.jenkins.plugins.SomeTypicalClass",
+    "level": "WARNING",
+    "message": "the message\nand another line",
+    "exception": {
+      "raw": "serialized exception\n many \n many \n lines"
+    }
+  }
+}
+
+.Registration Headers
+[source]
+----
+Content-Type: application/json
+----
+
+When things are sent as expected, then the endpoint will answer
+with an _HTTP-201_ and the following payload:
+
+.Error Telemetry successful creation payload
+[source,json]
+{
+  "status": "OK"
+}
+
+NOTE: the log is *not* sent back as this often can be seen to avoid sending
+big logs back and forth when the client is most likely not interested by what it just sent.
+
+////
+Should we compute a hash or something to be able to uniquely reference/find a log in the system between client and server if needed?
+////
+
+=== Maximum message size
+
+The maximum size of a the global JSON message is 1 million characters (~1 MB).
+This should be enough to allow receiving enough information when a stack trace is included,
+and defining a maximum size seems critical to operate the service.
+Hence the sender is expected to truncate the message if it is larger than this.
+
+If the received message exceeds that maximum, the HTTP status code will be an _HTTP-413_.
+
+.Error Telemetry failed creation payload
+[source,json]
+{
+  "status": "ERROR"
+}
+
+=== Malformed data
+
+The client will receive a more generic _HTTP-400_.
+An optional `message` field can be provided by the server in the payload
+to help understand what is wrong.
+
+.Error Telemetry failed creation payload
+[source,json]
+{
+  "status": "ERROR",
+  "message": "(optional) message to explain what made the server reject this message."
+}
+
+==== Meta Error Logging
+
+When the server rejects data, be it because of exceeded message size,
+or malformed message, it should reject it in some *non silent* way.
+The message can be dropped, but the fact there was a rejection
+shall be logged on the server side.
+
+This is important to detect attacks, but also more simply bugs that might have
+made the reporting system broken and we need to fix expeditely.
+
+=== Rate limiting
+
+We may define in the future the use of rate limiting.
+In that case, the server will send an _HTTP-429_.
+
+If so, the client is expected to retry _later_
+(the exact meaning of _later_ will be clarified if we decide to go that path).
+
+== Motivation
+
+There is no existing code base or process for this feature.
+
+== Reasoning
+
+=== A dedicated `/telemetry/error` endpoint only for *error* logging
+
+Despite we will define in the future endpoints for reporting other telemetry types,
+like metrics telemetry, for instance like
+link:https://issues.jenkins-ci.org/browse/JENKINS-49852[Pipeline related metrics],
+we are defining a dedicated entrypoint for error logging,
+and will define others for other types.
+
+We are **not** using the same endpoint, for instance using a `type` field as those
+different Telemetry _communications_ are very likely to be very different,
+and it will make this easier to define router-level rules if needed.
+
+=== Reliability concerns
+
+Though the service is expected to be always available,
+the client should be designed to handle a temporary unavailability.
+
+=== Send logs one by one
+
+For the current design, the client will use a single `POST` HTTP request for each log entry to send.
+We expect that the number of error or warning logs emitted from the Jenkins instance to be rare (i.e. less than a few dozens per day).
+
+So, at that stage of the project, we keep things simple.
+If it proves wrong, we will be able to evolve the API to accept for instance either `log` as currently, or `logs` to directly accept an array of multiple logs in one go.
+
+== Backwards Compatibility
+
+As the `log` field is somehow an opaque blob content,
+the compatibility concerns are more the same as defined in the
+link:https://github.com/jenkinsci/jep/tree/master/jep/304#logging-format[JEP 304 logging format section].
+But as also discussed there, using the `version` field of the message should
+be enough to accomadate any schema evolution.
+
+== Security
+
+There are no security risks related to this proposal.
+
+////
+Could stack traces leak private data?
+////
+
+== Infrastructure Requirements
+
+That service will need to be integrated and operated in the current Jenkins Infrastructure.
+
+This will most likely be integrated with the existing setup for error logging, but that aspect will need more prototyping to make this clearer.
+
+== Testing
+
+=== Rejecting bad data
+
+We must check that the backend does reject exceedingly big messages, or malformed logs.
+
+=== Load Testing
+
+The system must be tested against a reasonable amount of data,
+by evaluating the expected volume in 3 to 6 months that the service is likely to receive.
+This should especially be done by sending the right amount in number, but also in sizes
+(mimicking clients that would be sending a lot of stack traces for example).
+
+////
+Probably the _load projection_ should be made here,
+and tentative numbers written here as a starting point.
+////
+
+== Store UUID with logs
+
+It is critical to the quality of the telemetry system to be able to find
+and remove some logs originating from a rogue instance.
+Be it because it is controlled by an attacker, or for any other valid reasons.
+
+So, though not a pure API contract concern, it is important that the API
+stores a way to link back a log entry to its origin.
+
+It is recommended to store the UUID, so that the log can be linked back to
+not only a given instance, but a period of time where that instance was connected.
+
+== Prototype Implementation
+
+* https://github.com/jenkins-infra/evergreen
+
+== References
+
+*  link:https://github.com/jenkins-infra/evergreen/tree/master/docs/meetings/2018-05-07-existing-telemetry-setup-on-jenkins-io[Meeting notes about existing setup for Error Logging in the Kubernetes cluster in the Jenkins Infrastructure].
+* link:https://groups.google.com/d/msg/jenkinsci-dev/ql9iX06IdGw/AJxFcGK5BgAJ[Thread on the Jenkins Developers Mailing List].
+
+
+[IMPORTANT]
+====
+When moving this JEP from a Draft to "Accepted" or "Final" state,
+include links to the pull requests and mailing list discussions which were involved in the process.
+====

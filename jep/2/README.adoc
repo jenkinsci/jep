@@ -18,7 +18,7 @@ endif::[]
 | Title
 | Criteria for selecting "Suggested Plugins"
 
-| Author
+| Sponsor
 | link:https://github.com/daniel-beck[Daniel Beck], link:https://github.com/rtyler[R Tyler Croy]
 
 | Status

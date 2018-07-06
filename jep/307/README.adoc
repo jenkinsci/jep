@@ -38,9 +38,9 @@ endif::[]
 //
 //
 // Uncomment if there will be a BDFL delegate for this JEP.
-//| BDFL-Delegate
-//| :bulb: Link to github user page :bulb:
-//
+| BDFL-Delegate
+| link:https://github.com/rtyler[R. Tyler Croy]
+
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
 //| Discussions-To
@@ -180,7 +180,7 @@ necessary to update that specific client.
     "schema" : 1,
     "meta" : {
         "level" : 4,
-        "channel" : 'general"
+        "channel" : "general"
     },
     "core" : {
         "uri" : "https://update-cdn.example.com/some/path/to/a/jenkins.war",
@@ -270,8 +270,8 @@ that it should include the actual versions of software present on a Jenkins
 Essentials instance. This may include software which is outside of the update
 lifecycle.
 
-The purpose of the purpose of the version manifest is primarily for the client
-to report to the serve a fairly accurate state of the installed software in
+The purpose of the version manifest is primarily for the client
+to report to the server a fairly accurate state of the installed software in
 the instance.
 
 

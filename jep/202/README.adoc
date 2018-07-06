@@ -19,7 +19,7 @@ endif::[]
 | External Artifact Storage
 
 | Sponsor
-| https://github.com/carlossg[@carlossg]
+| link:https://github.com/carlossg[Carlos Sanchez]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
@@ -29,7 +29,7 @@ endif::[]
 | Standards
 
 | Created
-| 2018 Apr 13
+| 2018-04-13
 //
 //
 // Uncomment if there is an associated placeholder JIRA issue.
@@ -39,7 +39,7 @@ endif::[]
 //
 // Uncomment if there will be a BDFL delegate for this JEP.
 | BDFL-Delegate
-| https://github.com/jglick[Jesse Glick]
+| link:https://github.com/jglick[Jesse Glick]
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
@@ -100,12 +100,23 @@ The flow looks like
 ** browser is sent a HTTP redirect to that url so download is between external store and browser
 
 
-This change adds more methods to the VirtualFile API to support this flow.
+This change adds more methods to the http://javadoc.jenkins.io/jenkins/util/VirtualFile.html[`VirtualFile`] API to support this flow.
+
+* `toExternalURL()` Optionally obtains a URL which may be used to retrieve file contents from any process on any node.
+* `mode()` Gets the file Unix mode, if meaningful
+* `readLink()` If this file is a symlink, returns the link target.
+* `list(String, String, boolean)` Lists recursive files of this directory with pattern matching
+
+
+In https://github.com/jenkinsci/workflow-api-plugin[workflow-api-plugin] a new  https://github.com/jglick/workflow-api-plugin/blob/44bc9985b0aa1fb9407b5c78be6b429ad29af2d8/src/main/java/org/jenkinsci/plugins/workflow/flow/StashManager.java#L292-L315[`StashAwareArtifactManager`] is also added, a mixin interface for an `ArtifactManager` which supports specialized stash behavior as well.
+
 
 The `VirtualFile.run(Callable)` method, that already existed to optimize Workspace link browsing on agents, is now being used in artifact-related code in Jenkins core.
 It was important to implement this in the S3 plugin in order to ensure that Classic or Blue Ocean UI flows relating to artifacts, including simply opening the index page of a build, did not make a large number of network calls.
 The cache system allows a single S3 metadata call (possibly one HTTP request, depending on page size) to retrieve sufficient information for a complete page render of some or all of the artifact tree, without the rendering code (e.g., in Jenkins core) knowing anything about the storage system.
 
+The `apache-httpcomponents-client-4-api` plugin is extended with a `RobustHTTPClient`
+which standardizes handling of blob upload and download operations.
 
 == Motivation
 
@@ -117,7 +128,7 @@ There are serious drawbacks to use filesystem when running in cloud or container
 * Causing all sorts of issues due to usage of remoting for file transfer.
 Going through the master as files are copied from/to the agent cause load, cpu, network issues that are hard to diagnose and recover from.
 * Causing a big performance hit due to the traffic and disk access, preventing the usage of distributed filesystems such as NFS, GlusterFS,...
-* Providing limited functionality compared to a first class blob store (AWS S3, Azure Blob Storage, Google Blobstore) or artifact repository (Nexus, Artifactory).
+* Providing limited functionality compared to a first class blob store (AWS S3, Azure Blob Storage, Google Blobstore).
 Organizations may have some requirements that are not available today: auditability, sophisticated retention policies, versioning,...
 
 From the usability point of view, currently a Jenkins installation sizing has to have into account the expected amount of disk needed or a restart, disk reprovisioning, disk swap,... instead of a infinite scale, pay per use that a blob store can offer. Cloud installations can automatically configure the blob store to use offering a much better first time user experience.
@@ -150,6 +161,38 @@ AWS is the focus as it is the most widely used cloud provider, S3 being the prev
 Equivalent features to S3 exist in other cloud providers and artifact repositories.
 
 The S3 implementation also uses http://jclouds.apache.org[Apache JClouds] that abstracts most of the implementation from the underlying blob store.
+
+=== Container (Bucket) and Path References
+
+The implementation for S3 uses a master-wide configuration option to set the name of the container (S3 bucket) and path inside.
+(AWS-specific installers for Jenkins, such as for Essentials, could preconfigure these fields.)
+
+This means that different runs cannot store the artifacts in different buckets or paths, as we don't expect that to be a common use case.
+It would be more common to move all the artifacts from one location to another and that could be easily achieved by moving the blobs in S3 and changing the master wide configuration parameters.
+
+=== Interruptions
+
+The `VirtualFile` API does not support `InterruptedException`, but there is no evidence that it matters.
+Test coverage confirms reasonable handling of error conditions including build timeouts and user aborts.
+
+=== Security
+
+Two possible implementations were considered:
+
+==== Agents only need upload/download permissions
+
+If agents only do upload/download operations we can use pre-signed urls so they will not be able to access other jobs artifacts.
+Other operations (list, create, delete,...) would run on the master, which would be a performance hit for builds with many artifacts
+
+==== Passing limited credentials to each agent
+
+Masters need to run with elevated permissions to be able to create new roles and permissions on the fly for each job (`AssumeRole` in AWS).
+Those limited credentials would be passed on to the agent, who would use them to talk to the external store.
+All operations would run on agents, with less load on the master, although with extra role creation operations.
+But the configuration and setup would be considerably more complex, as well as the agent side download code, requiring larger refactorings and a more complicated core API.
+This temporary role creation does not exist in all clouds nor other artifact repositories. For instance, https://docs.microsoft.com/en-us/azure/active-directory/active-directory-configurable-token-lifetimes[Azure Active Directory token lifetime] is on public preview, and in Google Cloud ACLs are not temporary.
+
+We opted for the first, simpler option.
 
 == Backwards Compatibility
 
@@ -225,28 +268,13 @@ turns up the following possible issues:
 |link:https://plugins.jenkins.io/maven-plugin[Maven Integration]|124783
 |============================
 
+
 == Security
 
 Security considerations make agents need to be restricted to only access the artifacts needed.
 Having access to the blob store would mean access to other jobs artifacts.
-Two possible implementations were considered:
 
-=== Agents only need upload/download permissions
-
-If agents only do upload/download operations we can use pre-signed urls so they will not be able to access other jobs artifacts.
-Other operations (list, create, delete,...) would run on the master, which would be a performance hit for builds with many artifacts
-
-=== Passing limited credentials to each agent
-
-Masters need to run with elevated permissions to be able to create new roles and permissions on the fly for each job (`AssumeRole` in AWS).
-Those limited credentials would be passed on to the agent, who would use them to talk to the external store.
-All operations would run on agents, with less load on the master, although with extra role creation operations.
-But the configuration and setup would be considerably more complex, as well as the agent side download code, requiring larger refactorings and a more complicated core API.
-This temporary role creation does not exist in all clouds nor other artifact repositories. For instance, https://docs.microsoft.com/en-us/azure/active-directory/active-directory-configurable-token-lifetimes[Azure Active Directory token lifetime] is on public preview, and in Google Cloud ACLs are not temporary.
-
-We opted for the first, simpler option.
-
-Extra care needs to be taken so agents do not have any access to the blob store.
+Agents only do URL based upload/download operations and get the correct url to do so from the master.
 
 In the common case where the vm instances are assigned roles (`IAM role` in AWS) the instance where the master runs should have access to the blob store but the agents should run in a different instance where its role does not allow it.
 
@@ -264,7 +292,9 @@ Automated tests for the common archive/unarchive and stash/unstash flow have bee
 
 The AWS S3 implementation tests exercise this flow plus add some extra S3 specific tests.
 They require an AWS account and S3 permissions and can be run from a EC2 instance or a local machine.
-Some mock testing can be added in the future.
+
+There is an abstraction layer allowing use of any blob store supported by Apache jclouds.
+This layer has its own mock tests confirming general behaviors.
 
 == Prototype Implementation
 

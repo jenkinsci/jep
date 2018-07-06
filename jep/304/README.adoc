@@ -20,7 +20,7 @@ endif::[]
 | Essentials Error Telemetry Logging
 
 | Sponsor
-| https://github.com/batmat
+| link:https://github.com/batmat[Baptiste Mathus]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
@@ -40,7 +40,7 @@ endif::[]
 //
 // Uncomment if there will be a BDFL delegate for this JEP.
 | BDLF-Delegate
-| https://github.com/rtyler[R. Tyler Croy]
+| link:https://github.com/rtyler[R. Tyler Croy]
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
@@ -122,7 +122,10 @@ The formatting is done by a `JSONFormatter` extending link:https://docs.oracle.c
   "timestamp": 1522840762769,
   "name": "io.jenkins.plugins.SomeTypicalClass",
   "level": "WARNING",
-  "message": "the message\nand another line"
+  "message": "the message\nand another line",
+  "exception": {
+    "raw": "serialized exception\n many \n many \n lines"
+  }
 }
 
 version:: Initially `1`.
@@ -134,13 +137,17 @@ level:: The level of criticality of the log.
 In practice, should always be `SEVERE` or `WARNING`.
 But it is expected that this could be any value of the `java.util.logging.Level` class, if this proves necessary in the future.
 message:: The message for this log entry.
-exception:: See below <<exception-handling>>.
+exception:: (*optional*) See below <<exception-handling>>.
 
 [[exception-handling]]
 ==== Exceptions handling
 
 Exceptions are serialized in a `exception` field.
 This field can be absent.
+
+To make potential future evolution easier, we are making the exception field an object.
+For now, we only put a single `raw` field in this object.
+
 
 ==== Newlines and special characters
 

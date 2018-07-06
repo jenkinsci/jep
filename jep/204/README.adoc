@@ -1,0 +1,198 @@
+= JEP-204: BlueOcean Extensibility API
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 204
+
+| Title
+| BlueOcean Extensibility API
+
+| Sponsor
+| link:http://github.com/imeredith[Ivan Meredith]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2018-05-15
+
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+| Requires
+| JEP-203
+
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+The BlueOcean extensiblity api is the way in which Jenkins plugin developers extend the BlueOcean UI.
+This JEP describes how extensions are defined and implemented.
+
+== Specification
+
+=== Extension Store
+This is the only global object exposed by the extension system; it stores Extension Points and Extensions implementing it.
+This is where an extension registry is stored and during javascript execution offers lookup capability to apply the Extension Points or call the rendering function.
+
+==== Registering Extensions
+
+Extensions in Jenkins are normally discovered with the `@Extension` annotation.
+Javascript has no runtime methods to discover extensions automatically, so an explicit call to `register()` is needed.
+
+[source,javascript]
+----
+/**
+ * @param {string} extensionPointId - Unique string that idenifies the extension point.
+ * @param {function} callbackFn - Extension function<1>
+ */
+window.extensionStore.register(extensionPointId, callbackFn)
+----
+<1> <<extensionfunction>>
+
+===== Registration Event Listener
+
+[source,javascript]
+----
+/**
+ * @param {string} event - The event to register a callback against.
+ * @param {function} callbackFn - Callback function to be executed on event
+ */
+window.extensionStore.registerListener(event, callbackFn)
+----
+
+==== List of Extension Points
+
+[source,javascript]
+----
+/**
+ * @returns {string[]} List of extension point ids that are registered.
+ */
+window.extensionStore.getExtensionPointIds()
+----
+
+==== Listing of Extensions for a Extension Point
+
+[source,javascript]
+----
+/**
+ * @param {string} [extensionPointId] - Extension point to get registered extensions for. If not provided return all extensions.
+ */
+window.extensionStore.getExtensions(extensionPointId)
+----
+
+[#extensionfunction]
+=== Extension function
+
+Extensions are implemented as functions, specific extension points will define what contract the extensions must implement. The basic format is:
+
+[source,javascript]
+----
+function(context) {
+    // Extension code
+}
+----
+
+The extension point defines what context it will give extensions.
+This could be contextual data or it could be callback functions to provide data to the extension point
+
+==== Extensions that render
+
+Extensions that want to render UI are a specialized version of the general extension function.
+Extension points will pass in a `container` div for the extension to render into.
+
+[source,javascript]
+----
+function(context) {
+    context.container.innerHTML = "<p>No test results</p>"
+}
+----
+
+== Motivation
+
+BlueOcean has an extensibility system built around https://github.com/jenkinsci/js-builder[js-builder] and https://github.com/jenkinsci/js-modules[js-modules].
+It currently forces plugins to implement extensions as React components.
+
+There are some key issues with the way that it is currently implemented.
+
+=== Extensions as React components
+
+Because extensions are react components, it uses `ReactDOM` provided by BlueOcean to render them.
+This forces extensions to use the same version of React as BlueOcean.
+The main issue with this if BlueOcean needs to upgrade React, every plugin will need to be updated too, or potentially have runtime issues due to API changes in React.
+
+== Reasoning
+
+The extensibility api is designed to decouple the rendering of UI from BlueOcean.
+To that end extensions implement a function that does the rendering.
+Not only does it allow for greater flexibility as extensions can generate UI with any javascript library,
+if plugins need to use React they can provide thier own version of it which lets BlueOcean not worry about upgrading itself.
+
+ES5 compatibility was chosen to allow plugin developers to have the greatest flexibility with what Javascript technology they want to develop the extensions in.
+
+
+== Backwards Compatibility
+
+There are only a few BlueOcean plugins, however they will need to be updated to use this API.
+An exact plan on migration needs to be worked out.
+
+== Security
+
+There are no security risks related to this proposal.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+* Unit tests to show that API is to spec
+* BlueOcean Acceptance Test Harness will load extensions using this API for integration testing.
+
+== Prototype Implementation
+
+https://github.com/imeredith/es-extensions-api
+
+== References
+
+* link:https://groups.google.com/d/topic/jenkinsci-dev/urbEsaAjbVw/discussion[Blue Ocean Extensibility Discussion]
