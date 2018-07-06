@@ -66,7 +66,7 @@ link:https://issues.jenkins-ci.org/browse/JENKINS-51805[JENKINS-51805] - Java 11
 
 In September 2018 we expect Java 11 to be released.
 It will be an LTS version with a long support timeline.
-This jenkins Enhancement Proposal describes actions required in order to make Java 10 and 11 releases publicly available.
+This Jenkins Enhancement Proposal describes actions required in order to make Java 10 and 11 releases publicly available.
 
 
 == Specification
