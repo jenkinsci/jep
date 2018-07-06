@@ -132,7 +132,7 @@ All stories in this EPIC need to be completed.
 
 * The JENKINS-52012 EPIC includes a number of library updates in the core we know about: Groovy, ASM, etc.
 * Some updates may require downstream plugin updates.
-** For Example, Groovy update requires cleanup of the Metaspace leak memory in Script Security
+** For Example, Groovy update requires cleanup of the Metaspace leak memory in Script Security and Pipeline plugins
 
 ==== Core patches
 
