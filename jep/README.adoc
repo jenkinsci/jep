@@ -52,7 +52,7 @@
 | link:https://github.com/ewelinawilkosz2[Ewelina{nbsp}Wilkosz] from{nbsp}link:https://github.com/praqma[Praqma]
 | _not{nbsp}delegated_
 
-| Draft{nbsp}:speech_balloon:
+| Accepted{nbsp}:ok_hand:
 | link:202/[JEP-202: External Artifact Storage]
 | link:https://github.com/carlossg[Carlos{nbsp}Sanchez]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
