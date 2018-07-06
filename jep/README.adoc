@@ -72,6 +72,11 @@
 | link:https://github.com/ndeloof[ndeloof]
 | _not{nbsp}delegated_
 
+| Draft{nbsp}:speech_balloon:
+| link:211/[JEP-211: Java 10 and 11 support in Jenkins]
+| link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
+| TBD
+
 | Accepted{nbsp}:ok_hand:
 | link:300/[JEP-300: Jenkins Essentials]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
