@@ -19,7 +19,7 @@ endif::[]
 | Declarative Data Binding
 
 | Sponsor
-| https://github.com/ndeloof[ndeloof]
+| link:https://github.com/ndeloof[ndeloof]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
