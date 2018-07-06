@@ -56,6 +56,10 @@
 | link:205/[JEP-205: Declarative Data Binding]
 | _not specified_
 
+| Draft :speech_balloon:
+| link:211/[JEP-211: Java 10 and 11 support in Jenkins]
+| TBD
+
 | Accepted :ok_hand:
 | link:300/[JEP-300: Jenkins Essentials]
 | _not specified_

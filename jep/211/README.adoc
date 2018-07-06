@@ -1,4 +1,4 @@
-= JEP-0000: Java 10 and 11 support in Jenkins
+= JEP-211: Java 10 and 11 support in Jenkins
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -14,7 +14,7 @@ endif::[]
 [cols="2"]
 |===
 | JEP
-| 0000
+| 211
 
 | Title
 | Java 10 and 11 support in Jenkins
@@ -24,7 +24,7 @@ endif::[]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
-| Not Submitted :information_source:
+| Draft :speech_balloon:
 
 | Type
 | Process
@@ -72,7 +72,7 @@ This jenkins Enhancement Proposal describes actions required in order to make Ja
 == Specification
 
 The specification has been created according to the results of the link:https://jenkins.io/blog/2018/06/08/jenkins-java10-hackathon/[Jenkins and Java 10+ hackathon].
- 
+
 All stories in this JEP have tickets created in JIRA.
 Stories are aggregated in
 link:https://issues.jenkins-ci.org/browse/JENKINS-40689[JENKINS-40689],
