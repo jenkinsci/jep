@@ -19,7 +19,7 @@ endif::[]
 | Evergreen snapshotting data safety system
 
 | Sponsor
-| https://github.com/batmat
+| link:https://github.com/batmat[Baptiste Mathus]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
@@ -34,11 +34,12 @@ endif::[]
 //
 // Uncomment if there is an associated placeholder JIRA issue.
 | JIRA
-| https://issues.jenkins-ci.org/browse/JENKINS-49406[JENKINS-49406]
+| link:https://issues.jenkins-ci.org/browse/JENKINS-49406[JENKINS-49406]
 //
 //
 | BDFL-Delegate
-| https://github.com/rtyler[R. Tyler Croy]
+| link:https://github.com/rtyler[R. Tyler Croy]
+
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.

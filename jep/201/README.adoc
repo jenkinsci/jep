@@ -19,15 +19,10 @@ endif::[]
 | Jenkins Configuration as Code
 
 | Sponsor
-| https://github.com/ewelinawilkosz2[Ewelina Wilkosz] from https://github.com/praqma[Praqma]
+| link:https://github.com/ewelinawilkosz2[Ewelina Wilkosz] from link:https://github.com/praqma[Praqma]
 
 | Status
-| Draft :speech_balloon:
-//| Rejected :no_entry:
-//| Withdrawn :hand:
-//| Final :lock:
-//| Replaced :dagger:
-//| Active :smile:
+| Accepted :ok_hand:
 
 | Type
 | Standards
@@ -39,7 +34,7 @@ endif::[]
 //
 // Uncomment if there is an associated placeholder JIRA issue.
 | JIRA
-| https://issues.jenkins-ci.org/browse/JENKINS-31094[JENKINS-31094]
+| link:https://issues.jenkins-ci.org/browse/JENKINS-31094[JENKINS-31094]
 //
 //
 // Uncomment if there will be a BDFL delegate for this JEP.

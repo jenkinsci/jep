@@ -45,7 +45,6 @@ endif::[]
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
 | Discussions-To
 |
-link:https://groups.google.com/d/msgid/jenkinsci-dev/20180322210421.4ikcudf7m65yilvo%40blackberry.coupleofllamas.com[jenkinsci-dev@ thread]
 //
 //
 // Uncomment if this JEP depends on one or more other JEPs.
@@ -282,3 +281,4 @@ Nothing relevant for this JEP.
 
 * Much of the "SIG" concept has been borrowed heavily from the
   link:https://github.com/kubernetes/community/blob/master/governance.md#sigs[Kubernetes community].
+* link:https://groups.google.com/d/topic/jenkinsci-dev/6-1mZoKp4hM/discussion[jenkinsci-dev@ thread]

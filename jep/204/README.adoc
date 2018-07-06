@@ -19,7 +19,7 @@ endif::[]
 | BlueOcean Extensibility API
 
 | Sponsor
-| http://github.com/imeredith[Ivan Meredith]
+| link:http://github.com/imeredith[Ivan Meredith]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status

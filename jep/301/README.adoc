@@ -23,19 +23,13 @@ endif::[]
 
 | Status
 | Draft :speech_balloon:
-//| Deferred :hourglass:
-//| Accepted :ok_hand:
-//| Rejected :no_entry:
-//| Withdrawn :hand:
-//| Final :lock:
-//| Replaced :dagger:
-//| Active :smile:
 
 | Type
 | Standards
 
 | Created
 | 2018-02-07
+
 //
 //
 // Uncomment if there is an associated placeholder JIRA issue.
@@ -44,7 +38,8 @@ endif::[]
 //
 //
 | BDFL-Delegate
-| https://github.com/rtyler[R. Tyler Croy]
+| link:https://github.com/rtyler[R. Tyler Croy]
+
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.

@@ -1,107 +1,135 @@
 = Index of Jenkins Enhancement Proposals
 
-[cols="^,>,^"]
+[%header, cols="^1,<.^4,^1,^1"]
 |===
-| Status | Title | BDFL Delegate
+.^| Status
+.^| Title
+.^| Sponsor
+.^| BDFL Delegate
 
-| Active :smile:
+| Active{nbsp}:smile:
 | link:1/[JEP-1: Jenkins Enhancement Proposal Format]
-| _not specified_
+| link:https://github.com/rtyler[R{nbsp}Tyler{nbsp}Croy], link:https://github.com/bitwiseman[Liam{nbsp}Newman]
+| _not{nbsp}delegated_
 
-| Draft :speech_balloon:
+| Draft{nbsp}:speech_balloon:
 | link:2/[JEP-2: Criteria for selecting "Suggested Plugins"]
-| _not specified_
+| link:https://github.com/daniel-beck[Daniel{nbsp}Beck], link:https://github.com/rtyler[R{nbsp}Tyler{nbsp}Croy]
+| _not{nbsp}delegated_
 
-| Accepted :ok_hand:
+| Accepted{nbsp}:ok_hand:
 | link:3/[JEP-3: Adding the "Released As" field and "Ready for Release" status to Jenkins JIRA]
-| _not specified_
+| link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
+| _not{nbsp}delegated_
 
-| Draft :speech_balloon:
+| Draft{nbsp}:speech_balloon:
 | link:4/[JEP-4: Special Interest Groups]
-| _not specified_
+| link:https://github.com/rtyler[R{nbsp}Tyler{nbsp}Croy]
+| _not{nbsp}delegated_
 
-| Accepted :ok_hand:
+| Accepted{nbsp}:ok_hand:
 | link:5/[JEP-5: Jenkins Ambassador Program]
-| _not specified_
+| link:https://github.com/alyssat[Alyssa{nbsp}Tong], link:https://github.com/bitwiseman[Liam{nbsp}Newman]
+| _not{nbsp}delegated_
 
-| Accepted :ok_hand:
+| Accepted{nbsp}:ok_hand:
 | link:6/[JEP-6: Jenkins CVE Numbering Authority]
+| link:https://github.com/daniel-beck/[Daniel{nbsp}Beck]
 | Undetermined
 
-| Draft :speech_balloon:
+| Draft{nbsp}:speech_balloon:
 | link:7/[JEP-7: Deprecation of ruby-runtime]
-| _not specified_
+| link:https://github.com/daniel-beck/[Daniel{nbsp}Beck]
+| _not{nbsp}delegated_
 
-| Final :lock:
+| Final{nbsp}:lock:
 | link:200/[JEP-200: Switch Remoting/XStream blacklist to a whitelist]
-| https://github.com/oleg-nenashev[@oleg-nenashev]
+| link:https://github.com/jglick[Jesse{nbsp}Glick]
+| link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 
-| Draft :speech_balloon:
+| Accepted{nbsp}:ok_hand:
 | link:201/[JEP-201: Jenkins Configuration as Code]
-| _not specified_
+| link:https://github.com/ewelinawilkosz2[Ewelina{nbsp}Wilkosz] from{nbsp}link:https://github.com/praqma[Praqma]
+| _not{nbsp}delegated_
 
-| Draft :speech_balloon:
+| Draft{nbsp}:speech_balloon:
 | link:202/[JEP-202: External Artifact Storage]
-| https://github.com/jglick[Jesse Glick]
+| link:https://github.com/carlossg[Carlos{nbsp}Sanchez]
+| link:https://github.com/jglick[Jesse{nbsp}Glick]
 
-| Draft :speech_balloon:
+| Draft{nbsp}:speech_balloon:
 | link:203/[JEP-203: BlueOcean Extensibility]
-| _not specified_
+| link:http://github.com/imeredith[Ivan{nbsp}Meredith]
+| _not{nbsp}delegated_
 
-| Draft :speech_balloon:
+| Draft{nbsp}:speech_balloon:
 | link:204/[JEP-204: BlueOcean Extensibility API]
-| _not specified_
+| link:http://github.com/imeredith[Ivan{nbsp}Meredith]
+| _not{nbsp}delegated_
 
-| Draft :speech_balloon:
+| Draft{nbsp}:speech_balloon:
 | link:205/[JEP-205: Declarative Data Binding]
-| _not specified_
+| link:https://github.com/ndeloof[ndeloof]
+| _not{nbsp}delegated_
 
-| Draft :speech_balloon:
+| Draft{nbsp}:speech_balloon:
 | link:211/[JEP-211: Java 10 and 11 support in Jenkins]
+| link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | TBD
 
-| Accepted :ok_hand:
+| Accepted{nbsp}:ok_hand:
 | link:300/[JEP-300: Jenkins Essentials]
-| _not specified_
+| link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
+| _not{nbsp}delegated_
 
-| Draft :speech_balloon:
+| Draft{nbsp}:speech_balloon:
 | link:301/[JEP-301: Evergreen packaging for Jenkins Essentials]
-| https://github.com/rtyler[R. Tyler Croy]
+| link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
+| link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Draft :speech_balloon:
+| Draft{nbsp}:speech_balloon:
 | link:302/[JEP-302: Evergreen snapshotting data safety system]
-| https://github.com/rtyler[R. Tyler Croy]
+| link:https://github.com/batmat[Baptiste{nbsp}Mathus]
+| link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Draft :speech_balloon:
+| Draft{nbsp}:speech_balloon:
 | link:303/[JEP-303: Evergreen Client Registration and Authentication]
-| link:https://github.com/rtyler[R. Tyler Croy]
+| link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
+| link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Draft :speech_balloon:
+| Draft{nbsp}:speech_balloon:
 | link:304/[JEP-304: Essentials Client Error Telemetry Logging]
-| _not specified_
+| link:https://github.com/batmat[Baptiste{nbsp}Mathus]
+| _not{nbsp}delegated_
 
-| Draft :speech_balloon:
+| Draft{nbsp}:speech_balloon:
 | link:305/[JEP-305: Publishing incremental commits as Maven releases]
-| https://github.com/rtyler[R. Tyler Croy]
+| link:https://github.com/jglick[Jesse{nbsp}Glick]
+| link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Draft :speech_balloon:
+| Draft{nbsp}:speech_balloon:
 | link:306/[JEP-306: Essentials Instance Client Health Checking]
-| _not specified_
+| link:https://github.com/batmat[Baptiste{nbsp}Mathus]
+| link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Draft :speech_balloon:
+| Draft{nbsp}:speech_balloon:
 | link:307/[JEP-307: Evergreen Update Client/Server Lifecycle]
-| _not specified_
+| link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
+| link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Draft :speech_balloon:
+| Draft{nbsp}:speech_balloon:
 | link:308/[JEP-308: Essentials Error Telemetry API]
-| _not specified_
+| link:https://github.com/batmat[Baptiste{nbsp}Mathus]
+| link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Draft :speech_balloon:
+| Draft{nbsp}:speech_balloon:
 | link:309/[JEP-309: Bill of Materials]
-| _not specified_
+| link:https://github.com/carlossg[Carlos{nbsp}Sanchez]
+| link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Draft :speech_balloon:
+| Draft{nbsp}:speech_balloon:
 | link:400/[JEP-400: Jenkins X: Jenkins for Kubernetes CD]
-| _not specified_
+| link:https://github.com/jstrachan[James{nbsp}Strachan]
+| _not{nbsp}delegated_
 
 |===
