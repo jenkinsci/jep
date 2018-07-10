@@ -147,7 +147,6 @@ A dedicated group is created to allow access to the following ports:
 22:: restricted to an optional parameter.
 Users would typically use `curl ident.me` to avoid making this port accessible to the world.
 8080:: not restricted.
-50000:: not restricted (for agents).
 
 ==== Agents
 
@@ -192,10 +191,6 @@ The `SSHLocation` template parameter should be a specific IP.
 === HTTPS by default
 
 (?) TBD FIXME
-
-=== Agent port
-
-WIP: FIXME: do we even need to open it. Does the agent actually connect through the SSH pipe?
 
 == Infrastructure Requirements
 
