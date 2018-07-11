@@ -206,9 +206,7 @@ If we want to be able to run automated tests, we need some form of AWS account t
 [[aws-testing]]
 === AWS testing of CloudFormation template
 
-Given an <<aws-account>>, we can use the `aws` CLI, we need to set up automated tests using the .
-
-It is straightforward to implement:
+Given an <<aws-account>>, we can use the `aws` CLI to automatically trigger the provisioning, then retrieve what is neeeded to run automated tests:
 
 * create the stack using `aws cloudformation create-stack ...`
 * retrieve the EC2 instance IP using:
