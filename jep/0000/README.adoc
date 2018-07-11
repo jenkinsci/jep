@@ -144,8 +144,9 @@ FIXME: refine through JENKINS-52342.
 ==== Master
 A dedicated group is created to allow access to the following ports:
 
-22:: restricted to an optional parameter.
-Users would typically use `curl ident.me` to avoid making this port accessible to the world.
+22:: restricted to the `SSHLocation` parameter value, passed as CloudFormation template parameter at creation time.
+The user will be strongly advised to use their own public IP to restrict SSH access to the master to her only (i.e. discourage `0.0.0.0/0`).
+footnote:[using `curl ident.me` is often to help find out one' public IP and pass the value to the CloudFormation template parameter.]
 8080:: not restricted.
 
 ==== Agents
@@ -183,8 +184,9 @@ Two more need to be re-enabled for the Essentials AWS flavor to be able to auto-
 
 === SSH access to the server
 
-Users are strongly advised to pass a specific IP when creating their setup.
-The `SSHLocation` template parameter should be a specific IP.
+A CloudFormation template parameter `SSHLocation` is used to define the IPs allowed to access the master using SSH.
+
+Users are strongly advised to pass only their own IP when creating their setup.
 
 // Should we actually fail if one passes 0.0.0.0/0?
 
