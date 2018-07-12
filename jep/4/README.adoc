@@ -163,11 +163,11 @@ Create Google Groups at
 link:https://groups.google.com/forum/#!creategroup[],
 following the procedure:
 
-* Each SIG should have at least one discussion group.
-This group should be added to the SIG metadata
+* Each SIG must have at least one discussion group.
+This group must be added to the SIG metadata.
 * SIGs may also have a number of groups for mirroring relevant github notifications;
 * Create groups using the name conventions below;
-* Groups should be created as e-mail lists with at least three owners
+* Groups must be created as e-mail lists with at least three owners
   (including tyler at monkeypox.org and verninol at gmail.com to ensure SIG
   continuity);
 * To add the owners, visit the Group Settings (drop-down menu on the right
@@ -177,7 +177,7 @@ This group should be added to the SIG metadata
   maintenance.
 * Set "View topics", "Post", "Join the Group" permissions to be "Public"
 
-Naming convention: `jenkins-${sigId}` (the discussion group)
+Naming convention: `jenkins-${sigId}-sig` (the discussion group)
 
 [[video]]
 ==== Recorded Video Meetings
