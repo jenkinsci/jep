@@ -49,7 +49,7 @@
 
 | Accepted{nbsp}:ok_hand:
 | link:201/[JEP-201: Jenkins Configuration as Code]
-| link:https://github.com/ewelinawilkosz2[Ewelina{nbsp}Wilkosz] from{nbsp}link:https://github.com/praqma[Praqma]
+| link:https://github.com/ewelinawilkosz[Ewelina{nbsp}Wilkosz] from{nbsp}link:https://github.com/praqma[Praqma]
 | _not{nbsp}delegated_
 
 | Accepted{nbsp}:ok_hand:
