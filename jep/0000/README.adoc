@@ -1,0 +1,207 @@
+= JEP-0000: Google Summer of Code Budget
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.**JEP Template**
+[TIP]
+====
+In this document, all text in a "Tip" block (or inline text with with a ":bulb:" on either side)
+MUST be removed and/or replaced with text appropriate to this JEP before submission.
+
+Sections may include aditional help and advice in comments.
+":bulb:" entries in comments only need to be filled in if that text is uncommented.
+
+See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for full and accurate description of the JEP process and what is required in each section.
+====
+
+[TIP]
+====
+*BDLF-Delegate* is uncommented by default.
+As part of the in initial conversation or the JEP submission the sponsor should
+look for a BDFL Delegate.
+While not required, it is better for the community if Delegates perform most reviews.
+If no suitable BDFL-Delegate can be found, that row may be commented out.
+====
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 0000
+
+| Title
+| :bulb: Title :bulb:
+
+| Sponsor
+| :bulb: Link to github user page :bulb:
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| :bulb: Standards, Informational, or Process :bulb:
+
+| Created
+| :bulb: Date (YYYY-MM-DD) :bulb:
+
+| BDFL-Delegate
+| :bulb: Link to github user page :bulb:
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+This document documents the Google Summer of Code (GSoC) budgeting process.
+
+== Specification
+
+=== Budget sources
+
+The budget is formed from...
+
+* Payments by Google according to the
+link:https://developers.google.com/open-source/gsoc/help/org-payments[Payments to Google Summer of Code Organizations ]
+* Other donations to the Jenkins project,
+which explicitly target GSoC
+
+All payments are transferred to the Jenkins account
+provided by the link:https://www.spi-inc.org/[Software In Public Interest] non-profit organization,
+or to other official Jenkins treasury account.
+
+=== Using the budget
+
+The Google Summer of Code budget can be used ONLY to promote Google Summer of Code in the Jenkins project
+or to fund the ongoing Google Summer of Code
+or Google Code-In projects.
+It should not be used for other purposes,
+unless confirmed with GSoC organization admins.
+
+Possible usages:
+
+1. Travel grants for GSoC students in order to participate in Jenkins community or industry events
+** Examples: Jenkins Area Meetups, Jenkins World,
+open-source conferences like FOSDEM, etc.
+** Travel grants may cover: hotel, transportation costs, visa fees, meals
+** Transportation costs may be covered only for economy-class travel
+** Travel grants do NOT cover: conference fees, alcohol, souvenirs, etc.
+2. GSoC Mentor Summit travel grants for GSoC mentors and org admins
+** The budget is provided according to the rules defined in link:https://developers.google.com/open-source/gsoc/help/org-payments[GSoC Org Payments] (as of 2018 - 2200 USD)
+** Travel grants do NOT cover travel expenses to any other events
+** The rest of student travel grant policy applies to mentor travel grants as well
+3. Project expenses for students
+** GSoC budget may be used to cover particular expenses for projects: special equipment costs, SaaS hosting
+** Project expenses should happen within the GSoC timeframe between start of Community Bonding and end of the last coding phase
+** GSoC budget may not be used to cover generic equipment costs: laptop, IDEs, internet, etc.
+** GSoC budget may not be used to cover software license costs.
+The most of the projects are expected to be doable with only open-source or freeware software,
+otherwise it is up to the students and mentors to get the setup.
+** Total project expenses may not exceed the amount being payed by Google per project (as of 2018 - 500 USD)
+4. Promotional materials
+** GSoC budget may be used to promote Google Summer of Code by distributing swag, e.g. stickers, T-shirts and other items.
+Swag may be sent to participants or distributed at community events.
+** GSoC budget may be used to cover swag production costs and delivery costs by common mail
+** Swag may be sent out to active GSoC participants, including GSoC students, mentors, org admins, applicants, and other contributors who participated in GSoC
+** GSoC budget may not be used for any kind of payed advertisement or
+payments to external individuals/organizations for promotion.
+** GSoC budget may not be used to send out promotional materials which explicitly or implicitly reference other trademarks or commercial companies
+
+=== Approval process
+
+* All expenses should be pre-approved with
+Jenkins GSoC org admins before they are executed
+* Jenkins org admins are eligible to approve the requests only within the GSoC budget defined in this JEP
+* All payments beyond this budget should be approved by Jenkins Governance Meeting or Jenkins Board
+
+=== Payment process
+
+* Jenkins project does not pay for expenses,
+but it reimburses expenses post-factum
+* Reimbursements are performed according to the SPI process defined
+link:https://wiki.jenkins.io/display/JENKINS/Reimbursement+of+Expenses+via+SPI[Reimbursement of Expenses via SPI]
+
+=== Liability
+
+Jenkins project has no legal entity which can commit
+on expenses.
+As GSoC organization, we also
+It means that...
+
+* Approval by GSoC org admins does not guarantee the payments
+* Jenkins project, GSoC org admins or SPI cannot guarantee ETA of any payment or, in the worst case,
+the payment itself
+* Jenkins Project or SPI cannot issue guarantee letters for visa applications
+
+=== Unused budget from previous years
+
+Unused budget from previous years are transferred to the next year.
+Unused budgets for GSoC mentor summit travel grants may be used for different purpose once transferred
+to the next year.
+
+== Motivation
+
+Jenkins operates in Google Summer of Code within rules defined by Google,
+and it gets dedicated payments.
+In order to promote GSoC and community activities,
+we want to spend some of the budget on travel grants and other such promotional programs.
+Due to time constraints,
+travel grants need to be approved in a short timeframe in mid-summer.
+It is a vacation period, and it is difficult to reach out to stakeholders and get approvals during this timeframe.
+
+Having a separate GSoC budget and approval policy would
+give more freedom to Jenkins GSoC Org Admins in order
+to focus on organizational side of GSoC project.
+
+== Reasoning
+
+To be filled according to the community feedback
+
+== Security
+
+N/A (process JEP)
+
+== Infrastructure Requirements
+
+N/A (process JEP)
+
+== References
+
+* http://jenkins.io/projects/gsoc/
+* https://developers.google.com/open-source/gsoc/help/org-payments
+* https://www.spi-inc.org/
+* https://wiki.jenkins.io/display/JENKINS/Reimbursement+of+Expenses+via+SPI
+
+
