@@ -1,4 +1,4 @@
-= JEP-0000: Google Summer of Code Budget
+= JEP-0000: Google Summer of Code Budgeting and Expenses
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -9,26 +9,6 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-.**JEP Template**
-[TIP]
-====
-In this document, all text in a "Tip" block (or inline text with with a ":bulb:" on either side)
-MUST be removed and/or replaced with text appropriate to this JEP before submission.
-
-Sections may include aditional help and advice in comments.
-":bulb:" entries in comments only need to be filled in if that text is uncommented.
-
-See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for full and accurate description of the JEP process and what is required in each section.
-====
-
-[TIP]
-====
-*BDLF-Delegate* is uncommented by default.
-As part of the in initial conversation or the JEP submission the sponsor should
-look for a BDFL Delegate.
-While not required, it is better for the community if Delegates perform most reviews.
-If no suitable BDFL-Delegate can be found, that row may be commented out.
-====
 
 .Metadata
 [cols="2"]
@@ -37,20 +17,20 @@ If no suitable BDFL-Delegate can be found, that row may be commented out.
 | 0000
 
 | Title
-| :bulb: Title :bulb:
+| Google Summer of Code Budgeting and Expenses
 
 | Sponsor
-| :bulb: Link to github user page :bulb:
+| link:https://github.com/oleg-nenashev[Oleg Nenashev]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
 | Not Submitted :information_source:
 
 | Type
-| :bulb: Standards, Informational, or Process :bulb:
+| Process
 
 | Created
-| :bulb: Date (YYYY-MM-DD) :bulb:
+| 2018-07-17
 
 | BDFL-Delegate
 | :bulb: Link to github user page :bulb:
@@ -142,16 +122,23 @@ payments to external individuals/organizations for promotion.
 === Approval process
 
 * All expenses should be pre-approved with
-Jenkins GSoC org admins before they are executed
+Jenkins GSoC org admins before the payments are done
 * Jenkins org admins are eligible to approve the requests only within the GSoC budget defined in this JEP
 * All payments beyond this budget should be approved by Jenkins Governance Meeting or Jenkins Board
+* According to the SPI process,
+the GSoC-related expense reports still need approval by Jenkins Board
+once submitted (see _Payment process_)
 
 === Payment process
 
 * Jenkins project does not pay for expenses,
-but it reimburses expenses post-factum
+but it reimburses expenses post-factum to students, mentors or Org Admins
 * Reimbursements are performed according to the SPI process defined
 link:https://wiki.jenkins.io/display/JENKINS/Reimbursement+of+Expenses+via+SPI[Reimbursement of Expenses via SPI]
+* It may take a while to get an expense report reimbursed
+(see the _Liability_ section)
+* It is **recommended** that GSoC mentors do the payments for students
+and then reimburse the expenses
 
 === Liability
 
@@ -171,6 +158,16 @@ Unused budget from previous years are transferred to the next year.
 Unused budgets for GSoC mentor summit travel grants may be used for different purpose once transferred
 to the next year.
 
+=== Transparency
+
+* GSoC Org Admins report to the Jenkins Governance Board regarding the budgeting
+* GSoC Org Admins are responsible to report the current budget status at the
+Jenkins Governance meeting at least twice per year:
+** As a part of GSoC preparation process (est. January or February)
+** After all GSoC payments are done (est. October)
+* GSoC Org Admins are responsible to report on the budget at the
+Jenkins Governance Meeting upon request
+
 == Motivation
 
 Jenkins operates in Google Summer of Code within rules defined by Google,
@@ -187,7 +184,7 @@ to focus on organizational side of GSoC project.
 
 == Reasoning
 
-To be filled according to the community feedback
+To be filled according to the community feedback.
 
 == Security
 
@@ -197,11 +194,17 @@ N/A (process JEP)
 
 N/A (process JEP)
 
+== Testing
+
+N/A (process JEP)
+
+== Prototype Implementation
+
+N/A (process JEP)
+
 == References
 
 * http://jenkins.io/projects/gsoc/
 * https://developers.google.com/open-source/gsoc/help/org-payments
 * https://www.spi-inc.org/
 * https://wiki.jenkins.io/display/JENKINS/Reimbursement+of+Expenses+via+SPI
-
-
