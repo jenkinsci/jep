@@ -100,8 +100,10 @@ open-source conferences like FOSDEM, etc.
 ** Travel grants do NOT cover: conference fees, alcohol, souvenirs, etc.
 2. GSoC Mentor Summit travel grants for GSoC mentors and org admins
 ** The budget is provided according to the rules defined in link:https://developers.google.com/open-source/gsoc/help/org-payments[GSoC Org Payments] (as of 2018 - 2200 USD)
+** Mentor travel grants may cover: transportation costs, visa fees, meals
+** Transportation costs may be covered only for economy-class travel
 ** Travel grants do NOT cover travel expenses to any other events
-** The rest of student travel grant policy applies to mentor travel grants as well
+** Travel grants do NOT cover the hotel costs as long as it covered by the event organizer
 3. Project expenses for students
 ** GSoC budget may be used to cover particular expenses for projects: special equipment costs, SaaS hosting
 ** Project expenses should happen within the GSoC timeframe between start of Community Bonding and end of the last coding phase
@@ -122,7 +124,7 @@ payments to external individuals/organizations for promotion.
 === Approval process
 
 * All expenses should be pre-approved with
-Jenkins GSoC org admins before the payments are done
+Jenkins GSoC org admins before the expenses are incurred, and as a pre-condition for paymen
 * Jenkins org admins are eligible to approve the requests only within the GSoC budget defined in this JEP
 * All payments beyond this budget should be approved by Jenkins Governance Meeting or Jenkins Board
 * According to the SPI process,
@@ -150,7 +152,8 @@ It means that...
 * Approval by GSoC org admins does not guarantee the payments
 * Jenkins project, GSoC org admins or SPI cannot guarantee ETA of any payment or, in the worst case,
 the payment itself
-* Jenkins Project or SPI cannot issue guarantee letters for visa applications
+* Jenkins Project or SPI cannot issue guarantee letters for
+visa applications or other or other travel documents.
 
 === Unused budget from previous years
 
