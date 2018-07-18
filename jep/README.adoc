@@ -73,7 +73,7 @@
 | _not{nbsp}delegated_
 
 | Draft{nbsp}:speech_balloon:
-| link:206/[JEP-0000: Use UTF-8 for Pipeline build logs]
+| link:206/[JEP-206: Use UTF-8 for Pipeline build logs]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | :bulb: Link{nbsp}to{nbsp}github{nbsp}user{nbsp}page{nbsp}:bulb:
 
