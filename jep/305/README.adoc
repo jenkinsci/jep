@@ -140,7 +140,7 @@ the effect is equivalent to including the options:
 
 [source,bash]
 ----
--Pproduce-incrementals -Dchangelist=-rc$(git rev-list --first-parent --count HEAD).$(git rev-parse --short=12 HEAD)
+-Pproduce-incrementals -Dchangelist=-rc$(git rev-list --count HEAD).$(git rev-parse --short=12 HEAD)
 ----
 
 You will then see output like this:
@@ -474,7 +474,7 @@ The current proposal sets the `changelist` variable during Incrementals builds t
 
 [source,bash]
 ----
--rc$(git rev-list --first-parent --count HEAD).$(git rev-parse --short=12 HEAD)
+-rc$(git rev-list --count HEAD).$(git rev-parse --short=12 HEAD)
 ----
 
 This format has two key advantages:
@@ -495,7 +495,24 @@ not only is no such metadata available for local developer builds;
 but any time a Jenkins service is restored from backup,
 the build history could easily be reset and numbering restart from 1.
 
-A slight variant to the `rev-list` setup:
+A slight variant to the `rev-list` setup passes `--first-parent`:
+
+[source,bash]
+----
+-rc$(git rev-list --first-parent --count HEAD).$(git rev-parse --short=12 HEAD)
+----
+
+This scheme avoids counting commits from merged branches,
+and thus keeps the version number relatively small,
+and is adequate for comparisons within a Git branch.
+This was used initially but was rejected as part of
+link:https://issues.jenkins-ci.org/browse/JENKINS-51869[JENKINS-51869]
+because it did not work well in complex merge graphs
+(typical with long-lived interdependent topic branches):
+in certain situations it would result in the version number _decreasing_ after a merge,
+causing tools like `mvn incrementals:update` to select a valid but unnecessarily old release.
+
+Another variant:
 
 [source,bash]
 ----
@@ -510,9 +527,6 @@ it would be harder to tell that the commit after the merge was newer.
 `checkout scm` for pull request “merge” builds will merge the base branch into the head commit if it is not up to date,
 producing an unpredictable commit hash and (in the current proposal) incrementing the count by one.
 Therefore deployment is most useful from origin branch builds, or at least PR head builds.)
-
-The `--first-parent` option is not strictly necessary,
-but otherwise you wind up counting far too many commits when there have been lots of merges.
 
 It is possible to differentiate the count of commits made in the `master` branch from those in an (unnamed) side branch.
 This even works naturally after performing “ladder” merges to bring a branch up to date with `master`:
@@ -558,6 +572,9 @@ sorts similarly except for `-SNAPSHOT` handling:
 * `1.2-rc100.ab1`
 * `1.2-SNAPSHOT`
 * `1.2`
+
+Snapshot handling is under investigation in
+link:https://issues.jenkins-ci.org/browse/JENKINS-51594[JENKINS-51594].
 
 === Systems not based on IEP-9
 
@@ -807,7 +824,7 @@ that there is nothing preventing a developer from uploading something not built 
 
 ==== Recommendation
 
-The current candidate approach is to use a downstream deployment job checking `repository-permissions-updater`.
+The current approach is to use an Azure “function” triggered by the CI build and checking `repository-permissions-updater`.
 
 == Infrastructure Requirements
 
