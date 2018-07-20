@@ -150,7 +150,12 @@ A dedicated group is created to allow access to the following ports:
 The user will be strongly advised to use their own public IP to restrict SSH access to the master to her only (i.e. discourage `0.0.0.0/0`).
 footnote:[using `curl ident.me` is often to help find out one' public IP and pass the value to the CloudFormation template parameter.]
 8080:: not restricted.
-50000:: not restricted (for agents).
+50000:: not restricted (for potentially connecting agents with JNLP).
+
+NOTE: The port `50000` is not currently enabled inside the Essentials instance.
+But we keep it allowed at the security group and Docker container level.
+This will allow users to connect for instance Windows agents through the  Jenkins `JNLP` protocol by simply enabling the fixed agents port under `/configureSecurity/`.
+
 
 ==== Agents
 
