@@ -186,9 +186,8 @@ Two more need to be re-enabled for the Essentials AWS flavor to be able to auto-
 
 A CloudFormation template parameter `SSHLocation` is used to define the IPs allowed to access the master using SSH.
 
-Users are strongly advised to pass only their own IP when creating their setup.
-
-// Should we actually fail if one passes 0.0.0.0/0?
+Users are advised to pass only their own IP when creating their setup.
+But SSH is deemed sufficiently secure so that we still allow users to pass `0.0.0.0/0` as a value if they want this.
 
 === HTTPS by default
 
