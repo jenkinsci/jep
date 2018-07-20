@@ -150,6 +150,7 @@ A dedicated group is created to allow access to the following ports:
 The user will be strongly advised to use their own public IP to restrict SSH access to the master to her only (i.e. discourage `0.0.0.0/0`).
 footnote:[using `curl ident.me` is often to help find out one' public IP and pass the value to the CloudFormation template parameter.]
 8080:: not restricted.
+50000:: not restricted (for agents).
 
 ==== Agents
 
@@ -208,6 +209,10 @@ But SSH is deemed sufficiently secure so that we still allow users to pass `0.0.
 === HTTPS by default
 
 (?) TBD FIXME
+
+=== Agent port
+
+WIP: FIXME: do we even need to open it. Does the agent actually connect through the SSH pipe?
 
 == Infrastructure Requirements
 
