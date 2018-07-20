@@ -123,11 +123,9 @@ A dedicated instance profile is created by the _CloudFormation_ template to allo
 
 ==== S3 bucket policy
 
-FIXME: refine through JENKINS-52342.
-
 [source,json]
 "Statement": [{
-        "Sid": "TodoRefineSecurityALot",
+        "Sid": "TodoRefineSecurity-JENKINS-52342",
         "Effect": "Allow",
         "Action": [
             "s3:PutObject",
@@ -138,6 +136,10 @@ FIXME: refine through JENKINS-52342.
         "Resource": "*"
     }
 ]
+
+CAUTION: Currently the prototype is configured with the way shown above.
+We would like to reduce the access to only the dedicated bucket created for Jenkins Essentials usage.
+We are tracking this improvement as link:https://issues.jenkins-ci.org/browse/JENKINS-52342[JENKINS-52342].
 
 === Security groups
 
