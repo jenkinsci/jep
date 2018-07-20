@@ -163,11 +163,25 @@ Nothing was existing to provide an autoconfigured setup of Jenkins in a specific
 
 === Instance Profile
 
-Early during the prototype, a dedicated service user was used.
+Early during the prototype, a dedicated _service user_ was used.
 This was replaced by instance profile later for various reasons.
 
 This is because it is the recommended path for AWS, but also because doing so makes the configuration leaner:
 both the _EC2_ and _Artifact Manager on S3_ plugins will autodetect their permissions if no explicit credentials are specified.
+
+=== `s3:DeleteObject` permission on the S3 bucket
+
+Keeping this permission has been questioned; why allow deletion permission when:
+
+* _pure_ AWS administrators may prefer to define a lifecycle policy to clean up things;
+* S3 is so cheap that _we_, at least, should not care about deletions?
+
+We decided to keep it because:
+
+* link:https://github.com/jenkinsci/jep/tree/master/jep/300[Essentials is critically about simplicity].
+  If a user, or us a bit later, wants to enable to delete checkbox of the `artifact-manager-s3` plugin, this should be possible without having to go through the AWS console or CLI to find the right settings;
+* Keeping everything _forever_ is also probably some kind of liability.
+  And if some users have previously been administering a Jenkins instance previously, but they are not AWS experts, their expectation would probably be that artifacts are going to be cleaned up over time, according to the `buildDiscarder` policy in place.
 
 == Backwards Compatibility
 
