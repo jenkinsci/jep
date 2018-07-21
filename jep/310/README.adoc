@@ -1,0 +1,252 @@
+= JEP-310: Essentials AWS auto-configuration
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 310
+
+| Title
+| Essentials AWS auto-configuration
+
+| Sponsor
+| https://github.com/batmat[Baptiste Mathus]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2018-07-10
+
+| BDFL-Delegate
+| https://github.com/rtyler[R. Tyler Croy]
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-52210[JENKINS-52210] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+| Requires
+| link:https://github.com/jenkinsci/jep/tree/master/jep/300[JEP-300],
+link:https://github.com/jenkinsci/jep/tree/master/jep/307[JEP-307]
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+One of the four pillars of Jenkins Essentials is that it should be link:https://github.com/jenkinsci/jep/tree/master/jep/300#sane-defaults[autoconfigured with sane defaults for various cloud platforms]. This specification explains what setup is done to autoconfigure Jenkins Essentials to run in the link:https://aws.amazon.com[Amazon Web Service] environment.
+
+== Specification
+
+=== Global overview
+
+The setup uses an link:https://aws.amazon.com/cloudformation[AWS _CloudFormation_ template] that instantiates the right resources.
+
+It creates an EC2 instance, to host the Jenkins Essentials master in a dedicated Instance Profile.
+The master will be able to provision agents from EC2, and store artifacts directly in S3.
+
+=== Used plugins and configuration
+
+* link:https://plugins.jenkins.io/ec2[EC2 plugin]: to provide dynamically provisioned agents
+  footnote:[even more important for Jenkins Essentials which is configured with the link:JENKINS-49861[sane 0-executor for the master node]].
+* link:https://plugins.jenkins.io/artifact-manager-s3[Artifact Manager on S3 plugin]: to store artifacts and Pipeline stashes in Amazon S3.
+
+// JENKINS-52342 for ^ which is the design, but not done fully yet.
+
+As a general rule for Essentials, we are using the `configuration-as-code` plugin to do the necessary configuration.
+
+*No credentials* are specified.
+The permissions are retrieved dynamically through the instance profile used when creating the EC2 instance for the Essentials master.
+
+=== Instance Profile and IAM role
+
+A dedicated instance profile is created by the _CloudFormation_ template to allow creating EC2 instances for agents, and access a specific S3 bucket to store artifacts and Pipeline stashes.
+
+==== EC2 policy
+
+[source,json]
+"Statement": [{
+    "Sid": "ControlEC2JenkinsAgents",
+    "Effect": "Allow",
+    "Action": [
+        "ec2:DescribeInstances",
+        "ec2:TerminateInstances",
+        "ec2:RequestSpotInstances",
+        "ec2:DeleteTags",
+        "ec2:CreateTags",
+        "ec2:DescribeRegions",
+        "ec2:RunInstances",
+        "ec2:DescribeSpotInstanceRequests",
+        "ec2:StopInstances",
+        "ec2:DescribeSecurityGroups",
+        "ec2:GetConsoleOutput",
+        "ec2:DescribeImages",
+        "ec2:CancelSpotInstanceRequests",
+        "ec2:StartInstances",
+        "ec2:DescribeAvailabilityZones",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeKeyPairs"
+    ],
+    "Resource": "*"
+}]
+
+==== S3 bucket policy
+
+[source,json]
+"Statement": [{
+        "Sid": "TodoRefineSecurity-JENKINS-52342",
+        "Effect": "Allow",
+        "Action": [
+            "s3:PutObject",
+            "s3:GetObject",
+            "s3:ListBucket",
+            "s3:DeleteObject"
+        ],
+        "Resource": "*"
+    }
+]
+
+CAUTION: Currently the prototype is configured with the way shown above.
+We would like to reduce the access to only the dedicated bucket created for Jenkins Essentials usage.
+We are tracking this improvement as link:https://issues.jenkins-ci.org/browse/JENKINS-52342[JENKINS-52342].
+
+=== Security groups
+
+==== Master
+A dedicated group is created to allow access to the following ports:
+
+22:: restricted to the `SSHLocation` parameter value, passed as CloudFormation template parameter at creation time.
+The user will be strongly advised to use their own public IP to restrict SSH access to the master to her only (i.e. discourage `0.0.0.0/0`).
+footnote:[using `curl ident.me` is often to help find out one' public IP and pass the value to the CloudFormation template parameter.]
+8080:: not restricted.
+50000:: not restricted (for potentially connecting agents with JNLP).
+
+NOTE: The port `50000` is not currently enabled inside the Essentials instance.
+But we keep it allowed at the security group and Docker container level.
+This will allow users to connect for instance Windows agents through the  Jenkins `JNLP` protocol by simply enabling the fixed agents port under `/configureSecurity/`.
+
+
+==== Agents
+
+A dedicated group is created to allow only access to port `22`.
+
+== Motivation
+
+Nothing was existing to provide an autoconfigured setup of Jenkins in a specific Cloud environment.
+
+== Reasoning
+
+=== Instance Profile
+
+Early during the prototype, a dedicated _service user_ was used.
+This was replaced by instance profile later for various reasons.
+
+This is because it is the recommended path for AWS, but also because doing so makes the configuration leaner:
+both the _EC2_ and _Artifact Manager on S3_ plugins will autodetect their permissions if no explicit credentials are specified.
+
+=== `s3:DeleteObject` permission on the S3 bucket
+
+Keeping this permission has been questioned; why allow deletion permission when:
+
+* _pure_ AWS administrators may prefer to define a lifecycle policy to clean up things;
+* S3 is so cheap that _we_, at least, should not care about deletions?
+
+We decided to keep it because:
+
+* link:https://github.com/jenkinsci/jep/tree/master/jep/300[Essentials is critically about simplicity].
+  If a user, or us a bit later, wants to enable to delete checkbox of the `artifact-manager-s3` plugin, this should be possible without having to go through the AWS console or CLI to find the right settings;
+* Keeping everything _forever_ is also probably some kind of liability.
+  And if some users have previously been administering a Jenkins instance previously, but they are not AWS experts, their expectation would probably be that artifacts are going to be cleaned up over time, according to the `buildDiscarder` policy in place.
+
+== Backwards Compatibility
+
+There are no backwards compatibility concerns related to this proposal.
+
+== Security
+
+=== Allowed certificates
+
+link:https://github.com/jenkinsci/jep/tree/master/jep/307#security[JEP 307] aggressively restricts the list of certificates that will be allowed to be used from inside Essentials container.
+
+Two more need to be re-enabled for the Essentials AWS flavor to be able to auto-detect permissions given by the current instance profile:
+
+* `Baltimore_CyberTrust_Root.crt`: for S3.
+* `Amazon_Root_CA_1.crt`: for EC2.
+
+=== SSH access to the server
+
+A CloudFormation template parameter `SSHLocation` is used to define the IPs allowed to access the master using SSH.
+
+Users are advised to pass only their own IP when creating their setup.
+But SSH is deemed sufficiently secure so that we still allow users to pass `0.0.0.0/0` as a value if they want this.
+
+=== HTTPS by default
+
+(?) TBD FIXME
+
+=== Agent port
+
+WIP: FIXME: do we even need to open it. Does the agent actually connect through the SSH pipe?
+
+== Infrastructure Requirements
+
+[[aws-account]]
+=== AWS account for testing
+
+If we want to be able to run automated tests, we need some form of AWS account to actually check the CloudFormation works and keep working. See below <<aws-testing>>.
+
+== Testing
+
+[[aws-testing]]
+=== AWS testing of CloudFormation template
+
+Given an <<aws-account>>, we can use the `aws` CLI to automatically trigger the provisioning, then retrieve what is neeeded to run automated tests:
+
+* create the stack using `aws cloudformation create-stack ...`
+* retrieve the EC2 instance IP using:
+** `aws cloudformation list-stack-resources --stack-name <just-created-stack>`,
+** and `aws ec2 describe-instances --instance-ids i-<retrieved-ID> | grep -i publicIp`
+* run some tests, e.g.:
+** is the <masterIp>/login URL reachable, etc..
+** use `ssh ec2-user <masterIp> docker exec jenkins-essentials <some-command>` to do additional automated checks from the running instance itself.
+
+== Prototype Implementation
+
+The prototype implementation is available at https://github.com/jenkins-infra/evergreen.
+
+More specifically, the AWS part is available under the link:https://github.com/jenkins-infra/evergreen/tree/34371a6c94c5aa0274771d775da8757f544c2c4c/distribution/environments/aws-ec2-cloud[distribution/environments/aws-ec2-cloud] directory.
+
+== References
+
+* link:https://github.com/jenkins-infra/evergreen/pull/128[Pull request which contributed this feature]
