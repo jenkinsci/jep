@@ -126,12 +126,12 @@ link:https://jenkins.io/conduct[Code of Conduct].
 * Use existing proposal and <<pull-request, PR process>>
 * Announce new SIG on jenkinsci-dev@googlegroups.com
 * Submit a pull request to the link:https://github.com/jenkins-infra/jenkins.io/[jenkins-infra/jenkins.io] repository
-** Add SIG metadata to the `/content/_data/sigs/${sigId}.adoc` file.
-Use existing files in the directory as examples
 ** Create a `/content/sigs/${sigId}` directory.
 This directory can be used to store any SIG-related pages, docs, schedules, roadmaps, etc.
 ** Create a `/content/sigs/${sigId}/index.adoc` file.
 It will be used as a landing page for your SIG.
+The `index.adoc` will also contain metadata about the SIG.
+See other files in the directory for examples of what that should look like. 
 
 ==== SIGs and JEPs
 
@@ -214,10 +214,11 @@ scheduled.
 ==== Chats
 
 SIGs can *optionally* create dedicated channels for chats.
-These chats may be located in IRC, Gitter or other channels.
+These chats may be located in IRC, Gitter, Slack, or other channels.
 SIG leaders set up channels on their own, unless special permissions are needed
-(INFRA tickets should be created then).
+(in that case, INFRA tickets should be created).
 If such chats are created, they should be referenced in SIG metadata.
+
 
 ==== Create the GitHub teams
 
