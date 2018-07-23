@@ -1,0 +1,493 @@
+= JEP-207: External Build Logging support in the Jenkins Core
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 207
+
+| Title
+| External Build Logging support in the Jenkins Core
+
+| Sponsor
+| link:https://github.com/oleg-nenashev[Oleg Nenashev]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2018-07-23
+
+| BDFL-Delegate
+| link:https://github.com/jglick[Jesse Glick]
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+On large-scale Jenkins instances master Disk and Network I/O become bottlenecks in particular cases.
+Build logging and Task reporting are one for the most intensive I/O consumers,
+hence it would be great to somehow redirect them to an external system.
+This is a continuation of the original story we had back in 2016
+(see the public design document
+link:https://docs.google.com/document/d/1_bquSeA_lC7zJhQoWhxlSKJAg6b8duNbyQ15zCz-e4Y/edit#[here]).
+
+This Jenkins enhancement proposal documents changes in the core required to achieve
+the external **build** logging objective
+(see _Reasoning_ for explanation of the scope).
+Support of other logging types will be documented in subsequent JEPs.
+
+== Specification
+
+=== Top-level requirements
+
+* All or almost all build logging is moved from Jenkins filesystem to External Build Log Storage
+** ON: “Task” logging is not considered as a requirement after the scope change
+* Minimize log traffic between Jenkins agents and the master, logs should be reported from slaves directly when it is possible
+* External Build Log Storage has an extensible and pluggable architecture
+* Reference implementations:
+   * File-system-based storage (current implementation)
+   * One external build log storage based on the open-source stack, based on Fluentd/Logstash and CloudWatch for AWS
+   * Nice2Have: Elasticsearch-Logstash-Kibana for self-hosted solutions
+* Jenkins Pipeline is supported out of the box
+* Real-time and Annotated run console logs should be still supported
+* Data migration flow for upgrading instances
+* Reference External Build logging implementation provides a feasible performance and fault-tolerance compared to the original filesystem based solution
+* All Global Configurations are designed in a way that they can be configured via Jenkins Configuration-as-Code Plugin OOTB[e][f]
+Presumptions, obstacles and limitations (braindump)
+
+This section contains a not-so-sorted top-level description (aka “braindump”) of use-cases and concerns we need to address in the design.
+
+==== Events
+
+In this story we consider Build logs as a sequence of events, which need to be registered in the system.
+
+1. We cannot handle all kinds of executions in Jenkins since plugins may have their specific implementations
+2. For console logs the minimal atomic item for Event is a _line_ (for I/O Stream implementations) or _event_
+
+Such events may also include metadata so that they can be queried by Jenkins
+(e.g. "get all log entries for a build step") or other log consumers.
+
+==== External Build Logging System
+
+1. We do not implement new external logging system on our own,
+we want to integrate with existing open-source and/or proprietary systems
+2. The build reporting system should support….
+** Reporting of events - the build log will be splitted to multiple (potentially thousands) events.
+These timestamped events may be delivered to the storage systems in a random order
+(e.g. in `parallel()` builds for Pipeline)
+** The reporting may be performed in parallel
+*** Reporting of log data from master and agents will not be synchronized
+*** Reporting from a single instance (e.g. Master) may be also parallel
+3. Multiple Jenkins masters may be connected to the same External Log storage
+
+==== Build logging destinations
+
+Depending on the environment,
+different build logging destinations may be used.
+The solution should be generic enough in order to support common destination types
+The following storage types should be supportable:
+
+* FileSystem-based storage (default implementation)
+* Industry-standard External Build Logging and storage systems:
+Fluentd, Logstash, Elasticsearch, etc.
+* SQL-based storages
+* No-SQL storages: Key-value storages, Document-based storages
+
+==== Number of Logging System destinations
+
+* We will support different External Build Logging system for different builds
+** It allows updating without data migration
+** It allows configuring different loggers[n][o][p]
+
+Requirements:
+
+* We implement “LoggingMethodLocator” extension point, which allows tweaking logging strategies
+* By now we do not provide specific implementations excepting reference ones, but we can tweak logging destination via JobProperty or NodeProperty later
+   * Pipeline step / declarative will be complicated since we may lose some logging info (self-configuring logging within Pipeline, like JENKINS-41929)
+Secret handling during Log reporting
+* Logging should be performed on both master and slave
+* Secrets should be shaded on both sides => password suppression rules should be executed on both master and slaves side
+* This suppression rules should be passed to the node. It causes a potential security [q][r][s]risk if the implementation does not capture secrets **properly**, because they may go to location Jenkins admin does not control (external storage)
+   * JG: If a secret is defined in an environment variable, we are already sending it to the agent via `RemoteLaunchCallable.env`. So having the `ConsoleLogFilter` also include the same information is not an issue.
+Proposals
+* Agent <=> Master communication should be always performed via encrypted protocol when we use external build logging (ideally needs a NodeMonitor)
+* We should pass secret filtering options to the remote launcher when we invoke it
+Log annotation
+Notes
+* According to the “Indexing” approach, we have binary and text annotations
+* ConsoleNote is technically a binary one, which is being encoded to a string with a prefix to the output stream
+Proposals
+1. Log annotations should be performed on the master and agent side
+2. Binary annotations (ConsoleNote classes) should be encoded into HEX representation and stored as additional annotation fields[t]
+   1. They will be decoded by Jenkins master[u][v][w] only when it displays it
+
+==== Log browsing
+
+1. Log browsing should support both local and remote Logging systems
+2. The interface should support…
+   1. Querying and Filtering logs
+   2. Progressive log output (for running builds and tasks)
+   3. Annotation visualization
+Proposals
+* Annotations should be stored in the external storage
+Log rotation
+* Log rotation is performed as for any other components within Jenkins builds
+
+=== Design
+
+The following new API entities will be introduced:
+
+* `LoggingMethod` and `LogStorage` - objects defining log reporting and browsing logic
+* `Loggable` - interface for objects supporting external logging
+* `LoggingMethodLocator` - extension point for locating `LoggingMethod` and `LogStorage`
+
+Implementations:
+
+* File-based `LoggingMethod` and `LogStorage` -
+logging to the local FileSystem, implements compatibility mode
+* No-op `LoggingMethod` and `LogStorage` -
+Fallback implementations for reporting errors
+
+The introduced entities are described below.
+
+==== NEW: Loggable interface
+
+This is a new interface,
+which will mark all objects supporting external logging.
+In the current design this interface will be implemented only by `Run` instances,
+but other log types may be supported in further implementations.
+
+Loggable interface should provide the following methods:
+
+* Getters for the `LoggingMethod` and `LogBrowser` being used in the object
+** Default implementation - consult with `LoggingMethodLocator` extensions
+* Getters for default LoggingMethod and LogStorage
+** These getters will be used if there is no `LoggingMethod` and `LogBrowser` configured for the item
+** For example, `Run`s will be referring File-based storage to retain compatibility
+* `boolean isLoggingFinished()` - indicates that there is no new logging being performed
+* `Charset getCharset()` - method, which defines the charset to be used
+** Some instances like `Run` allow setting charsets explicitly.
+** By this method this requirement is propagated to logging methods
+* `getLogFileCompatLocation` - provides file path to the File-based storage
+** This method is needed, because instances like `Runs` have complex logic which defines the storage location
+
+==== NEW: LoggingMethod class
+
+Logging method class defines how the logs should be sent to the storage.
+Logging method generally does not define the storage itself,
+because it may be pointing to intermediate log collectors like Fluentd or Logstash.
+
+Methods to be offered:
+
+* `BuildListener createBuildListener() throws IOException, InterruptedException` -
+Build Listener provider.
+** This listener will receive build events and put them to the storage
+** Implementations are responsible to consult with Jenkins security logic
+like `ConsoleLogFilter` externsion points
+* `TaskListener createTaskListener() throws IOException, InterruptedException` -
+Same as `createBuildListener()`, but for tasks.
+This is a stub for other task types support in the future
+* `Launcher decorateLauncher(@Nonnull Launcher original, @Nonnull Run<?,?> run, @Nonnull Node node)` -
+Launcher decorator for logging.
+It allows overriding logging in tasks being invoked on agents so that
+the implementations can send logs to external storages directly
+without forwarding logs to the master.
+* `LogBrowser getDefaultLogBrowser()` -
+Method, which lets LoggingMethod to provide a default `LogBrowser`
+which is expected to be used with it.
+
+==== NEW: LogBrowser class
+
+Log Browser class is an instance,
+which refers ways to access the logs on the remote storage.
+
+It should offer the following methods:
+
+* `AnnotatedLargeText<T> overallLog()` -
+Get large text for the entire execution/run
+* `AnnotatedLargeText<T> stepLog(@CheckForNull String stepId, boolean completed)` -
+Get large text for a particular step
+
+Some implementations should be also moved from `Run` and generalized.
+It will provide default convenience methods which can be overridden by implementations for better peformance.
+
+* `InputStream getLogInputStream() throws IOException` -
+get log as an input stream
+* `Reader getLogReader() throws IOException` -
+get lof as a Reader
+* `String getLog() throws IOException`
+* `List<String> getLog(int maxLines) throws IOException`
+* `File getLogFile() throws IOException` -
+Compatibility method, which retrieves the log as a `File`.
+By default a temporary file will be created, unless an implementation offers something better
+
+==== NEW: LoggingMethodLocator extension point
+
+This is a low-level extension point, which allows locating
+`LoggingMethod` and `LogBrowser` to be used for a particular `Loggable` item.
+
+This extension point should offer static methods which consult with all implementations
+and provide proper extensions.
+If there is no `LoggingMethodLocator` providing implementation,
+fallback `FileLoggingMethod` and `FileLogBrowser` should be used.
+
+==== NEW: FileLoggingMethod and FileLogBrowser
+
+These classes implement extension points and contain the
+original logic for the Filesystem logging.
+All Filesystem-specific logic from `hudson.model.Run` and other such classes
+should be moved to these implementations.
+
+==== Patches in Run and AbstractBuild
+
+Integration with `Loggable`:
+
+* `Run` instance should implement `Loggable`
+* `Run` stores `LoggingMethod` and `LogStorage` references in fields.
+These fields can be persisted on the disk
+* `Run#onLoad()` method restores references to the owner which are stored by `LoggingMethod` and `LogStorage`
+* All methods in `Run` and child classes implement new APIs used by `LoggingMethod` and `LogStorage`
+
+File operations:
+
+* File logging operations are moved to `FileLoggingMethod` and `FileLogBrowser`
+* `Run#getLogFile()` method should be deprecated,
+all usages in the Jenkins core should be cleaned up.
+The method will be still invoking the compatibility layer from `LogBrowser`
+so read-only API users do not lose the compatibility
+
+== Reasoning
+
+Being compared to the original design in 2016,
+this design limits the scope of work so that it can be implemented and delivered
+in a reasonable timeframe.
+
+=== Why LoggingMethod and LogBrowser are separated?
+
+After the initial prototyping it was decided to separate Logging Method and LogBrowser
+to separate pluggable entities.
+It is different from how Pipeline `LogStorage` is implemented in
+link:https://github.com/jenkinsci/workflow-job-plugin/pull/27[this pull request].
+
+Reasons for such approach:
+
+* `LoggingMethod` does not define where logs will be actually stored.
+For example, logging to Fluentd or Logstash may end up in various storages
+depending on their configuration
+(e.g. in Elasticsearch, Redis, AWS CloudWatch, etc.)
+* Log browsing logic may be shared.
+E.g. with the current design logs can be browsed from Elasticsearch
+independently of how the logs get there (Logstash or direct push)
+* It gives more flexibility to Jenkins admins and plugin developers
+
+=== Log migration
+
+During the original discussions in 2016, the log migration topic has been raised.
+When a logging system is configured, one may expect the logs to be moved
+(e.g. from filesystem to the external storage).
+
+* We will NOT implement migration for old builds
+* We are going to provide multiple `LoggingMethod`s in parallel on a single instance according to the current design
+* We will show logs from the file system till they get log-rotated
+
+Justification:
+
+1. Not required since we offer smooth migration. All logs on the disk on old instances will be rotated eventually
+2. It would be complicated since we may have multiple log sources.
+3. We would also have to take ConsoleNote annotations into account
+
+=== Encoding of log files
+
+Currently Jenkins does not set limitations for encoding while doing logging.
+Any charsets may be used on agent and master sides, and it is hard to manage them.
+
+Although it is expected that all logs eventually switch to UTF-8
+(see the link:/jep/JEP-206[JEP-206 proposal] for Pipeline),
+in meantime external logging **may** be performed in different encodings.
+
+* `Loggable` implementations can define the charset to be used
+* `Logging Method` and `Logging Browser` implementations may
+implement support of charsets or reject them,
+it is up to the implementation
+* If the implementation does not support a charset,
+`ExternalLoggingMethodLocator`can skip the logging method
+
+=== Client-side-only Log Browsing
+
+* We investigated Kibana usage for client-only log browsing during ELK prototyping, and we were able to create it for non-authenticated instances
+* For real-world there are limitations of things to consider:
+** Master-provided logs may be required
+   by CLI, REST API, or by plugins relying on the current master-side
+   implementations (like BlueOcean)
+** Isolation. The log storage (e.g. Elasticsearch or AWS Cloudwatch) may be inaccessible to users at all. Services may have some kind of access tokens for it, but we should not expect any Jenkins user to have such access
+** Network isolation. The services may be just unreachable for user machines
+** …
+
+In the current design it was decided that log browsing by default will go through the master.
+Client-side logging may be implemented via custom `RunAction` implementations.
+Support of client-side log in `LogBrowser` may be added in a subsequent JEP.
+
+=== User Interface
+
+In order to minimize the implementation on the core side,
+there will be no User Interface for log management in the
+Jenkins core.
+
+Log management interface will be implemented in the
+External Logging API plugin.
+
+== Backwards Compatibility
+
+=== Storage compatibility
+
+This JEP guarantees full compatibility of Jenkins instances when
+they are upgraded and keep the legacy Filesystem-based storage.
+
+On the other hand,
+some incompatibilities may be introduced for the new external logging modes.
+
+* Logging of non-UTF-8 charsets
+* Application of non-serializable `ConsoleLogFilter` implementations
+* etc.
+
+External logging implementations will be responsible to document
+known incompatibilities and to warn users about it.
+Some checks will be performed at the External Logging API plugin level.
+
+=== Run API compatibility
+
+`hudson.model.Run` offers `File getLogFile()` method and several other methods,
+which cannot be universally mapped to external storages.
+
+In order to support them, all `LogBrowser` implementations are
+expected to provide a `File toLogFile()` method which ensures compatibility with such old API.
+It may be done via creating temporary files,
+so that read-only calls to `Run#getLogFile()` remain compatible.
+
+Such caching approach implies a performance hit, but the raw `File`-based APIs are deprecated by this design anyway.
+There will be no performance overhead on the built-in File-based storage.
+
+Also, caching does not prevent from compatibility issues if one of the plugins
+invokes `Run#getLogFile()` and then performs modification of such file.
+Such logic will be considered as incompatible for new External Logging implementations.
+
+=== API Extensibility
+
+The designed API can be extended in the future.
+Although this JEP addresses only external logging for runs,
+the API is designed in a way which allows supporting other log types later.
+
+== Security
+
+This JEP defines the following security requirements:
+
+* All newly introduced methods should follow the Jenkins security model
+and perform user and queue authentication permission checks where necessary
+* Existing sensitive information masking logic should be executed
+on master and agent
+*BEFORE* logs are submitted to the external storage.
+External log storage should not expose secrets
+* The following sensitive data must be masked by default
+** Environment variables and parameters marked as _sensitive_
+** Credentials contributed by _Credentials Binding_ plugin
+** `ConsoleLogFilter` implementations if they are `Serializable`
+(the most of Pipeline-compatible implementations are already serializable)
+* `ConsoleAnnotator`-based secret masking (e.g. _Mask Passwords_ plugin)
+should be implementable in plugins
+
+This Jenkins Enhancement Proposal does not define strong security
+requirements for external storage implementations.
+These implementations are responsible to define their security model.
+
+== Infrastructure requirements
+
+There is no special infrastructure requirements defined for
+this JEP.
+Subsequent JEPs for the implementations may define such infrastructure
+requirements.
+
+== Testing
+
+=== Functional testing
+
+All tests will be implemented using Jenkins Test Harness or
+Acceptance Test Harness (ATH) frameworks.
+
+The following use-cases must be covered:
+
+* Backward compatibility
+* Upgradeability - upgraded instances use the Filesystem Storage by default
+* Smoke tests - logging Method locators are invoked for new runs
+
+=== Integration testing
+
+Jenkins core will provide Logging methods and browsers only for the
+File System Log storage.
+This storage will be covered by existing tests for jobs.
+
+External Logging implementations are expected to implement integration
+tests using `DockerRule` or similar technologies,
+if the target log storage allows it.
+
+Once JENKINS-TODO is implemented, integration tests with _External Task Logging API Plugin_
+and one of the reference implementations should be added to the
+`essentialsTest()` run.
+
+=== Load Testing
+
+There is no special log testing requirements for this story.
+External Logging API and its implementations are responsible to execute
+performance and load testing,
+if deemed necessary.
+
+== Prototype implementation
+
+* https://github.com/jenkinsci/jenkins/pull/3557/files
+* https://github.com/oleg-nenashev/external-logging-api-plugin
+* https://github.com/oleg-nenashev/external-logging-logstash-plugin
+
+== References
+
+* link:https://docs.google.com/document/d/1_bquSeA_lC7zJhQoWhxlSKJAg6b8duNbyQ15zCz-e4Y/edit#[External Task Logging API design, 2016]
+* link:https://speakerdeck.com/onenashev/jw2016-hackathon-external-build-logging-prototype-demo[External Build Logging demo slides, 2016]
+* link:https://github.com/jenkinsci/custom-war-packager/tree/master/demo/external-logging-elasticsearch[External Task logging with Elasticsearch demo, 2018]
