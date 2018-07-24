@@ -1,0 +1,279 @@
+= JEP-0000: External Logging API plugin
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 0000
+
+| Title
+| External Logging API Plugin
+
+| Sponsor
+| link:https://github.com/oleg-nenashev[Oleg Nenashev]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2018-07-24
+
+| BDFL-Delegate
+| :bulb: Link to github user page :bulb:
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+| Requires
+| link:/jep/jep-207[JEP-207]
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+On large-scale Jenkins instances master Disk and Network I/O become bottlenecks in particular cases.
+Build logging and Task reporting are one for the most intensive I/O consumers,
+hence it would be great to somehow redirect them to an external system.
+This is a continuation of the original story we had back in 2016
+(see the public design document
+link:TODO[here]).
+JEP-TODO defines requirements to the external logging system and Core APIs.
+
+The External Logging API plugin is a separate plugin
+which offers shared functionality to External Logging implementations.
+
+* Configuration UI
+* Extension Points for External Logging implementations
+* Base classes for external logging,
+which simplify implementations
+* Other shared utility classes
+
+== Specification
+
+=== Event class
+
+Event is an atomic entry of the external logging.
+In the data model it includes the following fields:
+
+* `id` (long) - ID of the message.
+  It must be unique within a single `LoggingMethod` writer
+* `message`(string) - Contains the message body.
+  It may be a single-line or a multi-line message.
+  The message may also contain annotations.
+* `timestamp` (long) - Timestamp of the message,
+  measured in milliseconds, between
+  the current time and midnight, January 1, 1970 UTC
+* `data` (`Map<String, Serializable>`) - additional metadata.
+  This metadata will be used to categorize event entries.
+
+Some metadata is mandatory.
+Requited fields are defined below.
+
+==== Event metadata
+
+The following metadata entries are required to be present
+for all event entries:
+
+* `jenkinsId` - Instance ID of the Jenkins instance
+* `loggableType`  - Type of the `Loggable` entry, e.g. `run`
+* `loggableId` - Identifier of the `Loggable` entry
+
+==== Run metadata
+
+The following metadata entries are required to be present
+for all `hudson.model.Run` event entries:
+
+* All event metadata
+* `jobId` - ID of the Job, should be provided by Unique ID Plugin
+
+==== Pipeline  metadata
+
+* All Run metadata
+* `stepId` - Identifier of the step ("node")
+
+=== Extension Points
+
+The plugin should offer the following extension points:
+
+* `ExternalLoggingMethodFactory` -
+produced `ExternalLoggingMethod` instances for Runs and, eventually, other objects.
+This extension point implements `Describable`
+and should be configurable via UI.
+* `ExternalLogBrowserFactory` -
+Same as above, but for `ExternalLogBrowser`
+
+=== ExternalLoggingMethodFactory and classes
+
+Produces `ExternalLoggingMethod` instances for Runs and, eventually, other objects.
+This extension point implements `Describable`
+and should be configurable via UI.
+
+ExternalLoggingMethod is a new extension point on the top of `LoggingMethod`:
+
+* It implements `LoggingMethod` interfaces
+* It provides a new `createWriter()` method,
+which produces a `ExternalLoggingEventWriter` class instance.
+** This method automatically injects the mandatory metadata for events
+** An abstract `_createWriter()` method is offered for implementation by downstream implementations
+* Being compared to `LoggingMethod`,
+the implementation is designed to always perform logging
+from the agent side
+
+ExternalLoggingEventWriter class:
+
+* The class is `Serializable`.
+It will be sent to the agent side.
+* The class offers the following abstract methods:
+** `void writeEvent(Event event) throws IOException`
+- writing event to the remote storage
+* The class also stores metadata, which may be injected into the events
+** The class stores a Map of Serializable metadata entries
+** The class offers API, which allow setting the metadata.
+   This API will be used by `ExternalLoggingMethod` implementations and other logic
+   to provide additional metadata if required
+
+=== ExternalLogBrowserFactory and classes
+
+This factory just produces instances of `ExternalLogBrowser`.
+This class offers an abstraction layer for external log browsing
+and so far does not implement any custom methods.
+
+=== JSON-based external-logging layer
+
+The API Plugin should offer a convenience layer in order
+to support a number of most common logging providers like
+Logstash, Fluentd, Elasticsearch, AWS CloudWatch, etc.
+
+This layer should provide the following features:
+
+* Utility classes for reading and writing JSON Events,
+including parsing/writing `ConsoleNote` objects
+* Base classes for constructing JSON queries for fetching data
+
+=== Configuration
+
+External Logging API plugin should be fully configurable via
+WebUI and _Configuration-as-Code Plugin_.
+It includes:
+
+* Selection of `LoggingMethod` and `LogStorage` factories
+* Configuration of built-in External Logging and Log Browser factories
+* Any other configuration options
+
+=== Reference implementation
+
+As a reference implementation of the _External Logging API_ plugin,
+a new _External Logging for Elasticsearch Plugin_ will be implemented.
+Other implementations may be also created.
+
+== Reasoning
+
+=== Why separate plugin?
+
+One may say that all bits in the current design could be implemented
+as a part of the Jenkins core.
+It is true, but detaching of the plugin is intentional:
+
+* The plugin will have a separate release cycle so that changes in it
+  can be delivered and backported independently from the core's release cycle
+* The approach allows keeping the patches on the core's side minimal
+
+All External Log Storage implementations are expected to extend this plugin
+instead of just using API provided by the Core.
+Core APIs may be still used to define custom `LoggingMethodLocator` impelemtations,
+e.g. to define a custom logger allocation logic.
+
+=== Why do we need JSON layer?
+
+Many popular log storage engines store events in a JSON format:
+Fluentd, Logstash, Elasticsearch, AWS CloudWatch, etc.
+Offering a JSON layer as a part of the API plugin could greatly
+simplify such implementations.
+
+== Backwards Compatibility
+
+The External Logging API plugin will follow the compatibility requirements
+defined in the upstream JEP-TODO for the core.
+It will also offer API for plugins, which will allow reporting incompatibilities.
+
+== Security
+
+There is no special security requirements defined at this level.
+JEP-207 defines top-level security requirements.
+
+== Infrastructure requirements
+
+There is no special infrastructure requirements defined for
+this JEP.
+Subsequent JEPs for the implementations may define such infrastructure
+requirements.
+
+== Testing
+
+=== Functional testing
+
+All tests will be implemented using Jenkins Test Harness or
+Acceptance Test Harness (ATH) frameworks.
+
+The following use-cases must be covered:
+
+* Backward compatibility
+* Upgradeability - upgraded instances use the Filesystem Storage by default
+* Smoke tests - logging Method locators are invoked for new runs
+
+=== Integration testing
+
+Once JENKINS-TODO is implemented, integration tests with _External Task Logging for Logstash Plugin_
+and other reference implementations should be added to the
+`essentialsTest()` run.
+
+=== Load Testing
+
+There is no special log testing requirements for this story.
+External Logging API and its implementations are responsible to execute
+performance and load testing,
+if deemed necessary.
+
+== Prototype implementation
+
+* https://github.com/oleg-nenashev/external-logging-api-plugin
+* https://github.com/oleg-nenashev/external-logging-logstash-plugin
+
+== References
+
+* link:https://speakerdeck.com/onenashev/jw2016-hackathon-external-build-logging-prototype-demo[External Build Logging demo slides, 2016]
+* link:https://github.com/jenkinsci/custom-war-packager/tree/master/demo/external-logging-elasticsearch[External Task logging with Elasticsearch demo, 2018]
+* link:/jep/jep-207[JEP-207] - External Build Logging support in the Jenkins Core
