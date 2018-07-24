@@ -1,0 +1,442 @@
+= JEP-0000: External log storage for Pipeline
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 0000
+
+| Title
+| External log storage for Pipeline
+
+| Sponsor
+| link:http://github.com/jglick[@jglick]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2018-07-24
+
+| JIRA
+| https://issues.jenkins-ci.org/browse/JENKINS-38381[JENKINS-38381]
+
+| BDFL-Delegate
+| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+
+
+| Requires
+| link:https://github.com/jenkinsci/jep/blob/master/jep/206/README.adoc[JEP-206]: UTF-8 for Pipeline logs
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+This project overhauls the storage of logs for Jenkins Pipeline builds.
+(The log can be seen from the *Console* link,
+but also from Blue Ocean, *Pipeline Steps*, and REST and CLI.)
+There are four stages of changes:
+
+1. Minimize Remoting channel usage for durable task (`sh`, `bat`, `powershell`) output.
+2. Replace aggregation of per-step log files with a single log stream annotated by step ID.
+3. Make the traditional *Console* view use semantic markup of steps and CSS.
+4. Permit the entire log to be sent to a pluggable external service:
+   in the reference implementation, Amazon CloudWatch Logs via Fluentd.
+
+#1 is implemented as a set of independently releasable branches.
+(It is tracked by
+link:https://issues.jenkins-ci.org/browse/JENKINS-52165[JENKINS-52165].)
+#2, #3, and #4 constitute the complete change,
+and depend on #1 as well as
+link:https://github.com/jenkinsci/jep/blob/master/jep/206/README.adoc[JEP-206]
+for use of UTF-8 in Pipeline log files.
+
+The scope does not include other project types (freestyle),
+or other types of logging (system, branch indexing).
+link:https://github.com/jenkinsci/jep/blob/master/jep/207/README.adoc[JEP-207]
+covers at least freestyle build logs,
+and is expected to be integrated with these changes via this
+link:https://github.com/jenkinsci/jep/pull/151[unsubmitted JEP].
+
+== Specification
+
+Details follow the stages enumerated in the abstract.
+Together, the effect is that the `TaskListener` associated with the overall build,
+as well as with each individual step,
+is potentially a “remotable” object which can autonomously stream log messages
+directly from an agent computer to a cloud log service.
+If and when a Jenkins-based UI needs to observe build or step logs,
+the Jenkins master will retrieve messages from that service,
+and either filter them by step,
+or collate them by timestamp into a whole-build log annotated with step metadata.
+
+=== Invert control of durable task polling
+
+When running durable tasks such as `sh` on an agent,
+which involves “tailing” an `output.txt` file in a hidden directory,
+the agent process begins checking for growth in the file at short recurring intervals.
+Any new content is streamed to the master.
+
+By using a `last-location.txt` file to record the last-observed file length,
+the state is persistent, so that log streaming can resume after a restart of the agent process
+(including a restart of the Jenkins master, which forces agents to restart as well).
+
+The principal new API here, in `durable-task`, is `Controller.watch`.
+This takes a newly defined interface `Handler`
+capable of receiving text content and an exit event.
+
+`DurableTaskStep` calls the new APIs when available
+(which it will be for all standard steps),
+otherwise falling back to the old polling mode.
+The step will still poll at infrequent intervals
+in case the agent became unresponsive and the step needs to abort.
+The `Handler` implementation serializes the `TaskListener` coming from the `StepContext`,
+allowing an external log sink to bypass all master communications.
+
+=== Replace aggregation with single log stream
+
+There is a default `StreamLogStorage` implementation based on the traditional `log` file inside the build directory.
+All log messages associated with the build are sent to the `StreamBuildListener` which writes to this file.
+
+Steps which call `getContext().get(TaskListener.class)` for logging
+trigger addition of a `AnnotatedLogAction` (a stateless marker) to the `FlowNode`;
+this supplies a `TaskListener` which prepends the `FlowNode.id` (typically an integer)
+followed by the separator character `¦` to each line of text.
+For example:
+
+[source]
+----
+[Pipeline] sh
+12¦+ whoami
+12¦jglick
+----
+
+Conversely, calls to `LogAction.getLogText()` produce an implementation
+which greps the log for lines with the prefix corresponding to that step
+(stripping off the prefix in the process).
+
+Console annotations (which are ignored by Blue Ocean)
+continue to be written to the log file
+using serialized, signed, and Base64-encoded `ConsoleNote` objects.
+
+=== Semantic markup in HTML console
+
+Every sequence of consecutive lines in the “classic UI” HTML output (`AnnotatedLargeText.writeHtmlTo`)
+produced by the same step (technically, `FlowNode.id`, which is a little more specific as it tracks body blocks)
+is marked with an HTML `<span>` identifying that ID.
+(The absence of such a span indicates log lines not produced by _any_ node.)
+For example:
+
+[source,html]
+----
+<span class="pipeline-node-12">+ whoami
+jglick
+</span>
+----
+
+`StreamLogStorage` implementations get this for free;
+other implementations of `LogStorage.overallLog` must call `startStep` and `endStep`.
+
+`NewNodeConsoleNote` is used to print the introduction of a new node into the log, typically displayed like
+
+[source]
+----
+[Pipeline] sh
+----
+
+with variants for block-scoped steps.
+The generated HTML includes another `<span>` which encodes not just the node ID,
+but also the start node ID (in the case of a block end node),
+the enclosing (start) node ID,
+any the value of any `LabelAction`.
+
+`NewNodeConsoleNote` defines a combination of CSS and JavaScript
+which, together with both kinds of spans,
+implements a richer GUI in the build log view.
+In particular, *(show)* and *(hide)* links are displayed
+which allow output from individual steps or entire blocks
+to be selectively displayed.
+
+=== Pluggable log storage
+
+By default the traditional `log` file is used for build logs.
+Plugins may override this storage in both the read and write aspects.
+`LogStorageFactory` is the entry point for such an override;
+currently a plugin may pick builds to provide storage for,
+but this decision is not persisted
+(pending work in JEP-207).
+
+On the write side, the plugin is able to supply a custom `TaskListener`.
+This interface was already defined by Jenkins core to be remotable.
+An implementation which streams to external storage
+therefore needs only to ensure that all fields are truly serializable
+and that the code to connect to a storage service can be run on a remote node.
+There is a variant which records a `FlowNode.id` association.
+The reference implementation creates JSON-format records to be sent to Fluentd.
+
+On the read side, the plugin can supply an `AnnotatedLargeText`
+for either the build as a whole or one node.
+(While this Jenkins core interface supports HTML rendering for the “classic” UI,
+it is also responsible for generating plain-text content as consumed by Blue Ocean.)
+The reference implementation makes API calls to CloudWatch Logs to serve content
+based on JSON filter patterns to select messages by build and optionally node.
+
+A subtle issue is the use of `LargeText.isCompleted` by UI callers,
+which determines whether a given log is considered finalized,
+in which case no further “AJAX” calls need be made to fetch subsequent content.
+Yet Fluentd does not guarantee that a given record
+has been received by CloudWatch Logs when the log event is sent,
+and in the standard configuration in fact delays log flushes up to a second,
+so without any special effort a build log would sometimes stop refreshing before the end.
+This is solved with a utility class `TimestampTracker`
+(which could if necessary be pushed into a lower layer)
+which records the last (master-side) log message sent for a given scope
+and declines to mark the text block as completed
+unless the last timestamp observed in CloudWatch Logs
+matches the last-delivered timestamp.
+
+Another feature of the reference implementation is to store ``ConsoleNote``s separately in JSON.
+This is accomplished by the `ConsoleNotes` utility
+(again, potentially extractable to a shared API layer)
+which keeps opaque notes (serialized, signed, and Base64-encoded)
+in a separate JSON field,
+so that external log viewers can access the plain text easily.
+The plugin also supplies a sidebar link in builds
+which jumps to a suitably constructed CloudWatch Logs search URL
+displayed in the AWS Console.
+
+== Motivation
+
+The overall goal is to minimize the load placed on the Jenkins master process
+in the common case that the build log is written but not read
+(or read only via an external log browser).
+
+Changes to durable task polling, log aggregation, and especially log pluggability contribute directly to this goal.
+Semantic console markup is a small extension to log aggregation.
+
+=== Push vs. pull for durable task output
+
+Historically, when running durable tasks (`sh` and kin),
+running output was handled by having the master send a callable to the agent at intervals,
+initially short (¼s) but growing exponentially up to some maximum (15s) if the process seems to be idle,
+and resetting to short again if and when fresh output is detected.
+
+Not only is there up to a 15s delay in displaying new output,
+this is wasteful of master and network resources when the process is idle for a long time;
+and sending a `UserRequest` and corresponding response involves a fair amount of Java serialization.
+
+By contrast, non-durable processes (such as those created by `Launcher` in a freestyle build)
+use `RemoteOutputStream` to send content from the agent to master as soon as it is available, minimizing network traffic;
+Remoting is also able to optimize this kind of traffic by sending low-overhead `Chunk` packets of tailored sizes.
+
+Another minor benefit is that `DurableTaskStep` no longer needs to call `StepContext.saveState` every time new output is observed,
+which was potentially expensive since it involves a fresh serialization to `program.dat`.
+
+Therefore durable tasks should switch from the policy of pulling log output to having the agent push log output.
+The content cannot be detected _immediately_, since we are effectively tailing a log file,
+but it can be detected quickly after the log file is updated with minimal overhead.
+
+=== Log file per step vs. single log stream
+
+The original implementation of Pipeline (then “Workflow”) used a separate log file for each step
+as a rough-and-ready solution to the problem of allowing clients of the flow graph
+to determine which log lines came from which steps.
+To provide support for the various methods in `Run` which expect to read a single `log`,
+a method `WorkflowRun.copyLogs` periodically checked for new output in the step log files
+and synchronized it to the master log file.
+The last-read location for each active step was saved in `build.xml` to provide durability.
+
+This system had numerous flaws.
+Most obviously, it requires almost double the disk space.
+
+The copying had an inherent delay,
+ameliorated by eager copying at the time of step completion,
+which can lead to flaky tests if care is not taken to wait for content.
+Content between `parallel` steps was also not interleaved in real time.
+
+A heavily loaded system could wind up consuming considerable CPU and IOPS
+running copy tasks for numerous concurrent builds.
+Not only did many small step log files need to be read frequently,
+but in the safest durability modes every update forced a new `build.xml` write,
+which besides I/O requires Java serialization of possibly large unrelated objects.
+The required synchronization also introduced bottlenecks and occasional deadlocks.
+All the background tasks also sometimes consumed all available threads in an executor pool,
+leading to starvation of more critical operations.
+
+Using a single `log` file and streaming all data directly there
+is considerably simpler, even accounting for the need to handle step ID prefixes.
+It may be less efficient at read time,
+but the primary consideration is minimizing overhead at write time.
+
+=== Semantic markup
+
+The original Pipeline log display hard-coded markup for new node notes
+and failed to expose any of the node association information to potential UIs.
+Usability issues in the “classic” log build log UI continue to be brought up by users as annoyances,
+despite the availability of an alternative UI in Blue Ocean.
+
+Other behaviors, like hiding new node displays
+or hiding all but the first `parallel` branch initially,
+could be added later or even perhaps contributed by plugins.
+
+=== Pluggable storage
+
+The key goals of the JEP are addressed by external-storage implementations:
+the use of appropriate long-term storage systems for critical log data;
+and the ability to stream content from an agent JVM
+without consuming bandwidth on the Remoting channel.
+
+== Reasoning
+
+=== SPI design
+
+An earlier draft implementation exposed a simpler SPI to plugins:
+they could only supply a `TaskListener` for the overall build,
+and an `InputStream` for the overall build content.
+This SPI is effectively still available via `StreamLogStorage`,
+but it has proven inadequate for the CloudWatch Logs implementation at least.
+
+Most obviously, the `InputStream` interface forces the implementation to serve a complete build log
+even when the text for only a single step (~ `FlowNode.id`) has been requested.
+The CloudWatch Logs implementation can do better by using a server-side filter.
+This avoids any need for the `¦` separator used by `StreamLogStorage`.
+
+More subtly, the `InputStream` interface lacked any room for indicating
+that the build content was incomplete.
+
+=== Core dependencies
+
+Some aspects of the implementation would be easier given certain API changes in Jenkins core (or Stapler).
+For example, `ConsoleAnnotators` could be replaced by a proper API;
+some `LargeText` / `AnnotatedLargeText` methods could be better designed for subclassing;
+and some overrides in `WorkflowRun` would make sense pulled up into `Run`.
+For now, these considerations were outweighed by the convenience of running on stock versions of Jenkins LTS.
+
+=== Logging from `Launcher`
+
+When the synchronous `Launcher` interface is used to start non-durable remote processes,
+as happens for example from typical `SCM` implementations delegating to a command-line tool,
+currently the remotability of any supplied `TaskListener` is ignored
+and all log lines are sent over the Remoting channel to be processed on the master side.
+This is likely fixable as a simple patch to `Launcher`,
+which would also benefit JEP-207 by removing any need to use ``DecoratedLauncher``s for freestyle build steps.
+This is likely to also fix encoding issues with such synchronous steps for JEP-206.
+
+(While `TaskListener` was long ago designed to be remotable,
+and `StreamTaskListener` in fact handled that by using `RemoteOutputStream`,
+until now it was not noticeable that `Launcher` fails to remote the listener
+since the effect is the same if the instance is in fact a `StreamTaskListener`.
+
+== Backwards Compatibility
+
+`ConsoleLogFilter` implementations must be safely remotable in order to work correctly on the agent side.
+Since any implementations available for use in Pipeline jobs
+must already have been `Serializable` (to be saved in `program.dat`),
+this is not as significant a restriction as it might at first appear.
+It does mean that besides being careful about state (non-`transient` instance fields),
+implementations may not assume they are running inside the master JVM.
+Integration testing is likely to uncover any critical problems in widely-used filters.
+
+Completed ``FlowNode``s using the old `LogActionImpl` will continue to serve log text from the per-step file.
+This applies both to completed historical builds,
+and to steps completed prior to the resume of a build which spanned the upgrade.
+For the special case of a step running across the upgrade,
+`LogActionImpl` will stream new content to the overall build log,
+as well as to the per-step log.
+(For that purpose, the upgrade is detected as an update to the `workflow-job` plugin.)
+
+Historical builds using `WorkflowRunConsoleNote` should continue to render logs,
+but without the new semantic markup features.
+
+== Security
+
+Any `ConsoleLogFilter` with security-sensitive fields
+(notably the password masking by the `withCredentials` step)
+must take into account that it will now be sent to the agent side,
+where that data is vulnerable to retrieval or even manipulation by rogue builds.
+In the case of `withCredentials` this is not an issue,
+since the agent already received these same secrets as environment variables.
+
+Currently the Fluentd logger in the reference implementation
+assumes that the Fluentd server is accessible anonymously.
+A production-grade implementation should prevent a rogue build
+from writing log lines to a build of an unrelated job.
+This would presume some kind of Fluentd authentication plugin
+capable of processing generated tokens scoped to a particular JSON field,
+which is not yet known to exist.
+Alternately, logs could be sent directly to CloudWatch Logs,
+but this would then perhaps require the master to be able to use IAM
+to create temporary roles and tokens.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal,
+beyond what may arise in the course of testing external log implementations
+based on live services such as CloudWatch Logs.
+
+== Testing
+
+Automated functional tests verify the basic aspects of the change,
+such as the fact that with a suitably remotable `TaskListener`,
+a `sh` step will in fact deliver messages to the log sink constructed on the agent side.
+
+Functional tests for open-source, cluster-based implementations such as ElasticSearch could be run using `docker-fixtures`.
+Tests for SaaS-based implementations such as CloudWatch would require either mocks,
+and/or live tests run on restricted CI machines.
+
+Integration testing against uncommon plugins and usage modes will be needed,
+which will likely use standard mechanisms such as `plugin-compat-tester`;
+and some exploratory testing is expected.
+
+The nature of performance testing remains to be defined.
+The principal constraint is that the production of logs during a build should be efficient;
+Jenkins-based display of logs during a running build or of a completed build
+may involve some overhead to retrieve and collate messages,
+but this is assumed to be a relatively infrequent event.
+
+== Prototype Implementation
+
+The reference implementation is a
+link:https://github.com/jglick/pipeline-log-fluentd-cloudwatch-plugin[`pipeline-log-fluentd-cloudwatch` plugin]
+which depends on a series of Pipeline-related pull requests.
+
+== References
+
+* link:https://issues.jenkins-ci.org/browse/JENKINS-38381[JENKINS-38381]
+* link:https://issues.jenkins-ci.org/browse/JENKINS-52165[JENKINS-52165]
+* link:https://github.com/jenkinsci/workflow-api-plugin/pull/17[workflow-api PR 17]
+* link:https://github.com/jenkinsci/workflow-support-plugin/pull/15[workflow-support PR 15]
+* link:https://github.com/jenkinsci/workflow-job-plugin/pull/27[workflow-job PR 27]
+* link:https://github.com/jenkinsci/durable-task-plugin/pull/62[durable-task PR 62]
+* link:https://github.com/jenkinsci/workflow-durable-task-step-plugin/pull/21[workflow-durable-task-step PR 21]
+* link:https://github.com/jglick/pipeline-log-fluentd-cloudwatch-plugin[`pipeline-log-fluentd-cloudwatch` plugin]
