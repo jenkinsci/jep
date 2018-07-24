@@ -42,7 +42,7 @@ for f in $(ls $JEP_DIR | sort -n); do
 
         cat >> $JEP_INDEX <<EOF
 $jep_status
-| link:${f}/[$description]
+| link:${f}/README.adoc[$description]
 $sponsor
 $bdfl
 
