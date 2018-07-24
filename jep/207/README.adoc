@@ -284,7 +284,7 @@ gets the entire log as a single String
 ** This method is deprecated in `hudson.model.Run`,
 and it should remain deprecated
 * `List<String> getLog(int maxLines) throws IOException` -
-gets a number of log lines as a
+gets a number of log lines as a list of strings
 * `File getLogFile() throws IOException` -
 Compatibility method, which retrieves the log as a `File`.
 ** By default a temporary file will be created, unless an implementation offers something better
