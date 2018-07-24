@@ -179,6 +179,15 @@ This group must be added to the SIG metadata.
 
 Naming convention: `jenkins-${sigId}-sig` (the discussion group)
 
+[[organizations]]
+==== Organizations
+
+At the discretion of the SIG Lead(s), organizations may also join SIGs.
+Organizations may request to join a SIG and will then be listed on the SIG page.
+It is expected that organizations that join a SIG will actively participate in 
+the dicusssion and interation on the SIG. 
+
+
 [[video]]
 ==== Recorded Video Meetings
 
