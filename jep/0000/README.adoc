@@ -347,7 +347,8 @@ For now, these considerations were outweighed by the convenience of running on s
 When the synchronous `Launcher` interface is used to start non-durable remote processes,
 as happens for example from typical `SCM` implementations delegating to a command-line tool,
 currently the remotability of any supplied `TaskListener` is ignored
-and all log lines are sent over the Remoting channel to be processed on the master side.
+and all log lines are sent over the Remoting channel to be processed on the master side:
+link:https://issues.jenkins-ci.org/browse/JENKINS-52729[JENKINS-52729].
 This is likely fixable as a simple patch to `Launcher`,
 which would also benefit JEP-207 by removing any need to use ``DecoratedLauncher``s for freestyle build steps.
 This is likely to also fix encoding issues with such synchronous steps for JEP-206.
