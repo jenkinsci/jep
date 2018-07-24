@@ -168,8 +168,11 @@ It will be sent to the agent side.
 === ExternalLogBrowserFactory and classes
 
 This factory just produces instances of `ExternalLogBrowser`.
-This class offers an abstraction layer for external log browsing
-and so far does not implement any custom methods.
+This class offers an abstraction layer for external log browsing.
+
+`ExternalLogBrowser` will also provide an abstraction layer for
+eventual consistency management.
+This layer will be determined during reference implementation polishing.
 
 === JSON-based external-logging layer
 
@@ -182,6 +185,8 @@ This layer should provide the following features:
 * Utility classes for reading and writing JSON Events,
 including parsing/writing `ConsoleNote` objects
 * Base classes for constructing JSON queries for fetching data
+
+Other convenience layers will be defined during prototyping.
 
 === Configuration
 
@@ -222,6 +227,21 @@ Many popular log storage engines store events in a JSON format:
 Fluentd, Logstash, Elasticsearch, AWS CloudWatch, etc.
 Offering a JSON layer as a part of the API plugin could greatly
 simplify such implementations.
+
+=== Eventually-consistent storages
+
+Some target storages are eventually consistent.
+One cannot just write the data to remote storage and then reliably read it.
+It is critical for log browsers:
+
+* When a run finishes, querying data does not guarantee we get all the data
+* `Loggable#isCompleted()` call is not enough,
+some entries may be missing for "completed" entries
+
+Such issue explains why we need a special watch layer to determine whether logs are actually completed.
+It explains why we need a special logic/queries to determine whether the log is actually complete.
+
+Full logic for the layer should be determined during reference implementation.
 
 == Backwards Compatibility
 
