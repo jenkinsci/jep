@@ -119,7 +119,7 @@ for all `hudson.model.Run` event entries:
 * All event metadata
 * `jobId` - ID of the Job, should be provided by Unique ID Plugin
 
-==== Pipeline  metadata
+==== Pipeline metadata
 
 * All Run metadata
 * `stepId` - Identifier of the step ("node")
@@ -173,6 +173,13 @@ This class offers an abstraction layer for external log browsing.
 `ExternalLogBrowser` will also provide an abstraction layer for
 eventual consistency management.
 This layer will be determined during reference implementation polishing.
+
+=== Pipeline Bridge extensions
+
+The plugin should also implement Pipeline `LogStorage` and `LogStorageFactory` extension points
+so that it transparently supports Pipeline with existing API.
+
+Pipeline Storage JEP is documented in JEP-TODO.
 
 === JSON-based external-logging layer
 
