@@ -186,6 +186,8 @@ At the discretion of the SIG Lead(s), organizations may also join SIGs.
 Organizations may request to join a SIG and will then be listed on the SIG page.
 It is expected that organizations that join a SIG will actively participate in 
 the dicusssion and interation on the SIG. 
+Organization membership is in SIG informational only 
+and grants the organization no special power or voice in that SIG.
 
 
 [[video]]
