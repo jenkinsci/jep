@@ -164,7 +164,7 @@ We need some mechanism to construct a jenkins component in respect with it's lif
 schema is relevant for end-user based on his use of jenkins and it's web UI. Such component are tightly coupled with
 Stapler web framework and the expectation for them to be managed by this framework.
 
-++DataBoundSetter++s & ++DataBoundConstructor++s offer a natural way to construct Jenkins components from a set of key=value pairs. Most
+``DataBoundSetter``s & ``DataBoundConstructor``s offer a natural way to construct Jenkins components from a set of key=value pairs. Most
 jenkins components do rely on them and as such offer a 1:1 match between internal data structure and web UI configuration forms.
 Component to follow UI binding conventions and best practices will then be supported out-of-the-box. The few of them with custom UI binding
 rules should be easily fixed, as the required changes are limited to data binding conventions.
@@ -176,9 +176,9 @@ construction lifecycle and data constraints validation.
 
 ==== Descriptors global configuration
 
-A major exception to this is ++Descriptor++s which in many cases rely on manual parsing of +JSONObject+. In this JEP we
+A major exception to this is ``Descriptor``s which in many cases rely on manual parsing of `JSONObject`. In this JEP we
 propose to offer guidance and recommendation for plugin developers to apply the same databinding mechanisme to descriptor's
-++configure++ method. We published a https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/PLUGINS.md[step-by-step guide]
+``configure`` method. We published a https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/PLUGINS.md[step-by-step guide]
 for this purpose and will open pull-requests on few commons plugins to demonstrate this approach.
 
 Most plugin do already have setters for descriptor's attribte, designed to enable configuration from groovy scripts. We
@@ -208,7 +208,7 @@ tips from web view as additional guidance to end-user reading the doc.
 * We generate a json-schema that can be used by IDE or validation tools to check the yaml syntax is valid and matches the
 target jenkins instance.
 * We _could_ generate more, including dedicated validation tools, linter, etc. Tooling will be discussed in more details
-in https://github.com/jenkinsci/jep/pull/111[JEP-xx].
+in link:https://github.com/jenkinsci/jep/blob/master/jep/208/README.adoc[JEP-208].
 
 
 == Backwards Compatibility
