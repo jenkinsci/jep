@@ -32,9 +32,9 @@ endif::[]
 | Created
 | 2018-07-17
 
-| BDFL-Delegate
-| :bulb: Link to github user page :bulb:
-
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
 //
 //
 // Uncomment if there is an associated placeholder JIRA issue.
@@ -71,7 +71,7 @@ This document documents the Google Summer of Code (GSoC) budgeting process.
 
 === Budget sources
 
-The budget is formed from...
+The budget sources are:
 
 * Payments by Google according to the
 link:https://developers.google.com/open-source/gsoc/help/org-payments[Payments to Google Summer of Code Organizations ]
@@ -103,7 +103,7 @@ open-source conferences like FOSDEM, etc.
 ** Mentor travel grants may cover: transportation costs, visa fees, meals
 ** Transportation costs may be covered only for economy-class travel
 ** Travel grants do NOT cover travel expenses to any other events
-** Travel grants do NOT cover the hotel costs as long as it covered by the event organizer
+** TTravel grants do NOT cover expenses that are already covered event organizers, or other types of sponsors.
 3. Project expenses for students
 ** GSoC budget may be used to cover particular expenses for projects: special equipment costs, SaaS hosting
 ** Project expenses should happen within the GSoC timeframe between start of Community Bonding and end of the last coding phase
@@ -115,7 +115,7 @@ otherwise it is up to the students and mentors to get the setup.
 4. Promotional materials
 ** GSoC budget may be used to promote Google Summer of Code by distributing swag, e.g. stickers, T-shirts and other items.
 Swag may be sent to participants or distributed at community events.
-** GSoC budget may be used to cover swag production costs and delivery costs by common mail
+** GSoC budget may be used to cover swag production costs and delivery costs by regular mail
 ** Swag may be sent out to active GSoC participants, including GSoC students, mentors, org admins, applicants, and other contributors who participated in GSoC
 ** GSoC budget may not be used for any kind of payed advertisement or
 payments to external individuals/organizations for promotion.
@@ -124,7 +124,7 @@ payments to external individuals/organizations for promotion.
 === Approval process
 
 * All expenses should be pre-approved with
-Jenkins GSoC org admins before the expenses are incurred, and as a pre-condition for paymen
+Jenkins GSoC org admins before the expenses are incurred, and as a pre-condition for payment
 * Jenkins org admins are eligible to approve the requests only within the GSoC budget defined in this JEP
 * All payments beyond this budget should be approved by Jenkins Governance Meeting or Jenkins Board
 * According to the SPI process,
@@ -140,7 +140,7 @@ link:https://wiki.jenkins.io/display/JENKINS/Reimbursement+of+Expenses+via+SPI[R
 * It may take a while to get an expense report reimbursed
 (see the _Liability_ section)
 * It is **recommended** that GSoC mentors do the payments for students
-and then reimburse the expenses
+and then seek reimbursement for the expenses. Pre-approval is still required in this case.
 
 === Liability
 
