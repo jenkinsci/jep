@@ -83,6 +83,11 @@
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 
 | Draft{nbsp}:speech_balloon:
+| link:208/README.adoc[JEP-208: Configuration as Code Tooling]
+| link:https://github.com/ewelinawilkosz[Ewelina{nbsp}Wilkosz] from{nbsp}link:https://github.com/praqma[Praqma]
+| _not{nbsp}delegated_
+
+| Draft{nbsp}:speech_balloon:
 | link:211/README.adoc[JEP-211: Java 10 and 11 support in Jenkins]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | TBD
