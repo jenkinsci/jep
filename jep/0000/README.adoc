@@ -65,6 +65,9 @@ endif::[]
 This project overhauls the storage of logs for Jenkins Pipeline builds.
 (The log can be seen from the *Console* link,
 but also from Blue Ocean, *Pipeline Steps*, and REST and CLI.)
+
+== Specification
+
 There are four stages of changes:
 
 1. Minimize Remoting channel usage for durable task (`sh`, `bat`, `powershell`) output.
@@ -88,9 +91,6 @@ covers at least freestyle build logs,
 and is expected to be integrated with these changes via this
 link:https://github.com/jenkinsci/jep/pull/151[unsubmitted JEP].
 
-== Specification
-
-Details follow the stages enumerated in the abstract.
 Together, the effect is that the `TaskListener` associated with the overall build,
 as well as with each individual step,
 is potentially a “remotable” object which can autonomously stream log messages
