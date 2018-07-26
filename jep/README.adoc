@@ -88,6 +88,11 @@
 | _not{nbsp}delegated_
 
 | Draft{nbsp}:speech_balloon:
+| link:209/README.adoc[JEP-209: Configuration as Code YAML Schema]
+| https://github.com/ewelinawilkosz2[Ewelina{nbsp}Wilkosz] from{nbsp}https://github.com/praqma[Praqma]
+| _not{nbsp}delegated_
+
+| Draft{nbsp}:speech_balloon:
 | link:211/README.adoc[JEP-211: Java 10 and 11 support in Jenkins]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | TBD

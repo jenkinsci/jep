@@ -1,4 +1,4 @@
-= JEP-0000: Configuration as Code YAML Schema
+= JEP-209: Configuration as Code YAML Schema
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -13,7 +13,7 @@ endif::[]
 [cols="2"]
 |===
 | JEP
-| 0000
+| 209
 
 | Title
 | Configuration as Code YAML Schema
