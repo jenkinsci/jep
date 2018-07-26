@@ -108,7 +108,7 @@ Changes to be done:
 
 == Motivation
 
-As a Jenkins contributor, I see may users struggling to understand the issue statuses and the version including the fix.
+As a Jenkins contributor, I see many users struggling to understand the issue statuses and the version including the fix.
 Currently we have an issue with the _FIXED_ status.
 Depending on the component type, it may mean "merged" or "released".
 E.g. Jenkins JIRA linking bot automatically marks merged tickets with "FIXED" keyword as _FIXED_.

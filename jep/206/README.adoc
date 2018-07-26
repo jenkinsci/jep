@@ -1,4 +1,4 @@
-= JEP-0000: Use UTF-8 for Pipeline build logs
+= JEP-206: Use UTF-8 for Pipeline build logs
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -13,7 +13,7 @@ endif::[]
 [cols="2"]
 |===
 | JEP
-| 0000
+| 206
 
 | Title
 | Use UTF-8 for Pipeline build logs
