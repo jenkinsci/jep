@@ -24,7 +24,7 @@ endif::[]
 | link:https://github.com/daniel-beck/[Daniel Beck]
 
 | Status
-| Draft :speech_balloon:
+| Accepted :ok_hand:
 //| Deferred :hourglass:
 //| Accepted :ok_hand:
 //| Rejected :no_entry:

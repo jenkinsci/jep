@@ -43,9 +43,8 @@ endif::[]
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
-| Discussions-To
-|
-link:https://groups.google.com/d/msgid/jenkinsci-dev/20180322210421.4ikcudf7m65yilvo%40blackberry.coupleofllamas.com[jenkinsci-dev@ thread]
+//| Discussions-To
+//| link:https://groups.google.com/d/topic/jenkinsci-dev/6-1mZoKp4hM/discussion[jenkinsci-dev@ thread]
 //
 //
 // Uncomment if this JEP depends on one or more other JEPs.
@@ -84,7 +83,7 @@ In order to standardize Special Interest Group efforts, create maximum
 transparency, and route contributors to the appropriate SIG, SIGs should follow
 the guidelines stated below:
 
-* Meet regularly, at least for 30 minutes every 3 weeks, except November and December
+* Meet regularly, at least for 30 minutes every month
 * Keep up-to-date meeting notes, somewhere publicly linked from the SIG's page on jenkins.io
 * Announce meeting agenda and minutes after each meeting, on their SIG mailing list
 * Record SIG meeting, either via <<video, YouTube Live Streaming>>, or via
@@ -93,8 +92,7 @@ the guidelines stated below:
   (video or text) or the meeting minutes published afterwards.
 * Ensure the SIG's mailing list, and optional chat channel are archived
 * Report activity in the link:https://wiki.jenkins.io/display/JENKINS/Governance+Meeting+Agenda?cache[bi-weekly Governance Meeting] at least once every 6 weeks
-* Participate in release planning meetings and retrospectives, and burndown
-  meetings, as needed.
+* Participate in Governance meetings, as needed.
 * Ensure related work happens in a project-owned GitHub org and repository,
   with code and tests explicitly owned and supported by the SIG, including issue
   triage, PR reviews, test-failure response, bug fixes, etc.
@@ -109,7 +107,7 @@ link:https://jenkins.io/conduct[Code of Conduct].
 
 - **SIG Participant**: active in one or more areas of the project; wide
   variety of roles are represented
-- **SIG Lead**: SIG organizer
+- **SIG Lead**: SIG organizer. SIG may have multiple leaders
 
 === Creation and Maintenance
 
@@ -118,26 +116,43 @@ link:https://jenkins.io/conduct[Code of Conduct].
 * Propose the new SIG publicly, including a brief mission statement, by
   emailing jenkinsci-dev@googlegroups.com and jenkinsci-users@googlegroups.com,
   then wait a couple of days for feedback
+* Define a unique SIG identifier (`${sigId}` below):
+** Permitted symbols: `a-z`, `0-9`, `-`
+** Length: up to 32 symbols
+** Examples: `platform` (Platform SIG), `cloud-native-jenkins`, etc.
 * Organize meetings using video or text as needed. No need to wait for the a
   regularly scheduled Jenkins Governance meeting to discuss. Please report
   summary of ad hoc SIG meetings to the the SIG mailing list.
 * Use existing proposal and <<pull-request, PR process>>
 * Announce new SIG on jenkinsci-dev@googlegroups.com
-* Submit a PR to add a row for the SIG to the table in the jenkins.io/sigs
-  page, to create a kubernetes/community directory, and to add any SIG-related
-  docs, schedules, roadmaps, etc. to your new jenkins.io/sig/foo directory
+* Submit a pull request to the link:https://github.com/jenkins-infra/jenkins.io/[jenkins-infra/jenkins.io] repository
+** Create a `/content/sigs/${sigId}` directory.
+This directory can be used to store any SIG-related pages, docs, schedules, roadmaps, etc.
+** Create a `/content/sigs/${sigId}/index.adoc` file.
+It will be used as a landing page for your SIG.
+The `index.adoc` will also contain metadata about the SIG.
+See other files in the directory for examples of what that should look like. 
+
+==== SIGs and JEPs
+
+Creation of new SIGs does NOT require creation of new JEPs.
+As documented above, am email to the Developer mailing list is enough.
+
+Additional JEPs may be created if SIG Leaders want to define special processes and requirements
+for the Special Interest group (e.g. requirements to be a Security SIG member).
+If such JEPs are created, they will be a subject to the common review process
+defined in link:https://github.com/jenkinsci/jep/tree/master/jep/1[JEP-1].
 
 === Creating service accounts for the SIG
 
 With a purpose to distribute the channels of notification and discussion of the
-various topics, every SIG has to use multiple accounts to GitHub mentioning and
-notifications. Below the procedure is explained step-by-step.
+various topics, every SIG may use multiple communication channels.
+Below the procedure is explained step-by-step.
 
 [NOTE]
 ====
-This procedure is largely maintained by link:https://github.com[R Tyler Croy]
-on the Jenkins Infrastructure team, please file INFRA tickets in
-link:https://issues.jenkins-ci.org/[JIRA] or post
+This procedure is largely maintained by the Jenkins Infrastructure team,
+please file INFRA tickets in link:https://issues.jenkins-ci.org/[JIRA] or post
 to the link:http://lists.jenkins-ci.org/mailman/listinfo/jenkins-infra[Infra mailing list]
 in case of questions or suggestions.
 ====
@@ -148,21 +163,32 @@ Create Google Groups at
 link:https://groups.google.com/forum/#!creategroup[],
 following the procedure:
 
-* Each SIG should have one discussion groups, and a number of groups for mirroring relevant github notifications;
+* Each SIG must have at least one discussion group.
+This group must be added to the SIG metadata.
+* SIGs may also have a number of groups for mirroring relevant github notifications;
 * Create groups using the name conventions below;
-* Groups should be created as e-mail lists with at least three owners
+* Groups must be created as e-mail lists with at least three owners
   (including tyler at monkeypox.org and verninol at gmail.com to ensure SIG
   continuity);
 * To add the owners, visit the Group Settings (drop-down menu on the right
   side), select Direct Add Members on the left side and add Tyler and Olivier
   via email address (with a suitable welcome message); in Members/All Members
-  select Tyler and Olivier and assign t hem to an "owner role" for long term
+  select Tyler and Olivier and assign them to an "owner role" for long term
   maintenance.
 * Set "View topics", "Post", "Join the Group" permissions to be "Public"
 
-Name convention:
+Naming convention: `jenkins-${sigId}-sig` (the discussion group)
 
-* jenkins-foo (the discussion group)
+[[organizations]]
+==== Organizations
+
+At the discretion of the SIG Lead(s), organizations may also join SIGs.
+Organizations may request to join a SIG and will then be listed on the SIG page.
+It is expected that organizations that join a SIG will actively participate in 
+the dicusssion and interation on the SIG. 
+Organization membership is in SIG informational only 
+and grants the organization no special power or voice in that SIG.
+
 
 [[video]]
 ==== Recorded Video Meetings
@@ -195,24 +221,46 @@ and should consult the link:https://jenkins.io/event-calendar/[Jenkins Event
 Calendar] to make sure their meetings do not overlap with those already
 scheduled.
 
+[[chat]]
+==== Chats
+
+SIGs can *optionally* create dedicated channels for chats.
+These chats may be located in IRC, Gitter, Slack, or other channels.
+SIG leaders set up channels on their own, unless special permissions are needed
+(in that case, INFRA tickets should be created).
+If such chats are created, they should be referenced in SIG metadata.
+
 
 ==== Create the GitHub teams
 
-GitHub teams for the SIG should following the naming convention listed below.
+In order to allow GitHub mentioning, SIGs can *optionally* have GitHub teams.
 To create a team, a SIG lead should file an INFRA ticket linking to the SIG
 proposal on the jenkinsci-dev@googlegroups.com mailing list with a mention of
 which GitHub organizations in which the team should be created.
 
-Name convention:
+Naming convention: `${githubOrg}/sig-${sigId}` (e.g. `jenkinsci/sig-platform`)
 
-* sig-foo
+=== Changing leaders and adopting SIGs
 
-[NOTE]
-====
-There should not be a sig-foo team. We want to encourage contributors to select
-the most appropriate team to notify.
-====
+If there is no activity in SIGs for more than 2 months (2 meeting intervals),
+a SIG may be marked for adoption.
+In such case any SIG participant will be able to take leadership of the SIG.
 
+"Marking for adoption" process:
+
+* The process is similar to adopting plugins
+* If a SIG leader wants to step down, he/she may propose the leadership transfer
+* If there is no activity, a SIG participant or other Jenkins contributor may raise
+a question about SIG ownership transfer
+* Leadership change proposals should be sent to the primary SIG mailing list,
+the current SIG leader(s) should be in CC.
+* Leadership transfer may happen if there is a consensus between SIG participants in the thread
+* In the case of adopting SIG due to inactivity,
+there is a 2-week response timeout to give a chance to the SIG leader(s) to process the request
+* SIG leadership transfer happens by changing SIG metadata on jenkins.io and
+announcing the change in the Developer mailing list
+* The new SIG leader(s) are expected to create INFRA tickets to get
+the permission transfer for SIG resources
 
 == Motivation
 
@@ -276,9 +324,13 @@ Nothing relevant for this JEP.
 
 == Prototype Implementation
 
-Nothing relevant for this JEP.
+* https://jenkins.io/sigs/
+* link:https://jenkins.io/sigs/platform/[Platform SIG]
+* link:https://raw.githubusercontent.com/jenkins-infra/jenkins.io/master/content/_data/sigs/platform.adoc[SIG metadata example]
 
 == References
 
 * Much of the "SIG" concept has been borrowed heavily from the
   link:https://github.com/kubernetes/community/blob/master/governance.md#sigs[Kubernetes community].
+* link:https://groups.google.com/d/topic/jenkinsci-dev/6-1mZoKp4hM/discussion[jenkinsci-dev@ thread]
+

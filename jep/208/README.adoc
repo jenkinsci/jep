@@ -1,0 +1,221 @@
+= JEP-208: Configuration as Code Tooling
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 208
+
+| Title
+| Configuration as Code tooling
+
+| Sponsor
+| link:https://github.com/ewelinawilkosz[Ewelina Wilkosz] from link:https://github.com/praqma[Praqma]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2018-05-30
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+| Requires
+| JEP-201
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+Configuration-as-Code (JEP-201) describes the mechanisms used to configure a Jenkins master based
+on yaml file(s), by discovering the data model from Java API, without the need to write any "glue-code"
+for each and every supported plugin.
+
+This approach comes with some drawback: Any update to Jenkins master's core or plugins will change the
+inferred model, and as such a yaml configuration used a `t` time might not be valid at `t+1`. This concern
+has been raised by many early-adopters.
+
+This proposal is about defining the adequate tooling to balance this limitation, so both end-users
+and plugin maintainer are able to detect such compatibility breaks, and provide some diagnostic and
+resolution hints.
+
+== Specification
+
+Configuration-as-Code tooling is designed to fill the gap between the raw mechanism defined by JEP-201
+to configure a specific jenkins-core + plugins combination, and the need to keep this configuration
+stable during core or plugin upgrades, or at least detect breaking changes and provide hints to manage
+upgrade.
+
+This includes:
+
+- tooling to validate configuration, sort of a "dry-run" mode, with adequate diagnostic when some
+configuration mismatch is detected.
+- tooling to compare inferred model between versions, to be used by plugin developers to be aware
+changes they made during development might have impact on Configuration-as-Code.
+- Document recommendations for plugin developers on ways to avoid breaking changes
+- Metadata definition for plugin developers to document breaking changes and how to fix them. Based
+on this, when yaml validation do detect a configuration mismatch it can offer migration hints.
+
+
+== Motivation
+
+Configuration-as-Code doesn't define a data model to setup jenkins, it's based on inferring a model
+from live jenkins instance from its Java API, especially UI data-binding mechanisms. Based on this,
+changes made to core or a plugin _might_ change this model and a configuration file _could_ not be
+valid after upgrade.
+
+There's not so much cases where such compatibility breaks could happen, but there's chances this would.
+Compared to other tools, like `docker-compose`, we can't provide a `version` attribute and accept
+distinct models, as we only know about the live, inferred one.
+
+Configuration-as-Code tooling is defined to work around this limitation by providing a toolset to
+discover such breaking changes early, before the actual production configuration is updated.
+It will help detect breaking changes during jenkins and plugins development, offer an option for
+plugin developers to document required breaking changes, and validate a configuration for a specific
+jenkins instance before it get actually applied.
+
+== Reasoning
+
+Without an explicit versioned model per jenkins-core and plugin versions Configuration-as-Code only
+can rely offer some minimal backward compatibility.
+
+
+=== Relax Configuration-asCode for backward compatibility ?
+
+There's few circumstances where we have options
+to work around a technical change in Jenkins or plugin codebase as the technical bits are still available,
+just hidden by the default "model inference" mechanism.
+
+A typical sample for this has been debated on
+https://github.com/jenkinsci/configuration-as-code-plugin/issues/233[issue 233]: `JNLPLauncher` DataBound
+constructor has been updated in jenkins codebase to introduce new argument `workDirSettings`. This one
+is declared in API as `@Nonnull`, which means Configuration-as-Code will infer a required attribute. As
+a result, previous definition for a JNLP launcher will be broken as this attribute isn't declared. But on
+the other side, the legacy constructor is still available (but deprecated) and do define a default value
+for this new argument.
+
+**Shall we just relax Configuration-as-Code so it still can apply an outdated model ?**
+
+We don't think so, as doing so would eventually bring us to indeterminable configuration paths:
+As we allow use of deprecated constructor (or setters, or ...) we might result with colliding candidates
+to invoke, without a deterministic way to select the adequate one.
+
+To follow-up with this specific sample, JNLPLauncher do define (at time writing) two deprecated constructors
+and another non-deprecated one :
+
+```java
+@Deprecated
+public JNLPLauncher(String tunnel, String vmargs) { ... }
+
+@Deprecated
+public JNLPLauncher() { ... }
+
+public JNLPLauncher(boolean enableWorkDir) { ... }
+```
+
+The sole one we can guarantee is designed to submit configuration is the @DataBound one. For others
+there's no deterministic way to choose one. Even considering the configuration attributes we have from
+yaml file, which one should we use if configuration doesn't define `enableWorkDir`, `tunnel` nor `vmargs`?
+first one passing `null, null` of non-deprecated one passing `false` default value ?
+
+=== During Jenkins development
+
+Actually the exact same code change discussed in https://github.com/jenkinsci/configuration-as-code-plugin/issues/233[issue 233]
+could have been implemented without breaking Configuration-as-Code inferred model :
+
+- by defining a `@DataBoundSetter` for newly introduced `workDirSettings` attribute
+- by not defining `workDirSettings` argument as `@Nonnull` and applying default value
+
+Assuming Configuration-as-Code would exist for some time when this change was applied to jenkins-core, we
+might have detected it during code review and prevented this to happen.
+
+Configuration-as-Code tooling wants to avoid such unnecessary breaking changes to happen in the future.
+But as it wasn't there before developers aren't aware of this constraint, and we can't just ask them
+to keep our use-case in mind any time they write some code (there's already enough backward compatibility
+issues for them to address).
+
+Configuration-as-Code tooling do define tooling to detect such breaking changes, and warn developer about
+them. This tooling do run the model inference logic and compare with previous state of the codebase. This
+will warn developer about breaking change being introduced for Configuration-as-Code users.
+
+Sometime such changes are actually required. For such situation we propose some metadata being added aside
+changes made to codebase so Configuration-as-Code can give end-user some hints on the break and how to fix
+it.
+
+=== Before applying configuration
+
+On end-user side we want ot offer a validation toolkit to be used when applying configuration on a jenkins
+instance. This toolkit do parse the yaml configuration, try to apply configuration on the inferred model,
+and will report issue detected during this dry-run configuration process.
+
+It would rely on breaking changes metadata to offer end-user some guidance on way to address reported
+backward compatibility issues.
+
+
+== Backwards Compatibility
+
+N/A
+
+== Security
+
+N/A
+
+== Infrastructure Requirements
+
+Configuration-as-Code tooling to check for API backward compatibility will need to be
+included in the CI process, so it can inform plugin developers and contributors on breaking changes
+detection.
+
+== Testing
+
+N/A
+
+== Prototype Implementation
+
+TODO
+This JEP submission is only informative so far about our intents to address this concern
+
+== References
+
+* https://groups.google.com/forum/#!msg/jenkinsci-dev/nnfreZqwIJ4/XVRM_NZfBwAJ
+
+

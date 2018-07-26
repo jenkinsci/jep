@@ -19,7 +19,7 @@ endif::[]
 | Declarative Data Binding
 
 | Sponsor
-| https://github.com/ndeloof[ndeloof]
+| link:https://github.com/ndeloof[ndeloof]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
@@ -50,17 +50,86 @@ constraints in a declarative way, making developer life easier, and enabling bet
 
 == Specification
 
+=== Meta-Model annotations
+
 Declarative Data Binding defines annotations for data-binding. This is an opt-in mechanism, an
 arbitrary class can't be used for DataBinding.
 
-`@DataBound` can be applied to class, method or field. Annotated element has to be public, but
-using this annotation will mark it `@Restricted(NoExternalUse)` to avoid direct (mis)use by third party components,
-as a DataBound component expects a specific lifecycle (instanciation, data injection, validation, post-construction).
+Existing `@DataBoundSetter` is supported, but we introduce additional `@DataBound` annotation.
 
-`@Trim` annotation is defined to handle a common development pattern to trim strings and convert empty strings
-to null (or the opposite) as in most cases they actually reflect unset values. This annotation enable
-transformation on the payload before value is injected. We define two trim strategies: `TO_NULL` (default one)
-and `TO_EMPTY`.
+Like `@DataBoundSetter`, `@DataBound` can be applied to method or field, but also to a class. Doing so
+all (non transient) fields and setters are considered to be used for data-binding. Also, even being public,
+annotated element is marked `@Restricted(NoExternalUse)` to avoid reuse by third party components,
+as a DataBound component expects a specific lifecycle (instantiation, data injection, validation, post-construction)
+and shouldn't be reused outside this specific context, until explicitely enabled by developer.
+
+JSR-303 "Bean Validation" annotations are supported both on fields and setter parameter to define constraints
+on the data-bound model.
+
+`@Trim` annotation allows to handle a common development pattern to trim strings and convert empty strings
+to null (or the opposite, null to empty) to reflect unset values. This annotation enable
+transformation on the payload before value is injected, so developer don't have to handle this.
+We define two trim strategies: `TO_NULL` (default one) and `TO_EMPTY`.
+
+`@DefaultValue` annotation allows to declare properties value when none is submitted in
+json payload, or value is `null` (possibly after being trimmed).
+
+=== Meta-Model API
+
+Stapler is extended so a `DataBoundModel` do provide meta-data about data-bound properties and handle the
+whole instantiation lifecycle, as a reusable API by other components.
+This new API will mostly reflect existing work implemented by structs-plugin and configuration-as-code-plugin,
+also using it internally in Stapler.
+
+`DataBoundModel of(Class<T> clazz)` give access to this API to resolve metadata for specified type,
+with cache support.
+
+`Collection<DataBoundProperty> getProperties()` give access to data bound properties (either fields or
+setter methods) discovered by introspection.
+
+`DataBoundProperty getProperty(String name)` give access to a specific property by name.
+
+`DataBoundProperty` collect meta-data about a specific data-bound property based on introspection. This
+includes:
+- property type (both parameterized type and raw type)
+- flag for deprecated property
+- annotations, typically jsr-303 annotations to define model constraints
+- methods to set and retrieve value from a data-bound object instance
+
+`T instantiate(Map<String,?> map, DataBinder binder, Listener ... listeners)` allows to instantiate target type based on a {key=value}
+representation of it's data.
+
+`DataBinder` interface allows to plug conversion from value into java type expected to set property.
+When Used within Stapler for structured form submission, a recursive `bindJson` invocation will be used. Other implementation
+can use a distinct mechanism, typically relying on `@Symbol` type lookup.
+
+`Listener` allows to watch and control the instantiation process. It get involved as a property is set, as unknown
+attributes are found in submitted data, and while executing `@PostConstructor` init methods. External component
+can use such a Listener to adjust policy for those construction steps.
+
+`Map<String,Object> uninstantiate(T)` does the reverse operation, converting a DataBound object into
+a set of key,values. It only emit tuples for properties which aren't set to default value for the
+data-bound type.
+
+
+=== UI data-binding
+
+Jelly tags used by Jenkins to build configuration forms for a Data Bound component get extended so they read the
+DataBoundModel for target type and adjust the produced HTML element accordingly, reflecting data model constraints.
+
+Typically, Bean Validation annotations are used to tweak the HTML `<input>` element with adequate HTML5 attributes.
+`DefaultValue` annotation is also used to set initial value when form is used to create a new instance.
+
+So for sample, taking a DataBound field defined as:
+```java
+    @Positive @DefaultValue("1")
+    private int numExecutors;
+```
+
+using a minimal `<f:textbox>` jelly form element, will get following HTML element generated without any extra developer effort:
+```xml
+   <input type="number" min="1" value="1" name="_.numExecutors"/>
+```
 
 == Motivation
 
@@ -103,6 +172,13 @@ behavior accordingly. A good candidate for this is Configuration-as-Code (JEP-20
 compose the web UI also could introspect those annotations. For example, if some attribute is a number and
 has to be positive, `<input type='number' 'min=0'>` html 5 element would be automatically generated.
 
+Both https://github.com/jenkinsci/structs-plugin[structs plugin] and
+https://github.com/jenkinsci/configuration-as-code-plugin[configuration-as-code plugin] do re-implement
+Stapler's DataBound component lifecycle and as such will also require to be updated to implement this JEP.
+
+JEP 205 do include definition of a meta-model API so such components don't have to re-implement this logic
+and ensure they always are up to date with Stapler version being used, and expectation from plugin developers.
+
 ==== Relying on Bean Validation
 
 link:http://beanvalidation.org/2.0/spec/[Bean Validation] is an annotation-based framework designed for
@@ -111,6 +187,9 @@ constraints in a fully declarative way, and defines the mechanism to run validat
 
 Bean Validation also is extensible by developers who can define custom annotations and rules to implement
 them.
+
+Selected implementation for Bean Validation 2.0 is the reference implementation hibernate-validator, until
+some dependency issue is detected and blocks this choice.
 
 ==== Relying on JSON-B
 
@@ -141,7 +220,8 @@ Same applies to any `@PostConstruct` initializer method.
 Generally speaking, a component designed for data-binding can't guarantee it exposes a safe API until there's just
 a single constructor to require and validate all attributes. From this point of view, we consider a web UI
 databound component in Jenkins is nothing but a reusable component, and as such should never be used outside this
-very specific context.
+very specific context. Plugin developers who have reasons to expose a DataBound object as part of the public API
+can define explicit public setters or annotate class as `@Restricted(None)`.
 
 Based on this:
 
@@ -153,6 +233,11 @@ Based on this:
 
 Annotation based databinding comes in addition to the legacy mechanisms supporter by stapler, so don't break
 backward compatibility.
+
+As part of this JEP we define an API in Stapler to expose the meta-model for a DataBound component for
+third party consumption, as well as the instanciation lifecycle so components like structs and configuration-as-code
+can just rely on this new API, an stop re-implementing code. This will allow in future to ensure changes
+in Stapler lifecycle are well reflected by those components.
 
 == Security
 
@@ -167,7 +252,9 @@ N/A
 
 == Prototype Implementation
 
-* link:https://github.com/stapler/stapler/pull/140[Stapler PR 140]
+Proof of Concept prototype is implemented as changes made directly in Stapler web framework:
+https://github.com/ndeloof/stapler/tree/jep-205[Stapler jep-205]
+https://github.com/ndeloof/jenkins/tree/jep-205[Jenkins jep-205]
 
 == References
 
