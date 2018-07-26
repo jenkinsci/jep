@@ -1,4 +1,4 @@
-= JEP-0000: Google Summer of Code Budgeting and Expenses
+= JEP-8: Google Summer of Code Budgeting and Expenses
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -14,7 +14,7 @@ endif::[]
 [cols="2"]
 |===
 | JEP
-| 0000
+| 8
 
 | Title
 | Google Summer of Code Budgeting and Expenses
@@ -24,7 +24,7 @@ endif::[]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
-| Not Submitted :information_source:
+| Draft :speech_balloon:
 
 | Type
 | Process
@@ -146,8 +146,8 @@ and then seek reimbursement for the expenses. Pre-approval is still required in 
 
 Jenkins project has no legal entity which can commit
 on expenses.
-As GSoC organization, we also
-It means that...
+
+This means:
 
 * Approval by GSoC org admins does not guarantee the payments
 * Jenkins project, GSoC org admins or SPI cannot guarantee ETA of any payment or, in the worst case,
