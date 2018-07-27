@@ -98,6 +98,11 @@
 | _not{nbsp}delegated_
 
 | Draft{nbsp}:speech_balloon:
+| link:210/README.adoc[JEP-210: External log storage for Pipeline]
+| link:http://github.com/jglick[Jesse{nbsp}Glick]
+| TBD
+
+| Draft{nbsp}:speech_balloon:
 | link:211/README.adoc[JEP-211: Java 10 and 11 support in Jenkins]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | TBD
