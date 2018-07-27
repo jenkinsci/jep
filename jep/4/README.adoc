@@ -72,7 +72,6 @@ to tackle specific areas of focus within the project. This proposal describes a
 become more formalized, with consistent expectations of their operation, to
 help new contributors join areas of effort which align with their interests.
 
-[[specification]]
 == Specification
 
 Much of this specification is modeled after the Kubernetes project's "SIG"
@@ -131,7 +130,7 @@ This directory can be used to store any SIG-related pages, docs, schedules, road
 ** Create a `/content/sigs/${sigId}/index.adoc` file.
 It will be used as a landing page for your SIG.
 The `index.adoc` will also contain metadata about the SIG.
-See other files in the directory for examples of what that should look like. 
+See other files in the directory for examples of what that should look like.
 
 ==== SIGs and JEPs
 
@@ -179,14 +178,14 @@ This group must be added to the SIG metadata.
 
 Naming convention: `jenkins-${sigId}-sig` (the discussion group)
 
-[[organizations]]
+
 ==== Organizations
 
 At the discretion of the SIG Lead(s), organizations may also join SIGs.
 Organizations may request to join a SIG and will then be listed on the SIG page.
-It is expected that organizations that join a SIG will actively participate in 
-the dicusssion and interation on the SIG. 
-Organization membership is in SIG informational only 
+It is expected that organizations that join a SIG will actively participate in
+the dicusssion and interation on the SIG.
+Organization membership is in SIG informational only
 and grants the organization no special power or voice in that SIG.
 
 

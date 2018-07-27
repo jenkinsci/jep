@@ -32,7 +32,7 @@ endif::[]
 | 2018-06-22
 
 | BDFL-Delegate
-| :bulb: Link to github user page :bulb:
+| TBD
 
 | JIRA
 | link:https://issues.jenkins-ci.org/browse/JENKINS-31096[JENKINS-31096]
