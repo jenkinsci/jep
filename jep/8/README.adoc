@@ -103,7 +103,7 @@ open-source conferences like FOSDEM, etc.
 ** Mentor travel grants may cover: transportation costs, visa fees, meals
 ** Transportation costs may be covered only for economy-class travel
 ** Travel grants do NOT cover travel expenses to any other events
-** TTravel grants do NOT cover expenses that are already covered event organizers, or other types of sponsors.
+** Travel grants do NOT cover expenses that are already covered event organizers, or other types of sponsors.
 3. Project expenses for students
 ** GSoC budget may be used to cover particular expenses for projects: special equipment costs, SaaS hosting
 ** Project expenses should happen within the GSoC timeframe between start of Community Bonding and end of the last coding phase
