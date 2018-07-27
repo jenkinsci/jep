@@ -48,7 +48,7 @@ endif::[]
 //
 // Uncomment if this JEP depends on one or more other JEPs.
 | Requires
-| link:/jep/jep-207[JEP-207]
+| link:/jep/jep-207[JEP-207], link:/jep/jep-210[JEP-210]
 //
 //
 // Uncomment and fill if this JEP is rendered obsolete by a later JEP
@@ -211,22 +211,45 @@ As a reference implementation of the _External Logging API_ plugin,
 a new _External Logging for Elasticsearch Plugin_ will be implemented.
 Other implementations may be also created.
 
-== Reasoning
+== Motivation
 
-=== Why separate plugin?
-
+JEP-207 introduces a new API in the core for adding External logging features,
+but it does not provide neither configuration UI nor convenient API for implementing these storage engines.
+This API plugin does that.
 One may say that all bits in the current design could be implemented
 as a part of the Jenkins core.
-It is true, but detaching of the plugin is intentional:
+It is true, but detaching of the plugin has the following motivation:
 
 * The plugin will have a separate release cycle so that changes in it
   can be delivered and backported independently from the core's release cycle
 * The approach allows keeping the patches on the core's side minimal
+* The approach allows integrating with Pipeline Log Storage API introduced in Pipeline plugins (JEP-200)
 
 All External Log Storage implementations are expected to extend this plugin
 instead of just using API provided by the Core.
 Core APIs may be still used to define custom `LoggingMethodLocator` impelemtations,
 e.g. to define a custom logger allocation logic.
+
+== Reasoning
+
+=== Why do we introduce the Event layer?
+
+Jenkins project usually operates with logs as data streams and lines,
+especially on the agent side.
+On the other hand, modern log storage systems operate with "events" -
+atomic objects which may include multi-line strings and various metadata.
+Example: exception stacktraces may go to log storage as a single event and
+then they can be processed by external systems like Logstash if needed.
+The idea in this plugin is to offer bridge logic which converts
+stream-based logging into event-based logic.
+
+Jesse Glick has raised the concern that Event layer may not be helpful
+taking the current state,
+because a lot of code would need to be updated so that the events get captured properly.
+Opinion of the JEP sponsor is that this JEP offers a foundation layer
+so that it may be implemented.
+Reworking the entire Jenkins API to events is NOT an objective for this JEP-200,
+but it may be added in subsequent JEPs.
 
 === Why do we need JSON layer?
 
