@@ -96,8 +96,11 @@ it’s in sync with the actual codebase, like Pipeline DSL documentation does.
 The configuration file should be validated without the need to actually run a Jenkins master. At same time we generate documentation we
 need to generate some schema that could also be used with adequate IDE / editor to assist writing configuration.
 
-
 == Motivation
+
+TODO: @ndeloof This need filling out.
+
+== Reasoning
 
 === Human friendly syntax
 

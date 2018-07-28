@@ -77,6 +77,15 @@ This JEP is a “stake on the ground” that captures the mission and the genera
 The Jenkins X sub project focuses 100% on Kubernetes, CI/CD and Cloud Native use cases to provide great developer productivity.
 To that end, we have so far identified the following major deliverables.
 
+=== Target Audience
+
+Jenkins X is targeted at existing and new Jenkins users who are either:
+
+* Already using Kubernetes and want to adopt CI / CD
+* Want CI / CD and increasingly to move to the public cloud - though don’t necessary know anything about Kubernetes
+
+In both cases we expect these users to "just want get things done" by using best practices rather than discovering the best practices on their own.
+
 === Development Practice
 
 Jenkins X promotes a particular Git branching & repository model. The rest of the tools and services are built to fit this model.
@@ -226,15 +235,6 @@ There are lots of similarities between the goals of Prow and Jenkins X (e.g. Kub
 https://blog.argoproj.io/[Argo] is another useful technology which  handles Kubernetes-native long-term human workflows such as approvals and promotions.
 
 Longer term we’d like to integrate Prow and Argo more into Jenkins X as part of the CI / CD Platform for when they make sense; so that Jenkins X pipelines can use Prow to handle events and commands on issues & pull requests or Argo for longer term human approval of promotions in a kubernetes native way - while hiding the implementation details of Prow v Jenkins Pipeline v Argo from the user so the end user just gets awesome CI / CD for Kubernetes that just works and uses resources efficiently.
-
-== Target Audience
-
-Jenkins X is targeted at existing and new Jenkins users who are either:
-
-* Already using Kubernetes and want to adopt CI / CD
-* Want CI / CD and increasingly to move to the public cloud - though don’t necessary know anything about Kubernetes
-
-In both cases we expect these users to "just want get things done" by using best practices rather than discovering the best practices on their own.
 
 == Motivation
 

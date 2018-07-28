@@ -208,6 +208,10 @@ All options above are not ideal,
 but in the current state Jenkins project cannot offer other options.
 The approach will be revisited when (and if) Jenkins project has a legal entity.
 
+== Backwards Compatibility
+
+N/A (process JEP)
+
 == Security
 
 N/A (process JEP)
