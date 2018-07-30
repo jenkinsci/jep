@@ -183,6 +183,9 @@ For simplicity, this document uses the singular
 ("The JEP Sponsor", "a sponsor")
 when referring the one or more people in the role of "Sponsor" of a JEP.
 
+Sponsors have commmitter/write access on the JEP repository, but should
+only approve and merge pull requests for JEPs to which they are assigned.
+
 ==== BDFL Delegate
 
 The <<BDFL>> may delegate their responsibilities to another contributor,
@@ -207,6 +210,9 @@ If a Delegate wishes to leave a JEP, they may do so at any time by emailing jenk
 They can also be removed from a JEP by the BDFL.
 When a BDFL Delegate leaves or is removed from a JEP,
 the BDFL becomes the reviewer again and may ask someone else to be the BDFL Delegate for that JEP.
+
+BDFL Delegates have commmitter/write access on the JEP repository, but should
+only approve and merge pull requests for JEPs to which they are assigned.
 
 ==== Reviewer
 
@@ -921,6 +927,14 @@ Once the JEP is ready for the repository, a JEP editor will:
 . Update the JEP status using the `./set-jep-status <JEP number> draft` command (script is located in the root)
 . Commit all changes and push them to the branch in the PR
 . "Squash and merge" the PR into the `master` branch.
+
+==== Permission group membership
+
+Editors add and remove Sponsors and BDFL Delegates
+from the appropriate permission groups on the JEP repository.
+When a JEP includes a new Sponsor or BDFL Delegate an editor will add that
+person to the "JEP Sponsors" or "JEP BDFL Delegates" github group respectively.
+
 
 == Motivation
 
