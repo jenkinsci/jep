@@ -32,7 +32,7 @@ endif::[]
 | 2018-07-24
 
 | BDFL-Delegate
-| :bulb: Link to github user page :bulb:
+| TBD
 
 //
 //
