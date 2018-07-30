@@ -183,7 +183,7 @@ For simplicity, this document uses the singular
 ("The JEP Sponsor", "a sponsor")
 when referring the one or more people in the role of "Sponsor" of a JEP.
 
-Sponsors have commmitter/write access on the JEP repository, but should
+Sponsors have committer/write access on the JEP repository, but should
 only approve and merge pull requests for JEPs to which they are assigned.
 
 ==== BDFL Delegate
@@ -211,7 +211,7 @@ They can also be removed from a JEP by the BDFL.
 When a BDFL Delegate leaves or is removed from a JEP,
 the BDFL becomes the reviewer again and may ask someone else to be the BDFL Delegate for that JEP.
 
-BDFL Delegates have commmitter/write access on the JEP repository, but should
+BDFL Delegates have committer/write access on the JEP repository, but should
 only approve and merge pull requests for JEPs to which they are assigned.
 
 ==== Reviewer
