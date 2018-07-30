@@ -358,6 +358,20 @@ and `StreamTaskListener` in fact handled that by using `RemoteOutputStream`,
 until now it was not noticeable that `Launcher` fails to remote the listener
 since the effect is the same if the instance is in fact a `StreamTaskListener`.
 
+=== Explicit log mirroring
+
+Some existing plugins such as
+link:https://plugins.jenkins.io/logstash[Logstash]
+or
+link:https://plugins.jenkins.io/aws-cloudwatch-logs-publisher[AWS CloudWatch Logs Publisher]
+support redirecting or mirroring log messages to cloud services.
+To the extent that these are even compatible with Pipeline,
+they nonetheless suffer from fundamental limitations compared to the approach in this JEP:
+job configurers may have to opt-in to the publishing;
+log messages may still be kept on disk in the Jenkins master;
+the existing Jenkins UI gestures to display logs do not pick up data from the cloud;
+Remoting channels are still clogged with log-related traffic.
+
 == Backwards Compatibility
 
 `ConsoleLogFilter` implementations must be safely remotable in order to work correctly on the agent side.
