@@ -934,6 +934,10 @@ Editors add and remove Sponsors and BDFL Delegates
 from the appropriate permission groups on the JEP repository.
 When a JEP includes a new Sponsor or BDFL Delegate an editor will add that
 person to the "JEP Sponsors" or "JEP BDFL Delegates" github group respectively.
+When somone is no longer an active Sponsor or BDFL Delegate,
+a JEP editor will remove them from the permission group.  
+Editors will cleanup the the permission groups from time to time 
+as they see the need or are asked to do so.
 
 
 == Motivation
