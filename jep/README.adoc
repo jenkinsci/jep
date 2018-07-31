@@ -80,7 +80,7 @@
 | Draft{nbsp}:speech_balloon:
 | link:206/README.adoc[JEP-206: Use UTF-8 for Pipeline build logs]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
-| :bulb: Link{nbsp}to{nbsp}github{nbsp}user{nbsp}page{nbsp}:bulb:
+| TBD
 
 | Draft{nbsp}:speech_balloon:
 | link:207/README.adoc[JEP-207: External Build Logging support in the Jenkins Core]
@@ -104,6 +104,11 @@
 
 | Draft{nbsp}:speech_balloon:
 | link:211/README.adoc[JEP-211: Java 10 and 11 support in Jenkins]
+| link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
+| TBD
+
+| Draft{nbsp}:speech_balloon:
+| link:212/README.adoc[JEP-212: External Logging API plugin]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | TBD
 
