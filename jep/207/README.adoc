@@ -324,6 +324,11 @@ all usages in the Jenkins core should be cleaned up.
 The method will be still invoking the compatibility layer from `LogBrowser`
 so read-only API users do not lose the compatibility
 
+== Motivation
+
+TODO: @oleg-nenashev to write this.
+
+
 == Reasoning
 
 Being compared to the original design in 2016,

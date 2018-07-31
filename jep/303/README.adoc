@@ -316,7 +316,7 @@ Some of the specific aspects of this design are discussed further below.
   distribution system
 
 [[jwt]]
-== JSON Web Tokens
+=== JSON Web Tokens
 
 link:https://jwt.io[JSON Web Tokens]
 have a number of useful features, but by far the most useful feature of JWTs is

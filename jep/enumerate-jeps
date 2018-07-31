@@ -13,7 +13,7 @@ cat > $JEP_INDEX <<EOF
 |===
 .^| Status
 .^| Title
-.^| Sponsor
+.^| Sponsor(s)
 .^| BDFL Delegate
 
 EOF

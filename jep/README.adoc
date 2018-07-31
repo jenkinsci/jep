@@ -4,7 +4,7 @@
 |===
 .^| Status
 .^| Title
-.^| Sponsor
+.^| Sponsor(s)
 .^| BDFL Delegate
 
 | Active{nbsp}:smile:

@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+REL_SCRIPT_DIR="`dirname \"$0\"`"
+SCRIPT_DIR="`( cd \"$REL_SCRIPT_DIR\" && pwd )`"
+PROJECT_ROOT="`( cd \"$SCRIPT_DIR/..\" && pwd )`"
+
+# `report-jep-conformance <jep-number>`
+if [ -z "$1" ] ; then
+  echo "Missing JEP number." >&2
+  echo "Usage: $0 <jep-number>" >&2
+  exit 1
+fi
+
+JEP_NUMBER=$1
+JEP_README="$PROJECT_ROOT/jep/$JEP_NUMBER/README.adoc"
+
+if [ ! -f $JEP_README ] ; then
+  echo Could not find $JEP_NUMBER/README.adoc.
+  exit 1
+fi
+
+# check for :bulb: or [TIP] elements from temlate
+grep -e '^[^:/][^/].\+:bulb:' -n "$JEP_README" && {
+  echo Found left over template instructions.
+  exit 1
+}
+
+grep -e '\[TIP\]' -n "$JEP_README" && {
+  echo Found left over template instructions.
+  exit 1
+}
+
+# check top-level sections
+grep -e '^== .\+' "$JEP_README" | diff required-sections.txt - ||
+{
+  echo "Warning: Sections differ from expected."
+  echo "This may be okay in some cases (such as JEPs without implementation)."
+}
+
+
+
+
