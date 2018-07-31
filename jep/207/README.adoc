@@ -85,15 +85,17 @@ Support of other logging types will be documented in subsequent JEPs.
 * Minimize log traffic between Jenkins agents and the master, logs should be reported from slaves directly when it is possible
 * External Build Log Storage has an extensible and pluggable architecture
 * Reference implementations:
-   * File-system-based storage (current implementation)
-   * One external build log storage based on the open-source stack, based on Fluentd/Logstash and CloudWatch for AWS
-   * Nice2Have: Elasticsearch-Logstash-Kibana for self-hosted solutions
-* Jenkins Pipeline is supported out of the box
-* Real-time and Annotated run console logs should be still supported
-* Data migration flow for upgrading instances
+** File-system-based storage (current implementation)
+** One external build log storage based on the open-source stack, e.g. Elasticsearch-Logstash-Kibana (ELK)
+** Nice 2 have: one Cloud-focused implementation, e.g. for AWS CloudWatch
+* Freestyle and Jenkins Pipeline projects are supported out of the box
+* Run console logs should be provided using standard Jenkins interfaces
+* Data migration flow for upgrading instances is technically possible
+** It is OK if it requires special actions outside Jenkins
 * Reference External Build logging implementation provides a feasible performance and fault-tolerance compared to the original filesystem based solution
-* All Global Configurations are designed in a way that they can be configured via Jenkins Configuration-as-Code Plugin OOTB[e][f]
-Presumptions, obstacles and limitations (braindump)
+* All Global Configurations are designed in a way that they can be configured via Jenkins Configuration-as-Code Plugin
+
+=== Design decisions
 
 This section contains a not-so-sorted top-level description (aka “braindump”) of use-cases and concerns we need to address in the design.
 
@@ -143,35 +145,57 @@ Requirements:
 
 * We implement “LoggingMethodLocator” extension point, which allows tweaking logging strategies
 * By now we do not provide specific implementations excepting reference ones, but we can tweak logging destination via JobProperty or NodeProperty later
-   * Pipeline step / declarative will be complicated since we may lose some logging info (self-configuring logging within Pipeline, like JENKINS-41929)
+** Pipeline step / declarative will be complicated since we may lose some logging info (self-configuring logging within Pipeline, like JENKINS-41929)
 Secret handling during Log reporting
 * Logging should be performed on both master and slave
 * Secrets should be shaded on both sides => password suppression rules should be executed on both master and slaves side
 * This suppression rules should be passed to the node. It causes a potential security [q][r][s]risk if the implementation does not capture secrets **properly**, because they may go to location Jenkins admin does not control (external storage)
-   * JG: If a secret is defined in an environment variable, we are already sending it to the agent via `RemoteLaunchCallable.env`. So having the `ConsoleLogFilter` also include the same information is not an issue.
-Proposals
+** JG: If a secret is defined in an environment variable, we are already sending it to the agent via `RemoteLaunchCallable.env`. So having the `ConsoleLogFilter` also include the same information is not an issue.
+
+Design decisions:
+
 * Agent <=> Master communication should be always performed via encrypted protocol when we use external build logging (ideally needs a NodeMonitor)
 * We should pass secret filtering options to the remote launcher when we invoke it
-Log annotation
-Notes
+
+==== Log annotations
+
 * According to the “Indexing” approach, we have binary and text annotations
 * ConsoleNote is technically a binary one, which is being encoded to a string with a prefix to the output stream
-Proposals
-1. Log annotations should be performed on the master and agent side
-2. Binary annotations (ConsoleNote classes) should be encoded into HEX representation and stored as additional annotation fields[t]
-   1. They will be decoded by Jenkins master[u][v][w] only when it displays it
+
+Design decisions:
+
+* Log annotations should be performed on the master and agent side
+* Binary annotations (ConsoleNote classes) should be encoded into HEX representation and stored as additional annotation fields[t]
+** They will be decoded by Jenkins master[u][v][w] only when it displays it
 
 ==== Log browsing
 
-1. Log browsing should support both local and remote Logging systems
-2. The interface should support…
-   1. Querying and Filtering logs
-   2. Progressive log output (for running builds and tasks)
-   3. Annotation visualization
-Proposals
+* Log browsing should support both local and remote Logging systems
+* The interface should support…
+** Querying and Filtering logs
+** Progressive log output (for running builds and tasks)
+** Annotation visualization in console log
+
+Design decisions:
+
 * Annotations should be stored in the external storage
-Log rotation
+* Storage format is defined by the external log storage implementation
+* If the log storage can store objects, it is recommended to store annotations separately from the text
+
+==== Log rotation
+
 * Log rotation is performed as for any other components within Jenkins builds
+* Currently log deletion is implemented as a part of the build deletion
+
+Design decisions:
+
+* New API should be introduced to support deletion of logs
+* External logging APIs should provide methods for deletion of logs
+* These APIs may implement log deletion... or not.
+In the latter case Jenkins should be able to produce a warning,
+but it should not impact its operation
+* External log browser implementations should be able to explicitly
+indicate that there is no logs available
 
 === Design
 
@@ -249,17 +273,21 @@ Get large text for the entire execution/run
 Get large text for a particular step
 
 Some implementations should be also moved from `Run` and generalized.
-It will provide default convenience methods which can be overridden by implementations for better peformance.
+It will provide default convenience methods which can be overridden by implementations for better performance.
 
 * `InputStream getLogInputStream() throws IOException` -
-get log as an input stream
+gets the log as an input stream
 * `Reader getLogReader() throws IOException` -
-get lof as a Reader
-* `String getLog() throws IOException`
-* `List<String> getLog(int maxLines) throws IOException`
+get the log as a Reader
+* `String getLog() throws IOException` -
+gets the entire log as a single String
+** This method is deprecated in `hudson.model.Run`,
+and it should remain deprecated
+* `List<String> getLog(int maxLines) throws IOException` -
+gets a number of log lines as a list of strings
 * `File getLogFile() throws IOException` -
 Compatibility method, which retrieves the log as a `File`.
-By default a temporary file will be created, unless an implementation offers something better
+** By default a temporary file will be created, unless an implementation offers something better
 
 ==== NEW: LoggingMethodLocator extension point
 
@@ -295,6 +323,11 @@ File operations:
 all usages in the Jenkins core should be cleaned up.
 The method will be still invoking the compatibility layer from `LogBrowser`
 so read-only API users do not lose the compatibility
+
+== Motivation
+
+TODO: @oleg-nenashev to write this.
+
 
 == Reasoning
 

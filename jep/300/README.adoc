@@ -138,7 +138,7 @@ For Jenkins project developers, this approach introduces multiple improvements:
   issues, and file tickets in JIRA, when coupled with an automatically updating
   distribution allows for rapodily backing out changes which may cause problems
   for users.
-  
+
 The components responsible for this automatically self-updating distribution will be referred
 to as the "Evergreen" distribution system, and will be described further in subsequent JEP documents.
 
@@ -351,16 +351,6 @@ however have infrastructure requirements documented in each proposal.
 == Testing
 
 There are no testing issues related to this proposal.
-
-== Prototype Implementation
-
-[TIP]
-====
-Link to any open source reference implementation of code changes for this proposal.
-The reference implementation need not be completed before the JEP is <<accepted>>,
-but must be completed before any JEP is given "Final" status.
-JEPs which will not include code changes may omit this section.
-====
 
 == References
 

@@ -67,18 +67,9 @@ Java’s built-in API, from the Remoting layer;
 and XStream, for persisting configuration and settings.
 Both permit any Java class to be loaded merely by specifying its name in the input.
 
-For years, the Jenkins project has received reports of remote code execution (RCE) attacks involving these frameworks.
-Typically the attacks involve fairly exotic classes in the Java Platform, or sundry libraries such as Groovy.
-The Jenkins CERT has responded to such reports reactively, by blacklisting the affected classes or packages.
-That approach has proven unmaintainable, as there is a constant threat of further exploits using unexamined classes.
-
 This proposal switches the blacklist to a whitelist of a few dozen entries:
 for Jenkins to process a third-party class, it must be explicitly approved.
 Classes defined in Jenkins core or plugins are exempt, as are a few special categories.
-
-In practice it seems that very few plugins actually need to serialize any (third-party) types outside the whitelist.
-Many such cases point to dubious design decisions, but to retain compatibility a few such entries are bundled in core.
-Plugins or administrators can also expand the whitelist if regressions arise.
 
 == Specification
 
@@ -123,7 +114,96 @@ the following approaches:
 ** The entries are known to be fine for Jenkins/Hudson plugin POM versions newer than 1.320 (with default maven-hpi-plugin settings)
 0. By implementing the `CustomClassFilter` extension point, for dynamic whitelists—for example, all implementations of some interface.
 
+=== Rollout plan
+
+==== Phase 1. Remoting release
+
+Target date: Jan 10, 2017
+
+JEP-200 requires extra API in Remoting, so link:https://github.com/jenkinsci/remoting/pull/208[pull request #208]
+needs to be delivered in advance.
+https://github.com/oleg-nenashev[@oleg-nenashev] will release the following components once the rollout plan is confirmed with the JEP sponsor:
+
+* Remoting
+* link:https://github.com/jenkinsci/docker-slave[docker-slave] (including the `latest` tag)
+* link:https://github.com/jenkinsci/docker-jnlp-slave[docker-jnlp-slave] images (including the `latest` tag)
+* link:https://github.com/jenkinsci/swarm-plugin/[Swarm Plugin Client]
+
+==== Phase 2. Weekly Release
+
+Target date: Jan 13, 2017
+
+0. Once this JEP is approved, the https://jenkins.io/redirect/class-filter/ will be created on the Jenkins website
+** This document should provide a custom guide for creating JIRA issues with the `jep-200` label
+0. The JEP sponsor will write an announcement blogpost, which will describe the change and provide links to mitigation guidelines
+** This blog-post will be used as part of the upgrade guideline for LTS
+** Upgrade guidelines should explicitly recommend backing up the instance before the upgrade
+** Upgrade guidelines will also provide whitelisting guidelines to plugin developers
+** The blog post will include a reference to a
+link:https://wiki.jenkins.io/display/JENKINS/Plugins+affected+by+fix+for+JEP-200[Plugins affected by JEP-200] Wiki page,
+which will be providing info to Jenkins administrators about new discoveries if any.
+0. Once the blog post draft is approved,
+link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] will be integrated towards the next weekly release
+
+After the weekly release the JEP sponsor
+(or a group of people nominated by him, _JEP-200 maintainer(s)_)
+will be responsible to provide an extra support for the issues:
+
+* _JEP-200 maintainer(s)_ will regularly review open defects and triage them
+* _JEP-200 maintainer(s)_ may request additional information from the reporter.
+Finally, they are expected to communicate the triage outcome.
+* Possible triage outcomes:
+** Accepted - patch in the plugin. Patch to be proposed by _JEP-200 maintainer(s)_
+** Accepted - update whitelist in the core (similar to link:https://github.com/jenkinsci/jenkins/pull/3120/files#diff-ff24cb984ddd641f49a22cc13a90cfd3[these cases]),
+patch to be proposed by _JEP-200 maintainer(s)_
+** Rejected - functional defect.
+_JEP-200 maintainer(s)_ are **not responsible** to fix any issue,
+the reporter can use the suggested workarounds.
+The issue remains open as a common bug.
+** Rejected - security risk.
+In such case the issue will be moved to the SECURITY bugtracker and then handled by the link:https://jenkins.io/security/[Jenkins Security team]
+* For accepted issues _JEP-200 maintainer(s)_ schedule the fix and communicate ETAs to the reporter
+
+==== Phase 3. LTS availability
+
+Target Date: Mar 14, 2018 (if the weekly gets accepted to LTS)
+
+There is no plan to backport the proposed change to the 2.89.x LTS baseline.
+The change will be integrated into the LTS if the
+link:https://wiki.jenkins.io/display/JENKINS/Governance+Meeting+Agenda[governance meeting]
+selects a weekly with the integrated change.
+Estimated meeting date - Feb 14, 2018.
+
+Notes:
+
+* The change will be referenced in the upgrade guidelines based on the announcement blog post
+** These guidelines will be updated by the weekly rollout results
+** If there are any unresolved known issues, they will be referenced in the _Known Issues_ section
+
+==== Phase 4. Post-release
+
+The change may cause regressions in plugins on updating instances.
+In order to mitigate them, we define an extra support policy in the community.
+
+* Before May 01, 2018 - _JEP-200 maintainer(s)_ will be responsible to review/triage issues.
+It means there will be an extra month of active support.
+The process is similar to the one described in the Phase 2 section.
+* After May 01, 2018 - Issues labeled with `jep-200` will not be regularly reviewed by _JEP-200 maintainer(s)_,
+so the maintainers will be the entry point.
+
+
 == Motivation
+
+For years, the Jenkins project has received reports of remote code execution (RCE) attacks involving these frameworks.
+Typically the attacks involve fairly exotic classes in the Java Platform, or sundry libraries such as Groovy.
+The Jenkins CERT has responded to such reports reactively, by blacklisting the affected classes or packages.
+That approach has proven unmaintainable, as there is a constant threat of further exploits using unexamined classes.
+
+This proposal switches the blacklist to a whitelist of a few dozen entries.
+
+In practice it seems that very few plugins actually need to serialize any (third-party) types outside the whitelist.
+Many such cases point to dubious design decisions, but to retain compatibility a few such entries are bundled in core.
+Plugins or administrators can also expand the whitelist if regressions arise.
 
 The past few years have seen a flurry of activity by security researchers regarding Java deserialization vulnerabilities.
 The `ysoserial` attack library has been created to host standard "gadgets";
@@ -206,6 +286,34 @@ these have the advantage of applying to any `ObjectInputStream` in the system,
 but that is only really helpful when defending against attacks like the `SignedObject` exploit in 2017-04-26,
 which was already covered by a blacklist entry (and now a lack of whitelisting as well).
 
+=== Concern about the single whitelist approach
+
+https://github.com/oleg-nenashev[@oleg-nenashev] raised a concern about using the same whitelist for Remoting and XStream:
+
+* With the reference implementation in link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120]
+there is no way to approve serialization only for a single serialization type
+(e.g. only XStream).
+* Possible attack vectors in Remoting and XStream differ,
+especially when Remoting CLI is enabled due to the features missing in other CLI modes (multiple file parameters, etc.).
+** For attack via XML you usually need `Item.CONFIGURE` permissions
+** For attack over Remoting - `Computer.CONFIGURE` or write access to Remoting/Swarm Client JAR files on an agent.
+If Remoting CLI is enabled... then there is no special permissions required.
+
+Feedback from the JEP Sponsor:
+
+* Remoting CLI is not a concern since we are going to consider it as insecure
+and deprecated option even after integrating
+* Current implementation can be extended in the future if needed.
+Jenkins core patch may be required to pass information about the serialization type to
+the `CustomClassFilter` implementations
+* `CustomClassFilter` extension point is restricted now,
+so any required adjustements can be made by API users when needed.
+
+The BDFL delegate agreed with the provided feedback (Jan 03, 2017).
+He would like to see better extensibility in the future, but it does not block delivery of JEP-200.
+It is **NOT** a deferred task, JEP Sponsor has no plan to implement it.
+If a need arises, it can been contributed by somebody else.
+
 == Backwards Compatibility
 
 There is an obvious risk that some plugins will have a legitimate need to serialize and deserialize third-party types not covered in the whitelist.
@@ -281,96 +389,6 @@ Fortunately these tests generally check only unit functionality to begin with,
 and are not likely to be exercising interesting code paths such as settings storage or remote calls to agents.
 For similar reasons, certain tests written in Groovy rather than Java prevent normal filter operation and may fail spuriously.
 
-== Reference Implementation
-
-* link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] contains the bulk of the change and links to related PRs.
-* link:https://github.com/jenkinsci/remoting/pull/208[Remoting PR #208] introduces the new API required to deliver the change.
-
-== Rollout plan
-
-=== Phase 1. Remoting release
-
-Target date: Jan 10, 2017
-
-JEP-200 requires extra API in Remoting, so link:https://github.com/jenkinsci/remoting/pull/208[pull request #208]
-needs to be delivered in advance.
-https://github.com/oleg-nenashev[@oleg-nenashev] will release the following components once the rollout plan is confirmed with the JEP sponsor:
-
-* Remoting
-* link:https://github.com/jenkinsci/docker-slave[docker-slave] (including the `latest` tag)
-* link:https://github.com/jenkinsci/docker-jnlp-slave[docker-jnlp-slave] images (including the `latest` tag)
-* link:https://github.com/jenkinsci/swarm-plugin/[Swarm Plugin Client]
-
-=== Phase 2. Weekly Release
-
-Target date: Jan 13, 2017
-
-0. Once this JEP is approved, the https://jenkins.io/redirect/class-filter/ will be created on the Jenkins website
-** This document should provide a custom guide for creating JIRA issues with the `jep-200` label
-0. The JEP sponsor will write an announcement blogpost, which will describe the change and provide links to mitigation guidelines
-** This blog-post will be used as part of the upgrade guideline for LTS
-** Upgrade guidelines should explicitly recommend backing up the instance before the upgrade
-** Upgrade guidelines will also provide whitelisting guidelines to plugin developers
-** The blog post will include a reference to a
-link:https://wiki.jenkins.io/display/JENKINS/Plugins+affected+by+fix+for+JEP-200[Plugins affected by JEP-200] Wiki page,
-which will be providing info to Jenkins administrators about new discoveries if any.
-0. Once the blog post draft is approved,
-link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] will be integrated towards the next weekly release
-
-After the weekly release the JEP sponsor
-(or a group of people nominated by him, _JEP-200 maintainer(s)_)
-will be responsible to provide an extra support for the issues:
-
-* _JEP-200 maintainer(s)_ will regularly review open defects and triage them
-* _JEP-200 maintainer(s)_ may request additional information from the reporter.
-Finally, they are expected to communicate the triage outcome.
-* Possible triage outcomes:
-** Accepted - patch in the plugin. Patch to be proposed by _JEP-200 maintainer(s)_
-** Accepted - update whitelist in the core (similar to link:https://github.com/jenkinsci/jenkins/pull/3120/files#diff-ff24cb984ddd641f49a22cc13a90cfd3[these cases]),
-patch to be proposed by _JEP-200 maintainer(s)_
-** Rejected - functional defect.
-_JEP-200 maintainer(s)_ are **not responsible** to fix any issue,
-the reporter can use the suggested workarounds.
-The issue remains open as a common bug.
-** Rejected - security risk.
-In such case the issue will be moved to the SECURITY bugtracker and then handled by the link:https://jenkins.io/security/[Jenkins Security team]
-* For accepted issues _JEP-200 maintainer(s)_ schedule the fix and communicate ETAs to the reporter
-
-=== Phase 3. LTS availability
-
-Target Date: Mar 14, 2018 (if the weekly gets accepted to LTS)
-
-There is no plan to backport the proposed change to the 2.89.x LTS baseline.
-The change will be integrated into the LTS if the
-link:https://wiki.jenkins.io/display/JENKINS/Governance+Meeting+Agenda[governance meeting]
-selects a weekly with the integrated change.
-Estimated meeting date - Feb 14, 2018.
-
-Notes:
-
-* The change will be referenced in the upgrade guidelines based on the announcement blog post
-** These guidelines will be updated by the weekly rollout results
-** If there are any unresolved known issues, they will be referenced in the _Known Issues_ section
-
-=== Phase 4. Post-release
-
-The change may cause regressions in plugins on updating instances.
-In order to mitigate them, we define an extra support policy in the community.
-
-* Before May 01, 2018 - _JEP-200 maintainer(s)_ will be responsible to review/triage issues.
-It means there will be an extra month of active support.
-The process is similar to the one described in the Phase 2 section.
-* After May 01, 2018 - Issues labeled with `jep-200` will not be regularly reviewed by _JEP-200 maintainer(s)_,
-so the maintainers will be the entry point.
-
-== References
-
-* link:https://docs.google.com/document/d/1uQcyaaLvGFwFDe0mQ27JHeG2icdX0XfCHILbHGOtAmA/edit[JEP-200 Testing Notes (BDFL Review)]
-* link:https://github.com/jenkins-infra/jenkins.io/pull/1293[Announcement Blog Post Draft]
-* link:https://wiki.jenkins.io/display/JENKINS/Plugins+affected+by+fix+for+JEP-200[Wiki Page: Plugins affected by JEP-200]
-
-== Appendix A. JEP Review Notes
-
 === Tested Plugins
 
 During JEP-200 review an extra testing has been performed.
@@ -399,34 +417,15 @@ Although there will be extra testing performed before the release of the change 
 BDFL confirms that the current test coverage is good enough to accept this Jenkins Enhancement Proposal
 (Jan 08, 2017).
 
-=== Concern about the single whitelist approach
+== Reference Implementation
 
-https://github.com/oleg-nenashev[@oleg-nenashev] raised a concern about using the same whitelist for Remoting and XStream:
+* link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120] contains the bulk of the change and links to related PRs.
+* link:https://github.com/jenkinsci/remoting/pull/208[Remoting PR #208] introduces the new API required to deliver the change.
 
-* With the reference implementation in link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120]
-there is no way to approve serialization only for a single serialization type
-(e.g. only XStream).
-* Possible attack vectors in Remoting and XStream differ,
-especially when Remoting CLI is enabled due to the features missing in other CLI modes (multiple file parameters, etc.).
-** For attack via XML you usually need `Item.CONFIGURE` permissions
-** For attack over Remoting - `Computer.CONFIGURE` or write access to Remoting/Swarm Client JAR files on an agent.
-If Remoting CLI is enabled... then there is no special permissions required.
-
-Feedback from the JEP Sponsor:
-
-* Remoting CLI is not a concern since we are going to consider it as insecure
-and deprecated option even after integrating
-* Current implementation can be extended in the future if needed.
-Jenkins core patch may be required to pass information about the serialization type to
-the `CustomClassFilter` implementations
-* `CustomClassFilter` extension point is restricted now,
-so any required adjustements can be made by API users when needed.
-
-The BDFL delegate agreed with the provided feedback (Jan 03, 2017).
-He would like to see better extensibility in the future, but it does not block delivery of JEP-200.
-It is **NOT** a deferred task, JEP Sponsor has no plan to implement it.
-If a need arises, it can been contributed by somebody else.
 
 == References
 
 * https://groups.google.com/forum/#!topic/jenkinsci-dev/hOn7DTGv9tw[jenkinsci-dev mailing list thread]
+* link:https://docs.google.com/document/d/1uQcyaaLvGFwFDe0mQ27JHeG2icdX0XfCHILbHGOtAmA/edit[JEP-200 Testing Notes (BDFL Review)]
+* link:https://github.com/jenkins-infra/jenkins.io/pull/1293[Announcement Blog Post Draft]
+* link:https://wiki.jenkins.io/display/JENKINS/Plugins+affected+by+fix+for+JEP-200[Wiki Page: Plugins affected by JEP-200]

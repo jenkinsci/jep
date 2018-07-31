@@ -1,0 +1,263 @@
+= JEP-209: Configuration as Code YAML Schema
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 209
+
+| Title
+| Configuration as Code YAML Schema
+
+| Sponsor
+| https://github.com/ewelinawilkosz2[Ewelina Wilkosz] from https://github.com/praqma[Praqma]
+
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2017-06-07
+
+| JIRA
+| https://issues.jenkins-ci.org/browse/JENKINS-31094[JENKINS-31094]
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| https://github.com/ewelinawilkosz[Ewelina Wilkosz]
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+
+| Requires
+| JEP-201
+
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+
+== Abstract
+
+Jenkins Configuration-as-Code (https://github.com/jenkinsci/jep/blob/master/jep/201/README.adoc[JEP-201]) do rely on
+a `YAML` configuration file to setup jenkins, both for core and plugins, fully automatically. This JEP get's into
+details on the way a schema is dynamically built for this file.
+
+
+== Specification
+
+=== Declarative configuration as code
+
+We want to introduce a simple way to define Jenkins configuration from a declarative document that would be accessible even to newcomers.
+Such a document should replicate the web UI user experience so the resulting structure looks natural to end user. Jenkins components have
+to be identified by convention or user-friendly names rather than by actual implementation class name.
+
+=== Mimic web UI
+
+We consider web UI as a natural documentation for end-user. As they switch to configuration-as-code they will search for the labels and
+model their use to see on web UI. The configuration-as-code model should follow as much as possible this model.
+
+=== No glue-code requirement
+
+We want configuration-as-code to apply to all jenkins components without need for dedicated glue-code. But we also want to provide some
+helper code that would make some specific components easier to configure, or better reflect the web UI user experience.
+
+=== Documentation Generation
+
+The configuration file format has to be well documented to assist end-user in writing. This documentation has to be generated to ensure
+it’s in sync with the actual codebase, like Pipeline DSL documentation does.
+
+=== Validation
+
+The configuration file should be validated without the need to actually run a Jenkins master. At same time we generate documentation we
+need to generate some schema that could also be used with adequate IDE / editor to assist writing configuration.
+
+== Motivation
+
+TODO: @ndeloof This need filling out.
+
+== Reasoning
+
+=== Human friendly syntax
+
+We also only support a limited subset of YAML syntax, to ensure configuration file is understandable by newcomers.
+
+=== Configuration mechanism
+
+==== Yaml syntax
+
+Yaml do support complex data structures, like Maps, nested yaml, merges ... but initial alpha release demonstrate this isn't well
+understood by end users which mostly expect a simple tree syntax, comparable to `json`.
+
+For this reason Configuration-as-Code do only support a subset of Yaml syntax:
+
+* http://yaml.org/type/map.html[Mapping] with String keys
+* http://yaml.org/type/seq.html[Sequences]
+* basic Scalar types
+
+This restriction allows to keep the yaml file simple and readable even by newcomers. Jenkins plugins which internal design would
+require more complex models will have to provide a dedicated "simplified" model object with custom adapter code. Option for a plugin
+to provide a customized adapter is part of Configuration-as-Code design to support such corner-cases.
+
+==== Component names
+
+Configuration file has to identify target components to be setup, and in many cases a specific implementation for some
+extension point to be selected. We want to offer end-user a comfortable syntax for this purpose, and as such avoid
+using class names or such technical details.
+
+For a specific extension point to be configured, we need to find the matching Jenkins component. Relying on `@Symbol` annotation is an
+efficient way to identify components with a human friendly short name.
+
+```java
+@Symbol("foo")
+public class MyFooExtension extends CoolAPI { ... }
+```
+-> Component name is "foo" based on Symbol annotation
+
+For plugin which haven't (yet) adopted this annotation, we can rely
+on some convention. A common pattern is to name an implementation class as prefix + API class name. As we know
+the API we are looking for implementation, we can establish a natural short name for this implementation. We have
+identified two naming conventions widely used in Java ecosystem :
+
+```java
+public class FooCoolAPI extends CoolAPI { ... }
+```
+-> Component name is "foo" based on class name convention _vs_ API class name
+
+```java
+public class FooCoolAPIIml extends CoolAPI { ... }
+```
+-> Component name is "foo" based on class name convention _vs_ API class name + `Impl` suffix
+
+
+==== General mechanism
+
+Any configurable component comes with a Configurator which knows how to handle it's data model.
+
+To support both jenkins-core and all plugins out-of-the-box we need a generic mechanism to configure anything Jenkins
+component. This is the "fallback" mechanism for any component which doesn't come with a custom configurator, so not
+intended to cover all potential design glitches, but to offer a reasonable schema inference for any code base used
+in Jenkins ecosystem.
+
+We need some mechanism to construct a jenkins component in respect with it's lifecycle, and in a way the data model
+schema is relevant for end-user based on his use of jenkins and it's web UI. Such component are tightly coupled with
+Stapler web framework and the expectation for them to be managed by this framework.
+
+``DataBoundSetter``s & ``DataBoundConstructor``s offer a natural way to construct Jenkins components from a set of key=value pairs. Most
+jenkins components do rely on them and as such offer a 1:1 match between internal data structure and web UI configuration forms.
+Component to follow UI binding conventions and best practices will then be supported out-of-the-box. The few of them with custom UI binding
+rules should be easily fixed, as the required changes are limited to data binding conventions.
+
+Using annotations to define the data-binding model let us introspect a class efficiently. When approved we want
+Configuration-as-Code to adopt https://github.com/jenkinsci/jep/tree/master/jep/205[JEP-205] declarative data binding
+to get more details on component data model, as well as configure target components with full support for their
+construction lifecycle and data constraints validation.
+
+==== Descriptors global configuration
+
+A major exception to this is ``Descriptor``s which in many cases rely on manual parsing of `JSONObject`. In this JEP we
+propose to offer guidance and recommendation for plugin developers to apply the same databinding mechanisme to descriptor's
+``configure`` method. We published a https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/PLUGINS.md[step-by-step guide]
+for this purpose and will open pull-requests on few commons plugins to demonstrate this approach.
+
+Most plugin do already have setters for descriptor's attribte, designed to enable configuration from groovy scripts. We
+do rely on those when they exist, but adoption databinding mechanisms will ensure
+
+1. accessors name and types do match the internal data model
+1. all attributes are configurable relying on DataBound setters.
+
+==== Corner cases and custom schema
+
+In some circumstances the Java codebase doesn’t match the web UI forms or relies on some custom code for configuration. The Jenkins root
+object is such a component. For those, we need to provide some dedicated configuration adapter code. Some plugins might need the same,
+either to offer a nicer schema, or to adjust to internal data representation.
+
+Such component can define their own Configurator extension to Configuration-as-Code, which will be responsible to
+define the data model schema used to set the target component. Configuration-as-Code do define such custom configurators for
+some jenkins-core components which don't follow the data-binding conventions for legacy or architecture reasons.
+
+=== Documentation / Schema generation
+
+As configuration-as-code can identify a Configurator for any component in jenkins sometime using a generic, data-binding one,
+sometime relying on a specialized implementation, we can construct a full data model from a live jenkins instance, and
+produce various artifacts :
+
+* We generate user-friendly documentation for the data schema. As we rely on data-bound attributes we can include help
+tips from web view as additional guidance to end-user reading the doc.
+* We generate a json-schema that can be used by IDE or validation tools to check the yaml syntax is valid and matches the
+target jenkins instance.
+* We _could_ generate more, including dedicated validation tools, linter, etc. Tooling will be discussed in more details
+in link:https://github.com/jenkinsci/jep/blob/master/jep/208/README.adoc[JEP-208].
+
+
+== Backwards Compatibility
+
+As Configuration-as-Code do infer data model schema from data binding this schema is subject to changes when a plugin is
+updated, so configuration would suddenly fail to load. To workaround this issue we have implemented some backward compatibility
+support, based on the meta-data we can collect from live jenkins instance on obsolete code base.
+
+By default Configuration-as-Code would reject use of a Deprecated or Restricted attribute. For backward compatibility it
+can be configured to only warn user. This behaviour is controlled by an additional meta-configuration in yaml file:
+
+```yaml
+configuration-as-code:
+   deprecation: warn
+   restricted: warn
+```
+
+For a comparable reason, if at some point we decide to introduce some breaking change in the way we introspect the
+data model to build schema, this new behaviour would only be enabled as the configuration file opt-in for this new
+feature :
+```yaml
+configuration-as-code:
+    version: 2
+```
+
+== Security
+
+Sensible informations should _not_ be exposed directly within the yaml configuration file.
+Configuration-as-Code do support string expansion using a bash-like `${KEY}` syntax for string based values. Configuration-as-Code do also define
+an API to connect with third-party secret-sources. Out of the box we do support environment variable expansion, which should only be considered
+for testing purpose, as well as file-based secret source (docker-secret, kubernetes-secret) and a Vault connector. Third party plugins can be developped to offer comparable support with other secret providers.
+
+== Infrastructure Requirements
+
+N/A
+
+== Testing
+
+We provide a set of configuration samples for various popular plugins, both as documentation for newcomers and for acceptance testing of the
+implementation.
+
+== Prototype Implementation
+
+https://github.com/jenkinsci/configuration-as-code-plugin
+
+== References
+
+This topic was initially discussed on https://issues.jenkins-ci.org/browse/JENKINS-31094[JENKINS-31094].
+Subsequent discussion https://groups.google.com/d/msg/jenkinsci-dev/6TjlxEqHUEs/nKSG1xSkCQAJ[here].

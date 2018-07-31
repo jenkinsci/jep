@@ -252,7 +252,7 @@ Probably the _load projection_ should be made here,
 and tentative numbers written here as a starting point.
 ////
 
-== Store UUID with logs
+=== Store UUID with logs
 
 It is critical to the quality of the telemetry system to be able to find
 and remove some logs originating from a rogue instance.
@@ -272,10 +272,3 @@ not only a given instance, but a period of time where that instance was connecte
 
 *  link:https://github.com/jenkins-infra/evergreen/tree/master/docs/meetings/2018-05-07-existing-telemetry-setup-on-jenkins-io[Meeting notes about existing setup for Error Logging in the Kubernetes cluster in the Jenkins Infrastructure].
 * link:https://groups.google.com/d/msg/jenkinsci-dev/ql9iX06IdGw/AJxFcGK5BgAJ[Thread on the Jenkins Developers Mailing List].
-
-
-[IMPORTANT]
-====
-When moving this JEP from a Draft to "Accepted" or "Final" state,
-include links to the pull requests and mailing list discussions which were involved in the process.
-====
