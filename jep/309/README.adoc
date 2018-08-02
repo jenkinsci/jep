@@ -18,8 +18,9 @@ endif::[]
 | Title
 | Bill of Materials
 
-| Sponsor
-| link:https://github.com/carlossg[Carlos Sanchez]
+| Sponsors
+| link:https://github.com/carlossg[Carlos Sanchez],
+link:https://github.com/carlossg[Oleg Nenashev]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
@@ -41,16 +42,12 @@ endif::[]
 | BDFL-Delegate
 | link:https://github.com/rtyler[R. Tyler Croy]
 
-//
-// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
-//| Discussions-To
-//| :bulb: Link to where discussion and final status announcement will occur :bulb:
-//
-//
-// Uncomment if this JEP depends on one or more other JEPs.
-//| Requires
-//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
-//
+| Discussions-To
+| link:https://groups.google.com/d/topic/jenkinsci-dev/pR2ZQMj95Zc/discussion
+
+| Requires
+| link:/jep/305[JEP-305]
+
 //
 // Uncomment and fill if this JEP is rendered obsolete by a later JEP
 //| Superseded-By
@@ -90,14 +87,14 @@ AKA “I am a plugin maintainer, not a FindBugs robot. Automate checks for me”
 * https://github.com/jenkinsci/blueocean-acceptance-test[Blue Ocean acceptance test]
 * https://github.com/jenkinsci/plugin-compat-tester[Jenkins plugin compat tester]
 * https://github.com/jenkins-infra/evergreen[Essentials evergreen draft]
-* https://github.com/jenkinsci/jenkins-war-packager[Jenkins WAR packager] recently started
+* https://github.com/jenkinsci/custom-war-packager[Jenkins Custom WAR packager]
 
 === What are we missing
 
 * Builds/Tests from master, needed for Essentials
 * Builds/Tests from core, libraries and plugins PRs
 
-These cases are addressed by a Custom WAR Packager prototype for custom WAR Building and testing use-cases.
+These cases are addressed by a Custom WAR Packager for custom WAR Building and testing use-cases.
 That format is narrow focused, and it does not address use-cases like support of custom environments.
 We want to unify the description format across projects within Jenkins (e.g. Jenkins Essentials, Jenkins X, Docker Packaging, etc.).
 
@@ -158,9 +155,12 @@ Given the amount of work involved we recommend doing it in phases, targeting cor
 
 ===== BoM Format
 
-A new yaml format based on https://github.com/jenkins-infra/evergreen/blob/master/essentials.yaml[essentials] and https://github.com/oleg-nenashev/jenkins-war-packager[WAR packager] using the Kubernetes format.
+A new yaml format based on https://github.com/jenkins-infra/evergreen/blob/master/essentials.yaml[essentials] and https://github.com/oleg-nenashev/jenkins-war-packager[Custom WAR packager] using the Kubernetes format.
+
+=== YAML example
 
 ```yaml
+version: 1.0
 metadata:
   # labels and annotations are key: value string attributes
   labels:
@@ -214,6 +214,148 @@ status:
           # version: 1.0
 ```
 
+=== Version
+
+`version` field defines version of the BOM format.
+This JEP defines the version `1.0`,
+new formats may be introduced in subsequent JEPs.
+
+The specification version follows the link:https://semver.org/[Semantic Versioning 2.0.0] approach,
+but defines a 2-digit specification since there is no "bugfixes" planned.
+Incompatible changes will be always done along with a major version change.
+
+=== Field: `metadata`
+
+Metadata includes 2 key-value maps: `labels` and `annotations`.
+Both sections are optional.
+
+==== Labels
+
+Labels implement fields which will be used during the build.
+All labels are optional from the BOM specification standpoint,
+but implementations may define special requirements.
+
+There are following recommended `labels`:
+
+* `name` - Short string description of the bundle
+* `description` - Longer text description of the bundle
+* `groupId` - Maven Group ID of the bundle
+* `artifactId` - Maven Artifact ID of the bundle
+* `vendor` - Short description of the bundle's vendor (e.g. `Jenkins project`)
+
+All label values must be Strings.
+
+==== Annotations
+
+Additional metadata, which is not used during the build directly.
+
+* All metadata entries are optional.
+* Metadata keys should use the dot-separated strings,
+e.g. `io.jenkins.demo.mybundle.notForProduction`.
+* Metadata values should be always plain strings
+
+The expectation from BOM packaging implementations is that they
+take annotations and somehow make it available to users.
+
+=== Field: `specification`
+
+Specification defines contents of the bundle.
+It consists of the following sections:
+
+* `core` - Defines the core, this is a mandatory section
+* `plugins` - Jenkins plugins in the bundle
+* `components` - Defines a component (anything excepting a plugin)
+* `environments` - Environment-specific components
+
+==== Dependency type
+
+Fields below use a similar dependency format.
+
+* `groupId` - Maven group ID
+* `artifactId` - Maven artifact ID
+* `type` - Type of the packaging.
+           It may be implied or required depending on the field
+* `version` - Version to be used
+
+==== Field: `core`
+
+Defines source of the Jenkins core to be used.
+Depending on the BOM packaging implementation,
+it may be referring WAR or other packaging type.
+
+Implied type: `war`
+
+==== Field: `plugins`
+
+Implied type: `hpi`
+
+==== Field: `components`
+
+This section defines all other components which may be used in the package.
+The components are classified by the `type` field values,
+and these field may be interpreted differently by implementations.
+Type examples:
+
+* `jar` - JAR library
+** This type may be used to define extra libraries which are included into the package
+* `jenkins-module` - Jenkins core module
+** Modules represent parts of the Jenkins core which have their own release cycle.
+   They are always bundled into the core, but they are not used by the core directly.
+* `groovy-hook` - A package of
+link:https://wiki.jenkins.io/display/JENKINS/Groovy+Hook+Script[Groovy Hook Scripts]
+* `jcasc` - A package of
+
+If a BOM packager implementation support modifying the WAR file,
+these fields may be used to define components to be included/replaced.
+Other implementations may ignore the section, fail or handle components differently.
+
+Implied type: `jar`
+
+==== Field: `environments`
+
+Environments allow defining various packaging approaches for different targets.
+For example, BOM may define different environment specific plugins to be bundled for AWS and Azure:
+Agent provisioners, artifact manager implementations, etc.
+
+Fields:
+
+* `name` - Name of the environment, e.g. `aws` or `k8s`.
+           This field is mandatory
+* `plugins` - Jenkins plugins in the bundle
+* `modules` - Jenkins core modules to be bundled
+* `components` - Defines extra components to be bundled
+
+BOM packagers are expected to support passing environments as a build argument.
+The following rules apply:
+
+* Environments can add new components
+* Environments can override components defined in the main BOM section,
+  e.g. they may require newer plugin version
+* Environments cannot remove plugins
+
+=== Dependency resolution
+
+Plugins, modules and components may declare dependencies on other components.
+There is no strict requirement for BOM to provide a full list of dependencies,
+although it is recommended for BOM usages in production packages.
+
+Dependency resolution logic is not specified in this BOM format version,
+it is up to the implementations.
+Similarly, implementations are responsible for upper bounds dependency resolution
+and checks if they support transitive dependencies.
+Packaging implementations may also refuse to support transitive dependencies.
+
+=== Field: `status`
+
+This field represents the resulting BOM generated by a BOM packager implementation.
+This field is equivalent to `specification`, but there are additional requirements:
+
+* All dependencies must be resolved in a reproducible way.
+  There is no `dir` specifications pointing to sources not packaged with the resulting distribution
+* All transitive dependencies must be resolved and added to `status`
+
+Particular BOM packager implementations may squash the `environments` section
+if they build a package targeting a single environment.
 
 == Motivation
 
@@ -227,9 +369,18 @@ This proposal builds on the goals of Essentials. We want to ensure that the Esse
 == Reasoning
 
 The chosen YAML format is just picked due to the similarities with Kubernetes model objects and has no importance.
+Since the format does not support all required features,
+it has been extended to support them.
 
-For version naming there are other options:
+=== Plugin and component sources
 
+The implementation should support pulling in components by version from different sources.
+It includes version-based dependencies and also path definitions for local builds.
+
+For `version` naming there are other options:
+
+* Use standard releases in Jenkins repository
+* Use Incremental releases (JEP-305)
 * Use Maven SNAPSHOTS
 ** Automatically deploy snapshots using commit ids (ie. jenkins-core:aabbcc-SNAPSHOT)
 ** Ensure the commit ids are included in the packaging and visible during builds
@@ -237,11 +388,46 @@ For version naming there are other options:
 ** And build everything every time
 ** This would not work for Essentials as the components need to be individually downloadable.
 
+For path-based naming an `dir` field will be used.
+This field will support defining absolute and relative paths
+to sources of the component.
+Build of these sources is a responsibility of BOM implementations,
+support of such paths is **not mandatory**,
+implementations may reject the field.
 
+=== Format versioning
+
+According to the BOM discussion feedback,
+BOM format may change in the future in an incompatible way.
+In order to support that, a `version` field is introduced in the format.
+
+=== Tooling
+
+During the JEP discussion, it was proposed to introduce some tools
+in order to simplify usage of the model.
+It includes:
+
+* Utility Java library, which allows parsing and generating BOM
+* YAML schema, which will allow verifying the BOM formats
+
+As a part of this JEP, it was decided to NOT include separate tooling to the scope of this JEP.
+There is a link:https://github.com/jenkinsci/custom-war-packager[Jenkins Custom WAR Packager library]
+which offers BOM Model and utility methods.
+It can be used as a utility library for BOM format `1.0`.
+More tooling can be implemented on-demand.
+
+=== Hierarchical objects in annotations
+
+There was a comment that `annotations` should support hierarchical objects
+to be more flexible.
+As a part of format `1.0`, it was decided to NOT do that in order
+to keep YAML processing implementations simple.
+It can be implemented in new format versions.
 
 == Backwards Compatibility
 
 This proposal aims to add new functionality and reuse existing tooling by generating Maven poms and other formats in use today.
+BOM format versioning is supported by the `version` field in YAML.
 
 == Security
 
@@ -254,12 +440,24 @@ There are no new infrastructure requirements related to this proposal.
 == Testing
 
 There are no testing issues related to this proposal.
+Custom WAR Packager and Evergreen have test automation which verifies
+support of YAML formats.
+
+== Prototype implementation
+
+* link:https://github.com/jenkinsci/custom-war-packager[Custom WAR Packager] -
+BOM is supported as input and output format
+* link:https://github.com/jenkins-infra/evergreen[Essentials evergreen] -
+BOM is used as intermediate format to define contents of the system
+* https://github.com/jenkins-infra/pipeline-library/blob/master/vars/essentialsTest.groovy[essentialsTest()] -
+Part of the component delivery Pipeline which produces and uses BOM internally
 
 == References
 
 * link:https://groups.google.com/d/topic/jenkinsci-dev/pR2ZQMj95Zc/discussion[design discussion]
 * link:https://github.com/jenkinsci/acceptance-test-harness[Jenkins acceptance test harness]
 * link:https://github.com/jenkinsci/blueocean-acceptance-test[Blue Ocean acceptance test]
-* link:https://github.com/jenkinsci/plugin-compat-tester[Jenkins plugin compat tester]
 * link:https://github.com/jenkins-infra/evergreen[Essentials evergreen draft]
-* link:https://github.com/jenkinsci/custom-war-packager[Jenkins WAR packager]
+* link:https://github.com/jenkinsci/custom-war-packager[Jenkins Custom WAR packager]
+* https://github.com/jenkins-infra/pipeline-library/blob/master/vars/essentialsTest.groovy[essentialsTest() in Jenkins Pipeline Library]
+* link:https://github.com/jenkinsci/plugin-compat-tester[Jenkins plugin compat tester]
