@@ -99,6 +99,24 @@ In the data model it includes the following fields:
 * `data` (`Map<String, Serializable>`) - additional metadata.
   This metadata will be used to categorize event entries.
 
+[WARNING]
+====
+*(svanoort)*
+Timestamp when first part of message generated, or last? Or perhaps both?
+====
+
+[WARNING]
+====
+*(svanoort)*
+Why not enforce something simpler than Serializable for (meta)data which can be consumed by non-Java clients potentially, i.e. JSON perhaps?
+
+Better yet: JSON (or Map<String, JsonType> that gets converted to a JSON document) for most things, and a Map<String, Serializable> of JenkinsInternal stuff - with as little as possible in the latter category.
+
+To do cloud-native effectively, we need to have something consumable directly from the browser or that potentially be consumed by a non-Java source. (ab)use of java serialization is generally discouraged at this point - we should only be doing it where 100% required.
+
+Actually yeah, here's my proposal: we have JSON field that can be trivially converted by Java since types will map over. Then we have a Map<String, Serializable> with serializables stored (edited)base64, which can be ignored by non-Java consumers.
+====
+
 Some metadata is mandatory.
 Requited fields are defined below.
 
@@ -110,6 +128,13 @@ for all event entries:
 * `jenkinsId` - Instance ID of the Jenkins instance
 * `loggableType`  - Type of the `Loggable` entry, e.g. `run`
 * `loggableId` - Identifier of the `Loggable` entry
+
+[WARNING]
+====
+*(svanoort)* Re: `jenkinsId` -
+We probably need an API on the master that provides this easily (or at least there wasn't one the last time I checked, you had to kind of duplicate the method used for web requests).
+====
+
 
 ==== Run metadata
 
@@ -123,6 +148,12 @@ for all `hudson.model.Run` event entries:
 
 * All Run metadata
 * `stepId` - Identifier of the step ("node")
+
+[WARNING]
+====
+*(svanoort)*
+I think you probably mean flowNodeId, since that's the actual object that is mapped to where a log originates from (1 or more flownodes per step - an important key point).
+====
 
 === Extension Points
 
@@ -165,6 +196,14 @@ It will be sent to the agent side.
    This API will be used by `ExternalLoggingMethod` implementations and other logic
    to provide additional metadata if required
 
+[WARNING]
+====
+*(svanoort)* Re: Map of Serializable metadata entries
+Similarly, consider a non-Java map of metadata that can be consumed by other sources, plus a smaller Java serialized grouping.
+
+This makes parsing easier for non-java consumers too
+====
+
 === ExternalLogBrowserFactory and classes
 
 This factory just produces instances of `ExternalLogBrowser`.
@@ -192,6 +231,12 @@ This layer should provide the following features:
 * Utility classes for reading and writing JSON Events,
 including parsing/writing `ConsoleNote` objects
 * Base classes for constructing JSON queries for fetching data
+
+[WARNING]
+====
+*(svanoort)*
+Consider GraphQL for an event querying API?
+====
 
 Other convenience layers will be defined during prototyping.
 
@@ -270,6 +315,12 @@ some entries may be missing for "completed" entries
 
 Such issue explains why we need a special watch layer to determine whether logs are actually completed.
 It explains why we need a special logic/queries to determine whether the log is actually complete.
+
+[WARNING]
+====
+*(svanoort)*
+Polling-based or notification-based watch layer? This strikes me as a wrinkle that may be deceptively complex.
+====
 
 Full logic for the layer should be determined during reference implementation.
 
