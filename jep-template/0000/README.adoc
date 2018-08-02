@@ -62,7 +62,8 @@ If no suitable BDFL-Delegate can be found, that row may be commented out.
 //| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
 //
 //
-// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list
+// OR if there is a single thread for the discussion and comments.
 //| Discussions-To
 //| :bulb: Link to where discussion and final status announcement will occur :bulb:
 //

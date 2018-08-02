@@ -500,6 +500,8 @@ JEP review and resolution may also occur on a list other than jenkinsci-dev@goog
 In this case, the "Discussions-To" header in the JEP will identify the
 appropriate alternative list where discussion, review and pronouncement on the
 JEP will occur.
+"Discussions-To" may be also used to reference a particular thread with the discussion
+if the JEP sponsor prefers the discussion to happen in a single thread.
 
 [[accepted]]
 ==== Accepting a JEP
