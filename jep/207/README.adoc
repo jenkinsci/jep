@@ -326,8 +326,21 @@ so read-only API users do not lose the compatibility
 
 == Motivation
 
-TODO: @oleg-nenashev to write this.
+The default build logging in Jenkins is known to be a performance and scalability bottleneck at large-scale instances.
 
+* Build logging from agents goes through master.
+  It produces loads on the network and master's memory/CPU, especially in the case
+  of massive parallel builds
+* Build browsing goes through master.
+  Every time logs are displayed to users,
+  a request is sent to the Jenkins master in order to load the data
+* Logs are stored on the disk in raw format.
+  It consumes a lot of storage space.
+
+Externalization of Build logging could allow improving the situation a lot,
+but Core API patches are required to support external logging in `AbstractProject`-based job types.
+This JEP is needed in order to specify such core changes.
+Other changes are documented in subsequent JEPs.
 
 == Reasoning
 
@@ -516,8 +529,8 @@ if deemed necessary.
 == Prototype implementation
 
 * https://github.com/jenkinsci/jenkins/pull/3557/files
-* https://github.com/oleg-nenashev/external-logging-api-plugin
-* https://github.com/oleg-nenashev/external-logging-logstash-plugin
+* https://github.com/jenkinsci/external-logging-api-plugin
+* https://github.com/jenkinsci/external-logging-logstash-plugin
 
 == References
 
