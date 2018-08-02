@@ -37,12 +37,8 @@ endif::[]
 | BDFL-Delegate
 | TBD
 
-//
-//
-// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
-//| Discussions-To
-//| :bulb: Link to where discussion and final status announcement will occur :bulb:
-//
+| Discussions-To
+| link:https://groups.google.com/forum/#!forum/jenkins-cloud-native-sig[Jenkins Cloud Native SIG]
 
 | Requires
 | link:https://github.com/jenkinsci/jep/blob/master/jep/206/README.adoc[JEP-206]: UTF-8 for Pipeline logs

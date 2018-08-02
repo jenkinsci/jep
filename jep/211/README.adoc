@@ -41,10 +41,9 @@ link:https://issues.jenkins-ci.org/browse/JENKINS-52012[JENKINS-52012] - Java 10
 link:https://issues.jenkins-ci.org/browse/JENKINS-52284[JENKINS-52284] - Java 10 support in LTS,
 link:https://issues.jenkins-ci.org/browse/JENKINS-51805[JENKINS-51805] - Java 11 support
 
-// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
-//| Discussions-To
-//| :bulb: Link to where discussion and final status announcement will occur :bulb:
-//
+| Discussions-To
+| link:https://groups.google.com/forum/#!forum/jenkins-platform-sig[Jenkins Platform SIG]
+
 //
 // Uncomment if this JEP depends on one or more other JEPs.
 //| Requires

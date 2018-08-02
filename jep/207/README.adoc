@@ -40,11 +40,10 @@ endif::[]
 //| JIRA
 //| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
 //
-//
-// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
-//| Discussions-To
-//| :bulb: Link to where discussion and final status announcement will occur :bulb:
-//
+
+| Discussions-To
+| link:https://groups.google.com/forum/#!forum/jenkins-cloud-native-sig[Jenkins Cloud Native SIG]
+
 //
 // Uncomment if this JEP depends on one or more other JEPs.
 //| Requires
