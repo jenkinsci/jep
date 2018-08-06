@@ -35,7 +35,7 @@ endif::[]
 | https://issues.jenkins-ci.org/browse/JENKINS-38381[JENKINS-38381]
 
 | BDFL-Delegate
-| TBD
+| link:https://github.com/carlossg[Carlos Sanchez]
 
 | Discussions-To
 | link:https://groups.google.com/forum/#!forum/jenkins-cloud-native-sig[Jenkins Cloud Native SIG]
