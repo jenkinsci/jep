@@ -20,7 +20,7 @@ endif::[]
 
 | Sponsors
 | link:https://github.com/carlossg[Carlos Sanchez],
-link:https://github.com/carlossg[Oleg Nenashev]
+  link:https://github.com/oleg-nenashev[Oleg Nenashev]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
@@ -228,8 +228,10 @@ Incompatible changes will be always done along with a major version change.
 
 Metadata includes 2 key-value maps: `labels` and `annotations`.
 Both sections are optional.
+More new keys may be added in future BOM specification versions (see _BOM Versioning_),
+and implementations should ignore them if they hit unsupported metadata entries.
 
-==== Labels
+==== Field: labels
 
 Labels implement fields which will be used during the build.
 All labels are optional from the BOM specification standpoint,
@@ -245,7 +247,7 @@ There are following recommended `labels`:
 
 All label values must be Strings.
 
-==== Annotations
+==== Field: annotation
 
 Additional metadata, which is not used during the build directly.
 
@@ -328,10 +330,11 @@ Fields:
 BOM packagers are expected to support passing environments as a build argument.
 The following rules apply:
 
-* Environments can add new components
-* Environments can override components defined in the main BOM section,
+* Environments can add new plugins/components
+* Environments can update plugin/component versions defined in the main BOM section,
   e.g. they may require newer plugin version
-* Environments cannot remove plugins
+* Environments cannot remove plugins/components
+* Environments cannot downgrade plugin/component versions
 
 === Dependency resolution
 
