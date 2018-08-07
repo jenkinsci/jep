@@ -1,4 +1,4 @@
-= JEP-0000: How Delegates
+= JEP-0000: How BDFL Delegates
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -16,7 +16,7 @@ endif::[]
 | 0000
 
 | Title
-| How Delegates
+| How BDFL Delegates
 
 | Sponsor
 | link:https://github.com/kohsuke[Kohsuke Kawaguchi]
