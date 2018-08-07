@@ -1,0 +1,215 @@
+= JEP-0000: Modular Components
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.**JEP Template**
+[TIP]
+====
+In this document, all text in a "Tip" block (or inline text with with a ":bulb:" on either side)
+MUST be removed and/or replaced with text appropriate to this JEP before submission.
+
+Sections may include aditional help and advice in comments.
+":bulb:" entries in comments only need to be filled in if that text is uncommented.
+
+See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for full and accurate description of the JEP process and what is required in each section.
+====
+
+[TIP]
+====
+*BDLF-Delegate* is uncommented by default.
+As part of the in initial conversation or the JEP submission the sponsor should
+look for a BDFL Delegate.
+While not required, it is better for the community if Delegates perform most reviews.
+If no suitable BDFL-Delegate can be found, that row may be commented out.
+====
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 0000
+
+| Title
+| Modular Components
+
+| Sponsor
+| :bulb: Link to github user page :bulb:
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted
+
+| Type
+| Standards
+
+| Created
+| :bulb: Date (YYYY-MM-DD) :bulb:
+
+| BDFL-Delegate
+| TBD
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+[TIP]
+====
+Give a short (200 word) description of the technical issue addressed.
+
+* Use present tense - describe what the proposal "does" (as if it were already done) not what it will do.
+* Do not go into technical details, those go in the Specification section.
+* Do not talk about history or why this needs to be done, that is part of Motivation section.
+====
+
+== Specification
+
+[TIP]
+====
+Provide a detailed specification what is being proposed.
+Be as technical and detailed as needed to allow new or existing Jenkins developers
+to reasonably understand the scope/impact of an implementation.
+
+* Use present tense - describe what the proposal "does" (as if it were already done) not what it will do.
+* Do not discuss alternative designs that were rejected, those belong in the Reasoning section.
+* Avoid in-depth discussion or justification of design choices, that belongs in the Reasoning section.
+====
+
+== Motivation
+
+[TIP]
+====
+Explain why the existing code base or process is inadequate to address the problem that the JEP solves.
+This section may also contain any historal context such as how things were done before this proposal.
+
+* Do not discuss design choices or alternative designs that were rejected, those belong in the Reasoning section.
+====
+
+== Reasoning
+
+[TIP]
+====
+Explain why particular design decisions were made.
+Describe alternate designs that were considered and related work, e.g. how the feature is supported in other systems.
+Provide evidence of consensus within the community and discuss important objections or concerns raised during discussion.
+
+* Use sub-headings to organize this section for ease of readability.
+* Do not talk about history or why this needs to be done, that is part of Motivation section.
+====
+
+== Backwards Compatibility
+
+[TIP]
+====
+Describe any incompatibilities and their severity.
+Describe how the JEP proposes to deal with these incompatibilities.
+
+If there are no backwards compatibility concerns, this section may simply say:
+There are no backwards compatibility concerns related to this proposal.
+====
+
+== Security
+
+[TIP]
+====
+Describe the security impact of this proposal.
+Outline what was done to identify and evaluate security issues,
+discuss of potential security issues and how they are mitigated or prevented,
+and how the JEP interacts with existing permissions, authentication, authorization, etc.
+
+If this proposal will have no impact on security, this section may simply say:
+There are no security risks related to this proposal.
+====
+
+== Infrastructure Requirements
+
+[TIP]
+====
+Describe any impact on Jenkins project infrastructure.
+
+Include any additions or changes, interactions with exiting components,
+potential instabilities, service-level agreements,
+and responsibilities for continuing maintenance.
+Explain the scope of infrastructure changes with sufficient detail
+to allow initial and on-going cost (in both time and money) to be estimated.
+
+If this proposal will have no impact on infrastructure, this section may simply say:
+There are no new infrastructure requirements related to this proposal.
+====
+
+== Testing
+
+[TIP]
+====
+If the JEP involves any kind of behavioral change to code
+(whether in a Jenkins product or backend infrastructure),
+give a summary of how its correctness (and, if applicable, compatibility, security, etc.) can be tested.
+
+In the preferred case that automated tests can be developed to cover all significant changes, simply give a short summary of the nature of these tests.
+
+If some or all of changes will require human interaction to verify, explain why automated tests are considered impractical.
+Then summarize what kinds of test cases might be required: user scenarios with action steps and expected outcomes.
+Might behavior vary by platform (operating system, servlet container, web browser, etc.)?
+Are there foreseeable interactions between different permissible versions of components (Jenkins core, plugins, etc.)?
+Are any special tools, proprietary software, or online service accounts required to exercise a related code path (Active Directory server, GitHub login, etc.)?
+When will testing take place relative to merging code changes, and might retesting be required if other changes are made to this area in the future?
+
+If this proposal requires no testing, this section may simply say:
+There are no testing issues related to this proposal.
+====
+
+== Prototype Implementation
+
+[TIP]
+====
+Link to any open source reference implementation of code changes for this proposal.
+The implementation need not be completed before the JEP is
+link:https://github.com/jenkinsci/jep/tree/master/jep/1#accepted[accepted],
+but must be completed before any JEP is given
+"link:https://github.com/jenkinsci/jep/tree/master/jep/1#final[Final]" status.
+
+JEPs which will not include code changes may omit this section.
+====
+
+== References
+
+[TIP]
+====
+Provide links to any related documents.
+This will include links to discussions on the mailing list, pull requests, and meeting notes.
+====
+
+
+
