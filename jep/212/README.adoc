@@ -32,7 +32,8 @@ endif::[]
 | 2018-07-24
 
 | BDFL-Delegate
-| TBD
+| link:https://github.com/carlossg[Carlos Sanchez]
+
 
 //
 //

@@ -40,7 +40,7 @@ endif::[]
 //
 // Uncomment if there will be a BDFL delegate for this JEP.
 | BDFL-Delegate
-| Undetermined
+| link:https://github.com/daniel-beck[Daniel Beck]
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
