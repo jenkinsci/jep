@@ -47,6 +47,11 @@
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | _not{nbsp}delegated_
 
+| Draft{nbsp}:speech_balloon:
+| link:9/README.adoc[JEP-0000: How BDFL Delegates]
+| link:https://github.com/kohsuke[Kohsuke{nbsp}Kawaguchi]
+| _not{nbsp}delegated_
+
 | Final{nbsp}:lock:
 | link:200/README.adoc[JEP-200: Switch Remoting/XStream blacklist to a whitelist]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
@@ -159,7 +164,7 @@
 
 | Draft{nbsp}:speech_balloon:
 | link:309/README.adoc[JEP-309: Bill of Materials]
-| link:https://github.com/carlossg[Carlos{nbsp}Sanchez]
+| link:https://github.com/carlossg[Carlos{nbsp}Sanchez],
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
 | Draft{nbsp}:speech_balloon:
