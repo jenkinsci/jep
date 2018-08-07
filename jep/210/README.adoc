@@ -330,6 +330,16 @@ This avoids any need for the `¦` separator used by `StreamLogStorage`.
 More subtly, the `InputStream` interface lacked any room for indicating
 that the build content was incomplete.
 
+=== Annotating lines by step using `ConsoleNote`
+
+For the default filesystem-based storage,
+originally it was attempted to use a special `ConsoleNote` to mark which step produced a given line.
+This worked, but resulted in unacceptably bloated raw logs:
+the serialized form, after GZIPping and Base64-encoding, was over 200 characters per line;
+and rendered typical raw logs more or less unreadable.
+Therefore the `¦` separator (later used only by `StreamLogStorage`) was introduced,
+as it adds minimal space overhead and does not interfere with legibility.
+
 === Core dependencies
 
 Some aspects of the implementation would be easier given certain API changes in Jenkins core (or Stapler).
@@ -342,12 +352,12 @@ For now, these considerations were outweighed by the convenience of running on s
 
 When the synchronous `Launcher` interface is used to start non-durable remote processes,
 as happens for example from typical `SCM` implementations delegating to a command-line tool,
-currently the remotability of any supplied `TaskListener` is ignored
+historically the remotability of any supplied `TaskListener` is ignored
 and all log lines are sent over the Remoting channel to be processed on the master side:
 link:https://issues.jenkins-ci.org/browse/JENKINS-52729[JENKINS-52729].
-This is likely fixable as a simple patch to `Launcher`,
+This was fixed as a simple patch to `Launcher`,
 which would also benefit JEP-207 by removing any need to use ``DecoratedLauncher``s for freestyle build steps.
-This is likely to also fix encoding issues with such synchronous steps for JEP-206.
+A related change could perhaps also fix encoding issues with such synchronous steps for JEP-206.
 
 (While `TaskListener` was long ago designed to be remotable,
 and `StreamTaskListener` in fact handled that by using `RemoteOutputStream`,
