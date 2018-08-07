@@ -337,6 +337,8 @@ originally it was attempted to use a special `ConsoleNote` to mark which step pr
 This worked, but resulted in unacceptably bloated raw logs:
 the serialized form, after GZIPping and Base64-encoding, was over 200 characters per line;
 and rendered typical raw logs more or less unreadable.
+Therefore the `¦` separator (later used only by `StreamLogStorage`) was introduced,
+as it adds minimal space overhead and does not interfere with legibility.
 
 === Core dependencies
 
