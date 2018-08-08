@@ -26,7 +26,7 @@ endif::[]
 | Not Submitted :information_source:
 
 | Type
-| :bulb: Standards, Informational, or Process :bulb:
+| Standards
 
 | Created
 | 2018-08-08
