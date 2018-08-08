@@ -117,6 +117,11 @@
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/carlossg[Carlos{nbsp}Sanchez]
 
+| Draft{nbsp}:speech_balloon:
+| link:213/README.adoc[JEP-213: Configuration Storage API in the Jenkins Core]
+| link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
+| TBD
+
 | Accepted{nbsp}:ok_hand:
 | link:300/README.adoc[JEP-300: Jenkins Essentials]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
@@ -164,7 +169,7 @@
 
 | Draft{nbsp}:speech_balloon:
 | link:309/README.adoc[JEP-309: Bill of Materials]
-| link:https://github.com/carlossg[Carlos{nbsp}Sanchez],
+| link:https://github.com/carlossg[Carlos{nbsp}Sanchez], link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
 | Draft{nbsp}:speech_balloon:
