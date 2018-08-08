@@ -1,6 +1,7 @@
 = JEP-0000: Modular Components
 :toc: preamble
 :toclevels: 3
+:source-highlighter: highlightjs
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
@@ -8,27 +9,6 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
-
-.**JEP Template**
-[TIP]
-====
-In this document, all text in a "Tip" block (or inline text with with a ":bulb:" on either side)
-MUST be removed and/or replaced with text appropriate to this JEP before submission.
-
-Sections may include aditional help and advice in comments.
-":bulb:" entries in comments only need to be filled in if that text is uncommented.
-
-See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for full and accurate description of the JEP process and what is required in each section.
-====
-
-[TIP]
-====
-*BDLF-Delegate* is uncommented by default.
-As part of the in initial conversation or the JEP submission the sponsor should
-look for a BDFL Delegate.
-While not required, it is better for the community if Delegates perform most reviews.
-If no suitable BDFL-Delegate can be found, that row may be commented out.
-====
 
 .Metadata
 [cols="1h,1"]
@@ -40,7 +20,7 @@ If no suitable BDFL-Delegate can be found, that row may be commented out.
 | Modular Components
 
 | Sponsor
-| :bulb: Link to github user page :bulb:
+| https://github.com/sophistifunk
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
@@ -50,7 +30,7 @@ If no suitable BDFL-Delegate can be found, that row may be commented out.
 | Standards
 
 | Created
-| :bulb: Date (YYYY-MM-DD) :bulb:
+| 2018-08-08
 
 | BDFL-Delegate
 | TBD
@@ -85,16 +65,205 @@ If no suitable BDFL-Delegate can be found, that row may be commented out.
 
 == Abstract
 
-[TIP]
-====
-Give a short (200 word) description of the technical issue addressed.
+This document describes a set of practices to allow creation and embedding of Modular UX Widgets: Compound React components that are more task-specific and self-contained than the simpler, building-block kind of components found in a common UI Component library package (such as Button, Table, DropDown, etc).
 
-* Use present tense - describe what the proposal "does" (as if it were already done) not what it will do.
-* Do not go into technical details, those go in the Specification section.
-* Do not talk about history or why this needs to be done, that is part of Motivation section.
-====
+Example use cases:
+
+* Pipeline run graph
+* Pipeline creation wizard
+* Pipeline activity table
 
 == Specification
+
+=== Embedding a Widget into a Host Application
+
+==== Requirements
+
+* A bundler/transpiler that understands ES6 Modules (or modern browser requirements)
+* React 
+
+Additionally, the Widget module artefact will include TypeScript `*.d.ts` files for Host Applications using TypeScript, but you are free to ignore them otherwise.  
+
+==== Adding it to your project 
+
+Add the Widget to your application's dependencies like a normal NPM module:
+
+----
+npm install --save @org-name/widget-module-name 
+----
+
+And render it as you would any other React component:
+
+[source, JavaScript]
+----
+import { FooWidget } from '@org-name/widget-module-name';
+
+class MyWrapper extends React.Component {
+
+    /* .... */
+
+    render() {
+        /* .... */
+        return (
+            <div>
+                <h1>Hello, World!</h1>
+                <FooWidget foo="bar" baz={quux}/>
+            </div>
+        );
+    }
+}
+----
+
+==== Providing the Data Model
+
+The data model should be provided to the Widget via React properties, as a normal JavaScript object: 
+
+[source, JavaScript]
+----
+    render() {
+        const topLevelStages = this.getTopLevelStages();
+        return (
+            <PipelineGraph stages={topLevelStages}/>
+        );
+    }
+----
+
+The expected type of all data model properties will be described in the Widget's documentation, as well as available in the form of TypeScript `Foo.d.ts` files in the artefact alongside the JavaScript source.
+
+Unless specifically described otherwise in the Widget's documentation, treat data model objects as immutable, and do not expect the Widget to re-render if you change some of its nested properties.
+
+==== Providing CSS
+
+Each Widget will provide the styles it requires in a predictable location within the artefact:
+
+* As CSS, located with the entry at `/styles/css/main.css`
+* Optionally as SCSS source files with the entry at `/styles/scss/main.scss`
+
+It is up to the Host Application to ensure that the correct styles are loaded when rendering the widget. How you do that depends on your Application's build process and environment.
+
+==== Providing Static Assets
+
+Any static assets (such as images) required by the Widget will be provided in the artefact within the `/assets/` folder, and must be set as React props on the Widget.
+
+Host Applications can serve these assets from a known location and provide the HREFs to the widget:
+
+[source, JavaScript]
+----
+    render() {
+        const assetBase = this.getAssetBase();
+
+        const assets = {
+            happy: `${assetBase}/happy.png`,
+            sad: `${assetBase}/sad.png`
+        };
+
+        return (
+            <FaceWidget {...assets}/>
+        );
+    }
+----
+
+As an alternative, depending on your bundler/loader, you can embed them directly from the artefact as `data://` URLs:
+
+[source, JavaScript]
+----
+const happyImg = require('@example-org/widget-module-name/assets/happy.png');
+const sadImg = require('@example-org/widget-module-name/assets/happy.png');
+
+class MyWrapper extends React.Component {
+
+    /* .... */
+
+    render() {
+        const assets = {
+            happy: happyImg,
+            sad: sadImg
+        };
+
+        return (
+            <FaceWidget {...assets}/>
+        );
+    }
+}
+----
+
+==== Providing i18n Resources
+
+Widgets will provide their localised resources as JSON in a predictable location:
+
+* `/i18n/resources.en.json`
+* `/i18n/resources.us.json`
+* `/i18n/resources.jp.json`
+* `/i18n/resources.de.json`
+* _...etc_
+
+The host application must, based on the user's current locale, provide the correct data to the Widget as a plain JavaScript object via the `resourceBundle` React prop.
+
+If the host application supports locales for which the widget does not provide a bundle, default to `en`.
+
+==== Providing Service Objects
+
+In some instances, a Widget may require service objects to provide access to an API. These will be host-specific, and must be provided by the Host Application via React props.
+
+The detailed interfaces that must be implemented by any service objects will be provided by the Widget's documentation, as well as in the form of TypeScript `*.d.ts` definitions in the Widget module artefact.
+
+==== Listening to Widget Events
+
+A Widget may provide standard React events via any number of `onFoo=` props that the Host Application can choose to listen to. The Widget's documentation will provide details of the meaning and function signiatures for any Widget Events, as well as in the form of TypeScript `*.d.ts` definitions in the Widget module artefact.
+
+==== Notifying Widget of External Events
+
+In some instances, a Widget will need to be notified about events from the Host Application or the outside world, in a way that would not be well served by changing a data model prop. For this purpose we use a simple implementation of the https://en.wikipedia.org/wiki/Signals_and_slots[Signal pattern]. The Widget Framework library contains the interface definitions and a simple implementation class that can be re-used by Host Applications:
+
+[source, TypeScript]
+----
+
+import { EventSource } from 'widget-framework';
+
+class App extends React.Component {
+
+    // Signal instance
+    fileChanged = new EventSource<String>('fileChanged');
+
+    // Method called by some other code (not shown)
+    externalFileChanged(filename: string) {
+        // Notify the widget via our signal
+        this.fileChanged.dispatch(filename);
+    }
+
+    render() {
+        return (
+            <DirectoryListingWidget fileChanged={this.fileChanged} />
+        );
+    }
+}
+----
+
+=== Creating and Publishing a Widget
+
+==== Requirements 
+
+==== Good Documentation
+
+==== Main Widget Class
+
+==== Metadata
+
+==== CSS
+
+==== Static Assets
+
+==== Internationalisation
+
+==== Service Object Interfaces
+
+==== Widget Events
+
+==== Host Events
+
+==== Building and Publishing your Widget
+
+=== Widget Artefact Specifications
 
 [TIP]
 ====
@@ -108,6 +277,8 @@ to reasonably understand the scope/impact of an implementation.
 ====
 
 == Motivation
+
+In order to share existing React components with other projects, as well as improve flexibility and maintainability within the Blue Ocean project, we need a standard method for defining and documenting individual Widget modules, their responsibilities, and the responsibilities of the host application. Clearly marked module boundaries will help us keep code maintainable and testable, and should allow other projects more flexibility in picking and choosing the versions of Widget dependencies rather than the all-or-nothing approach required when depending on the current entire Blue Ocean Plugin.
 
 [TIP]
 ====
@@ -131,77 +302,23 @@ Provide evidence of consensus within the community and discuss important objecti
 
 == Backwards Compatibility
 
-[TIP]
-====
-Describe any incompatibilities and their severity.
-Describe how the JEP proposes to deal with these incompatibilities.
-
-If there are no backwards compatibility concerns, this section may simply say:
 There are no backwards compatibility concerns related to this proposal.
-====
 
 == Security
 
-[TIP]
-====
-Describe the security impact of this proposal.
-Outline what was done to identify and evaluate security issues,
-discuss of potential security issues and how they are mitigated or prevented,
-and how the JEP interacts with existing permissions, authentication, authorization, etc.
-
-If this proposal will have no impact on security, this section may simply say:
 There are no security risks related to this proposal.
-====
 
 == Infrastructure Requirements
 
-[TIP]
-====
-Describe any impact on Jenkins project infrastructure.
-
-Include any additions or changes, interactions with exiting components,
-potential instabilities, service-level agreements,
-and responsibilities for continuing maintenance.
-Explain the scope of infrastructure changes with sufficient detail
-to allow initial and on-going cost (in both time and money) to be estimated.
-
-If this proposal will have no impact on infrastructure, this section may simply say:
 There are no new infrastructure requirements related to this proposal.
-====
 
 == Testing
 
-[TIP]
-====
-If the JEP involves any kind of behavioral change to code
-(whether in a Jenkins product or backend infrastructure),
-give a summary of how its correctness (and, if applicable, compatibility, security, etc.) can be tested.
-
-In the preferred case that automated tests can be developed to cover all significant changes, simply give a short summary of the nature of these tests.
-
-If some or all of changes will require human interaction to verify, explain why automated tests are considered impractical.
-Then summarize what kinds of test cases might be required: user scenarios with action steps and expected outcomes.
-Might behavior vary by platform (operating system, servlet container, web browser, etc.)?
-Are there foreseeable interactions between different permissible versions of components (Jenkins core, plugins, etc.)?
-Are any special tools, proprietary software, or online service accounts required to exercise a related code path (Active Directory server, GitHub login, etc.)?
-When will testing take place relative to merging code changes, and might retesting be required if other changes are made to this area in the future?
-
-If this proposal requires no testing, this section may simply say:
-There are no testing issues related to this proposal.
-====
+Individual projects maintaining Widgets or host applications that rely on them will be responsible for the applicable testing infrastructure, although testability of existing code is expected to improve as these processes are adopted and components are extracted as Widgets.
 
 == Prototype Implementation
 
-[TIP]
-====
-Link to any open source reference implementation of code changes for this proposal.
-The implementation need not be completed before the JEP is
-link:https://github.com/jenkinsci/jep/tree/master/jep/1#accepted[accepted],
-but must be completed before any JEP is given
-"link:https://github.com/jenkinsci/jep/tree/master/jep/1#final[Final]" status.
-
-JEPs which will not include code changes may omit this section.
-====
+https://github.com/sophistifunk/modular-ux-widgets-poc
 
 == References
 
