@@ -68,16 +68,6 @@ This design addresses the following top-level requirements:
 * The extension should be available before very first Jenkins logic starts up (config.xml reading, etc.). Likely it means that implementations should be in bundled libraries,
 ** Storage is configurable via system properties (similar as what PluginManager and UpdateSite extensions do) or by a MetaInfServices-implementation
 
-== Prior work
-
-* link:https://github.com/groupon/DotCi/[DotCI] -
-Custom MongoDB-based storage was implemented for Jenkins
-* link:https://github.com/jstrachan/jenkins/tree/kubeify[Kubeify] -
-Patches which offer K8s storage as an implementation for the core.
-This implementation is **NOT** pluggable
-* link:https://github.com/jenkinsci/jenkins/pull/3473[jenkins/pull/3473] -
-Attempt to support gzipped archiving of XMLs
-
 == Specification
 
 === Scope of changes
@@ -215,6 +205,16 @@ externalize the configurations,
 but they duplicate the information and do not act as a main storage for Jenkins initialization.
 
 == Reasoning
+
+=== Prior work
+
+* link:https://github.com/groupon/DotCi/[DotCI] -
+Custom MongoDB-based storage was implemented for Jenkins
+* link:https://github.com/jstrachan/jenkins/tree/kubeify[Kubeify] -
+Patches which offer K8s storage as an implementation for the core.
+This implementation is **NOT** pluggable
+* link:https://github.com/jenkinsci/jenkins/pull/3473[jenkins/pull/3473] -
+Attempt to support gzipped archiving of XMLs
 
 === Focus on `hudson.XmlFile`
 
