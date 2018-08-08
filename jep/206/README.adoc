@@ -183,6 +183,20 @@ this is likely a rare use case today.
 In any event, making Jenkins architecture more complex and potentially buggy
 to satisfy a marginal requirement seems a poor trade-off.
 
+=== Use of non-ASCII-embedding encodings
+
+No special consideration is given to encodings
+which fail to act as a superset of ASCII at the byte level,
+such as UTF-16 or EBCDIC.
+These are unlikely to be practical system encodings for build machines anyway,
+as encoding-naïve developer tools emitting hard-coded ASCII messages
+could not be used in such an environment.
+
+In the event a particular process does generate output in such an encoding,
+it is safest to have the user script (passed to `sh` or the like)
+convert that output to a safer encoding using various command-line tools.
+That would be true even before this JEP.
+
 == Backwards Compatibility
 
 Jenkins clusters running on computers with UTF-8 set as the system encoding
