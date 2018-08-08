@@ -19,8 +19,7 @@ endif::[]
 | Bill of Materials
 
 | Sponsors
-| link:https://github.com/carlossg[Carlos Sanchez],
-  link:https://github.com/oleg-nenashev[Oleg Nenashev]
+| link:https://github.com/carlossg[Carlos Sanchez], link:https://github.com/oleg-nenashev[Oleg Nenashev]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
