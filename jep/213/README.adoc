@@ -1,4 +1,4 @@
-= JEP-0000: Configuration Storage API in the Jenkins Core
+= JEP-213: Configuration Storage API in the Jenkins Core
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -13,7 +13,7 @@ endif::[]
 [cols="1h,1"]
 |===
 | JEP
-| 0000
+| 213
 
 | Title
 | Configuration Storage API in the Jenkins Core
@@ -276,6 +276,10 @@ After the initial review is was decided that caching engine would be too complic
 due to the cache invalidation logic.
 It was decided that caching, if needed, should be done in implementations instead of the Jenkins core.
 
+== Backwards Compatibility
+
+As any other pluggable storage JEP, this design sets high backward compatibility requirements.
+
 == Security
 
 There is no specific security implications for the API design in the Jenkins core:
@@ -291,10 +295,6 @@ There is no specific security implications for the API design in the Jenkins cor
 
 XMLStorage implementations may do some security checks in the preflight() callback in order to mitigate
 the risks and enforce security practices.
-
-== Backward Compatibility
-
-As any other pluggable storage JEP, this design sets high backward compatibility requirements.
 
 === Filesystem-based storage
 
@@ -332,14 +332,14 @@ For known plugin incompatibilities, for users there should be a quick way to acc
 * The page should provide guidelines about troubleshooting and reporting compatibility issues
 * The page should provide a list of known defects or to reference a JIRA query/dashboard
 
-== Infrastructure requirements
+== Infrastructure Requirements
 
 === jenkins.io and JIRA
 
 Jenkins website and JIRA should be updated in order to provide information
 about known compatibility issues to Jenkins users.
 
-=== Test infrastructure
+=== Test Infrastructure
 
 There is no special test infrastructure requirements for the implementation.
 Testing of the _Kubernetes Configuration Storage Library_ will require a Kubernetes cluster,
@@ -385,14 +385,14 @@ All plugins mentioned in the _Backward Compatibility_ section should be tested i
 In order to setup continuous integration, `essentialsTest()` from the Jenkins Pipeline Library will be used.
 Both implementation will be packaged as WARs using link:https://github.com/jenkinsci/custom-war-packager[Custom WAR Packager]
 
-=== Performance testing
+=== Performance Testing
 
 No specific performance testing planned for the reference implementation.
 The current design does not introduce significant overhead for the Filesystem-based configuration storage.
 API Implementations may have performance testing,
 but it is up to the implementation.
 
-== Prototype implementation
+== Prototype Implementation
 
 * https://github.com/jenkinsci/jenkins/pull/3393
 
