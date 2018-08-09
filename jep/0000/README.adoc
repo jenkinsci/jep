@@ -73,171 +73,11 @@ Example use cases:
 * Pipeline creation wizard
 * Pipeline activity table
 
+== Motivation
+
+In order to share existing React components with other projects, as well as improve flexibility and maintainability within the Blue Ocean project, we need a standard method for defining and documenting individual Widget modules, their responsibilities, and the responsibilities of the host application. Clearly marked module boundaries will help us keep code maintainable and testable, and should allow other projects more flexibility in picking and choosing the versions of Widget dependencies rather than the all-or-nothing approach required when depending on the current entire Blue Ocean Plugin.
+
 == Specification
-
-=== Embedding a Widget into a Host Application
-
-==== Requirements
-
-* A bundler/transpiler that understands ES6 Modules (or modern browser requirements)
-* React 
-
-Additionally, the Widget module artefact will include TypeScript `*.d.ts` files for Host Applications using TypeScript, but you are free to ignore them otherwise.  
-
-==== Adding it to your project 
-
-Add the Widget to your application's dependencies like a normal NPM module:
-
-----
-npm install --save @org-name/widget-module-name 
-----
-
-And render it as you would any other React component:
-
-[source, JavaScript]
-----
-import { FooWidget } from '@org-name/widget-module-name';
-
-class MyWrapper extends React.Component {
-
-    /* .... */
-
-    render() {
-        /* .... */
-        return (
-            <div>
-                <h1>Hello, World!</h1>
-                <FooWidget foo="bar" baz={quux}/>
-            </div>
-        );
-    }
-}
-----
-
-==== Providing the Data Model
-
-The data model should be provided to the Widget via React properties, as a normal JavaScript object: 
-
-[source, JavaScript]
-----
-    render() {
-        const topLevelStages = this.getTopLevelStages();
-        return (
-            <PipelineGraph stages={topLevelStages}/>
-        );
-    }
-----
-
-The expected type of all data model properties will be described in the Widget's documentation, as well as available in the form of TypeScript `Foo.d.ts` files in the artefact alongside the JavaScript source.
-
-Unless specifically described otherwise in the Widget's documentation, treat data model objects as immutable, and do not expect the Widget to re-render if you change some of its nested properties.
-
-==== Providing CSS
-
-Each Widget will provide the styles it requires in a predictable location within the artefact:
-
-* As CSS, located with the entry at `/styles/css/main.css`
-* Optionally as SCSS source files with the entry at `/styles/scss/main.scss`
-
-It is up to the Host Application to ensure that the correct styles are loaded when rendering the widget. How you do that depends on your Application's build process and environment.
-
-==== Providing Static Assets
-
-Any static assets (such as images) required by the Widget will be provided in the artefact within the `/assets/` folder, and must be set as React props on the Widget.
-
-Host Applications can serve these assets from a known location and provide the HREFs to the widget:
-
-[source, JavaScript]
-----
-    render() {
-        const assetBase = this.getAssetBase();
-
-        const assets = {
-            happy: `${assetBase}/happy.png`,
-            sad: `${assetBase}/sad.png`
-        };
-
-        return (
-            <FaceWidget {...assets}/>
-        );
-    }
-----
-
-As an alternative, depending on your bundler/loader, you can embed them directly from the artefact as `data://` URLs:
-
-[source, JavaScript]
-----
-const happyImg = require('@example-org/widget-module-name/assets/happy.png');
-const sadImg = require('@example-org/widget-module-name/assets/happy.png');
-
-class MyWrapper extends React.Component {
-
-    /* .... */
-
-    render() {
-        const assets = {
-            happy: happyImg,
-            sad: sadImg
-        };
-
-        return (
-            <FaceWidget {...assets}/>
-        );
-    }
-}
-----
-
-==== Providing i18n Resources
-
-Widgets will provide their localised resources as JSON in a predictable location:
-
-* `/i18n/resources.en.json`
-* `/i18n/resources.us.json`
-* `/i18n/resources.jp.json`
-* `/i18n/resources.de.json`
-* _...etc_
-
-The host application must, based on the user's current locale, provide the correct data to the Widget as a plain JavaScript object via the `resourceBundle` React prop.
-
-If the host application supports locales for which the widget does not provide a bundle, default to `en`.
-
-==== Providing Service Objects
-
-In some instances, a Widget may require service objects to provide access to an API. These will be host-specific, and must be provided by the Host Application via React props.
-
-The detailed interfaces that must be implemented by any service objects will be provided by the Widget's documentation, as well as in the form of TypeScript `*.d.ts` definitions in the Widget module artefact.
-
-==== Listening to Widget Events
-
-A Widget may provide standard React events via any number of `onFoo=` props that the Host Application can choose to listen to. The Widget's documentation will provide details of the meaning and function signiatures for any Widget Events, as well as in the form of TypeScript `*.d.ts` definitions in the Widget module artefact.
-
-==== Notifying Widget of External Events
-
-In some instances, a Widget will need to be notified about events from the Host Application or the outside world, in a way that would not be well served by changing a data model prop. For this purpose we use a simple implementation of the https://en.wikipedia.org/wiki/Signals_and_slots[Signal pattern]. The Widget Framework library contains the interface definitions and a simple implementation class that can be re-used by Host Applications:
-
-[source, TypeScript]
-----
-
-import { EventSource } from 'widget-framework';
-
-class App extends React.Component {
-
-    // Signal instance
-    fileChanged = new EventSource<string>('fileChanged');
-
-    // Method called by some other code (not shown)
-    externalFileChanged(filename: string) {
-        // Notify the widget via our signal
-        this.fileChanged.dispatch(filename);
-    }
-
-    render() {
-        return (
-            <DirectoryListingWidget fileChanged={this.fileChanged} />
-        );
-    }
-}
-----
 
 === Creating and Publishing a Widget
 
@@ -429,6 +269,171 @@ In most cases, information should be provided to your Widget via Data Model prop
 
 Your widget should be built and published as a normal NPM module, with the correct layout, including generated documentation. Widgets should be published as ES6 modules, with accompanying TypeScript `*.d.ts` declaration files.
 
+=== Embedding a Widget into a Host Application
+
+==== Requirements
+
+* A bundler/transpiler that understands ES6 Modules (or modern browser requirements)
+* React 
+
+Additionally, the Widget module artefact will include TypeScript `*.d.ts` files for Host Applications using TypeScript, but you are free to ignore them otherwise.  
+
+==== Adding it to your project 
+
+Add the Widget to your application's dependencies like a normal NPM module:
+
+----
+npm install --save @org-name/widget-module-name 
+----
+
+And render it as you would any other React component:
+
+[source, JavaScript]
+----
+import { FooWidget } from '@org-name/widget-module-name';
+
+class MyWrapper extends React.Component {
+
+    /* .... */
+
+    render() {
+        /* .... */
+        return (
+            <div>
+                <h1>Hello, World!</h1>
+                <FooWidget foo="bar" baz={quux}/>
+            </div>
+        );
+    }
+}
+----
+
+==== Providing the Data Model
+
+The data model should be provided to the Widget via React properties, as a normal JavaScript object: 
+
+[source, JavaScript]
+----
+    render() {
+        const topLevelStages = this.getTopLevelStages();
+        return (
+            <PipelineGraph stages={topLevelStages}/>
+        );
+    }
+----
+
+The expected type of all data model properties will be described in the Widget's documentation, as well as available in the form of TypeScript `Foo.d.ts` files in the artefact alongside the JavaScript source.
+
+Unless specifically described otherwise in the Widget's documentation, treat data model objects as immutable, and do not expect the Widget to re-render if you change some of its nested properties.
+
+==== Providing CSS
+
+Each Widget will provide the styles it requires in a predictable location within the artefact:
+
+* As CSS, located with the entry at `/styles/css/main.css`
+* Optionally as SCSS source files with the entry at `/styles/scss/main.scss`
+
+It is up to the Host Application to ensure that the correct styles are loaded when rendering the widget. How you do that depends on your Application's build process and environment.
+
+==== Providing Static Assets
+
+Any static assets (such as images) required by the Widget will be provided in the artefact within the `/assets/` folder, and must be set as React props on the Widget.
+
+Host Applications can serve these assets from a known location and provide the HREFs to the widget:
+
+[source, JavaScript]
+----
+    render() {
+        const assetBase = this.getAssetBase();
+
+        const assets = {
+            happy: `${assetBase}/happy.png`,
+            sad: `${assetBase}/sad.png`
+        };
+
+        return (
+            <FaceWidget {...assets}/>
+        );
+    }
+----
+
+As an alternative, depending on your bundler/loader, you can embed them directly from the artefact as `data://` URLs:
+
+[source, JavaScript]
+----
+const happyImg = require('@example-org/widget-module-name/assets/happy.png');
+const sadImg = require('@example-org/widget-module-name/assets/happy.png');
+
+class MyWrapper extends React.Component {
+
+    /* .... */
+
+    render() {
+        const assets = {
+            happy: happyImg,
+            sad: sadImg
+        };
+
+        return (
+            <FaceWidget {...assets}/>
+        );
+    }
+}
+----
+
+==== Providing i18n Resources
+
+Widgets will provide their localised resources as JSON in a predictable location:
+
+* `/i18n/resources.en.json`
+* `/i18n/resources.us.json`
+* `/i18n/resources.jp.json`
+* `/i18n/resources.de.json`
+* _...etc_
+
+The host application must, based on the user's current locale, provide the correct data to the Widget as a plain JavaScript object via the `resourceBundle` React prop.
+
+If the host application supports locales for which the widget does not provide a bundle, default to `en`.
+
+==== Providing Service Objects
+
+In some instances, a Widget may require service objects to provide access to an API. These will be host-specific, and must be provided by the Host Application via React props.
+
+The detailed interfaces that must be implemented by any service objects will be provided by the Widget's documentation, as well as in the form of TypeScript `*.d.ts` definitions in the Widget module artefact.
+
+==== Listening to Widget Events
+
+A Widget may provide standard React events via any number of `onFoo=` props that the Host Application can choose to listen to. The Widget's documentation will provide details of the meaning and function signiatures for any Widget Events, as well as in the form of TypeScript `*.d.ts` definitions in the Widget module artefact.
+
+==== Notifying Widget of External Events
+
+In some instances, a Widget will need to be notified about events from the Host Application or the outside world, in a way that would not be well served by changing a data model prop. For this purpose we use a simple implementation of the https://en.wikipedia.org/wiki/Signals_and_slots[Signal pattern]. The Widget Framework library contains the interface definitions and a simple implementation class that can be re-used by Host Applications:
+
+[source, TypeScript]
+----
+
+import { EventSource } from 'widget-framework';
+
+class App extends React.Component {
+
+    // Signal instance
+    fileChanged = new EventSource<string>('fileChanged');
+
+    // Method called by some other code (not shown)
+    externalFileChanged(filename: string) {
+        // Notify the widget via our signal
+        this.fileChanged.dispatch(filename);
+    }
+
+    render() {
+        return (
+            <DirectoryListingWidget fileChanged={this.fileChanged} />
+        );
+    }
+}
+----
+
+
 === Widget Module Artefact Specifications
 
 [cols="2,5", options="header"]
@@ -461,10 +466,6 @@ Your widget should be built and published as a normal NPM module, with the corre
 | Stylesheet, SCSS sources (optional)
 
 |===
-
-== Motivation
-
-In order to share existing React components with other projects, as well as improve flexibility and maintainability within the Blue Ocean project, we need a standard method for defining and documenting individual Widget modules, their responsibilities, and the responsibilities of the host application. Clearly marked module boundaries will help us keep code maintainable and testable, and should allow other projects more flexibility in picking and choosing the versions of Widget dependencies rather than the all-or-nothing approach required when depending on the current entire Blue Ocean Plugin.
 
 == Reasoning
 
