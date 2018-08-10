@@ -166,7 +166,11 @@ and should be configurable via UI.
 * `ExternalLogBrowserFactory` -
 Same as above, but for `ExternalLogBrowser`
 
-=== ExternalLoggingMethodFactory and classes
+=== ExternalLoggingMethod and subclasses
+
+This class defines how the logs should be sent to the storage.
+Logging method generally does not define the storage itself,
+because it may be pointing to intermediate log collectors like Fluentd or Logstash.
 
 Produces `ExternalLoggingMethod` instances for Runs and, eventually, other objects.
 This extension point implements `Describable`
@@ -204,10 +208,34 @@ Similarly, consider a non-Java map of metadata that can be consumed by other sou
 This makes parsing easier for non-java consumers too
 ====
 
-=== ExternalLogBrowserFactory and classes
+=== ExternalLogBrowser and subclasses
 
-This factory just produces instances of `ExternalLogBrowser`.
-This class offers an abstraction layer for external log browsing.
+Log Browser class is an instance,
+which refers ways to access the logs on the remote storage.
+
+It should offer the following methods:
+
+* `AnnotatedLargeText<T> overallLog()` -
+Get large text for the entire execution/run
+* `AnnotatedLargeText<T> stepLog(@CheckForNull String stepId, boolean completed)` -
+Get large text for a particular step
+
+Some implementations should be also moved from `Run` and generalized.
+It will provide default convenience methods which can be overridden by implementations for better performance.
+
+* `InputStream getLogInputStream() throws IOException` -
+gets the log as an input stream
+* `Reader getLogReader() throws IOException` -
+get the log as a Reader
+* `String getLog() throws IOException` -
+gets the entire log as a single String
+** This method is deprecated in `hudson.model.Run`,
+and it should remain deprecated
+* `List<String> getLog(int maxLines) throws IOException` -
+gets a number of log lines as a list of strings
+* `File getLogFile() throws IOException` -
+Compatibility method, which retrieves the log as a `File`.
+** By default a temporary file will be created, unless an implementation offers something better
 
 `ExternalLogBrowser` will also provide an abstraction layer for
 eventual consistency management.
@@ -276,6 +304,27 @@ Core APIs may be still used to define custom `LoggingMethodLocator` impelemtatio
 e.g. to define a custom logger allocation logic.
 
 == Reasoning
+
+=== Why ExternalLoggingMethod and ExternalLogBrowser are separated?
+
+After the initial prototyping it was decided to separate Logging Method and LogBrowser
+to separate pluggable entities.
+It is different from how Pipeline `LogStorage` is implemented in
+link:https://github.com/jenkinsci/workflow-job-plugin/pull/27[this pull request].
+
+Reasons for such approach:
+
+* `ExternalLoggingMethod` does not define where logs will be actually stored.
+For example, logging to Fluentd or Logstash may end up in various storages
+depending on their configuration
+(e.g. in Elasticsearch, Redis, AWS CloudWatch, etc.)
+* Log browsing logic may be shared.
+E.g. with the current design logs can be browsed from Elasticsearch
+independently of how the logs get there (Logstash or direct push)
+* It gives more flexibility to Jenkins admins and plugin developers
+
+Originally the separation was done inside the Jenkins Core as a part of JEP-207,
+but then it was decided to move it to External Logging API.
 
 === Why do we introduce the Event layer?
 
