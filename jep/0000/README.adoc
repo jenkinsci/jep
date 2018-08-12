@@ -251,10 +251,11 @@ export class MyWidget extends React.Component {
         this.doSomething(event.value);
     }
 }
+----
 
 The names of these properties must be included in `WidgetDescription.hostEvents`
 
-----
+
 
 ==== Service Object Interfaces
 
@@ -264,6 +265,10 @@ In most cases, information should be provided to your Widget via Data Model prop
 * Provide a fully-specified and commented TypeScript Interface
 * List the prop name in `WidgetDescription.services`
 * If it's a common / known API, provide a default implementation if possible.
+
+==== Runtime Extensibility
+
+Documentation for how to extend widgets at runtime is available at https://github.com/imeredith/es-extensions-api[es-extensions-api] (JEP-204). 
 
 ==== Building and Publishing your Widget
 
