@@ -35,7 +35,7 @@
 | Accepted{nbsp}:ok_hand:
 | link:6/README.adoc[JEP-6: Jenkins CVE Numbering Authority]
 | link:https://github.com/daniel-beck/[Daniel{nbsp}Beck]
-| Undetermined
+| link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
 
 | Draft{nbsp}:speech_balloon:
 | link:7/README.adoc[JEP-7: Deprecation of ruby-runtime]
@@ -48,7 +48,7 @@
 | _not{nbsp}delegated_
 
 | Draft{nbsp}:speech_balloon:
-| link:9/README.adoc[JEP-0000: How BDFL Delegates]
+| link:9/README.adoc[JEP-9: How BDFL Delegates]
 | link:https://github.com/kohsuke[Kohsuke{nbsp}Kawaguchi]
 | _not{nbsp}delegated_
 
@@ -105,15 +105,20 @@
 | Draft{nbsp}:speech_balloon:
 | link:210/README.adoc[JEP-210: External log storage for Pipeline]
 | link:http://github.com/jglick[Jesse{nbsp}Glick]
-| TBD
+| link:https://github.com/carlossg[Carlos{nbsp}Sanchez]
 
 | Draft{nbsp}:speech_balloon:
 | link:211/README.adoc[JEP-211: Java 10 and 11 support in Jenkins]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
-| TBD
+| link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 
 | Draft{nbsp}:speech_balloon:
 | link:212/README.adoc[JEP-212: External Logging API plugin]
+| link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
+| link:https://github.com/carlossg[Carlos{nbsp}Sanchez]
+
+| Draft{nbsp}:speech_balloon:
+| link:213/README.adoc[JEP-213: Configuration Storage API in the Jenkins Core]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | TBD
 
@@ -164,7 +169,7 @@
 
 | Draft{nbsp}:speech_balloon:
 | link:309/README.adoc[JEP-309: Bill of Materials]
-| link:https://github.com/carlossg[Carlos{nbsp}Sanchez],
+| link:https://github.com/carlossg[Carlos{nbsp}Sanchez], link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
 | Draft{nbsp}:speech_balloon:
