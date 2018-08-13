@@ -52,6 +52,11 @@
 | link:https://github.com/kohsuke[Kohsuke{nbsp}Kawaguchi]
 | _not{nbsp}delegated_
 
+| Draft{nbsp}:speech_balloon:
+| link:10/README.adoc[JEP-10: Jenkins Twitter Policy for Contributors]
+| link:https://github.com/tracymiranda[Tracy{nbsp}Miranda]
+| link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
+
 | Final{nbsp}:lock:
 | link:200/README.adoc[JEP-200: Switch Remoting/XStream blacklist to a whitelist]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
