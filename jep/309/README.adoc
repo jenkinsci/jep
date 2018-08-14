@@ -23,7 +23,7 @@ endif::[]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
-| Draft :speech_balloon:
+| Accepted :ok_hand:
 
 | Type
 | Standards
@@ -158,7 +158,8 @@ A new yaml format based on https://github.com/jenkins-infra/evergreen/blob/maste
 
 === YAML example
 
-```yaml
+[source,yaml]
+----
 version: 1.0
 metadata:
   # labels and annotations are key: value string attributes
@@ -211,7 +212,7 @@ status:
           artifactId: acme2-plugin
           ref: cccddd
           # version: 1.0
-```
+----
 
 === Version
 
