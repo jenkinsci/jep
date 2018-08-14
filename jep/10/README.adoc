@@ -61,7 +61,8 @@ The Jenkins board will approve contributors using the following criteria:
 * Knowledge - the candidate should have indepth knowledge of Jenkins community and/or projects
 * Experience - the candidate should point to experience with Twitter/social media or submit sample tweets
 
-Once approved, the candidate should share their twitter account with the Twitter account owner
+Once approved, the candidate should share their twitter account with the Twitter account owner.
+The candidate should confirm they have login verification on their Twitter accounts to meet security requirements.
 The Twitter owner will invite the candidate to join the account Team via Tweetdeck.
 
 New admins will typically be experienced contributors who the board approve as administrators.
@@ -90,7 +91,7 @@ These are the best practices for contributors to follow:
 
 * Conduct - always abide by Jenkins community code of conduct .
 * Content - write or curate tweets that meet one of the goals above.
-* Cadence - contributors should work together to maintain a regular cadence e.g. 3-5 tweets a day
+* Cadence - contributors should work together to maintain a regular cadence of interesting/relevant tweets daily
 * Lead with community - tweets should serve a purpose to the community first.
 * Credit - wherever possible give credit to author, project or originating organisation.
 * Hashtags - use these to link themes or help community find content. Ideally max 2 hashtags per tweet.
@@ -120,7 +121,7 @@ There are no backwards compatibility concerns related to this proposal.
 
 == Security
 
-Contribution team members are recommended to use login verification on their twitter accounts.
+Contribution team members are required to use login verification on their Twitter accounts.
 Contribution team members must report breaches to their Twitter account to the Twitter owner as soon as possible.
 
 
