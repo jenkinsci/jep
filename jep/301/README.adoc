@@ -1,4 +1,4 @@
-= JEP-301: Evergreen packaging for Jenkins Essentials
+= JEP-301: Evergreen packaging
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -16,7 +16,7 @@ endif::[]
 | 301
 
 | Title
-| Evergreen packaging for Jenkins Essentials
+| Evergreen packaging
 
 | Sponsor
 | link:https://github.com/rtyler[R. Tyler Croy]
@@ -67,12 +67,12 @@ endif::[]
 == Abstract
 
 A key aspect of
-link:https://github.com/jenkinsci/jep/tree/master/jep/300[Jenkins Essentials]
+link:https://github.com/jenkinsci/jep/tree/master/jep/300[Jenkins Evergreen]
 is the
 link:https://github.com/jenkinsci/jep/tree/master/jep/300#auto-update[automatically updating distribution],
 which aims to provide an easier to use, self-updating distribution of Jenkins
 core and an "essential" set of plugins. This document outlines the design of
-the Evergreen packaging system for Jenkins Essentials which is, in short, a
+the Evergreen packaging system for Jenkins Evergreen which is, in short, a
 self-updating Docker container necessary to provide the least-error-prone
 mechanism for automatically self-updating Jenkins and a set of plugins.
 
@@ -87,7 +87,7 @@ Unlike the current primary images footnoteref:[docker, https://github.com/jenkin
 `jenkins/jenkins:latest`, `jenkins/jenkins:lts`, `jenkins/jenkins:alpine`, and
 `jenkins/jenkins:lts-alpine`, the `jenkins/evergreen` image will contain
 additional scripting, tooling, and machinery to coordinate the
-automatically self-updating functions of Jenkins Essentials.
+automatically self-updating functions of Jenkins Evergreen.
 
 The first additional tool added into `jenkins/evergreen` is
 link:http://supervisord.org/[supervisord],
@@ -160,7 +160,7 @@ The `jenkins/evergreen` image extends the `openjdk:8-jre-alpine` image to
 provide the latest up to date Java Runtime Environment (JRE). In addition to
 the JRE, the `jenkins/evergreen` image should include the necessary supporting
 tools and scripts to _fetch_ the latest up-to-date version of Jenkins
-Essentials on first boot. This ensures that each instance is on the latest
+Evergreen on first boot. This ensures that each instance is on the latest
 release.
 
 New revisions of the base image should cause a rebuild of the `latest` tag of
@@ -173,7 +173,7 @@ scripts committed upstream.
 === Plugins
 
 The `jenkins/evergreen` image does not have any plugins pre-installed, since
-the plugin versions in Jenkins Essentials will be constantly updating. Rather
+the plugin versions in Jenkins Evergreen will be constantly updating. Rather
 `jenkins/evergreen` must have some "first-boot" behavior to reach out to the
 Evergreen hosted service layer to request the current plugin versions.
 
@@ -184,7 +184,7 @@ small.
 === Scripts
 
 Since the `jenkins/evergreen` image is likely going to be moving slower than
-Jenkins Essentials itself, it will contain only the bare minimum amount of
+Jenkins Evergreen itself, it will contain only the bare minimum amount of
 scripts to support configuring and setting up `evergreen-client`, Jenkins core,
 and `supervisord`.
 
@@ -217,15 +217,15 @@ is largely structured around the need to provide a multitude of native Jenkins
 core packages for different platforms.
 
 The two downsides to this multi-variant packaging approach, which necessitate a
-separate packaging mechanism for Jenkins Essentials, are:
+separate packaging mechanism for Jenkins Evergreen, are:
 
 . The numerous platform-specific packages requires a non-trivial amount of work
   to maintain, build, and support.
-. Jenkins Essentials requires a very confined and consistent environment, at
+. Jenkins Evergreen requires a very confined and consistent environment, at
   least initially, to safely perform automatically self-updates. The isolated
   packaging approach described above, creating a `jenkins/evergreen` image,
   allows for a dramatic reduction in variance in the build, testing, and
-  runtime environments for Jenkins Essentials.
+  runtime environments for Jenkins Evergreen.
 
 Additionally, packaging as a separate `jenkins/evergreen` container allows for
 safe experimentation without disrupting existing users of native packages, or
@@ -234,7 +234,7 @@ the current `jenkins/jenkins` containers.
 
 == Reasoning
 
-As described in the <<motivation>> section, Jenkins Essentials requires a very
+As described in the <<motivation>> section, Jenkins Evergreen requires a very
 confined and consistent environment. The requirements are a natural fit for
 Docker containers. Compared to three years ago, containers are now much more
 commonly accepted as a distribution mechanism for software such as Jenkins. As
@@ -246,7 +246,7 @@ The major architecture change _within_ the container, compared to
 `jenkins/jenkins`, comes with the introduction of the `evergreen-client`
 process. The process is responsible for managing the lifecycle of the Jenkins
 core and essential plugins, along with a number of other responsibilities which
-are unique to Jenkins Essentials. By delegating these responsibilities to
+are unique to Jenkins Evergreen. By delegating these responsibilities to
 something _external_ to Jenkins core, `evergreen-client`, lifecycle processes
 which require the termination of the Jenkins process can be safely managed.
 
@@ -278,7 +278,7 @@ reasons, but the most important one is the need to be able to control Jenkins
 _while_ Jenkins is offline. One such scenario would be if an automatic
 self-upgrade fails, resulting in the Jenkins process failing to boot due to
 some critical error. Using a Jenkins plugin as the vehicle for managing
-Jenkins Essentials upgrades would open the potential for "bricked instances"
+Jenkins Evergreen upgrades would open the potential for "bricked instances"
 when a bad upgrade is delivered.
 
 Extending Jenkins itself also adds other constraints, such as requiring the
@@ -302,7 +302,7 @@ ensure that necessary core security updates are baked into the image by
 default.
 
 The documents describing the design of `evergreen-client` and the Jenkins
-Essentials plugin list will detail the specific security ramifications of those
+Evergreen plugin list will detail the specific security ramifications of those
 two systems.
 
 
@@ -323,7 +323,7 @@ The requirements of the Jenkins project infrastructure are only:
 
 == Testing
 
-The testing of what composes "Jenkins Essentials" is the subject of another JEP
+The testing of what composes "Jenkins Evergreen" is the subject of another JEP
 document, but in the context of the Evergreen packaging there are no plans for
 specific test suites other than to ensure that the `jenkins/evergreen`
 container can properly boot both Jenkins core and the `evergreen-client` after

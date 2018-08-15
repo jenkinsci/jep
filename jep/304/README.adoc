@@ -1,4 +1,4 @@
-= JEP-304: Essentials Client Error Telemetry Logging
+= JEP-304: Evergreen Client Error Telemetry Logging
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -17,7 +17,7 @@ endif::[]
 | 304
 
 | Title
-| Essentials Error Telemetry Logging
+| Evergreen Error Telemetry Logging
 
 | Sponsor
 | link:https://github.com/batmat[Baptiste Mathus]
@@ -68,10 +68,10 @@ link:https://github.com/jenkinsci/jep/tree/master/jep/301[JEP-301]
 
 == Abstract
 
-Sending error logging to the backend is a critical aspect of Essentials to be able to implement the _Automated Health Assessment_ story
+Sending error logging to the backend is a critical aspect of Evergreen to be able to implement the _Automated Health Assessment_ story
 footnote:[a dedicated proposal will be written for this in link:https://issues.jenkins-ci.org/browse/JENKINS-50294[JENKINS-50294]].
 
-_Jenkins Essentials_ needs a way to _extract_ the error logging from the Jenkins instance.
+_Jenkins Evergreen_ needs a way to _extract_ the error logging from the Jenkins instance.
 
 The current document describes how we plan to extract those logs so that the _evergreen-client_ can find, process and send them to the backend.
 
@@ -101,7 +101,7 @@ A total maximum of 50 MB of disk consumption for all this seems very reasonable 
 
 === Jenkins Plugin
 
-We will host the code for all this in a new _Essentials Jenkins Plugin_ that will be required to be installed and active on any _Jenkins Essentials_ instance.
+We will host the code for all this in a new _Evergreen Jenkins Plugin_ that will be required to be installed and active on any _Jenkins Evergreen_ instance.
 
 See <<plugin-or-module>> for why a Jenkins plugin.
 
@@ -164,7 +164,7 @@ So we might in the future change that for instance to send those logs to the cli
 ==== Rotation parameters
 
 As explained previously, we plan to rotate on _5_ files, of _10 MB_ each maximum.
-If contrary to what we think, this proves not enough, or too much, we will be able to easily adjust those settings by delivering a new version of the _Essentials Jenkins Plugin_ handling this.
+If contrary to what we think, this proves not enough, or too much, we will be able to easily adjust those settings by delivering a new version of the _Evergreen Jenkins Plugin_ handling this.
 
 == Motivation
 
@@ -186,10 +186,10 @@ So we chose the easiest path to *not* roll our own `SocketHandler` at least for 
 We chose the Jenkins plugin path because this is a simpler path forward.
 The _Jenkins Project_ has already everything ready to handle the hosting and release process of plugins.
 
-Using a `jenkins-module` would mean we need to set up a custom Jenkins WAR build for Essentials.
-This would also mean we cannot use the quality assurance improvements we have started to put in place in the same way for Essentials, and for the standard Jenkins core delivery.
+Using a `jenkins-module` would mean we need to set up a custom Jenkins WAR build for Evergreen.
+This would also mean we cannot use the quality assurance improvements we have started to put in place in the same way for Evergreen, and for the standard Jenkins core delivery.
 
-Though having a dedicated WAR packaging for _Jenkins Essentials_ is very likely something we will do in the future, we deemed preferrable to defer it to later, and focus instead on the other yet unresolved design questions of Essentials.
+Though having a dedicated WAR packaging for _Jenkins Evergreen_ is very likely something we will do in the future, we deemed preferrable to defer it to later, and focus instead on the other yet unresolved design questions of Evergreen.
 
 === The `exception` field in the JSON logs
 
@@ -236,13 +236,13 @@ It is indeed easy to check that the logs are indeed found under the expected loc
 
 === Test with the plugin
 
-The _Essentials Jenkins Plugin_ is going to start introducing some core changes to the way Jenkins logs things.
+The _Evergreen Jenkins Plugin_ is going to start introducing some core changes to the way Jenkins logs things.
 
 We want to check we do not inadvertently change, or disable totally for instance, the usual logging Jenkins has.
 
 == Prototype Implementation
 
-* link:https://github.com/jenkins-infra/evergreen/[Jenkins Essentials official repository]
+* link:https://github.com/jenkins-infra/evergreen/[Jenkins Evergreen official repository]
 ** More specifically: https://github.com/jenkins-infra/evergreen/pull/43
 * https://github.com/batmat/essentials-plugin/ (will be moved to https://github.com/jenkinsci as soon as the feedback is gathered and the overall feedback validates this design)
 
@@ -250,7 +250,7 @@ We want to check we do not inadvertently change, or disable totally for instance
 
 * link:https://issues.jenkins-ci.org/browse/JENKINS-49805[JENKINS-49805]
 * Mailing list related threads:
-** link:https://groups.google.com/d/msg/jenkinsci-dev/1qtL_ADxfFE/W2_1UOzJAAAJ[Thoughts on sending error telemetry for Jenkins Essentials]
+** link:https://groups.google.com/d/msg/jenkinsci-dev/1qtL_ADxfFE/W2_1UOzJAAAJ[Thoughts on sending error telemetry for Jenkins Evergreen]
 ** link:https://groups.google.com/d/msg/jenkinsci-dev/sS8XQbnm9cg/xXEOFx-GBwAJ[Where to store necessary classes: plugin or a core module?]
 ** link:https://groups.google.com/d/msg/jenkinsci-dev/IrNOfrlgEEw/MiR5wDiXAQAJ[Early draft review of this JEP]
 

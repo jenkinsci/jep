@@ -56,7 +56,7 @@ endif::[]
 
 In order to support more rapid continuous delivery models, such as that
 described by
-link:https://github.com/jenkinsci/jep/tree/master/jep/300[Jenkins Essentials],
+link:https://github.com/jenkinsci/jep/tree/master/jep/300[Jenkins Evergreen],
 Jenkins core and plugin builds must be deployed into a Maven repository much
 more incrementally rather than waiting for a developer to manually deploy a
 release to the existing `releases` footnote:[https://repo.jenkins-ci.org/releases/]
@@ -254,7 +254,7 @@ link:https://github.com/jenkins-infra/update-center2[Jenkins update center gener
 consumes artifacts from the `releases` repository,
 and automatically selects the latest versions to publish based on scanning the Artifactory index.
 
-For Essentials/Evergreen, some “bill of materials” to be determined will determine exact versions of components.
+For Evergreen/Evergreen, some “bill of materials” to be determined will determine exact versions of components.
 For plugins, the
 link:https://github.com/jenkins-infra/evergreen/blob/288dc51fa5d169124caf7034a5e43191fa0702b3/configuration/essentials.yaml#L21-L23[current prototype]
 merely refers to traditional releases.
@@ -289,7 +289,7 @@ though in practice SemVer has never been used consistently in core areas of Jenk
 Since broad adoption of such a workflow would require extensive communication and testing,
 it is _not_ proposed in this JEP but left for experimentation and a possible future follow-up.
 Nonetheless, this JEP is designed to create the infrastructure that would make it possible,
-with Essentials/Evergreen exercising the concepts initially.
+with Evergreen/Evergreen exercising the concepts initially.
 
 == Motivation
 
@@ -311,7 +311,7 @@ While this process has always been cumbersome,
 it is particularly onerous for use from
 link:https://github.com/jenkinsci/jep/blob/master/jep/301/README.adoc[JEP-301 “Evergreen”]
 as laid out in
-link:https://github.com/jenkinsci/jep/blob/master/jep/300/README.adoc#auto-update[JEP-300 “Essentials”]:
+link:https://github.com/jenkinsci/jep/blob/master/jep/300/README.adoc#auto-update[JEP-300 “Evergreen”]:
 
 [quote]
 ____
@@ -624,7 +624,7 @@ or to simulate such an arrangement using Git submodules.
 Either mode certainly makes some development logistics conceptually simpler:
 for example, a rename refactoring across components just becomes a single commit
 (or an aggregation commit faking it using a set of submodule commits).
-Targeting plugin versions for deployment to Essentials would cease to exist as a concept:
+Targeting plugin versions for deployment to Evergreen would cease to exist as a concept:
 the manifest (if in the same monorepo) would not need to specify versions at all;
 it would simply pick up whatever sources were in the same mono-revision.
 `git bisect` works across everything at once.
@@ -647,13 +647,13 @@ of all of its upstream components;
 making up version numbers for the components will not work too well since they are no longer enforced.
 (The NetBeans project tries to do that, and it is a failure.)
 But then you have created a monolithic _system_ to be deployed as a unit.
-While this might suit Essentials fine (that is its goal),
+While this might suit Evergreen fine (that is its goal),
 it would potentially cause problems for other Jenkins deployment modes and OEM products,
 as components get otherwise gratuitous dependencies on the newest version of absolutely everything.
 
 Deciding what exactly to include in a monorepo would be a tough call.
 Out of the hundreds of plugins, which make the cut?
-The set to be included in Essentials would be a reasonable choice,
+The set to be included in Evergreen would be a reasonable choice,
 but then you are back to square one when developing changes
 targeted in part to plugins currently outside the set
 (including OEM and proprietary extensions).
@@ -693,7 +693,7 @@ and thus automatically built and (if successful) deployed to `incrementals`.
 
 There is some risk that a developer would blindly run `versions:display-dependency-updates`
 and accept the newest available artifact,
-but this could be mitigated for example in Essentials quality gates
+but this could be mitigated for example in Evergreen quality gates
 by verifying that the commit hashes of all proposed components are in fact ancestors of the current `master` heads.
 
 ==== Maven deployment from `buildPlugin`

@@ -1,4 +1,4 @@
-= JEP-308: Essentials Error Telemetry API
+= JEP-308: Evergreen Error Telemetry API
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -17,7 +17,7 @@ endif::[]
 | 308
 
 | Title
-| Essentials Error Telemetry API
+| Evergreen Error Telemetry API
 
 | Sponsor
 | link:https://github.com/batmat[Baptiste Mathus]
@@ -67,12 +67,12 @@ endif::[]
 
 == Abstract
 
-One critical aspect of Jenkins Essentials is that the connected instances
+One critical aspect of Jenkins Evergreen is that the connected instances
 must be upgraded automatically in a safe way.
 To that end, we detect the errors that occur in these instance,
 and push those to a central place to participate to the assessment of
 the health level of a given instance, and by transitivity of a given
-link:https://github.com/jenkinsci/jep/tree/master/jep/307#update-levels[_Essentials_ update level].
+link:https://github.com/jenkinsci/jep/tree/master/jep/307#update-levels[_Evergreen_ update level].
 
 The current document describes what the server side API for this error logging looks like
 footnote:[Basically sending the Jenkins logs defined in the link:https://github.com/jenkinsci/jep/tree/master/jep/304[JEP-304]].
