@@ -254,7 +254,7 @@ link:https://github.com/jenkins-infra/update-center2[Jenkins update center gener
 consumes artifacts from the `releases` repository,
 and automatically selects the latest versions to publish based on scanning the Artifactory index.
 
-For Evergreen/Evergreen, some “bill of materials” to be determined will determine exact versions of components.
+For Evergreen, some “bill of materials” to be determined will determine exact versions of components.
 For plugins, the
 link:https://github.com/jenkins-infra/evergreen/blob/288dc51fa5d169124caf7034a5e43191fa0702b3/configuration/essentials.yaml#L21-L23[current prototype]
 merely refers to traditional releases.
@@ -289,7 +289,7 @@ though in practice SemVer has never been used consistently in core areas of Jenk
 Since broad adoption of such a workflow would require extensive communication and testing,
 it is _not_ proposed in this JEP but left for experimentation and a possible future follow-up.
 Nonetheless, this JEP is designed to create the infrastructure that would make it possible,
-with Evergreen/Evergreen exercising the concepts initially.
+with Evergreen exercising the concepts initially.
 
 == Motivation
 
