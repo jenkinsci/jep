@@ -116,11 +116,19 @@ So the viable options are the following:
 * We could continue to distribute ruby-runtime and keep the already implemented changes to core around, hoping no further problems occur. If they do, we can still implement this proposed deprecation of ruby-runtime. In this case, there would be no advance warning of current ruby-runtime users, and the number of users may increase in the mean time, making it more difficult to justify such a change.
 * We could continue to distribute ruby-runtime, keep the already implemented changes to core around, and fix any future problems. This option comes with potentially significant work with very little benefit, as ruby-runtime based plugins are neither very popular, nor actively maintained.
 
+=== Impact on current users
+
+Feedback on the developers list expressed concern for current users of any of these plugins and a 'configuration-as-code' approach that sets up new Jenkins instances on a regular basis.
+This will be addressed in the next section.
 
 == Backwards Compatibility
 
 Existing users can continue to use ruby-runtime based plugins.
 ruby-runtime and plugins depending on it can still be downloaded from Artifactory to support legacy environments.
+This is also expected to apply to most configuration-as-code approaches supporting installation of arbitrary plugin versions.
+
+Users of 'configuration-as-code' methods for Jenkins will be impacted by this fairly quickly.
+Workarounds for this include downloading affected plugins from Artifactory, and possibly hosting their own update sites.
 
 If previous core compatibility fixes are reverted, or future core changes break ruby-runtime, users of those plugins will be impacted.
 
