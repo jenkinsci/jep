@@ -1,4 +1,4 @@
-= JEP-306: Essentials Instance Client Health Checking
+= JEP-306: Evergreen Instance Client Health Checking
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -16,7 +16,7 @@ endif::[]
 | 306
 
 | Title
-| Essentials Instance Client Health Checking
+| Evergreen Instance Client Health Checking
 
 | Sponsor
 | link:https://github.com/batmat[Baptiste Mathus]
@@ -68,7 +68,7 @@ endif::[]
 
 == Abstract
 
-The first pillar of _Jenkins Essentials_ is that it is an link:https://github.com/jenkinsci/jep/tree/master/jep/300#auto-update[Automatically Updated Distribution].
+The first pillar of _Jenkins Evergreen_ is that it is an link:https://github.com/jenkinsci/jep/tree/master/jep/300#auto-update[Automatically Updated Distribution].
 
 To be able to achieve this goal in a durable way, we need to be able to _automatically assess the health_ of a *given* instance.
 The scope of this proposal is to design the way we decide if we link:https://github.com/jenkinsci/jep/tree/master/jep/302[automatically roll back] or not.
@@ -77,7 +77,7 @@ It will also regularly be fed back to the backend so that we can compute global 
 
 == Specification
 
-We do expect to evolve the health-checking process as we learn, but as the local healthcheck is a critical part of the overall _Essentials_ story, we want to start _small_ on purpose.
+We do expect to evolve the health-checking process as we learn, but as the local healthcheck is a critical part of the overall _Evergreen_ story, we want to start _small_ on purpose.
 Once we deem to have learned enough, we will create new proposals to discuss and document the new checks we want to add.
 
 We will check two URLs:
@@ -123,8 +123,8 @@ From this URL, we check that:
 ** `thread-deadlock.healthy` attribute is `true`
 
 We are *not* checking the space related attributes on purpose, at least for now.
-The rationale being that the upgrade to a new _Essentials_ BOM
-footnote:[Bill Of Materials: the configuration file describing what an Essentials release is made of: what exact WAR version, which plugins, etc.]
+The rationale being that the upgrade to a new _Evergreen_ BOM
+footnote:[Bill Of Materials: the configuration file describing what an Evergreen release is made of: what exact WAR version, which plugins, etc.]
  could consume a bit more disk space, and trigger a disk space warning.
 We probably do not want to wholly revert an upgrade because of this.
 
@@ -140,7 +140,7 @@ If for some reason, the plugin fails to start, then the healthcheck should fall 
 
 The plugin is configured using the link:https://github.com/jenkinsci/configuration-as-code-plugin[Configuration As Code] Jenkins plugin, using the following syntax:
 
-[source,yaml,title=Essentials Configuration-as-code file]
+[source,yaml,title=Evergreen Configuration-as-code file]
 ---
 jenkins:
   # [snip other configurations]
@@ -162,7 +162,7 @@ There is nothing existing in this area.
 
 === Why not leverage the error logging
 
-In the link:https://github.com/jenkinsci/jep/tree/master/jep/304[JEP-304 on _Essentials Client Error Telemetry Logging_], we describe how the Jenkins instance is _publishing_ its error logging.
+In the link:https://github.com/jenkinsci/jep/tree/master/jep/304[JEP-304 on _Evergreen Client Error Telemetry Logging_], we describe how the Jenkins instance is _publishing_ its error logging.
 
 We are not going to use those logs for now for the reason stated previously: we do no think we know enough how to use them correctly yet.
 So we are taking a careful path here: anyway, those logs are going to be sent to the backend as a one of the data points for assessing quality of given releases.

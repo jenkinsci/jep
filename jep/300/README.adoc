@@ -1,4 +1,4 @@
-= JEP-300: Jenkins Essentials
+= JEP-300: Jenkins Evergreen
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -16,7 +16,7 @@ endif::[]
 | 300
 
 | Title
-| Jenkins Essentials Overview
+| Jenkins Evergreen Overview
 
 | Sponsor
 | link:https://github.com/rtyler[R. Tyler Croy]
@@ -63,11 +63,18 @@ endif::[]
 |===
 
 
+[NOTE]
+====
+Jenkins Evergreen was originally referred to as "Jenkins Essentials" and has
+since been renamed, see
+link:https://groups.google.com/d/msgid/jenkinsci-dev/20180814220448.GI17800%40grape.lasagna.io[this mailing list thread].
+====
+
 == Abstract
 
 We often describe Jenkins using the metaphor of lego bricks which can be pieced
 together by the end-user in order to solve their problems. Borrowing that metaphor,
-Jenkins Essentials provides the end-user with a
+Jenkins Evergreen provides the end-user with a
 pre-assembled collection of legos that can be immediately used to implement CI
 footnoteref:[ci, https://en.wikipedia.org/wiki/Continuous_integration]
 and CD
@@ -79,7 +86,7 @@ bugs, more rapidly than before.
 
 == Specification
 
-Jenkins Essentials covers an ambitious scope which is more thoroughly
+Jenkins Evergreen covers an ambitious scope which is more thoroughly
 detailed in subsequent JEP footnoteref:[jep,
 https://github.com/jenkinsci/jep/tree/master/jep/1#jep-1-jenkins-enhancement-proposal-format]
 documents in this series. This specification describes the problem, and
@@ -89,13 +96,13 @@ structures.
 [[target-audience]]
 === Target Audience
 
-Jenkins Essentials is targeted at existing and new Jenkins users who are
+Jenkins Evergreen is targeted at existing and new Jenkins users who are
 not necessarily interested in becoming Jenkins experts,
 but rather wish to use Jenkins as a means to an end.
 That end being: building, testing, and
 delivering their projects, with as little overhead as possible.
 
-Jenkins Essentials is not going to be an ideal solution
+Jenkins Evergreen is not going to be an ideal solution
 for _everybody_ who is interested in Jenkins. It is expected that some number
 of users will continue to "build their own" Jenkins environment, cobbling
 together a core `.war` and the specific set of plugins which meet their desired
@@ -104,9 +111,9 @@ goals.
 
 === Pillars
 
-The pillars to Jenkins Essentials will be described in more detail in future
+The pillars to Jenkins Evergreen will be described in more detail in future
 documents but this section provides an overview of the four core aspects of
-Jenkins Essentials which, taken together, will address the problems facing the
+Jenkins Evergreen which, taken together, will address the problems facing the
 <<target-audience>>.
 
 
@@ -114,15 +121,15 @@ Jenkins Essentials which, taken together, will address the problems facing the
 ==== Automatically Updated Distribution
 
 In order to provide an easier-to-use and easier-to-manage Jenkins environment,
-Jenkins Essentials will be distributed as an automatically self-updating
+Jenkins Evergreen will be distributed as an automatically self-updating
 distribution, containing Jenkins core and a version-locked set of plugins considered "essential."
 Rather than attempting to mirror the existing Weekly and LTS release lines for core, plus
-some plugin version matrix, Jenkins Essentials will update in a manner similar
+some plugin version matrix, Jenkins Evergreen will update in a manner similar
 to Google Chrome.
 footnote:[https://en.wikipedia.org/wiki/Google_Chrome#Release_channels,_cycles_and_updates]
 
 For Jenkins end-users, this automatically updating distribution will
-mean that Jenkins Essentials will require significantly less overhead to manage,
+mean that Jenkins Evergreen will require significantly less overhead to manage,
 receiving improvements and bug fixes without any user involvement. From the user
 perspective, their Jenkins will appear to automatically improve over time.
 
@@ -162,10 +169,10 @@ This will take numerous forms, including but not limited to:
 
 
 For the various cloud platforms, rather than support all the
-environment-driven defaults in a _single_ package, Jenkins Essentials should
+environment-driven defaults in a _single_ package, Jenkins Evergreen should
 provide a "flavor" specific to that environment. For example, Azure users
 should click a "Deploy to Azure" button which launches an Azure-specific flavor
-of Jenkins Essentials, whereas Kubernetes users should deploy a
+of Jenkins Evergreen, whereas Kubernetes users should deploy a
 [Helm](https://helm.sh/) chart.
 
 The specifics of each flavor will be subject to different documents describing
@@ -176,7 +183,7 @@ their design.
 
 In order to provide a more seamless experience for end-users, and ensure that
 Jenkins project developers receive useful error and usage telemetry to drive
-further improvements in Jenkins, Jenkins Essentials must necessarily be viewed
+further improvements in Jenkins, Jenkins Evergreen must necessarily be viewed
 as a "Connected" application. This entails some yet-to-be-specified number of
 server-side applications to coordinate updates, receive and process telemetry,
 broker 3rd-party service authentications, relay webhooks, etc.
@@ -184,7 +191,7 @@ broker 3rd-party service authentications, relay webhooks, etc.
 [[obvious-path]]
 ==== Obvious Path to User Success
 
-The final pillar in Jenkins Essentials, is to ensure that Jenkins provides an
+The final pillar in Jenkins Evergreen, is to ensure that Jenkins provides an
 obvious path for a user to configure and use it successfully. This largely
 entails in-application documentation, examples, and disabling legacy
 functionality within the application. All with the end goal of preventing users
@@ -224,7 +231,7 @@ be configured, in order to construct a suitable CI/CD environment for their
 projects. While this is related to the problem which JEP-2
 footnoteref:[jep2, https://github.com/jenkinsci/jep/tree/master/jep/2#jep-2-criteria-for-selecting-suggested-plugins]
 attempted to address in the "Setup Wizard" introduced in Jenkins 2.0, Jenkins
-Essentials aims to address the broader problem of providing users with a
+Evergreen aims to address the broader problem of providing users with a
 low-overhead, easily maintained, and solid distribution of common features
 (provided by a set of existing plugins) which will help the user focus on
 building, testing, and delivering their projects rather than maintaining
@@ -263,8 +270,8 @@ This results in:
 This document does not  propose a _specific_ design or implementation, as other JEPs might.
 This is intentional.
 Later JEPs in this series will will address design and implementation.
-This document specifies the concept of "Jenkins Essentials" and the mission and priorities
-of the Jenkins Essentials project.
+This document specifies the concept of "Jenkins Evergreen" and the mission and priorities
+of the Jenkins Evergreen project.
 Limiting the scope of this JEP to high-level goals will let us build
 a solid consensus for that direction before we begin working on individual features.
 Having a unified plan as we begin is vital to addressing the "User-success isolation"
@@ -294,11 +301,11 @@ The underlying problem remains unsolved, to this end the pillars of
 rapidly adopt features provided by "essential" plugins to successfully solve
 their problems.
 
-By channeling this work through the <<auto-update>>, Jenkins Essentials aims to
+By channeling this work through the <<auto-update>>, Jenkins Evergreen aims to
 cross some of the organizational boundaries currently present in the Jenkins
 project, as is necessary to provide a more cohesive solution for end-users.
 
-Plainly stated, Jenkins Essentials means: the whole is greater than the sum of
+Plainly stated, Jenkins Evergreen means: the whole is greater than the sum of
 its parts.
 
 ==== Suggested Plugins
@@ -328,7 +335,7 @@ administrators or solutions providers.
 == Backwards Compatibility
 
 There are no anticipated backwards compatibility issues to discuss in this
-document. Future enhancements to plugins under the guise of Jenkins Essentials
+document. Future enhancements to plugins under the guise of Jenkins Evergreen
 may make backwards incompatible changes, and thereby require new core version
 dependencies in their `pom.xml`.
 
@@ -336,7 +343,7 @@ dependencies in their `pom.xml`.
 == Security
 
 There are no inherent security impacts to discuss in this document, another
-document related to Jenkins Essentials will discuss a proposed process for
+document related to Jenkins Evergreen will discuss a proposed process for
 handling link:https://jenkins.io/security/[Security (CERT)] advisories and
 updates.
 

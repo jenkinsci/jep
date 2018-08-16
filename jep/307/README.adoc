@@ -67,7 +67,7 @@ endif::[]
 == Abstract
 
 Integral to link:https://github.com/jenkinsci/jep/tree/master/jep/300[Jenkins
-Essentials] is the client's update lifecycle with the Evergreen hosted service
+Evergreen] is the client's update lifecycle with the Evergreen hosted service
 layer. Starting with the first boot, the client must frequently inform the
 server of its current versions, retrieve new versions, and apply updates. This
 document specifies those API interactions and expectations to allow this update
@@ -254,14 +254,14 @@ Update Manifest to safely include things which are not yet supported.
 ====
 There _may_ be opportunities to cache the Update Manifest in the future, but
 this is considered a potential optimization which will be contingent on
-observation of real world usage for Jenkins Essentials.
+observation of real world usage for Jenkins Evergreen.
 ====
 
 
 ==== Checksums
 
 The checksums provided in the Update Manifest are not generated or validated by
-Jenkins Essentials but rather the Artifactory instance from which plugin, core,
+Jenkins Evergreen but rather the Artifactory instance from which plugin, core,
 and other binaries are pulled.
 
 In essence, every `foo-1.2.3.hpi` has a corresponding `foo-1.2.3.hpi.sha256`
@@ -285,7 +285,7 @@ accurate generated Update Manifest.
 
 A version manifest is the symmetrically opposite of the <<update-manifest>> in
 that it should include the actual versions of software present on a Jenkins
-Essentials instance. This may include software which is outside of the update
+Evergreen instance. This may include software which is outside of the update
 lifecycle.
 
 The purpose of the version manifest is primarily for the client
@@ -438,8 +438,8 @@ environments:
 
 == Motivation
 
-The motivation for the Jenkins Essentials distribution using this update
-lifecycle is largely driven by the goal for Jenkins Essentials to be
+The motivation for the Jenkins Evergreen distribution using this update
+lifecycle is largely driven by the goal for Jenkins Evergreen to be
 self-updating, which necessitates a different approach to code distribution
 compared to the conventional Update Center process.
 
@@ -447,11 +447,11 @@ compared to the conventional Update Center process.
 == Reasoning
 
 The design described above is intended to be succinct enough to drive updates
-to Jenkins Essentials, of which all instances are expected to be running the
+to Jenkins Evergreen, of which all instances are expected to be running the
 same approximate set of software. Contrasted to the Jenkins "Update Center"
 which provides much more metadata to provide user-visible information.
 
-As Jenkins Essentials is intended to update automatically, the metadata
+As Jenkins Evergreen is intended to update automatically, the metadata
 (<<update-manifest>>), only needs to contain the URLs for packages and a
 checksum for validation. There are additional <<security>> concerns and
 reasoning discussed below.
@@ -470,7 +470,7 @@ What happened if a client didn't connect to the update service for month?
 Is it an information that would be useful in the update manifest?
 ____
 
-One of the challenges for Jenkins Essentials is determining how to handle
+One of the challenges for Jenkins Evergreen is determining how to handle
 updates for clients which are not consistently connected. If for example, a
 client is only _connected_ to the Evergreen backend services layer once a week
 due to network misconfiguration, outages in the Evergreen services layer, or
@@ -487,7 +487,7 @@ Our state is now:
     Bravo: UL1
 
 The first idea was to dry to have Bravo jump from UL1 -> UL14 but with Jenkins
-Essentials' testing process, this would effectively be a completely untested
+Evergreen' testing process, this would effectively be a completely untested
 upgrade jump. This approach was considered **too risky**.
 
 Another idea which was discussed was to use a git-bisect(1) type approach, trying UL14,
@@ -530,7 +530,7 @@ link:https://letsencrypt.org[Let's Encrypt] certificates provisioned for all
 
 To provide additional security, and protect against poisoned or fraudulent
 `jenkins.io` certificates being used to distribute false Update Manifests, the
-Jenkins Essentials container will have a **restricted set of trusted root
+Jenkins Evergreen container will have a **restricted set of trusted root
 certificates**. Trusting only the
 link:https://letsencrypt.org/certificates/[root certificates used by Let's
 Encrypt], which are presently:
@@ -565,7 +565,7 @@ link:https://community.letsencrypt.org/t/hpkp-best-practices-if-you-choose-to-im
 with Let's Encrypt] (also see
 link:https://lilleengen.io/blog/posts/activating-http-public-key-pinning-hpkp-on-lets-encrypt[this
 blog post]). This approach was discarded as unnecessarily complex considering
-the client environment which is under control by Jenkins Essentials.
+the client environment which is under control by Jenkins Evergreen.
 
 ==== GPG key exchange
 
