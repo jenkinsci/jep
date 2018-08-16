@@ -54,7 +54,7 @@ The following roles are recognized:
 * Admin - can invite others to contribute
 * Contributor - creates content and can tweet, retweet and schedule tweets
 
-New contributors may be proposed at a governance meeting.
+New contributors are first proposed on the dev mailing list and then approved at a governance meeting.
 The Jenkins board will approve contributors using the following criteria:
 
 * Contributions - the candidate should actively be contributing to Jenkins community
