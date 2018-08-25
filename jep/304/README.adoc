@@ -39,7 +39,7 @@ endif::[]
 //
 //
 // Uncomment if there will be a BDFL delegate for this JEP.
-| BDLF-Delegate
+| BDFL-Delegate
 | link:https://github.com/rtyler[R. Tyler Croy]
 //
 //
