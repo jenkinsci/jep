@@ -1,0 +1,102 @@
+= JEP-0000: Process improvements for adopting a Jenkins plugin
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.**JEP Template**
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 0000
+
+| Title
+| Process improvements for adopting a Jenkins plugin
+
+| Sponsor
+| link:https://github.com/rodrigc[Craig Rodrigues]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Process
+
+| Created
+| 2018-08-25
+
+| BDFL-Delegate
+| TBD
+
+|===
+
+== Abstract
+
+Over time, Jenkins plugin maintainers need to change as the original maintainer may need
+to move on to other work.
+link:https://wiki.jenkins.io/display/JENKINS/Adopt+a+Plugin[Adopt a Plugin] outlines the process for adopting
+a plugin.  This page mentions that the Jenkins developer mailing list should be e-mailed to start
+the process.
+This JEP proposes some process improvements to adopting a plugin which
+
+== Specification
+
+=== Initiating the plugin adoption process
+
+* When someone wants to adopt a plugin, they should file a JIRA ticket.
+* They should set the Component field to the name of the plugin.
+* In addition, they must set a tag in JIRA to *adopt-plugin*.
+* The current plugin maintainer will receive an e-mail from JIRA.  If there are multiple plugin maintainers, they should be
+  mentioned via the "@" mechanism in JIRA.
+* If the plugin owner does not respond to the JIRA ticket within 3 weeks (enough time to cover
+  reasonable vacation time, sick time, emergency), then the plugin can be adopted.
+* Plugin authors will also able to file a JIRA ticket with the *adopt-plugin* tag, and mention that they want to
+  give up maintainership of the plugin By doing things in JIRA, it is easier for Jenkins administrators to query
+  the list of plugins which are up for adoption and there is a clear audit trail of when a plugin was adopted.
+
+=== Post plugin adoption tasks
+* The new maintainer needs to be given write access to the git repository with the plugin code.
+  This can by done by sending special commands to the bot on the IRC Freenode #jenkins channel.
+* In JIRA, the new maintainer should be made the default assignee for tickets filed with Component set to that plugin.
+* In JIRA, all Unresolved tickets should be assigned to the new maintainer.
+* The new maintainer will be responsible for updating the wiki page for the plugin to list themselves as the new maintainer.
+* The new maintainer must updat the pom.xml metadata for the plugin in GitHub to indicate that they are the new maintainer.
+
+== Motivation
+
+Due to the popularity of Jenkins, the mailing lists receive a lot of messages.
+For casual Jenkins users who maintain plugins, following the mailing lists
+may be difficult and it is easy to miss these types of e-mails.
+
+== Reasoning
+
+There must be a clear process by which a user can easily request to adopt
+a plugin.  This process must have a clear audit trail that can be tracked.
+There also must be a clear way to track the post plugin adoption tasks.
+
+== Security
+
+There are no security risks related to this proposal.
+
+== Infrastructure Requirements
+
+* JIRA must be updated to support the new *adopt-plugin* tag.
+* link:https://wiki.jenkins.io/display/JENKINS/Adopt+a+Plugin must be updated to reflect the
+  new process for adopting a plugin.
+
+== Testing
+
+There are no testing issues related to this proposal.
+
+== References
+
+* link:https://groups.google.com/d/msg/jenkinsci-dev/BkSipSaSYl8/71Ek0PVQEgAJ[Discussion on jenkinsci-dev mailing list]
+* link:https://wiki.jenkins.io/display/JENKINS/Adopt+a+Plugin[Adopt a Plugin wiki page]
