@@ -442,7 +442,7 @@ by following the steps outlined in the
 When they are done, the Draft JEP will have an official JEP number and
 the submission PR will have been merged to a matching folder
 (for example,
-`link:https://github.com/jenkinsci/jep/tree/master/jep/1[jep/1]`)
+`link:https://github.com/jenkinsci/jep/tree/master/jep/pull/1[jep/1]`)
 in the `master` branch.
 
 Editors are not the only ones who can approve a submission.
