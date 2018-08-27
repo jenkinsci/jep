@@ -1,4 +1,4 @@
-= JEP-0000: Process improvements for adopting a Jenkins plugin
+= JEP-11: Process improvements for adopting a Jenkins plugin
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -15,7 +15,7 @@ endif::[]
 [cols="1h,1"]
 |===
 | JEP
-| 0000
+| 11
 
 | Title
 | Process improvements for adopting a Jenkins plugin
@@ -25,7 +25,7 @@ endif::[]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
-| Not Submitted :information_source:
+| Draft :speech_balloon:
 
 | Type
 | Process
@@ -48,6 +48,17 @@ the process.
 This JEP proposes some process improvements to adopting a plugin which
 
 == Specification
+
+[WARNING]
+====
+*(liamn)*
+Rather than this JEP describing only how the process should change, I would like
+to see it also describe the process as it is.
+Basically, pull in the contents of
+link:https://wiki.jenkins.io/display/JENKINS/Adopt+a+Plugin[the wiki page]
+and then also describe how it will be updated.
+In my opinion, just describing the change makes for an incomplete picture of adopting a plugin.
+====
 
 === Initiating the plugin adoption process
 
@@ -76,11 +87,23 @@ Due to the popularity of Jenkins, the mailing lists receive a lot of messages.
 For casual Jenkins users who maintain plugins, following the mailing lists
 may be difficult and it is easy to miss these types of e-mails.
 
-== Reasoning
-
 There must be a clear process by which a user can easily request to adopt
 a plugin.  This process must have a clear audit trail that can be tracked.
 There also must be a clear way to track the post plugin adoption tasks.
+
+== Reasoning
+
+[WARNING]
+====
+*(jglick)*
+A lot of minor refinements or alternative structures were discussed on the dev list.
+You might not agree with any of them, but the basic ideas ought to be noted in this
+section and an explanation given of why you are going with the current proposal instead.
+====
+
+== Backwards Compatibility
+
+There are no backward compatibility concerns.
 
 == Security
 
@@ -91,6 +114,12 @@ There are no security risks related to this proposal.
 * JIRA must be updated to support the new *adopt-plugin* tag.
 * link:https://wiki.jenkins.io/display/JENKINS/Adopt+a+Plugin must be updated to reflect the
   new process for adopting a plugin.
+
+[WARNING]
+====
+*(jglick)*
+There is no preparation needed. The first time a new tag is typed in, it becomes available in completion.
+====
 
 == Testing
 
