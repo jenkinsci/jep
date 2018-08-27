@@ -1123,7 +1123,7 @@ This JEP leverages existing infrastructure.
 
 === Pull Requests
 
-* link:https://github.com/jenkinsci/jep/1[PR 1]
+* link:https://github.com/jenkinsci/jep/pull/1[PR 1]
 * link:https://github.com/jenkinsci/jep/pull/12[PR 12]
 * link:https://github.com/jenkinsci/jep/pull/19[PR 19]
 * link:https://github.com/jenkinsci/jep/pull/76[PR 76]
