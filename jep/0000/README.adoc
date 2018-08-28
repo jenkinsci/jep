@@ -1,0 +1,81 @@
+= JEP-0000: Localization Plugin
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 0000
+
+| Title
+| Localization Plugin
+
+| Sponsor
+| link:https://github.com/LinuxSuRen[Zhao Xiaojie]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Informational
+
+| Created
+| 2018-08-28
+
+| BDFL-Delegate
+| TBD
+
+|===
+
+== Abstract
+
+Localization plugins separate i10n resource files from Jenkins core and plugins. These plugin will be choose when users install a new Jenkins according their browser language setting.
+
+== Specification
+
+The proposed Localization plugins suggest every main language has their own localization plugin. Such as Chinese Localization plugin. Maybe you just wish to install one language localization plugin in most case.
+
+== Motivation
+
+Localization plugin is targeted at Jenkins plugin developers who want to improve native language UI experience. Let Jenkins is more easy to use.
+
+== Reasoning
+
+Easy for localization contribution access manage. There is someone want to contribute localization, but he may not have permission to commit, and other people perhaps can't do a real review. So this process could be very slow.
+
+== Backwards Compatibility
+
+Remain all languages file, until target language already moved into one localization plugin. Then all languages install wizard resources file can't be removed.
+
+== Security
+
+There are no security risks related to this proposal.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+There are no testing issues related to this proposal.
+
+== Prototype Implementation
+
+link:https://github.com/LinuxSuRen/chinese-localization-plugin[Chinese Localization Plugin]
+
+== References
+
+link:https://groups.google.com/forum/#!msg/jenkinsci-dev/jeKVskUwE8M/gckewoBpDwAJ[Initial discussion]
+link:https://jenkins.io/sigs/chinese-localization/[Chinese Localization SIG]
+
+
+
