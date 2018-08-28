@@ -49,18 +49,40 @@ This JEP proposes some process improvements to adopting a plugin which
 
 == Specification
 
-[WARNING]
-====
-*(liamn)*
-Rather than this JEP describing only how the process should change, I would like
-to see it also describe the process as it is.
-Basically, pull in the contents of
-link:https://wiki.jenkins.io/display/JENKINS/Adopt+a+Plugin[the wiki page]
-and then also describe how it will be updated.
-In my opinion, just describing the change makes for an incomplete picture of adopting a plugin.
-====
+=== Existing plugin adoption process
+The existing plugin adoption process is
+outlined here on link:https://wiki.jenkins.io/display/JENKINS/Adopt+a+Plugin[this wiki page].
 
-=== Initiating the plugin adoption process
+The above web page can be summarized as follows.
+
+For a user who is interested in adopting a plugin:
+
+1. The user should visit link:https://wiki.jenkins.io/display/JENKINS/Adopt+a+Plugin#AdoptaPlugin-Listofplugins
+   for a list of plugins eligible for adoption.
+2. The user should review the documentation on plugin maintainership in the Jenkins project, especially
+   documentation with respect to link:https://jenkins.io/project/governance/#compatibility-mattera[plugin compatibility]
+   and link:https://wiki.jenkins.io/display/JENKINS/Marking+a+new+plugin+version+as+incompatible+with+older+versions[marking a plugin as incompatible
+   with older Jenkins releases].
+3. The user should mail the link:mailto:jenkinsci-dev@googlegroups.com[Jenkins Developers mailing list] and request to be made a maintainer
+   of the plugin.  The user is encouraged to CC: the existing maintainer during this e-mail request.
+   In the e-mail, the user is encouraged to submit their GitHub ID and Jenkins infrastructure ID.
+4. If the existing maintainer provides feedback agreeing to the request, the Jenkins infrastructure admins will usually grant maintainership of the
+   plugin to the user.
+5. Sometimes an existing maintainer cannot be contacted, or does not respond in a timely way to agree or disagree with
+   the request to change maintainership of the plugin.  In these cases, if the existing maintainer does not provide
+   feedback after approximately two weeks, the Jenkins infrastructure admins will usually
+   grant maintainership of the plugin to the user.
+6. Once granted maintainership of the plugin, the user is encouraged to file a GitHub PR against
+   link:https://github.com/jenkins-infra/repository-permissions-updater to request permission to deploy snapshots and releases of the plugin.
+
+For a maintainer who is interested in giving up maintainership of a plugin:
+1. The maintainer should edit the plugin's wiki page and add the *adopt-this-plugin* label.
+2. Alternatively, the maintainer can use the following JIRA macro on the plugin's wiki page:
+
+ {jenkins-plugin-info:myplugin|adopt-message=The maintainer is looking for a co-maintainer.}
+
+
+=== Proposed modification to plugin adoption process: using JIRA
 
 * When someone wants to adopt a plugin, they should file a JIRA ticket.
 * They should set the Component field to the name of the plugin.
