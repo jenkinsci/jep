@@ -107,7 +107,11 @@ There are no backward compatibility concerns.
 
 == Security
 
-There are no security risks related to this proposal.
+There are no new security risks introduced by this proposal.
+The existing plugin adoption process theoretically makes it possible for bad actors to take control of popular,
+but badly maintained plugins.  The Jenkins infra team should take this into account when
+reviewing requests to change plugin maintainership, and deny requests to bad actors.  This JEP does not offer any other
+solutions to this problem.
 
 == Infrastructure Requirements
 
