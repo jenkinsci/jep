@@ -69,7 +69,7 @@ In my opinion, just describing the change makes for an incomplete picture of ado
   mentioned via the "@" mechanism in JIRA.
 * If the plugin owner does not respond to the JIRA ticket within 3 weeks (enough time to cover
   reasonable vacation time, sick time, emergency), then the plugin can be adopted.
-* Plugin authors will also able to file a JIRA ticket with the *adopt-plugin* tag, and mention that they want to
+* Plugin authors will also be able to file a JIRA ticket with the *adopt-plugin* tag, and mention that they want to
   give up maintainership of the plugin By doing things in JIRA, it is easier for Jenkins administrators to query
   the list of plugins which are up for adoption and there is a clear audit trail of when a plugin was adopted.
 
