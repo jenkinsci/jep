@@ -56,6 +56,7 @@ outlined here on link:https://wiki.jenkins.io/display/JENKINS/Adopt+a+Plugin[thi
 The above web page can be summarized as follows.
 
 For a user who is interested in adopting a plugin:
+
 1. The user should visit link:https://wiki.jenkins.io/display/JENKINS/Adopt+a+Plugin#AdoptaPlugin-Listofplugins
    for a list of plugins eligible for adoption.
 2. The user should review the documentation on plugin maintainership in the Jenkins project, especially
