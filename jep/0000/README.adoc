@@ -143,7 +143,7 @@ The traffic to each individual endpoints depends on:
 The latter depends on the time span defined for a collector, and the component implementing the collector (popularity and user update behavior).
 For collectors defined in core, current usage statistics indicate that around 20,000-30,000 installations are on the current LTS line, and around 30,000 installations are on the most recent eight weekly releases.
 
-This indicates a projected upper bound of 600MB of uncompressed data collected per day for a collector defined in core that is active for two months.
+This indicates a projected upper bound of 600MB of uncompressed data collected per day for a collector defined in core that is active for two months, if we expect a maximum average size of 10KB.
 
 
 == Testing
