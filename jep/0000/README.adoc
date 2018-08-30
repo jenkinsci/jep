@@ -70,7 +70,7 @@ There are no testing issues related to this proposal.
 
 == Prototype Implementation
 
-link:https://github.com/LinuxSuRen/chinese-localization-plugin[Chinese Localization Plugin]
+link:https://github.com/LinuxSuRen/localization-zh-cn-plugin[Localization: Chinese (Simplified)]
 
 == References
 
