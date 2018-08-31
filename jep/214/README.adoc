@@ -73,10 +73,11 @@ This JEP proposes infrastructure for gathering usage telemetry.
 
 A `Telemetry` extension point is added to Jenkins (core). It allows implementations in core or plugins ("collectors") to define the following:
 
-* Alphanumeric ID.
-* User-friendly display name.
-* Time period (start and end date) during which data collection is enabled on the client. Both are mandatory.
-* A method returning the string content (expected to be JSON) to be submitted to the Jenkins project.
+* ID matching `[a-zA-Z0-9_-]+` (i.e. alphanumeric with dash and underscore)
+* User-friendly (localizable) display name
+* Time period (start and end date) during which data collection is enabled on the client (end date is mandatory)
+* A method returning the string content to be submitted to the Jenkins project (typically JSON)
+* A method returning the string content's content-type (typically `application/json`)
 
 The implementation in core has the following characteristics:
 
@@ -153,7 +154,7 @@ Automatic tests in Jenkins core need to ensure the constraints defined for this 
 
 == Prototype Implementation
 
-TBD
+* link:https://github.com/jenkinsci/jenkins/pull/3604[Core PR 3604]
 
 == References
 
