@@ -49,7 +49,7 @@ endif::[]
 //
 // Uncomment if this JEP depends on one or more other JEPs.
 | Requires
-| JEP-300, JEP-301
+| JEP-300, JEP-301, JEP-306
 //
 //
 // Uncomment and fill if this JEP is rendered obsolete by a later JEP
@@ -67,7 +67,8 @@ endif::[]
 
 link:https://github.com/jenkinsci/jep/tree/master/jep/300:[Jenkins Evergreen], and more specifically its link:https://github.com/jenkinsci/jep/tree/master/jep/301:[Evergreen] _component_, aims at providing an link:https://github.com/jenkinsci/jep/tree/master/jep/300#auto-update[automatically updating distribution] of Jenkins.
 
-Continuous Delivery is about making small incremental changes, making failures much more easily recoverable. In the context here, it means Jenkins Evergreen must to be able to seamlessly upgrade Jenkins, _but also_ roll back to the previously running version if an upgrade goes wrong.
+Continuous Delivery is about making small incremental changes, making failures much more easily recoverable.
+In the context here, it means Jenkins Evergreen must be able to seamlessly upgrade Jenkins, _but also_ roll back to the previously running version if an upgrade goes wrong.
 As Jenkins does not support downgrading alone, this document introduces the snapshotting system which enables that auto-downgrade capability.
 
 == Specification
@@ -193,7 +194,8 @@ Ideally, Evergreen would move this elsewhere under `$EVERGREEN_HOME/jenkins/var/
 From the perspective of this proposal, health checking Jenkins itself is out of scope.
 But the  _driver_ of the upgrade, _evergreen client_, requires a way to determine whether or not a rollback should be executed.
 
-For reference, the Jira issue tracking this design work is: link:https://issues.jenkins-ci.org/browse/JENKINS-50294[JENKINS-50294].
+This aspect is described in the dedicated link:https://github.com/jenkinsci/jep/blob/master/jep/306/README.adoc[JEP-306 covering Instance Client Health Checking].
+
 
 == Motivation
 
