@@ -92,7 +92,7 @@
 | link:https://github.com/ndeloof[ndeloof]
 | _not{nbsp}delegated_
 
-| Draft{nbsp}:speech_balloon:
+| Final{nbsp}:lock:
 | link:206/README.adoc[JEP-206: Use UTF-8 for Pipeline build logs]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | TBD
