@@ -49,7 +49,10 @@ endif::[]
 //
 // Uncomment if this JEP depends on one or more other JEPs.
 | Requires
-| JEP-300, JEP-301, JEP-306
+|
+link:https://github.com/jenkinsci/jep/tree/master/jep/300[JEP-300],
+link:https://github.com/jenkinsci/jep/tree/master/jep/301[JEP-301],
+link:https://github.com/jenkinsci/jep/tree/master/jep/306[JEP-306]
 //
 //
 // Uncomment and fill if this JEP is rendered obsolete by a later JEP
