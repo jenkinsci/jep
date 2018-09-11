@@ -75,7 +75,21 @@ Example use cases:
 
 == Motivation
 
-In order to share existing React components with other projects, as well as improve flexibility and maintainability within the Blue Ocean project, we need a standard method for defining and documenting individual Widget modules, their responsibilities, and the responsibilities of the host application. Clearly marked module boundaries will help us keep code maintainable and testable, and should allow other projects more flexibility in picking and choosing the versions of Widget dependencies rather than the all-or-nothing approach required when depending on the current entire Blue Ocean Plugin.
+Benefits to widget consumers:
+
+* Less overhead and transient dependencies for any given widget
+* More fine-grained control over depdency versioning
+* Component source will be easier to grok without having knowledge of the Blue Ocean codebase (less forest, more tree)
+* Explicit declaration of the component API means no assumptions about the Blue Ocean container will infect the host application
+* Better and more focused documentation
+* Easier to get custom changes to widget source upstream without requiring simultaneous changes to Blue Ocean application or maintaining a fork or cherry-picking from the monolithic Blue Ocean codebase.
+
+Benefits to Blue Ocean team:
+
+* Can share Widget code between "Blue Ocean as Jenkins plugin" and future "Standalone Blue Ocean" applications
+* LTS branches will be easier to maintain by pegging widget versions rather than having to cherry-pick from trunk changes
+* Explicit widget API will codify and reduce existing ambient assumptions / globals within the application
+* Widget source code can advance more quickly to meet the needs of consumers without having to make simultaneous changes to the Blue Ocean application
 
 == Specification
 
