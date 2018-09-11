@@ -76,16 +76,16 @@ A `Telemetry` extension point is added to Jenkins (core). It allows implementati
 * ID matching `[a-zA-Z0-9_-]+` (i.e. alphanumeric with dash and underscore)
 * User-friendly (localizable) display name
 * Time period (start and end date) during which data collection is enabled on the client (end date is mandatory)
-* A method returning the string content to be submitted to the Jenkins project (typically JSON)
-* A method returning the string content's content-type (typically `application/json`)
+* A method returning the `JSONObject` to be submitted to the Jenkins project
 
 The implementation in core has the following characteristics:
 
 * Collection and submission is possible only if the instance participates in anonymous usage statistics.
-* Individual collectors can additionally be disabled, and as a result, collection code is not executed.
-* Each collector is run periodically to build its content, and the central extension point will submit it to the Jenkins project infrastructure via HTTPS to a base URL, with a suffix matching the ID of the collector.
+* Each collector is run periodically to build its content, and the central extension point will submit it to the Jenkins project infrastructure via HTTPS.
 * A facility explaining what data is collected, to be shown to administrators.
-* The endpoint the data is submitted to is not modifiable by implementations.
+* The endpoint the data is submitted to is not modifiable by extension point implementations.
+* It submits a correlation ID to the Jenkins project to allow merging and deduplicating submissions from the same Jenkins instance.
+  This correlation ID is independent of instance identity or any other public identifier.
 
 == Motivation
 
@@ -122,7 +122,7 @@ As each collector is an independent extension implementation only operational wi
 == Security
 
 Collectors need to be written carefully to not collect user data, such as PII.
-As each collector needs its own endpoint in Jenkins project infra, the Jenkins infra team can ensure isolation between different collected information, grant access to the collected data in a fine-grained manner, and enforce the collector start and end dates server-side.
+The server component needs to ensure isolation between different collected information, grant access to the collected data in a fine-grained manner, and enforce the collector start and end dates server-side.
 
 Data submission is done via HTTPS to prevent eavesdropping and man-in-the-middle attacks.
 
@@ -131,12 +131,15 @@ Data submission is done via HTTPS to prevent eavesdropping and man-in-the-middle
 
 A new service needs to be added to the Jenkins project infrastructure.
 
-* Support for multiple user-defined endpoints (URLs), each corresponding to a collector.
+* A URL that accepts POST submissions with a JSON body and stores them. The JSON dictionary has the following top-level items:
+** `type` (string identifying the collector by ID)
+** `payload` (a JSON object)
+** `correlator` (an arbitrary per-instance identifier)
 * Support for definition of a collection period (start and end date), outside of which submissions are rejected.
 
 Beyond these, the service can remain fairly basic, e.g. writing submission bodies to files, similar to the logging performed in the usage statistics service.
 
-The traffic to each individual endpoints depends on:
+The traffic for each collector depends on several parameters:
 
 * The size of data gathered for each collector
 * The number of instances for each collector
@@ -155,6 +158,7 @@ Automatic tests in Jenkins core need to ensure the constraints defined for this 
 == Prototype Implementation
 
 * link:https://github.com/jenkinsci/jenkins/pull/3604[Core PR 3604]
+* link:https://github.com/rtyler/uplink/["Uplink" service receiving data in Jenkins project infrastructure]
 
 == References
 
