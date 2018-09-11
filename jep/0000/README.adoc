@@ -38,7 +38,7 @@ endif::[]
 
 == Abstract
 
-Localization plugins separate i10n resource files from Jenkins core and plugins. These plugin will be choose when users install a new Jenkins according their browser language setting.
+Localization plugins separate i10n resource files from Jenkins core and plugins. These plugins will be choose when users install a new Jenkins according their browser language setting.
 
 == Specification
 
@@ -46,7 +46,7 @@ The proposed Localization plugins suggest every main language has their own loca
 
 == Motivation
 
-Localization plugin is targeted at Jenkins plugin developers who want to improve native language UI experience. Let Jenkins is more easy to use.
+Localization plugin is targeted on Jenkins plugin developers who want to improve native language UI experience. Let Jenkins is more easy to use.
 
 == Reasoning
 
@@ -54,7 +54,11 @@ Easy for localization contribution access manage. There is someone want to contr
 
 == Backwards Compatibility
 
-Remain all languages file, until target language already moved into one localization plugin. Then all languages install wizard resources file can't be removed.
+Remain all language files, until target language already moved into one localization plugin. And all languages install wizard resources file can't be removed.
+
+In order to keep well compatibility between different versions, you can add a specific version directory. For example, there is a hep text for a button in ver 1.0, but it has totally different meaning in ver 2.0. In this case, you can create two directories to store translation files. The language plugin should choose the right languge files by current version. Actualy the language plugin should always try to find current version language files first, if it doesn't exist then use the latest one. Maybe in most of case, we just need maintain the latest version. 
+
+Now you can find out the help text comes from which plugin, but the description maybe already is stale. So target plugin's version also will be in this note.
 
 == Security
 
