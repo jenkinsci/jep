@@ -122,7 +122,7 @@ As each collector is an independent extension implementation only operational wi
 == Security
 
 Collectors need to be written carefully to not collect user data, such as PII.
-As each collector needs its own endpoint in Jenkins project infra, the Jenkins infra team can ensure isolation between different collected information, grant access to the collected data in a fine-grained manner, and enforce the collector start and end dates server-side.
+The server component needs to ensure isolation between different collected information, grant access to the collected data in a fine-grained manner, and enforce the collector start and end dates server-side.
 
 Data submission is done via HTTPS to prevent eavesdropping and man-in-the-middle attacks.
 
