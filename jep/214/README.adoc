@@ -33,7 +33,7 @@ endif::[]
 | 2018-08-30
 
 | BDFL-Delegate
-| TBD
+| link:https://github.com/rtyler[R Tyler Croy]
 
 //
 //
