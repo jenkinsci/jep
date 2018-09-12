@@ -1,0 +1,403 @@
+= JEP-213: Configuration Storage API in the Jenkins Core
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 213
+
+| Title
+| Configuration Storage API in the Jenkins Core
+
+| Sponsor
+| link:https://github.com/oleg-nenashev[Oleg Nenashev]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2018-08-08
+
+| BDFL-Delegate
+| TBD
+
+| JIRA
+| https://issues.jenkins-ci.org/browse/JENKINS-51966[JENKINS-51966]
+
+
+| Discussions-To
+| link:https://groups.google.com/forum/#!forum/jenkins-cloud-native-sig[Jenkins Cloud Native SIG]
+
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+This JEP documents how Pluggable Configuration storage should be implemented in Jenkins.
+This design addresses the following top-level requirements:
+
+* Jenkins core is updated to offer a pluggable Configuration Storage Implementation
+* Jenkins core implements API for `XmlFileStorage` and, optionally, API for other storage types
+* Filesystem-based storage is offered as a fallback
+* The extension should be available before very first Jenkins logic starts up (config.xml reading, etc.). Likely it means that implementations should be in bundled libraries,
+** Storage is configurable via system properties (similar as what PluginManager and UpdateSite extensions do) or by a MetaInfServices-implementation
+
+== Specification
+
+=== Scope of changes
+
+The following changes are required:
+
+* Modification of the Jenkins core
+* jenkins.io or Wiki updates (documentation)
+* Repository with demos and CI flow definitions
+
+Reference implementations:
+
+* Filesystem-based XML storage (compatibility mode)
+* K8s storage
+* SQL Storage
+
+=== Changes in the Jenkins Core
+
+==== NEW: FileStorage and XmlFileStorage API
+
+[WARNING]
+====
+*(oleg-nenashev)*
+Needs to be documented when https://github.com/jenkinsci/jenkins/pull/3393 is updated,
+Maybe there should be a "FileStorage" API retained, TBD
+====
+
+* There is an XmlFileStorage base class offered in the core
+* The implementation is similar to link:https://github.com/jenkinsci/jenkins/pull/3393[jenkins/pull/3393], BUT...
+** The implementation is binary compatible
+** The implementation takes changes in Kubeify into the account
+** The implementation has a `preflightCheck()` method which allows checking that the storage is operational
+* API requirements:
+** XmlFileStorage offers all API methods required for XMLFile to operate correctly.
+   Final API will be determined during the reference implementation prototyping
+** API should offer atomic CRUD operations against files
+
+==== UPD: Jenkins class
+
+* There is a new API in the Jenkins class, which allows getting storages and configuring them for tests
+* When Jenkins starts up, it checks a “io.jenkins.storage.primaryXmlFileStorageClass” and “io.jenkins.storage.fallbackXmlFileStorageClass” system property. If it is set, Jenkins saves reference to this storage implementations
+** The properties is configured via SystemProperties, so it can be set via web.xml in WAR packaging
+** “io.jenkins.storage.primaryXmlFileStorageClass” defaults to Filesystem storage.
+** “io.jenkins.storage.fallbackXmlFileStorageClass” defaults to Filesystem storage, but can be disabled (may be null for API)
+** If class names are missing, it leads to immediate startup failure
+* For both primary and fallback storages Jenkins invokes a preflightCheck()
+** Negative results for both storages lead to a critical startup failure
+
+==== UPD: XmlFile
+
+`hudson.XmlFile` should be updated in order to pick-up the new `XmlFileStorage` implementation.
+
+* When an XmlFile Object is created, it consults with the Jenkins instance to get the configured storage
+* When reading/writing objects, XmlFile tries the XmlFileStorage defined in the global configuration
+* If a fallback XmlFileStorage is set, XmlFile will also try to fallback to Filesystem storage
+if the main storage is not set
+
+===== XmlFile API Compatibility
+
+XMLStorage implementation should retain compatibility in new implementations.
+
+Some methods may require extra patches in the XmlFileStorage Implementation.
+The only critical method is getFile(),
+because it is supposed to provide path to local filesystem which is not offered.
+
+* Caching is done via XMLFileCache defined on the XmlFileStorage level (see below)
+* getFile() documentation should be explicit that the method is deprecated (and why)
+
+==== UPD: XmlFile#getFile() cleanup
+
+* This is a wide-open task: “Review plugins for getFile() usages in Jenkins core and modules”
+* If there are any quick-wins create patches in the reference implementations
+
+==== NEW: Filesystem XML storage
+
+This is a compatibility layer for the existing Filesystem-based engine.
+Existing implementation in XmlFile should be refactored out to a default storage implementation.
+To retain the backward compatibility,
+`preflightCheck()` should be noop even if some edge cases could be verified on the Jenkins startup.
+
+=== Reference implementations
+
+==== Kubernetes Configuration Storage Library
+
+This is a reference implementation which can be used natively in Kubernetes.
+It may be used in projects like Jenkins X.
+
+* This is a new library to be created
+* The most of the code can be taken from Kubeify prototype
+* The library should be hosted within the Jenkins or Jenkins X organization on GitHub
+
+Structure:
+
+* The repository is implemented as a “jar” or “jenkins-module” packaging
+* Jenkins dependencies are “Provided”, there is no plan to run the library outside Jenkins
+
+What should the repository include?
+
+* Kubernetes Client
+* Kubernetes XML Storage Implementation
+* Integration tests (See “Testing” below)
+* Custom WAR Packager specification for building Custom WAR for Testing
+
+==== SQL Configuration Storage Library
+
+This is a second reference implementation.
+It is similar to the Kubernetes Configuration Storage described above.
+
+=== Packaging
+
+Until Pluggable Core Components story (link:https://issues.jenkins-ci.org/browse/JENKINS-41196[JENKINS-41196]) is ready,
+there will be no way to install configuration storage as a plugin.
+Instead of that, packaging guidelines will be provided.
+
+* Option 1: Adding library to Classpath + Docker Packaging
+** We provide guidelines how to download the library and install it
+** We offer Docker packaging for it as a part of Jenkins X
+* Option 2: Building a custom WAR using link:https://github.com/jenkinsci/custom-war-packager[Custom WAR Packager]
+** Packages everything as a single WAR
+** Demo will be offered in the _Kubernetes XML Storage Lib_ repository
+
+Particular storage implementations may be also shipped as plugins if they find a way to support that.
+
+== Motivation
+
+Currently Jenkins stores all configurations in the file system within `JENKINS_HOME`.
+Such configuration complicates backup management and disaster recovery,
+because `JENKINS_HOME` contains lots of other information in addition to sensitive configs.
+
+Externalizing them is a also critical task for getting highly-available or disposable Jenkins masters.
+Currently it is possible to externalize the entire `JENKINS_HOME` by using shared file storages (e.g. NFS),
+but there is no engine in Jenkins which would allow moving files outside the filesystem.
+Plugins like link:https://plugins.jenkins.io/scm-sync-configuration[SCM Sync Configuration]
+externalize the configurations,
+but they duplicate the information and do not act as a main storage for Jenkins initialization.
+
+== Reasoning
+
+=== Prior work
+
+* link:https://github.com/groupon/DotCi/[DotCI] -
+Custom MongoDB-based storage was implemented for Jenkins
+* link:https://github.com/jstrachan/jenkins/tree/kubeify[Kubeify] -
+Patches which offer K8s storage as an implementation for the core.
+This implementation is **NOT** pluggable
+* link:https://github.com/jenkinsci/jenkins/pull/3473[jenkins/pull/3473] -
+Attempt to support gzipped archiving of XMLs
+
+=== Focus on `hudson.XmlFile`
+
+There are many ways to store configurations in Jenkins,
+but 95% of cases are covered by the XmlFile layer
+which serializes objects to disk and reads them using the XStream library.
+Externalizing these XmlFiles would be a great step forward.
+
+=== Why not “ExtensionPoint” in the plugin?
+
+* Making XMLStorage an extension point is complicated,
+because it causes chicken-and-egg problem
+(loading Jenkins configurations on very first stages of the startup, e.g. main config.xml)
+* Pluggable Core Components (link:https://issues.jenkins-ci.org/browse/JENKINS-41196[JENKINS-41196]) support would allow to implement the feature as a plugin,
+but it is not there yet
+* Mitigation: Custom WAR Packager as documented above
+
+Such configuration implies that the storage type will not be configurable using plugins
+like Jenkins Configuration as Code.
+Eventually this design concern may be addressed.
+
+=== Limiting the "configuration" term
+
+In Jenkins `hudson.XmlFile` is widely used to store build records, test results, and other data entries.
+So the engine does not implement configurations only.
+According to the comment from Jesse Glick,
+such configuration types should be probably ignored,
+because there are other pluggable storage stories.
+
+In the current design, the decision is to apply the storage to all types by default.
+There are the following reasons:
+
+* Implementing such feature may be a shortcut to get a lot of JENKINS_HOME data externalized while other pluggable storage stories are not ready.
+E.g., we can offload JUnit and XmlFile-based Coverage reports immediately once the story is done
+** As Jesse mentioned, for Code Coverage plugins there is no unified format so far.
+   In longer term https://github.com/jenkinsci/code-coverage-api-plugin may address this issue.
+   But for now we concentrate only on XmlFile-typed reports
+* The story is compatible with new Pluggable storage research activities.
+  When `XmlFile` engine is invoked, it already means that the legacy compatibility path is used
+* The design allows `XmlFileStorage` implementations to opt-out from particular files
+  based on the object type or file path.
+  In such case the File-based XML storage will be used so the compatibility is retained.
+
+=== Requiring restart to apply new Configuration storage settings
+
+The implementation presumes that XMLStorage is not configurable within Jenkins.
+Restart is required to apply changes, unless an implementation supports reconfiguration on the flights.
+
+=== Data migration
+
+* Migration is possible, because the design allows having 2 XmlFileStorage implementations at the same time (primary and fallback ones)
+* We do not plan to offer automatic migration of existing data in the reference implementation.
+* In order to migrate the data from Filesystem to K8s storage (or from storage 1 => storage 2), all items need to be re-saved
+
+=== Caching of configuration files
+
+Original design assumed that there will be caching of `XmlFile` compatibility layer.
+After the initial review is was decided that caching engine would be too complicated
+due to the cache invalidation logic.
+It was decided that caching, if needed, should be done in implementations instead of the Jenkins core.
+
+== Backwards Compatibility
+
+As any other pluggable storage JEP, this design sets high backward compatibility requirements.
+
+== Security
+
+There is no specific security implications for the API design in the Jenkins core:
+
+* Storage security is up to the XMLStorage API implementations
+* Implementations may define security requirements in documentation
+** E.g., for Legacy Filesystem Storage:
+*** There should be no jobs running on the master node[r] and accessing workspaces there, except specially designed job types like Jenkins Pipeline
+*** External users must not have read-only access to JENKINS_HOME contents
+     E.g. for K8s XML Storage
+*** K8s configuration must restrict access to the storage so that only Jenkins master container and Jenkins admins have access to it
+* If a user decides to violate the documented configuration, it’s his own decision and risk.
+
+XMLStorage implementations may do some security checks in the preflight() callback in order to mitigate
+the risks and enforce security practices.
+
+=== Filesystem-based storage
+
+For this legacy storage it is required that Jenkins retains **Full backward compatibility**,
+including cases not explicitly supported by the API:
+
+* All `XmlFile` API methods behave in the same way as before
+* All File locations stay the same,
+so direct file operations continue working as before
+* All plugins should retain compatibility
+* Features like _Old Data Monitor_ continue working as before
+
+=== Critical plugins
+
+Below there is a list of plugins,
+which explicitly rely on `XmlFile` and
+link:https://jenkins.io/doc/developer/extensions/jenkins-core/#saveablelistener[SaveableListener] APIs in order to perform operations
+related to configuration management:
+
+* link:https://plugins.jenkins.io/disk-usage[Disk Usage Plugin]
+* link:https://plugins.jenkins.io/jobConfigHistory[Job Configuration History] (manages system configurations as well)
+* link:https://plugins.jenkins.io/scm-sync-configuration[SCM Sync Configuration]
+* link:https://plugins.jenkins.io/google-cloud-backup[Google Cloud Backup]
+
+=== New storage implementations
+
+New storage implementations are not obliged to retain compatibility in all cases.
+Compatibility must be retained for all cases in the Jenkins core, e.g. _Old Data Monitor_
+or other data migration logic in XStream.
+
+For known plugin incompatibilities, for users there should be a quick way to access the pages:
+
+* There should be a jenkins.io or Wiki page created in order to describe the External Configuration storage story
+** If there is a Wiki page, it should have a redirect from jenkins.io
+* The page should provide guidelines about troubleshooting and reporting compatibility issues
+* The page should provide a list of known defects or to reference a JIRA query/dashboard
+
+== Infrastructure Requirements
+
+=== jenkins.io and JIRA
+
+Jenkins website and JIRA should be updated in order to provide information
+about known compatibility issues to Jenkins users.
+
+=== Test Infrastructure
+
+There is no special test infrastructure requirements for the implementation.
+Testing of the _Kubernetes Configuration Storage Library_ will require a Kubernetes cluster,
+but it can be done outside ci.jenkins.io if needed (e.g. within the Jenkins X test environment).
+
+== Testing
+
+=== Functional testing
+
+All new tests will be implemented using Jenkins Test Harness.
+Jenkins core should include automatic tests which verify that the configuration storage can be configured via API.
+Configuration storage implementations also should be tested.
+
+==== File-based configuration storage
+
+File-based configuration storage will be verified by existing automatic tests available in the Jenkins core.
+These tests offer good coverage, and all tests should pass without modification
+to satisfy the backward compatibility requirements.
+
+==== Kubernetes Configuration Storage
+
+* Tests will be designed to run **only** in the Kubernetes Cluster
+** Running tests outside K8s would be nice2have, but it is not mandatory
+* We will need a new “K8sStorageJenkinsRule” for testing
+** The rule starts up Jenkins and configures it to use the `XmlFileStorage` implementation for testing
+
+If there is an applicable K8s Storage Client mocking engine (e.g. via Docker container),
+we can add such logic initialization to the rule as well so that tests run outside the K8s cluster
+
+==== SQL Configuration Storage Library
+
+SQL Configuration storage test automation can be implemented using existing tools available
+in the Jenkins Test Harness framework.
+link:https://github.com/jenkinsci/docker-fixtures[Docker Fixtures] or
+link:https://github.com/testcontainers/testcontainers-java[Testcontainers]
+can be used to provision the database using JUnit test rules.
+
+=== PCT/ATH
+
+In order to ensure compatibility of plugins, Plugin Compatibility Tester and Acceptance Test Harness test frameworks will be used.
+All plugins mentioned in the _Backward Compatibility_ section should be tested in such way.
+
+In order to setup continuous integration, `essentialsTest()` from the Jenkins Pipeline Library will be used.
+Both implementation will be packaged as WARs using link:https://github.com/jenkinsci/custom-war-packager[Custom WAR Packager]
+
+=== Performance Testing
+
+No specific performance testing planned for the reference implementation.
+The current design does not introduce significant overhead for the Filesystem-based configuration storage.
+API Implementations may have performance testing,
+but it is up to the implementation.
+
+== Prototype Implementation
+
+* https://github.com/jenkinsci/jenkins/pull/3393
+
+== References
+
+* link:http://javadoc.jenkins.io/hudson/XmlFile.html[hudson.XmlFile Javadoc]
+* link:https://issues.jenkins-ci.org/browse/JENKINS-41196[JENKINS-41196] - Pluggable core components
+* link:https://github.com/jstrachan/jenkins/tree/kubeify[Kubeify]

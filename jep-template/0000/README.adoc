@@ -23,7 +23,7 @@ See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for fu
 
 [TIP]
 ====
-*BDLF-Delegate* is uncommented by default.
+*BDFL-Delegate* is uncommented by default.
 As part of the in initial conversation or the JEP submission the sponsor should
 look for a BDFL Delegate.
 While not required, it is better for the community if Delegates perform most reviews.
@@ -40,7 +40,7 @@ If no suitable BDFL-Delegate can be found, that row may be commented out.
 | :bulb: Title :bulb:
 
 | Sponsor
-| :bulb: Link to github user page :bulb:
+| :bulb: Link to github user page (if multiple, comma separated on one line). Example: link:https://github.com/username[User Name], link:https://github.com/username2[User Name 2] :bulb:
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status

@@ -1,0 +1,143 @@
+= JEP-10: Jenkins Twitter Policy for Contributors
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 10
+
+| Title
+| Jenkins Twitter Policy for Contributors
+
+| Sponsor
+| link:https://github.com/tracymiranda[Tracy Miranda]
+
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Process
+
+| Created
+| 2018-08-07
+
+| BDFL-Delegate
+| link:https://github.com/rtyler[R. Tyler Croy]
+
+|===
+
+== Abstract
+
+This JEP describes the policy for Jenkins twitter accounts and covers:
+
+* Enabling a team of contributors
+* Jenkins Twitter policy
+* Regular reports on Twitter engagement
+
+== Specification
+
+=== Enabling a Team of Contributors
+
+Tweetdeck's Team feature will be used to manage the team of contributors.
+The following roles are recognized:
+
+* Owner - owner of the twitter account
+* Admin - can invite others to contribute
+* Contributor - creates content and can tweet, retweet and schedule tweets
+
+New contributors are first proposed on the dev mailing list and then approved at a governance meeting.
+The Jenkins board will approve contributors using the following criteria:
+
+* Contributions - the candidate should actively be contributing to Jenkins community
+* Knowledge - the candidate should have indepth knowledge of Jenkins community and/or projects
+* Experience - the candidate should point to experience with Twitter/social media or submit sample tweets
+
+Once approved, the candidate should share their twitter account with the Twitter account owner.
+The candidate should confirm they have login verification on their Twitter accounts to meet security requirements.
+The Twitter owner will invite the candidate to join the account Team via Tweetdeck.
+
+New admins will typically be experienced contributors who the board approve as administrators.
+
+==== Responsibilites of Contributors
+
+Admin and Contributors will make regular tweets or retweets to meet the goals below.
+Admin and Contributors agree to abide by the Jenkins Twitter policy.
+The Twitter owner may revoke access if contributors violate this policy.
+If contributors are inactive they may request to leave the team or the owner may revoke access.
+
+=== Jenkins Twitter Policy
+
+==== Goals
+The goals of the @jenkinsci twitter account are:
+
+* Create awareness of Jenkins projects, releases, plugins and features
+* Promote awareness of Jenkins working groups, events, JAMs or talks about Jenkins
+* Build awareness of Jenkins and encourage contributions
+* Celebrate achievements of the community
+* Grow the open source community around Jenkins
+* Always be a trustworthy, reputable source of information
+
+==== Best Practices
+These are the best practices for contributors to follow:
+
+* Conduct - always abide by Jenkins community code of conduct .
+* Content - write or curate tweets that meet one of the goals above.
+* Cadence - contributors should work together to maintain a regular cadence of interesting/relevant tweets daily
+* Lead with community - tweets should serve a purpose to the community first.
+* Credit - wherever possible give credit to author, project or originating organisation.
+* Hashtags - use these to link themes or help community find content. Ideally max 2 hashtags per tweet.
+* Voice - be community facing, share a common tone with other contributors avoid corporate tones.
+* Support - avoid being a support channel for the Jenkins project
+
+=== Regular Reporting
+The Twitter account owner will download monthly analytics reports from Twitter.
+These will be shared with the contribution team.
+One member of the contribution team will prepare a quarterly report to be shared with the community summarizing stats and insights.
+
+== Motivation
+
+Jenkins twitter accounts have a massive following.
+To date there is usually one owner tweeting, retweeting and all other twitter activity.
+There are automated tweets but these have some limitations e.g no tags, no images included in tweets.
+These policies aim to lighten the burden on Twitter owners and use twitter to meet Jenkins project goals
+
+== Reasoning
+Having a well defined policy enables the community to welcome contributors and share best practices.
+
+
+== Backwards Compatibility
+
+There are no backwards compatibility concerns related to this proposal.
+
+
+== Security
+
+Contribution team members are required to use login verification on their Twitter accounts.
+Contribution team members must report breaches to their Twitter account to the Twitter owner as soon as possible.
+
+
+== Infrastructure Requirements
+
+A location to save Twitter monthly reports for sharing between team members would be required.
+
+== Testing
+
+There are no testing issues related to this proposal.
+
+
+== References
+
+* link:https://groups.google.com/forum/#!topic/jenkinsci-dev/gqR_ee5grtM[jenkinsci-dev@ discussion]
+* link:http://meetings.jenkins-ci.org/jenkins-meeting/2018/jenkins-meeting.2018-07-18-18.00.log.html[Governance meeting discussion]
+* link:https://help.twitter.com/en/using-twitter/tweetdeck-teams[How to use TweetDeck Team Feature]
+
+

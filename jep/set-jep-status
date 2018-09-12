@@ -46,6 +46,6 @@ fi
 
 # This will replace other lines with the same content as the status line
 # So far this is only a problem on JEP-1 which we shouldn't have to set status on
-sed -i '' "s/^$JEP_STATUS/$JEP_NEW_STATUS/" $JEP_README &&
+sed -i "s/^$JEP_STATUS/$JEP_NEW_STATUS/" $JEP_README &&
     echo "Set status of JEP-$JEP_NUMBER to $(echo $JEP_NEW_STATUS | cut -d " " -f 2)." &&
     $SCRIPT_DIR/enumerate-jeps

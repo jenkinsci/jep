@@ -142,7 +142,7 @@ Fluentd, Logstash, Elasticsearch, etc.
 
 Requirements:
 
-* We implement “LoggingMethodLocator” extension point, which allows tweaking logging strategies
+* We implement the new “LogStorageFactory” extension point, which allows tweaking logging strategies
 * By now we do not provide specific implementations excepting reference ones, but we can tweak logging destination via JobProperty or NodeProperty later
 ** Pipeline step / declarative will be complicated since we may lose some logging info (self-configuring logging within Pipeline, like JENKINS-41929)
 Secret handling during Log reporting
@@ -200,15 +200,15 @@ indicate that there is no logs available
 
 The following new API entities will be introduced:
 
-* `LoggingMethod` and `LogStorage` - objects defining log reporting and browsing logic
 * `Loggable` - interface for objects supporting external logging
-* `LoggingMethodLocator` - extension point for locating `LoggingMethod` and `LogStorage`
+* `LogStorage` - objects defining log reporting and browsing logic
+* `LogStorageFactory` - extension point for locating `LogStorage`
 
 Implementations:
 
-* File-based `LoggingMethod` and `LogStorage` -
+* File-based `LogStorage` -
 logging to the local FileSystem, implements compatibility mode
-* No-op `LoggingMethod` and `LogStorage` -
+* No-op `LogStorage` -
 Fallback implementations for reporting errors
 
 The introduced entities are described below.
@@ -222,23 +222,26 @@ but other log types may be supported in further implementations.
 
 Loggable interface should provide the following methods:
 
-* Getters for the `LoggingMethod` and `LogBrowser` being used in the object
-** Default implementation - consult with `LoggingMethodLocator` extensions
-* Getters for default LoggingMethod and LogStorage
-** These getters will be used if there is no `LoggingMethod` and `LogBrowser` configured for the item
+* Getters for the `LogStorage` being used in the object
+** Default implementation - consult with `LogStorageFactory` extensions
+* Getters for default LogStorage
+** These getters will be used if there is no `LogStorage` configured for the item
 ** For example, `Run`s will be referring File-based storage to retain compatibility
 * `boolean isLoggingFinished()` - indicates that there is no new logging being performed
 * `Charset getCharset()` - method, which defines the charset to be used
 ** Some instances like `Run` allow setting charsets explicitly.
 ** By this method this requirement is propagated to logging methods
-* `getLogFileCompatLocation` - provides file path to the File-based storage
+* `getLogFileCompatLocation` - provides file path to be used by the File-based storage
 ** This method is needed, because instances like `Runs` have complex logic which defines the storage location
 
-==== NEW: LoggingMethod class
+==== NEW: LogStorage abstract class
 
-Logging method class defines how the logs should be sent to the storage.
-Logging method generally does not define the storage itself,
-because it may be pointing to intermediate log collectors like Fluentd or Logstash.
+LogStorage is a central class
+which represents the log storage being used for a particular `Loggable` instance.
+It defines API for reporting logs and retrieving them.
+
+LogStorage is an `@ExportedBean`,
+so its instances can be exported to the REST API.
 
 Methods to be offered:
 
@@ -246,33 +249,21 @@ Methods to be offered:
 Build Listener provider.
 ** This listener will receive build events and put them to the storage
 ** Implementations are responsible to consult with Jenkins security logic
-like `ConsoleLogFilter` externsion points
+like `ConsoleLogFilter` extension points
 * `TaskListener createTaskListener() throws IOException, InterruptedException` -
 Same as `createBuildListener()`, but for tasks.
 This is a stub for other task types support in the future
 * `Launcher decorateLauncher(@Nonnull Launcher original, @Nonnull Run<?,?> run, @Nonnull Node node)` -
 Launcher decorator for logging.
-It allows overriding logging in tasks being invoked on agents so that
-the implementations can send logs to external storages directly
-without forwarding logs to the master.
-* `LogBrowser getDefaultLogBrowser()` -
-Method, which lets LoggingMethod to provide a default `LogBrowser`
-which is expected to be used with it.
-
-==== NEW: LogBrowser class
-
-Log Browser class is an instance,
-which refers ways to access the logs on the remote storage.
-
-It should offer the following methods:
-
+It allows altering the launcher logic in builds, e.g. to inject custom environment.
+This logic may be invoked by core and plugins
+(see link:https://issues.jenkins-ci.org/browse/JENKINS-52914[JENKINS-52914] for limitations).
 * `AnnotatedLargeText<T> overallLog()` -
 Get large text for the entire execution/run
-* `AnnotatedLargeText<T> stepLog(@CheckForNull String stepId, boolean completed)` -
-Get large text for a particular step
 
 Some implementations should be also moved from `Run` and generalized.
-It will provide default convenience methods which can be overridden by implementations for better performance.
+Jenkins core or External Logging API will provide default convenience implementations
+which can be overridden by implementations for better performance.
 
 * `InputStream getLogInputStream() throws IOException` -
 gets the log as an input stream
@@ -288,17 +279,17 @@ gets a number of log lines as a list of strings
 Compatibility method, which retrieves the log as a `File`.
 ** By default a temporary file will be created, unless an implementation offers something better
 
-==== NEW: LoggingMethodLocator extension point
+==== NEW: LogStorageFactory extension point
 
 This is a low-level extension point, which allows locating
-`LoggingMethod` and `LogBrowser` to be used for a particular `Loggable` item.
+`LogStorage` to be used for a particular `Loggable` item.
 
 This extension point should offer static methods which consult with all implementations
 and provide proper extensions.
-If there is no `LoggingMethodLocator` providing implementation,
-fallback `FileLoggingMethod` and `FileLogBrowser` should be used.
+If there is no `LogStorageFactory` providing implementation,
+fallback `FileLogStorage` should be used.
 
-==== NEW: FileLoggingMethod and FileLogBrowser
+==== NEW: FileLogStorage
 
 These classes implement extension points and contain the
 original logic for the Filesystem logging.
@@ -310,17 +301,18 @@ should be moved to these implementations.
 Integration with `Loggable`:
 
 * `Run` instance should implement `Loggable`
-* `Run` stores `LoggingMethod` and `LogStorage` references in fields.
+* `Run` stores `LogStorage` references in fields.
 These fields can be persisted on the disk
-* `Run#onLoad()` method restores references to the owner which are stored by `LoggingMethod` and `LogStorage`
-* All methods in `Run` and child classes implement new APIs used by `LoggingMethod` and `LogStorage`
+* `Run#onLoad()` method restores references to the owner which are stored by `LogStorage`
+* All methods in `Run` and child classes implement new APIs used by LogStorage`
+* `Run` offers a `getLogStorage()` method which is `@Exported`
 
 File operations:
 
-* File logging operations are moved to `FileLoggingMethod` and `FileLogBrowser`
+* File logging operations are moved to `FileLogStorage`
 * `Run#getLogFile()` method should be deprecated,
 all usages in the Jenkins core should be cleaned up.
-The method will be still invoking the compatibility layer from `LogBrowser`
+The method will be still invoking the compatibility layer from `LogStorage`
 so read-only API users do not lose the compatibility
 
 == Motivation
@@ -347,23 +339,25 @@ Being compared to the original design in 2016,
 this design limits the scope of work so that it can be implemented and delivered
 in a reasonable timeframe.
 
-=== Why LoggingMethod and LogBrowser are separated?
+=== `LogStorage` vs. separate `LoggingMethod` and `LogBrowser`
 
-After the initial prototyping it was decided to separate Logging Method and LogBrowser
-to separate pluggable entities.
-It is different from how Pipeline `LogStorage` is implemented in
-link:https://github.com/jenkinsci/workflow-job-plugin/pull/27[this pull request].
+The original design in this JEP proposed to keep independent implementations
+for log reporting and log browsing functionality
+in order to increase configuration flexibility of implementations.
 
-Reasons for such approach:
+After the discussion in Cloud Native SIG,
+it was decided to move this separation to the External Logging API Plugin (JEP-212).
 
-* `LoggingMethod` does not define where logs will be actually stored.
-For example, logging to Fluentd or Logstash may end up in various storages
-depending on their configuration
-(e.g. in Elasticsearch, Redis, AWS CloudWatch, etc.)
-* Log browsing logic may be shared.
-E.g. with the current design logs can be browsed from Elasticsearch
-independently of how the logs get there (Logstash or direct push)
-* It gives more flexibility to Jenkins admins and plugin developers
+=== Steps browsing support in the core
+
+In the original JEP it was proposed to support Log browsing for particular steps.
+This functionality is needed to browse Pipeline FlowNode logs,
+but it may be also used to browse other segmented logs.
+
+After the review it was decided to NOT add this API to the core.
+Instead of that, External Logging API implements it for now.
+If there is a need to support logging of steps,
+such feature can be added in future core versions in a compatible way (implicit override).
 
 === Log migration
 
@@ -372,7 +366,7 @@ When a logging system is configured, one may expect the logs to be moved
 (e.g. from filesystem to the external storage).
 
 * We will NOT implement migration for old builds
-* We are going to provide multiple `LoggingMethod`s in parallel on a single instance according to the current design
+* We are going to provide multiple `LogStorage`s in parallel on a single instance according to the current design
 * We will show logs from the file system till they get log-rotated
 
 Justification:
@@ -385,17 +379,23 @@ Justification:
 
 Currently Jenkins does not set limitations for encoding while doing logging.
 Any charsets may be used on agent and master sides, and it is hard to manage them.
+Some implementations also rely on the default encoding in master or agent JVMs,
+and these encodings may be different.
+This behavior should be retained, because it is a default one for Freestyle projects.
 
 Although it is expected that all logs eventually switch to UTF-8
 (see the link:/jep/JEP-206[JEP-206 proposal] for Pipeline),
 in meantime external logging **may** be performed in different encodings.
 
 * `Loggable` implementations can define the charset to be used
-* `Logging Method` and `Logging Browser` implementations may
+* `LogStorage` implementations may
 implement support of charsets or reject them,
 it is up to the implementation
-* If the implementation does not support a charset,
-`ExternalLoggingMethodLocator`can skip the logging method
+* If the implementation does not support the requested charset,
+`LogStorageFactory` may apply a compatibility layer or skip the Log Storage
+
+In the current design, the encoding is up to the `LogStorage` implementation.
+The default `FileLogStorage` implementation must support the default encoding.
 
 === Client-side-only Log Browsing
 
@@ -410,7 +410,7 @@ it is up to the implementation
 
 In the current design it was decided that log browsing by default will go through the master.
 Client-side logging may be implemented via custom `RunAction` implementations.
-Support of client-side log in `LogBrowser` may be added in a subsequent JEP.
+Support of client-side log browsing may be added in a subsequent JEP.
 
 === User Interface
 
@@ -444,7 +444,7 @@ Some checks will be performed at the External Logging API plugin level.
 `hudson.model.Run` offers `File getLogFile()` method and several other methods,
 which cannot be universally mapped to external storages.
 
-In order to support them, all `LogBrowser` implementations are
+In order to support them, all `LogStorage` implementations are
 expected to provide a `File toLogFile()` method which ensures compatibility with such old API.
 It may be done via creating temporary files,
 so that read-only calls to `Run#getLogFile()` remain compatible.
@@ -527,7 +527,7 @@ if deemed necessary.
 
 == Prototype implementation
 
-* https://github.com/jenkinsci/jenkins/pull/3557/files
+* https://github.com/jenkinsci/jenkins/pull/3575
 * https://github.com/jenkinsci/external-logging-api-plugin
 * https://github.com/jenkinsci/external-logging-logstash-plugin
 

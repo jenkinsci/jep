@@ -121,25 +121,40 @@ allowing an external log sink to bypass all master communications.
 
 === Replace aggregation with single log stream
 
-There is a default `StreamLogStorage` implementation based on the traditional `log` file inside the build directory.
-All log messages associated with the build are sent to the `StreamBuildListener` which writes to this file.
+There is a default `FileLogStorage` implementation based on the traditional `log` file inside the build directory.
+All log messages associated with the build are sent to the `BuildListener` which writes to this file.
 
 Steps which call `getContext().get(TaskListener.class)` for logging
-trigger addition of a `AnnotatedLogAction` (a stateless marker) to the `FlowNode`;
-this supplies a `TaskListener` which prepends the `FlowNode.id` (typically an integer)
-followed by the separator character `¦` to each line of text.
+trigger addition of a `LogStorageAction` (a stateless marker) to the `FlowNode`;
+this supplies a `TaskListener` which tracks the `FlowNode.id` (typically an integer)
+used at certain byte offsets in the log, in a separate `log-index` file.
 For example:
 
 [source]
 ----
-[Pipeline] sh
-12¦+ whoami
-12¦jglick
+1597 7
+1985
+2285 8
+2686
+2983 10
+3034
+4245 14
+4287 10
+4296 14
+4328 10
+4337 14
+4360 10
+4369 14
+4392 10
+4401 14
+4424
+5318 10
+5329 14
+7537
 ----
 
 Conversely, calls to `LogAction.getLogText()` produce an implementation
-which greps the log for lines with the prefix corresponding to that step
-(stripping off the prefix in the process).
+which concatenates segments of the `log` for text corresponding to that step.
 
 Console annotations (which are ignored by Blue Ocean)
 continue to be written to the log file
@@ -160,8 +175,7 @@ jglick
 </span>
 ----
 
-`StreamLogStorage` implementations get this for free;
-other implementations of `LogStorage.overallLog` must call `startStep` and `endStep`.
+Implementations of `LogStorage.overallLog` such as in `FileLogStorage` must call `startStep` and `endStep`.
 
 `NewNodeConsoleNote` is used to print the introduction of a new node into the log, typically displayed like
 

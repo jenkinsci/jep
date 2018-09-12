@@ -19,12 +19,11 @@ endif::[]
 | Bill of Materials
 
 | Sponsors
-| link:https://github.com/carlossg[Carlos Sanchez],
-  link:https://github.com/oleg-nenashev[Oleg Nenashev]
+| link:https://github.com/carlossg[Carlos Sanchez], link:https://github.com/oleg-nenashev[Oleg Nenashev]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
-| Draft :speech_balloon:
+| Accepted :ok_hand:
 
 | Type
 | Standards
@@ -71,8 +70,8 @@ The BoM is a cornerstone to enable these other goals:
 * Ensure value gets delivered while quality is continuously improved
 * Do not go down the rabbit hole of spending weeks without delivering value
 * Increase quality of non-LTS builds
-* Provide an answer to “Is this code ready to be delivered to Jenkins Essentials?”
-* Avoid complex matrix testing that is the objective of Essentials tracing and monitoring
+* Provide an answer to “Is this code ready to be delivered to Jenkins Evergreen?”
+* Avoid complex matrix testing that is the objective of Evergreen tracing and monitoring
 * Feedback delivered to PR author as soon as possible
 * Automated releases - at least from the perspective of the engineer
 * Reduce code review overheads so that maintainers can process more.
@@ -86,17 +85,17 @@ AKA “I am a plugin maintainer, not a FindBugs robot. Automate checks for me”
 * https://github.com/jenkinsci/acceptance-test-harness[Jenkins acceptance test harness]
 * https://github.com/jenkinsci/blueocean-acceptance-test[Blue Ocean acceptance test]
 * https://github.com/jenkinsci/plugin-compat-tester[Jenkins plugin compat tester]
-* https://github.com/jenkins-infra/evergreen[Essentials evergreen draft]
+* https://github.com/jenkins-infra/evergreen[Evergreen evergreen draft]
 * https://github.com/jenkinsci/custom-war-packager[Jenkins Custom WAR packager]
 
 === What are we missing
 
-* Builds/Tests from master, needed for Essentials
+* Builds/Tests from master, needed for Evergreen
 * Builds/Tests from core, libraries and plugins PRs
 
 These cases are addressed by a Custom WAR Packager for custom WAR Building and testing use-cases.
 That format is narrow focused, and it does not address use-cases like support of custom environments.
-We want to unify the description format across projects within Jenkins (e.g. Jenkins Essentials, Jenkins X, Docker Packaging, etc.).
+We want to unify the description format across projects within Jenkins (e.g. Jenkins Evergreen, Jenkins X, Docker Packaging, etc.).
 
 === Bill of Materials (BoM)
 
@@ -106,16 +105,16 @@ The usage of the maven release plugin does not fit this requirement.
 
 The BoM needs to be trackable in Git.
 
-The BoM needs to have the concept of environments for Essentials. Ie. install different plugins in AWS vs Azure vs...
+The BoM needs to have the concept of environments for Evergreen. Ie. install different plugins in AWS vs Azure vs...
 
-A requirement for Essentials is that parts of the BoM need to be downloadable.
-Essentials needs to enable selective downloads of core, bundled libraries and plugins for incremental upgrades.
+A requirement for Evergreen is that parts of the BoM need to be downloadable.
+Evergreen needs to enable selective downloads of core, bundled libraries and plugins for incremental upgrades.
 Pushing into maven repo is fine, although indexing time is big.
 Will need to mirror into Azure CDN at some point.
 
 The BoM needs to be translated to take advantage of existing infrastructure.
 
-* Essentials needs to generate a diff for upgrades and download the bits
+* Evergreen needs to generate a diff for upgrades and download the bits
 * Existing ATH uses a war binary that can be built from BoM
 
 Packages should be trackable back to a commit id, but during development the BoM should point to branches or tags, so we would have a BoM as input and a effective BoM as output with all the git refs resolved to specific commit ids.
@@ -151,7 +150,7 @@ Same as above but instead of pointing to core/library PR, pointing to master.
 ==== Continuous Delivery
 
 Changes in master of core and libraries should trigger downstream rebuilds of plugins.
-Given the amount of work involved we recommend doing it in phases, targeting core plugins first, as defined in Essentials.
+Given the amount of work involved we recommend doing it in phases, targeting core plugins first, as defined in Evergreen.
 
 ===== BoM Format
 
@@ -159,7 +158,8 @@ A new yaml format based on https://github.com/jenkins-infra/evergreen/blob/maste
 
 === YAML example
 
-```yaml
+[source,yaml]
+----
 version: 1.0
 metadata:
   # labels and annotations are key: value string attributes
@@ -212,7 +212,7 @@ status:
           artifactId: acme2-plugin
           ref: cccddd
           # version: 1.0
-```
+----
 
 === Version
 
@@ -367,7 +367,7 @@ The current approach to make changes in core, libraries and plugins is too cumbe
 Changes typically span more than one repository, causing contributors to manually combine different PRs together.
 The goal of this proposal is to move towards a master based delivery process, ensure that core changes don't break plugins and that core changes needed by plugins can be quickly and safely adopted.
 
-This proposal builds on the goals of Essentials. We want to ensure that the Essentials distribution is continuously delivered, off master, and is done safely with a set of checks that run automatically.
+This proposal builds on the goals of Evergreen. We want to ensure that the Evergreen distribution is continuously delivered, off master, and is done safely with a set of checks that run automatically.
 
 == Reasoning
 
@@ -389,7 +389,7 @@ For `version` naming there are other options:
 ** Ensure the commit ids are included in the packaging and visible during builds
 * Use git modules to point to the master and PR commits
 ** And build everything every time
-** This would not work for Essentials as the components need to be individually downloadable.
+** This would not work for Evergreen as the components need to be individually downloadable.
 
 For path-based naming an `dir` field will be used.
 This field will support defining absolute and relative paths
@@ -450,7 +450,7 @@ support of YAML formats.
 
 * link:https://github.com/jenkinsci/custom-war-packager[Custom WAR Packager] -
 BOM is supported as input and output format
-* link:https://github.com/jenkins-infra/evergreen[Essentials evergreen] -
+* link:https://github.com/jenkins-infra/evergreen[Evergreen evergreen] -
 BOM is used as intermediate format to define contents of the system
 * https://github.com/jenkins-infra/pipeline-library/blob/master/vars/essentialsTest.groovy[essentialsTest()] -
 Part of the component delivery Pipeline which produces and uses BOM internally
@@ -460,7 +460,7 @@ Part of the component delivery Pipeline which produces and uses BOM internally
 * link:https://groups.google.com/d/topic/jenkinsci-dev/pR2ZQMj95Zc/discussion[design discussion]
 * link:https://github.com/jenkinsci/acceptance-test-harness[Jenkins acceptance test harness]
 * link:https://github.com/jenkinsci/blueocean-acceptance-test[Blue Ocean acceptance test]
-* link:https://github.com/jenkins-infra/evergreen[Essentials evergreen draft]
+* link:https://github.com/jenkins-infra/evergreen[evergreen draft]
 * link:https://github.com/jenkinsci/custom-war-packager[Jenkins Custom WAR packager]
 * https://github.com/jenkins-infra/pipeline-library/blob/master/vars/essentialsTest.groovy[essentialsTest() in Jenkins Pipeline Library]
 * link:https://github.com/jenkinsci/plugin-compat-tester[Jenkins plugin compat tester]
