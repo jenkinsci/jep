@@ -132,6 +132,16 @@
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | TBD
 
+| Draft{nbsp}:speech_balloon:
+| link:214/README.adoc[JEP-214: Jenkins Telemetry]
+| link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
+| TBD
+
+| Draft{nbsp}:speech_balloon:
+| link:215/README.adoc[JEP-215: Modular Components]
+| https://github.com/sophistifunk
+| TBD
+
 | Accepted{nbsp}:ok_hand:
 | link:300/README.adoc[JEP-300: Jenkins Evergreen]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]

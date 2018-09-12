@@ -1,4 +1,4 @@
-= JEP-0000: Modular Components
+= JEP-215: Modular Components
 :toc: preamble
 :toclevels: 3
 :source-highlighter: highlightjs
@@ -14,7 +14,7 @@ endif::[]
 [cols="1h,1"]
 |===
 | JEP
-| 0000
+| 215
 
 | Title
 | Modular Components
@@ -24,7 +24,7 @@ endif::[]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
-| Not Submitted
+| Draft :speech_balloon:
 
 | Type
 | Standards
@@ -77,7 +77,7 @@ Example use cases:
 
 === Creating and Publishing a Widget
 
-==== Requirements 
+==== Requirements
 
 * TypeScript
 * React
@@ -85,7 +85,7 @@ Example use cases:
 
 ==== Documentation
 
-Quality documentation is a key concern for any reusable code, moreso in the case of Widgets that may require the Host Application to provide implementation of service interfaces and Host Event signals. 
+Quality documentation is a key concern for any reusable code, moreso in the case of Widgets that may require the Host Application to provide implementation of service interfaces and Host Event signals.
 
 The Widget Framework provides tools usable from the command line or Gulp to generate documentation for your Widget. It is generated mechanically, based on the `WidgetDescription.json`, the types of your Widget's props, and your documentation comments.
 
@@ -196,7 +196,7 @@ The names of these properties must be included in `WidgetDescription.widgetEvent
 
 ==== Host Events
 
-If your Widget needs to be notified of distinct _events_ from the Host Application or outside world that can't be described as part of the Data Model, the Widget Framework provides a generic https://en.wikipedia.org/wiki/Signals_and_slots[Signal]-like interface. 
+If your Widget needs to be notified of distinct _events_ from the Host Application or outside world that can't be described as part of the Data Model, the Widget Framework provides a generic https://en.wikipedia.org/wiki/Signals_and_slots[Signal]-like interface.
 
 Declare a prop of type `Signal<PayloadType>`:
 
@@ -264,7 +264,7 @@ In most cases, information should be provided to your Widget via Data Model prop
 
 ==== Runtime Extensibility
 
-Documentation for how to extend widgets at runtime is available at https://github.com/imeredith/es-extensions-api[es-extensions-api] (JEP-204). 
+Documentation for how to extend widgets at runtime is available at https://github.com/imeredith/es-extensions-api[es-extensions-api] (JEP-204).
 
 ==== Building and Publishing your Widget
 
@@ -275,16 +275,16 @@ Your widget should be built and published as a normal NPM module, with the corre
 ==== Requirements
 
 * A bundler/transpiler that understands ES6 Modules (or modern browser requirements)
-* React 
+* React
 
-Additionally, the Widget module artefact will include TypeScript `*.d.ts` files for Host Applications using TypeScript, but you are free to ignore them otherwise.  
+Additionally, the Widget module artefact will include TypeScript `*.d.ts` files for Host Applications using TypeScript, but you are free to ignore them otherwise.
 
-==== Adding it to your project 
+==== Adding it to your project
 
 Add the Widget to your application's dependencies like a normal NPM module:
 
 ----
-npm install --save @org-name/widget-module-name 
+npm install --save @org-name/widget-module-name
 ----
 
 And render it as you would any other React component:
@@ -311,7 +311,7 @@ class MyWrapper extends React.Component {
 
 ==== Providing the Data Model
 
-The data model should be provided to the Widget via React properties, as a normal JavaScript object: 
+The data model should be provided to the Widget via React properties, as a normal JavaScript object:
 
 [source, JavaScript]
 ----
@@ -457,7 +457,7 @@ class App extends React.Component {
 | `/i18n/`
 | Localised resources and messages
 
-| `/lib/` 
+| `/lib/`
 | ES6 Source and TypeScript declaration files for the Widget's classes and modules
 
 | `/styles/css/`
@@ -518,11 +518,6 @@ https://github.com/sophistifunk/modular-ux-widgets-poc (some PoC details will di
 
 == References
 
-[TIP]
-====
-Provide links to any related documents.
-This will include links to discussions on the mailing list, pull requests, and meeting notes.
-====
-
+* link:https://groups.google.com/d/topic/jenkinsci-dev/oiLuh-m38Mc/discussion[Initial JEP Discussion]
 
 
