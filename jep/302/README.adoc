@@ -75,13 +75,54 @@ As Jenkins does not support downgrading alone, this document introduces the snap
 
 _Evergreen_ works with two main components: Jenkins itself, and the _evergreen-client_.
 
-=== Upgrading and downgrading
+=== Safely Upgrading
+
+This section will describe how to _safely_ upgrade:
+i.e. how to apply an update, then restart Jenkins and check it still works, and roll back to the initial state in case it has become _unhealthy_
+footnote:[Cf. <<healthcheck>>.].
+
+==== Challenges and open questions
+
+===== Failed rollback
+
+If an upgrade goes wrong, we will trigger a rollback.
+
+But what if even after that rollback, Jenkins still does not "come back"?
+
+The _current_ design choice is to stop at this point.
+If an instance is unable to brought back to life after a rollback, supposedly using a state where it *was* working, this is unlikely that we'll have a bigger chance to fix it by going back over and over until the _Update Level 0_, with an empty Jenkins Evergreen instance.
+
+It is probably wiser to:
+* report this to the backend, and have the failure analyzed by a human, and then
+* apply the next public _Update Level_ available
+
+===== Infinite upgrade/rollback loop
+
+As per the current design, an instance that is failing is on purpose not authoritative enough to globally _taint_ a given _Update Level_ alone.
+This would be too risky that a single instance can just taint all update levels and stall the whole system.
+
+This means that, after a rollback occurred for an instance to apply that _Update Level X_, that same instance would be presented again and again with that same "bad" _UL X_, and keep upgrading and rolling back forever.
+
+Hence, we need something to _remember a previously failed instance should not retry an Update Level that already caused a rollback.
+Given our current principle of keeping the evergreen client _rather_ simple, doing this on the server is more likely what we should do.
+
+I suggest we create a new endpoint for this purpose: it will look similar to global one allowing to tainting an update level globally (touching the `updates` table).
+The difference being that it will store the couple `(instance uuid|update level)`.
+
+Then, when the client asks for updates, the server will not filter out globally tainted updated, but also the ones that have been known already to make this very instance fail.
+
+From a Evergreen Project operation standpoint, we will obviously need to carefully monitor the calls made to this "instance-by-instance-tainting" endpoint, so that we decide to globally mark a problematic _update level_ as tainted or not.
+
+We could even automate it partly by implementing some rules (to be defined): for instance, if more than 25% of instances are reporting to fail to upgrade to a given _update level_, this update would automatically be flagged preventively as globally tainted to allow humans to analyze the issue more closely before it creates more problems.
+
+
+==== Upgrade Process
 
 Once an _evergreen client_ has been instructed to perform an upgrade, it is responsible for the following operations:
 
 . (If needed) Initialize the git repository.
-. Stop Jenkins
 . Take a snapshot (see <<snapshot>> below)
+. Stop Jenkins
 . Perform the instructed upgrade to the given Evergreen BOM footnote:[Bill Of Materials: this format is currently being designed, but will list everything constituting a version of Evergreen: WAR and exact versions of all plugins]
 . Start new Jenkins version and check Jenkins state (see below <<healthcheck>>).
 . If a rollback is decided:
