@@ -44,6 +44,12 @@ Localization plugins separate i10n resource files from Jenkins core and plugins.
 
 The proposed Localization plugins suggest every main language has their own localization plugin. Such as Chinese Localization plugin. Maybe you just wish to install one language localization plugin in most case.
 
+There are some points need to translation:
+
+* Localization from Jelly views, like `index.jelly`
+* Localization from Java source codes
+* Localization from help files
+
 == Motivation
 
 Localization plugin is targeted on Jenkins plugin developers who want to improve native language UI experience. Let Jenkins is more easy to use.
