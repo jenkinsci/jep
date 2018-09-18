@@ -193,7 +193,7 @@
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
 | Draft{nbsp}:speech_balloon:
-| link:310/README.adoc[JEP-310: Essentials AWS auto-configuration]
+| link:310/README.adoc[JEP-310: Evergreen AWS auto-configuration]
 | https://github.com/batmat[Baptiste{nbsp}Mathus]
 | https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
