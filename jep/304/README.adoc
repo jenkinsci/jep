@@ -87,8 +87,8 @@ Logs are sent:
 * in `JSON` format for easier parsing by the client.
 ** Each log entry separated by a newline, so that each line can be parsed as a JSON object, without needing a JSON streaming parser.
 * only if the level is greater or equal to _WARNING_.
-* to the disk, under `$JENKINS_VAR/logs/essentials.log.N` rotating files.
-** By rotating, we mean `essentials.log.0` is the one file to "tail" to receive new log entries.
+* to the disk, under `$JENKINS_VAR/logs/evergreen.log.N` rotating files.
+** By rotating, we mean `evergreen.log.0` is the one file to "tail" to receive new log entries.
 It is left to the consumer to decide how to know where to start from in case of a fresh start, or restart.
 Though it is a subject for another design document, it is suggested to:
 *** store the last timestamp that was read ;
@@ -244,7 +244,7 @@ We want to check we do not inadvertently change, or disable totally for instance
 
 * link:https://github.com/jenkins-infra/evergreen/[Jenkins Evergreen official repository]
 ** More specifically: https://github.com/jenkins-infra/evergreen/pull/43
-* https://github.com/batmat/essentials-plugin/ (will be moved to https://github.com/jenkinsci as soon as the feedback is gathered and the overall feedback validates this design)
+* https://github.com/batmat/evergreen-plugin/ (will be moved to https://github.com/jenkinsci as soon as the feedback is gathered and the overall feedback validates this design)
 
 == References
 

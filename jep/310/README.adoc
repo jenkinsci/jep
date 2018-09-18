@@ -1,4 +1,4 @@
-= JEP-310: Essentials AWS auto-configuration
+= JEP-310: Evergreen AWS auto-configuration
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -16,7 +16,7 @@ endif::[]
 | 310
 
 | Title
-| Essentials AWS auto-configuration
+| Evergreen AWS auto-configuration
 
 | Sponsor
 | https://github.com/batmat[Baptiste Mathus]
@@ -65,7 +65,7 @@ link:https://github.com/jenkinsci/jep/tree/master/jep/307[JEP-307]
 
 == Abstract
 
-One of the four pillars of Jenkins Essentials is that it should be link:https://github.com/jenkinsci/jep/tree/master/jep/300#sane-defaults[autoconfigured with sane defaults for various cloud platforms]. This specification explains what setup is done to autoconfigure Jenkins Essentials to run in the link:https://aws.amazon.com[Amazon Web Service] environment.
+One of the four pillars of Jenkins Evergreen is that it should be link:https://github.com/jenkinsci/jep/tree/master/jep/300#sane-defaults[autoconfigured with sane defaults for various cloud platforms]. This specification explains what setup is done to autoconfigure Jenkins Essentials to run in the link:https://aws.amazon.com[Amazon Web Service] environment.
 
 == Specification
 
@@ -73,21 +73,21 @@ One of the four pillars of Jenkins Essentials is that it should be link:https://
 
 The setup uses an link:https://aws.amazon.com/cloudformation[AWS _CloudFormation_ template] that instantiates the right resources.
 
-It creates an EC2 instance, to host the Jenkins Essentials master in a dedicated Instance Profile.
+It creates an EC2 instance, to host the Jenkins Evergreen master in a dedicated Instance Profile.
 The master will be able to provision agents from EC2, and store artifacts directly in S3.
 
 === Used plugins and configuration
 
 * link:https://plugins.jenkins.io/ec2[EC2 plugin]: to provide dynamically provisioned agents
-  footnote:[even more important for Jenkins Essentials which is configured with the link:JENKINS-49861[sane 0-executor for the master node]].
+  footnote:[even more important for Jenkins Evergreen which is configured with the link:JENKINS-49861[sane 0-executor for the master node]].
 * link:https://plugins.jenkins.io/artifact-manager-s3[Artifact Manager on S3 plugin]: to store artifacts and Pipeline stashes in Amazon S3.
 
 // JENKINS-52342 for ^ which is the design, but not done fully yet.
 
-As a general rule for Essentials, we are using the `configuration-as-code` plugin to do the necessary configuration.
+As a general rule for Evergreen, we are using the `configuration-as-code` plugin to do the necessary configuration.
 
 *No credentials* are specified.
-The permissions are retrieved dynamically through the instance profile used when creating the EC2 instance for the Essentials master.
+The permissions are retrieved dynamically through the instance profile used when creating the EC2 instance for the Evergreen master.
 
 === Instance Profile and IAM role
 
@@ -138,7 +138,7 @@ A dedicated instance profile is created by the _CloudFormation_ template to allo
 ]
 
 CAUTION: Currently the prototype is configured with the way shown above.
-We would like to reduce the access to only the dedicated bucket created for Jenkins Essentials usage.
+We would like to reduce the access to only the dedicated bucket created for Jenkins Evergreen usage.
 We are tracking this improvement as link:https://issues.jenkins-ci.org/browse/JENKINS-52342[JENKINS-52342].
 
 === Security groups
@@ -152,7 +152,7 @@ footnote:[using `curl ident.me` is often to help find out one' public IP and pas
 8080:: not restricted.
 50000:: not restricted (for potentially connecting agents with JNLP).
 
-NOTE: The port `50000` is not currently enabled inside the Essentials instance.
+NOTE: The port `50000` is not currently enabled inside the Evergreen instance.
 But we keep it allowed at the security group and Docker container level.
 This will allow users to connect for instance Windows agents through the  Jenkins `JNLP` protocol by simply enabling the fixed agents port under `/configureSecurity/`.
 
@@ -184,7 +184,7 @@ Keeping this permission has been questioned; why allow deletion permission when:
 
 We decided to keep it because:
 
-* link:https://github.com/jenkinsci/jep/tree/master/jep/300[Essentials is critically about simplicity].
+* link:https://github.com/jenkinsci/jep/tree/master/jep/300[Evergreen is critically about simplicity].
   If a user, or us a bit later, wants to enable to delete checkbox of the `artifact-manager-s3` plugin, this should be possible without having to go through the AWS console or CLI to find the right settings;
 * Keeping everything _forever_ is also probably some kind of liability.
   And if some users have previously been administering a Jenkins instance previously, but they are not AWS experts, their expectation would probably be that artifacts are going to be cleaned up over time, according to the `buildDiscarder` policy in place.
@@ -197,9 +197,9 @@ There are no backwards compatibility concerns related to this proposal.
 
 === Allowed certificates
 
-link:https://github.com/jenkinsci/jep/tree/master/jep/307#security[JEP 307] aggressively restricts the list of certificates that will be allowed to be used from inside Essentials container.
+link:https://github.com/jenkinsci/jep/tree/master/jep/307#security[JEP 307] aggressively restricts the list of certificates that will be allowed to be used from inside Evergreen container.
 
-Two more need to be re-enabled for the Essentials AWS flavor to be able to auto-detect permissions given by the current instance profile:
+Two more need to be re-enabled for the Evergreen AWS flavor to be able to auto-detect permissions given by the current instance profile:
 
 * `Baltimore_CyberTrust_Root.crt`: for S3.
 * `Amazon_Root_CA_1.crt`: for EC2.
@@ -239,7 +239,7 @@ Given an <<aws-account>>, we can use the `aws` CLI to automatically trigger the 
 ** and `aws ec2 describe-instances --instance-ids i-<retrieved-ID> | grep -i publicIp`
 * run some tests, e.g.:
 ** is the <masterIp>/login URL reachable, etc..
-** use `ssh ec2-user <masterIp> docker exec jenkins-essentials <some-command>` to do additional automated checks from the running instance itself.
+** use `ssh ec2-user <masterIp> docker exec jenkins-evergreen <some-command>` to do additional automated checks from the running instance itself.
 
 == Prototype Implementation
 
