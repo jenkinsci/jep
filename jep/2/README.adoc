@@ -84,6 +84,7 @@ high-level view of plugin functionality in Jenkins:
 ** Some overlap with Organization and Administration, e.g. Antisamy Markup Formatter. The difference is that these plugins are mostly useless when security is disabled.
 * **Notifications and Publishing**: are plugins that notify other systems about builds and build results, or publish data, typically on remote systems. Examples are JIRA Plugin, Mailer Plugin, Email Extension Plugin, or Slack Plugin.
 ** Likely overlap with Build Analysis and Reporting. The difference is mostly that plugins in this category typically require specific other systems or software to work.
+* **Languages**: are plugins that provide localization for Jenkins and others plugins. The specific language plugin will be selected according to the user-agent settings.
 
 Any of these categories will be present as necessary for the plugin selection.
 
