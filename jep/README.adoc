@@ -62,6 +62,11 @@
 | link:https://github.com/rodrigc[Craig{nbsp}Rodrigues]
 | TBD
 
+| Draft{nbsp}:speech_balloon:
+| link:12/README.adoc[JEP-12: Travel Grant Proposal Update]
+| link:https://github.com/tracymiranda[Tracy{nbsp}Miranda]
+| link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
+
 | Final{nbsp}:lock:
 | link:200/README.adoc[JEP-200: Switch Remoting/XStream blacklist to a whitelist]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
@@ -118,7 +123,7 @@
 | link:https://github.com/carlossg[Carlos{nbsp}Sanchez]
 
 | Draft{nbsp}:speech_balloon:
-| link:211/README.adoc[JEP-211: Java 10 and 11 support in Jenkins]
+| link:211/README.adoc[JEP-211: Java 11 support in Jenkins]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 

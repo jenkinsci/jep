@@ -22,7 +22,7 @@ endif::[]
 | link:https://github.com/tracymiranda[Tracy Miranda]
 
 | Status
-| Not Submitted :information_source:
+| Draft :speech_balloon:
 
 | Type
 | Process
@@ -36,14 +36,20 @@ endif::[]
 |===
 
 == Abstract
-
-====
 This JEP provides an update to the existing Jenkins travel grant policy.
 
+== Specification
+
+[WARNING]
+====
+*(bitwiseman)*
+Rather than this being an update to Travel Grant Policy on the wiki,
+I'd like to see this replace the wiki page entirely.
 ====
 
-== Specification
+
 The last line of the travel grant "We will reimburse actually incurred costs up to the 500 USD limit." is removed.
+
 This is replaced with:
 Typical travel grants approved are limited to 500 USD.
 Travel grant requests for more than 500 USD will need to be requested through a Governance meeting.
