@@ -1,4 +1,4 @@
-= JEP-12: Travel Grant Proposal Update
+= JEP-12: Travel Grant Program
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -36,24 +36,62 @@ endif::[]
 |===
 
 == Abstract
-This JEP provides an update to the existing Jenkins travel grant policy.
+
+The Jenkins project provides travel grants to a limited number of community members requesting assistance.
 
 == Specification
 
-[WARNING]
-====
-*(bitwiseman)*
-Rather than this being an update to Travel Grant Policy on the wiki,
-I'd like to see this replace the wiki page entirely.
-====
+The Jenkins project provides travel grants to a limited number of community members requesting assistance.
+Each travel grant supports one individual's travel to a Jenkins community event such as Jenkins User Conferences with up to 500 USD.
 
+=== Eligibility
 
-The last line of the travel grant "We will reimburse actually incurred costs up to the 500 USD limit." is removed.
+All community members are eligible for support unless they've received a travel grant within the last year (based on the event's date).
+However, as we have very limited funds to support this program, we'll prefer applications by active contributors to the Jenkins project.
 
-This is replaced with:
+If you have other possible funding sources, please look to them first.
+This will allow more people to attend Jenkins community events.
+
+=== Application
+
+To apply for a travel grant, send an email with the following information to the jenkinsci-dev mailing list at least two months before the event you want to attend:
+
+* Your name
+* The event you'd like to attend
+* The expected cost of travel (airfare, hotel, conference fees, etc.)
+* A description of your contributions to the Jenkins project, such as:
+** Plugins you developed
+** Pull requests you authored
+** Documentation you wrote
+** Public presentations on Jenkins-related topics
+* Why should the Jenkins project sponsor your trip?
+
+=== Review Process
+
+We'll review your application at a Jenkins project meeting.
+This meeting is usually biweekly.
+While you're free to attend the meeting in case there are any questions, please refrain from more active participation while your application is being discussed.
+
+You will receive our response at least four weeks before the event.
+This response will include the sponsored amount (less than 500 USD if your travel costs are less) as well as who to send your receipts (see below) to.
+
+=== Your duties
+
+If you've been selected for a travel grant, we'll expect you to be available for a blog post about this program before the event.
+
+After the trip, please submit a travel report to jenkinsci-dev (same thread as your application).
+This report should include the following:
+
+* What you accomplished at the event
+* What you learned at the event
+* Contacts you made
+* Other useful information
+
+We also expect you to submit your receipts via email to the person mentioned in the travel grant confirmation for review.
+
 Typical travel grants approved are limited to 500 USD.
 Travel grant requests for more than 500 USD will need to be requested through a Governance meeting.
-Requests for 500 USD should provide mitigating circumstances which include:
+Requests for more than 500 USD should provide mitigating circumstances which include:
 
   * Cost of city or distance travelled
   * Number of days of the conference
@@ -69,12 +107,16 @@ The item will be discussed at a governance meeting and a vote will be taken, als
 Travel grant requests made in this way will be recorded in the meeting minutes.
 
 == Motivation
+
 At the Jenkins Governance meeting in August 2018 there was a travel grant request for more than USD$500.
 While many community members were in favour of additional funds it was agreed that a process definition should be in place for this, particularly to make it clear who may similarly apply.
 This document aims to provide the process by which travel grants may be extended and who is eligible to apply.
 
 == Reasoning
+
 Jenkins community has a certain amount of funding to support community attending events.
+
+
 A fixed amount does not always take into consideration other variables such as city of event as well as whether other submissions have been made in the year.
 This process allows for some more flexibility with the goal of enabling as many of our community members as we can.
 
@@ -94,11 +136,11 @@ There are no infrastructure requirements related to this proposal.
 
 There are no testing issues related to this proposal.
 
-
 == References
 
 * link:https://groups.google.com/d/msgid/jenkinsci-dev/20180801174530.GE3303%40grape.lasagna.io.[jenkinsci-dev@ discussion]
-* link:http://meetings.jenkins-ci.org/jenkins-meeting/2018/jenkins-meeting.2018-08-01-18.00.log.html[Governance meeting discussion]
+* link:http://meetings.jenkins-ci.org/jenkins/2015/jenkins.2015-09-02-18.00.html[Governance meeting discussion 2015-09-02]
+* link:http://meetings.jenkins-ci.org/jenkins-meeting/2018/jenkins-meeting.2018-08-01-18.00.log.html[Governance meeting discussion 2018-08-01]
 * link:https://wiki.jenkins.io/display/JENKINS/Travel+Grant+Program[Jenkins Travel Grant Program]
 
 
