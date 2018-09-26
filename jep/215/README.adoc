@@ -1,0 +1,523 @@
+= JEP-215: Modular Components
+:toc: preamble
+:toclevels: 3
+:source-highlighter: highlightjs
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 215
+
+| Title
+| Modular Components
+
+| Sponsor
+| https://github.com/sophistifunk
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2018-08-08
+
+| BDFL-Delegate
+| TBD
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+This document describes a set of practices to allow creation and embedding of Modular UX Widgets: Compound React components that are more task-specific and self-contained than the simpler, building-block kind of components found in a common UI Component library package (such as Button, Table, DropDown, etc).
+
+Example use cases:
+
+* Pipeline run graph
+* Pipeline creation wizard
+* Pipeline activity table
+
+== Specification
+
+=== Creating and Publishing a Widget
+
+==== Requirements
+
+* TypeScript
+* React
+* Gulp
+
+==== Documentation
+
+Quality documentation is a key concern for any reusable code, moreso in the case of Widgets that may require the Host Application to provide implementation of service interfaces and Host Event signals.
+
+The Widget Framework provides tools usable from the command line or Gulp to generate documentation for your Widget. It is generated mechanically, based on the `WidgetDescription.json`, the types of your Widget's props, and your documentation comments.
+
+==== Main Widget Class
+
+The main class for your Widget should be a React component. Use a named export (no default exports), and export it in the root namespace of your module.
+
+==== Metadata
+
+The build tools provided by the Widget Framework require a small amount of metadata in the form of a `WidgetDescription.json` file. The interface declaration for the file is as follows:
+
+[source, TypeScript]
+----
+export interface WidgetDescription {
+    /**
+     * The name of the Widget's React Component class
+     */
+    widgetClass: string;
+
+    /**
+     * Names of the React properties for Widget Events
+     */
+    widgetEvents: Array<string>;
+
+    /**
+     * Names of the React properties for Host Events
+     */
+    hostEvents: Array<string>;
+
+    /**
+     * Names of the React properties for Data Model objects
+     */
+    models: Array<string>;
+
+    /**
+     * Names of the React properties for required Service objects
+     */
+    services: Array<string>;
+
+    /**
+     * Names of the React properties for static assets
+     */
+    assets: Array<string>;
+}
+----
+
+==== CSS
+
+If your Widget requires stylesheets, you must provide them as CSS in your published module under `/styles/css/`, with the entry point (preferrably a single file) being `/styles/css/main.css`. We recommend SCSS for writing stylesheets, and that you also include the SCSS sources in your module, with the entry point being `/styles/scss/main.scss` - this allows those embedding the widget the most freedom over how they choose to embed the stylesheets into their build.
+
+Styles must be namespaced so as to not interfere with the Host Application, and should not refer to external assets if possible, as this may make embedding your Widget more difficult for Host Application authors.
+
+==== Static Assets
+
+As a general rule, try not to require any static assets for your widgets. Use inline SVG where possible, to reduce the burden on Host Application authors.
+
+If you do need static assets such as PNG or JPG files, each asset:
+
+* Must be included in the published module under the `/assets/` directory;
+* Must have a corresponding React prop on the main class so the Host Application can set the correct URL at runtime;
+* Must be listed in `WidgetDescription.assets`, and
+* Should be appropriately documented in the typedef for your `props`
+
+==== Internationalisation
+
+Include any localised resources in JSON format in the following location within the published Widget module:
+
+* `/i18n/resources.en.json`
+* `/i18n/resources.us.json`
+* `/i18n/resources.jp.json`
+* `/i18n/resources.de.json`
+* _...etc_
+
+At runtime, the Host Application will select the appropriate bundle based on the user's locale, and provide it to your Widget's main class via the `resourceBundle` React prop.
+
+How these JSON files are generated, and the implementation details of translating keys to strings are up to each individual Widget's authors.
+
+==== Data Model
+
+Any data your Widget requires that will be provided by the Host Application must be fully specified as commented TypeScript interfaces, and listed in `WidgetDescription.models`
+
+==== Widget Events
+
+Widget Events are those dispatched by your Widget, usually in response to user actions such as selection changes, button clicks, etc. These should be standard `onEventName`-style React props that are of fully specified and commented `Function` type, and should usually be optional:
+
+[source, TypeScript]
+----
+
+interface MyWidgetProps {
+    /* .... */
+
+    /**
+     * Called when the user clicks the cancel buton
+     */
+    onCancel?: () => void;
+
+    /**
+     * Called when the user selects an option from the available hostnames
+     */
+    onHostnameSelected?: (hostname: string) => void;
+
+    /* .... */
+}
+
+----
+
+The names of these properties must be included in `WidgetDescription.widgetEvents`.
+
+==== Host Events
+
+If your Widget needs to be notified of distinct _events_ from the Host Application or outside world that can't be described as part of the Data Model, the Widget Framework provides a generic https://en.wikipedia.org/wiki/Signals_and_slots[Signal]-like interface.
+
+Declare a prop of type `Signal<PayloadType>`:
+
+[source, TypeScript]
+----
+
+interface MyWidgetProps {
+    /* .... */
+
+    /**
+     * Host Application should trigger this signal every time the current temperature is taken
+     */
+    currentTemperature: Signal<Number>;
+
+    /* .... */
+}
+
+----
+
+Then:
+
+* Add a handler to the signal in `componentWillMount()`
+* Cancel the subscription in `componentWillUnmount()` - otherwise you may create a memory leak
+* Take whatever action is needed when the Signal is fired
+
+[source, TypeScript]
+----
+
+interface MyWidget {
+    onTemperatureRecorded: Handler<Number>;
+}
+
+export class MyWidget extends React.Component {
+
+    props: MyWidgetProps;
+
+    subscriptions: Array<Subscription> = [];
+
+    componentWillMount() {
+        this.subscriptions.push(this.props.currentTemperature.add(this.onTemperatureRecorded));
+    }
+
+    componentWillUnmount() {
+        this.subscriptions.forEach(subscription => subscription.cancel());
+    }
+
+    onTemperatureRecorded = (event: HostEvent<Number>) => {
+        this.doSomething(event.value);
+    }
+}
+----
+
+The names of these properties must be included in `WidgetDescription.hostEvents`
+
+
+
+==== Service Object Interfaces
+
+In most cases, information should be provided to your Widget via Data Model props and user actions dispatched via Widget Events. However if your Widget requires access to an API, you should use a Service Object prop.
+
+* Declare the object as a React prop
+* Provide a fully-specified and commented TypeScript Interface
+* List the prop name in `WidgetDescription.services`
+* If it's a common / known API, provide a default implementation if possible.
+
+==== Runtime Extensibility
+
+Documentation for how to extend widgets at runtime is available at https://github.com/imeredith/es-extensions-api[es-extensions-api] (JEP-204).
+
+==== Building and Publishing your Widget
+
+Your widget should be built and published as a normal NPM module, with the correct layout, including generated documentation. Widgets should be published as ES6 modules, with accompanying TypeScript `*.d.ts` declaration files.
+
+=== Embedding a Widget into a Host Application
+
+==== Requirements
+
+* A bundler/transpiler that understands ES6 Modules (or modern browser requirements)
+* React
+
+Additionally, the Widget module artefact will include TypeScript `*.d.ts` files for Host Applications using TypeScript, but you are free to ignore them otherwise.
+
+==== Adding it to your project
+
+Add the Widget to your application's dependencies like a normal NPM module:
+
+----
+npm install --save @org-name/widget-module-name
+----
+
+And render it as you would any other React component:
+
+[source, JavaScript]
+----
+import { FooWidget } from '@org-name/widget-module-name';
+
+class MyWrapper extends React.Component {
+
+    /* .... */
+
+    render() {
+        /* .... */
+        return (
+            <div>
+                <h1>Hello, World!</h1>
+                <FooWidget foo="bar" baz={quux}/>
+            </div>
+        );
+    }
+}
+----
+
+==== Providing the Data Model
+
+The data model should be provided to the Widget via React properties, as a normal JavaScript object:
+
+[source, JavaScript]
+----
+    render() {
+        const topLevelStages = this.getTopLevelStages();
+        return (
+            <PipelineGraph stages={topLevelStages}/>
+        );
+    }
+----
+
+The expected type of all data model properties will be described in the Widget's documentation, as well as available in the form of TypeScript `Foo.d.ts` files in the artefact alongside the JavaScript source.
+
+Unless specifically described otherwise in the Widget's documentation, treat data model objects as immutable, and do not expect the Widget to re-render if you change some of its nested properties.
+
+==== Providing CSS
+
+Each Widget will provide the styles it requires in a predictable location within the artefact:
+
+* As CSS, located with the entry at `/styles/css/main.css`
+* Optionally as SCSS source files with the entry at `/styles/scss/main.scss`
+
+It is up to the Host Application to ensure that the correct styles are loaded when rendering the widget. How you do that depends on your Application's build process and environment.
+
+==== Providing Static Assets
+
+Any static assets (such as images) required by the Widget will be provided in the artefact within the `/assets/` folder, and must be set as React props on the Widget.
+
+Host Applications can serve these assets from a known location and provide the HREFs to the widget:
+
+[source, JavaScript]
+----
+    render() {
+        const assetBase = this.getAssetBase();
+
+        const assets = {
+            happy: `${assetBase}/happy.png`,
+            sad: `${assetBase}/sad.png`
+        };
+
+        return (
+            <FaceWidget {...assets}/>
+        );
+    }
+----
+
+As an alternative, depending on your bundler/loader, you can embed them directly from the artefact as `data://` URLs:
+
+[source, JavaScript]
+----
+const happyImg = require('@example-org/widget-module-name/assets/happy.png');
+const sadImg = require('@example-org/widget-module-name/assets/happy.png');
+
+class MyWrapper extends React.Component {
+
+    /* .... */
+
+    render() {
+        const assets = {
+            happy: happyImg,
+            sad: sadImg
+        };
+
+        return (
+            <FaceWidget {...assets}/>
+        );
+    }
+}
+----
+
+==== Providing i18n Resources
+
+Widgets will provide their localised resources as JSON in a predictable location:
+
+* `/i18n/resources.en.json`
+* `/i18n/resources.us.json`
+* `/i18n/resources.jp.json`
+* `/i18n/resources.de.json`
+* _...etc_
+
+The host application must, based on the user's current locale, provide the correct data to the Widget as a plain JavaScript object via the `resourceBundle` React prop.
+
+If the host application supports locales for which the widget does not provide a bundle, default to `en`.
+
+==== Providing Service Objects
+
+In some instances, a Widget may require service objects to provide access to an API. These will be host-specific, and must be provided by the Host Application via React props.
+
+The detailed interfaces that must be implemented by any service objects will be provided by the Widget's documentation, as well as in the form of TypeScript `*.d.ts` definitions in the Widget module artefact.
+
+==== Listening to Widget Events
+
+A Widget may provide standard React events via any number of `onFoo=` props that the Host Application can choose to listen to. The Widget's documentation will provide details of the meaning and function signiatures for any Widget Events, as well as in the form of TypeScript `*.d.ts` definitions in the Widget module artefact.
+
+==== Notifying Widget of External Events
+
+In some instances, a Widget will need to be notified about events from the Host Application or the outside world, in a way that would not be well served by changing a data model prop. For this purpose we use a simple implementation of the https://en.wikipedia.org/wiki/Signals_and_slots[Signal pattern]. The Widget Framework library contains the interface definitions and a simple implementation class that can be re-used by Host Applications:
+
+[source, TypeScript]
+----
+
+import { EventSource } from 'widget-framework';
+
+class App extends React.Component {
+
+    // Signal instance
+    fileChanged = new EventSource<string>('fileChanged');
+
+    // Method called by some other code (not shown)
+    externalFileChanged(filename: string) {
+        // Notify the widget via our signal
+        this.fileChanged.dispatch(filename);
+    }
+
+    render() {
+        return (
+            <DirectoryListingWidget fileChanged={this.fileChanged} />
+        );
+    }
+}
+----
+
+
+=== Widget Module Artefact Specifications
+
+[cols="2,5", options="header"]
+|===
+
+| Path | Description
+
+| `/package.json`
+| Standard NPM metadata
+
+| `/WidgetDescription.json`
+| Widget metadata
+
+| `/assets/`
+| Static assets such as PNG / JPG files
+
+| `/docs/`
+| Generated documentation
+
+| `/i18n/`
+| Localised resources and messages
+
+| `/lib/`
+| ES6 Source and TypeScript declaration files for the Widget's classes and modules
+
+| `/styles/css/`
+| Stylesheet, in standard CSS
+
+| `/styles/scss/`
+| Stylesheet, SCSS sources (optional)
+
+|===
+
+== Motivation
+
+Benefits to widget consumers:
+
+* Less overhead and transient dependencies for any given widget
+* More fine-grained control over depdency versioning
+* Component source will be easier to grok without having knowledge of the Blue Ocean codebase (less forest, more tree)
+* Explicit declaration of the component API means no assumptions about the Blue Ocean container will infect the host application
+* Better and more focused documentation
+* Easier to get custom changes to widget source upstream without requiring simultaneous changes to Blue Ocean application or maintaining a fork or cherry-picking from the monolithic Blue Ocean codebase.
+
+Benefits to Blue Ocean team:
+
+* Can share Widget code between "Blue Ocean as Jenkins plugin" and future "Standalone Blue Ocean" applications
+* LTS branches will be easier to maintain by pegging widget versions rather than having to cherry-pick from trunk changes
+* Explicit widget API will codify and reduce existing ambient assumptions / globals within the application
+* Widget source code can advance more quickly to meet the needs of consumers without having to make simultaneous changes to the Blue Ocean application
+
+== Reasoning
+
+=== TypeScript Source
+
+The Blue Ocean team has been porting existing sources to TypeScript over the last few months, and found it helps a lot with clarity and readability, dev-time tooling, as well as reducing the time to detect typos, bad import statements and missing object properties. Having explicit typedefs for interfaces and React props also allows a higher quality of output from automatic documentation tooling.
+
+=== ES6 Module Distribution
+
+We find that compiling to ES6 modules gives the greatest build flexibility for Host Application authors, while including TypeScript `*.d.ts` declaration files means those also using TypeScript (including ourselves in dogfood situations) need not give up the type information.
+
+== Backwards Compatibility
+
+There are no backwards compatibility concerns related to this proposal.
+
+== Security
+
+There are no security risks related to this proposal.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+Individual projects maintaining Widgets or host applications that rely on them will be responsible for the applicable testing infrastructure, although testability of existing code is expected to improve as these processes are adopted and components are extracted as Widgets.
+
+== Prototype Implementation
+
+https://github.com/sophistifunk/modular-ux-widgets-poc (some PoC details will differ from the final spec)
+
+== References
+
+* link:https://groups.google.com/d/topic/jenkinsci-dev/oiLuh-m38Mc/discussion[Initial JEP Discussion]
+
+

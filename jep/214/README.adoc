@@ -1,0 +1,167 @@
+= JEP-214: Jenkins Telemetry
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 214
+
+| Title
+| Jenkins Telemetry
+
+| Sponsor
+| link:https://github.com/daniel-beck[Daniel Beck]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2018-08-30
+
+| BDFL-Delegate
+| link:https://github.com/rtyler[R Tyler Croy]
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+Jenkins is exclusively distributed to users for installation on their own infrastructure.
+This presents challenges when evolving Jenkins, as we typically only learn about problems after a change has been delivered.
+This JEP proposes infrastructure for gathering usage telemetry.
+
+== Specification
+
+A `Telemetry` extension point is added to Jenkins (core). It allows implementations in core or plugins ("collectors") to define the following:
+
+* ID matching `[a-zA-Z0-9_-]+` (i.e. alphanumeric with dash and underscore)
+* User-friendly (localizable) display name
+* Time period (start and end date) during which data collection is enabled on the client (end date is mandatory)
+* A method returning the `JSONObject` to be submitted to the Jenkins project
+
+The implementation in core has the following characteristics:
+
+* Collection and submission is possible only if the instance participates in anonymous usage statistics.
+* Each collector is run periodically to build its content, and the central extension point will submit it to the Jenkins project infrastructure via HTTPS.
+* A facility explaining what data is collected, to be shown to administrators.
+* The endpoint the data is submitted to is not modifiable by extension point implementations.
+* It submits a correlation ID to the Jenkins project to allow merging and deduplicating submissions from the same Jenkins instance.
+  This correlation ID is independent of instance identity or any other public identifier.
+
+== Motivation
+
+We are occasionally in the situation that we need to understand how Jenkins is used or configured, typically to estimate the feasibility or impact of a planned change.
+As Jenkins is not a hosted SaaS, but distributed for local installation, we have very limited ways to get any information from our users in advance of actually performing the changes.
+Combined with the complexity of having 1500+ plugins with virtually unrestricted access to internal APIs means the risk of problems due to major changes is rather high.
+While we have _some_ tooling (mostly related to Java API use across components), that might only be a small subset of what we'd need to know.
+
+
+== Reasoning
+
+=== Combination with Evergreen telemetry (JEP-308)
+
+Evergreen telemetry and this proposal have multiple key differences:
+
+* Evergreen focuses on monitoring Jenkins from the outside, observing output such as log messages, while the proposed telemetry would be internal to Jenkins.
+* Evergreen stores data for a large period of time, while the proposed telemetry is gathered for a specific purpose and intended to be collected for a defined, short period of time.
+
+=== Reuse of existing anonymous usage statistics
+
+While there are anonymous usage statistics, the data provided is fairly limited (mostly basic master/agent setup, job types and count, and installed plugins).
+Additionally, its collection protocol does not allow for it to be easily extended with additional information due to length restrictions.
+Even worse, the server-side processing code, as of 2018, is complex and very difficult to change.
+
+It is also not designed to support the time limited collection of telemetry that is an important part of this proposal.
+
+== Backwards Compatibility
+
+There are no backwards compatibility concerns related to this proposal.
+
+Feedback to the initial proposal indicated a desire to merge this with JEP-308.
+As each collector is an independent extension implementation only operational within a defined time period, we are able to retire/version the extension point in core aggressively to support future improvements.
+
+== Security
+
+Collectors need to be written carefully to not collect user data, such as PII.
+The server component needs to ensure isolation between different collected information, grant access to the collected data in a fine-grained manner, and enforce the collector start and end dates server-side.
+
+Data submission is done via HTTPS to prevent eavesdropping and man-in-the-middle attacks.
+
+
+== Infrastructure Requirements
+
+A new service needs to be added to the Jenkins project infrastructure.
+
+* A URL that accepts POST submissions with a JSON body and stores them. The JSON dictionary has the following top-level items:
+** `type` (string identifying the collector by ID)
+** `payload` (a JSON object)
+** `correlator` (an arbitrary per-instance identifier)
+* Support for definition of a collection period (start and end date), outside of which submissions are rejected.
+
+Beyond these, the service can remain fairly basic, e.g. writing submission bodies to files, similar to the logging performed in the usage statistics service.
+
+The traffic for each collector depends on several parameters:
+
+* The size of data gathered for each collector
+* The number of instances for each collector
+
+The latter depends on the time span defined for a collector, and the component implementing the collector (popularity and user update behavior).
+For collectors defined in core, current usage statistics indicate that around 20,000-30,000 installations are on the current LTS line, and around 30,000 installations are on the most recent eight weekly releases.
+
+This indicates a projected upper bound of 600MB of uncompressed data collected per day for a collector defined in core that is active for two months, if we expect a maximum average size of 10KB.
+
+
+== Testing
+
+Automatic tests in Jenkins core need to ensure the constraints defined for this system (administrator control via usage statistics option, collection dates, etc.).
+
+
+== Prototype Implementation
+
+* link:https://github.com/jenkinsci/jenkins/pull/3604[Core PR 3604]
+* link:https://github.com/rtyler/uplink/["Uplink" service receiving data in Jenkins project infrastructure]
+
+== References
+
+* link:https://groups.google.com/d/msg/jenkinsci-dev/CsESQQ1mxLY/8xQazCYbEAAJ[Initial proposal and request for feedback on jenkinsci-dev]
+
+
