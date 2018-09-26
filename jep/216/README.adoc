@@ -1,0 +1,140 @@
+= JEP-216: Localization Plugin
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 216
+
+| Title
+| Localization Plugin
+
+| Sponsor
+| link:https://github.com/LinuxSuRen[Zhao Xiaojie]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Informational
+
+| Created
+| 2018-08-28
+
+| BDFL-Delegate
+| TBD
+
+|===
+
+== Abstract
+
+Localization plugins separate i10n resource files from Jenkins core and plugins.
+These plugins will be choose when users install a new Jenkins according their browser language setting.
+
+== Specification
+
+The proposed Localization plugins suggest every main language has their own localization plugin.
+Such as Chinese Localization plugin.
+Maybe you just wish to install one language localization plugin in most case.
+
+There are some points need to translation:
+
+* Localization from Jelly views, like `index.jelly`
+* Localization from Java source codes
+* Localization from help files
+
+[WARNING]
+====
+*(bitwiseman)*
+This section needs considerably more detail about how this will work, the processes for updating it, etc.
+There are details in the linked discussion that need to be pulled in.
+This JEP should be sufficiently complete that a reader a year from now can read only the JEP and have reasonable understanding of the design of the feature.
+====
+
+
+== Motivation
+
+Localization plugin is targeted on Jenkins plugin developers who want to improve native language UI experience.
+Let Jenkins is more easy to use.
+
+== Reasoning
+
+Easy for localization contribution access manage.
+There is someone want to contribute localization, but he may not have permission to commit, and other people perhaps can't do a real review.
+So this process could be very slow.
+
+[WARNING]
+====
+*(bitwiseman)*
+This reasoning section needs considerably more detail regarding the discussion linked in the references.
+This JEP should be sufficiently complete that a reader a year from now can read only the JEP and have reasonable understanding of the why various design choices were made.
+====
+
+
+== Backwards Compatibility
+
+Remain all language files, until target language already moved into one localization plugin.
+And all languages install wizard resources file can't be removed.
+
+In order to keep well compatibility between different versions, you can add a specific version directory.
+For example, there is a help text for a button in ver 1.0, but it has totally different meaning in ver 2.0.
+In this case, you can create two directories to store translation files.
+The language plugin should choose the right languge files by current version.
+Actualy the language plugin should always try to find current version language files first, if it doesn't exist then use the latest one.
+Maybe in most of case, we just need maintain the latest version.
+
+[WARNING]
+====
+*(bitwiseman)*
+There was a discussion in the starting PR between @daniel-beck and @LinuxSuRen around some of this,
+but is unclear to me whether it has been properly represented.
+
+Please see https://github.com/jenkinsci/jep/pull/191#issuecomment-417640698 for details and consider whether this is done or need more detail.
+====
+
+
+Now you can find out the help text comes from which plugin, but the description maybe already is stale.
+So target plugin's version also will be in this note.
+
+== Security
+
+There are no security risks related to this proposal.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+There are no testing issues related to this proposal.
+
+[WARNING]
+====
+*(bitwiseman)*
+As a tester, this seems completely false to me.
+How do are the translations tested/verified?
+Are they automated?
+If not, who tests them?
+====
+
+== Prototype Implementation
+
+link:https://github.com/jenkinsci/localization-zh-cn-plugin[Localization: Chinese (Simplified)]
+
+== References
+
+* link:https://groups.google.com/forum/#!msg/jenkinsci-dev/jeKVskUwE8M/gckewoBpDwAJ[Initial discussion]
+* link:https://jenkins.io/sigs/chinese-localization/[Chinese Localization SIG]
+
+
+

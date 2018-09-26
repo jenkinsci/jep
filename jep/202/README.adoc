@@ -142,7 +142,7 @@ Several alternatives exist today but they all require changes to all the pipelin
 
 Even without this JEP people can use things like the S3 plugin to upload and download artifacts.
 But since the use of S3, and details about location, are baked into the script, we cannot publish general examples like https://jenkins.io/doc/pipeline/tour/tests-and-artifacts/[tests-and-artifacts] that are actually ready for people to use.
-That would contradict one of the goals of link:https://github.com/jenkinsci/jep/tree/master/jep/300[Essentials], that you can get a reasonable workflow going in a few minutes.
+That would contradict one of the goals of link:https://github.com/jenkinsci/jep/tree/master/jep/300[Evergreen], that you can get a reasonable workflow going in a few minutes.
 
 Without `ArtifactManager` and `VirtualFile` integration, a number of integrations between plugins are impossible.
 For example, using only the S3 plugin, if you wish to copy artifacts from an upstream build, you cannot use the Copy Artifact plugin; you would need to devise your own system for passing an S3 bucket/path from the upstream build to the downstream build.
@@ -165,7 +165,7 @@ The S3 implementation also uses http://jclouds.apache.org[Apache JClouds] that a
 === Container (Bucket) and Path References
 
 The implementation for S3 uses a master-wide configuration option to set the name of the container (S3 bucket) and path inside.
-(AWS-specific installers for Jenkins, such as for Essentials, could preconfigure these fields.)
+(AWS-specific installers for Jenkins, such as for Evergreen, could preconfigure these fields.)
 
 This means that different runs cannot store the artifacts in different buckets or paths, as we don't expect that to be a common use case.
 It would be more common to move all the artifacts from one location to another and that could be easily achieved by moving the blobs in S3 and changing the master wide configuration parameters.

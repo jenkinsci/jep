@@ -135,11 +135,16 @@
 | Draft{nbsp}:speech_balloon:
 | link:214/README.adoc[JEP-214: Jenkins Telemetry]
 | link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
-| TBD
+| link:https://github.com/rtyler[R{nbsp}Tyler{nbsp}Croy]
 
 | Draft{nbsp}:speech_balloon:
 | link:215/README.adoc[JEP-215: Modular Components]
 | https://github.com/sophistifunk
+| TBD
+
+| Draft{nbsp}:speech_balloon:
+| link:216/README.adoc[JEP-216: Localization Plugin]
+| link:https://github.com/LinuxSuRen[Zhao{nbsp}Xiaojie]
 | TBD
 
 | Accepted{nbsp}:ok_hand:
@@ -157,7 +162,7 @@
 | link:https://github.com/batmat[Baptiste{nbsp}Mathus]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Draft{nbsp}:speech_balloon:
+| Accepted{nbsp}:ok_hand:
 | link:303/README.adoc[JEP-303: Evergreen Client Registration and Authentication]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
@@ -193,7 +198,7 @@
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
 | Draft{nbsp}:speech_balloon:
-| link:310/README.adoc[JEP-310: Essentials AWS auto-configuration]
+| link:310/README.adoc[JEP-310: Evergreen AWS auto-configuration]
 | https://github.com/batmat[Baptiste{nbsp}Mathus]
 | https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 

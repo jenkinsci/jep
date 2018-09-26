@@ -106,7 +106,7 @@ To support snapshotting, Jenkins is configured in a way that physically separate
 
 ////
 I think .gitignore content must be designed to be able to evolve over time.
-To allow more flexibility, I think the content should be associated between an essentials release/bom to a given .gitignore content.
+To allow more flexibility, I think the content should be associated between an evergreen release/bom to a given .gitignore content.
 ////
 
 An manual example of the process can be visualized with the following:
