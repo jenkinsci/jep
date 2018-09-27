@@ -138,7 +138,7 @@ There are no testing issues related to this proposal.
 
 == References
 
-* link:https://groups.google.com/d/msgid/jenkinsci-dev/20180801174530.GE3303%40grape.lasagna.io.[jenkinsci-dev@ discussion]
+* link:https://groups.google.com/d/topic/jenkinsci-dev/FWq7zKeL6oU/discussion[jenkinsci-dev@ discussion]
 * link:http://meetings.jenkins-ci.org/jenkins/2015/jenkins.2015-09-02-18.00.html[Governance meeting discussion 2015-09-02]
 * link:http://meetings.jenkins-ci.org/jenkins-meeting/2018/jenkins-meeting.2018-08-01-18.00.log.html[Governance meeting discussion 2018-08-01]
 * link:https://wiki.jenkins.io/display/JENKINS/Travel+Grant+Program[Jenkins Travel Grant Program]
