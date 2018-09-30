@@ -67,50 +67,14 @@ JSR-303 "Bean Validation" annotations are supported both on fields and setter pa
 on the data-bound model.
 
 `@Trim` annotation allows to handle a common development pattern to trim strings and convert empty strings
-to null (or the opposite, null to empty) to reflect unset values. This annotation enable
-transformation on the payload before value is injected, so developer don't have to handle this.
-We define two trim strategies: `TO_NULL` (default one) and `TO_EMPTY`.
+to null to reflect unset values. This annotation enable transformation on the payload before value is injected,
+so developer don't have to handle this.
+
+Some may argue it is better to trim to empty strintgs, to prevent `NullPointerException`. Our reasoning is that
+an empty string has no meaning, so we prefer to enforce a default value is set, so:
 
 `@DefaultValue` annotation allows to declare properties value when none is submitted in
 json payload, or value is `null` (possibly after being trimmed).
-
-=== Meta-Model API
-
-Stapler is extended so a `DataBoundModel` do provide meta-data about data-bound properties and handle the
-whole instantiation lifecycle, as a reusable API by other components.
-This new API will mostly reflect existing work implemented by structs-plugin and configuration-as-code-plugin,
-also using it internally in Stapler.
-
-`DataBoundModel of(Class<T> clazz)` give access to this API to resolve metadata for specified type,
-with cache support.
-
-`Collection<DataBoundProperty> getProperties()` give access to data bound properties (either fields or
-setter methods) discovered by introspection.
-
-`DataBoundProperty getProperty(String name)` give access to a specific property by name.
-
-`DataBoundProperty` collect meta-data about a specific data-bound property based on introspection. This
-includes:
-- property type (both parameterized type and raw type)
-- flag for deprecated property
-- annotations, typically jsr-303 annotations to define model constraints
-- methods to set and retrieve value from a data-bound object instance
-
-`T instantiate(Map<String,?> map, DataBinder binder, Listener ... listeners)` allows to instantiate target type based on a {key=value}
-representation of it's data.
-
-`DataBinder` interface allows to plug conversion from value into java type expected to set property.
-When Used within Stapler for structured form submission, a recursive `bindJson` invocation will be used. Other implementation
-can use a distinct mechanism, typically relying on `@Symbol` type lookup.
-
-`Listener` allows to watch and control the instantiation process. It get involved as a property is set, as unknown
-attributes are found in submitted data, and while executing `@PostConstructor` init methods. External component
-can use such a Listener to adjust policy for those construction steps.
-
-`Map<String,Object> uninstantiate(T)` does the reverse operation, converting a DataBound object into
-a set of key,values. It only emit tuples for properties which aren't set to default value for the
-data-bound type.
-
 
 === UI data-binding
 
@@ -234,11 +198,6 @@ Based on this:
 Annotation based databinding comes in addition to the legacy mechanisms supporter by stapler, so don't break
 backward compatibility.
 
-As part of this JEP we define an API in Stapler to expose the meta-model for a DataBound component for
-third party consumption, as well as the instanciation lifecycle so components like structs and configuration-as-code
-can just rely on this new API, an stop re-implementing code. This will allow in future to ensure changes
-in Stapler lifecycle are well reflected by those components.
-
 == Security
 
 N/A
@@ -252,9 +211,7 @@ N/A
 
 == Prototype Implementation
 
-Proof of Concept prototype is implemented as changes made directly in Stapler web framework:
-https://github.com/ndeloof/stapler/tree/jep-205[Stapler jep-205]
-https://github.com/ndeloof/jenkins/tree/jep-205[Jenkins jep-205]
+https://github.com/stapler/stapler/pull/147
 
 == References
 
