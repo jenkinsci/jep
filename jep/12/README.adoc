@@ -37,16 +37,15 @@ endif::[]
 
 == Abstract
 
-The Jenkins project provides travel grants to a limited number of community members requesting assistance to attend event.
+The Jenkins project provides travel grants to a limited number of community members to attend Jenkins related events.
+This document describes the process by which travel grants may be requested and approved.
 
 == Specification
 
-This document describes the process by which travel grants may be requested and approved, and who is eligible to apply.
-
 === Eligibility
 
-All community members are eligible for support unless they've received a travel grant within the last year (based on the event's date).
-However, as we have very limited funds to support this program, we'll prefer applications by active contributors to the Jenkins project.
+All community members are eligible for travel grants.
+However, as we have very limited funds to support this program, each community member may only receive a travel grant once per year (based on the date of the event they plan to attend).
 Grants are offered to individual community members, not companies. 
 
 If you have other possible funding sources, please look to them first.
@@ -54,11 +53,11 @@ This will allow more people to attend Jenkins community events.
 
 === Grant usage and amounts
 
-Funds received via this program may be used to cover any expenses related attending any event including but not limited to conference fees, hotel, and travel to or from the event.  
-Grants will not exceed your actual travel costs.
+Funds received via this program may be used to cover any expenses related attending an event including but not limited to conference fees, hotel, and travel to and from the event.  
+Grants will not exceed actual travel costs.
 
 Regular travel grants are limited to 500 USD. 
-Travel grants for more than 500 USD may be approved under special circumstances noted below.
+Travel grants for more than 500 USD may be approved under <<special circumstances>>.
 
 === Application
 
@@ -75,29 +74,37 @@ Requests for 500 USD or less only need to include basic information:
 ** Documentation you wrote
 ** Public presentations made on Jenkins-related topics
 
-Requests for more than 500 USD should include any special circumstances that justify the additional expense, such as:
+==== Special circumstances 
+
+Requests for more than 500 USD should describe any special circumstances that justify the additional expenses, such as:
 
 * Cost of city or distance travelled
 * Number of days of the conference
 * Additional merit of requester
-* Whether you are from a underrepresented group in tech
+* Whether you are a member of an underrepresented group in tech
 * Any other mitigating circumstances
 
 === Review Process
 
-All applications will be reviewed at a Jenkins project governance meeting.
-This meeting is usually biweekly.
-While applicants are free to attend the meeting in case there are any questions, we ask they refrain from more active participation while your application is being discussed.
+All applications will be reviewed at a 
+link:https://jenkins.io/project/governance/#meeting[Jenkins project governance meeting].
+This meeting is usually help biweekly, see the 
+link:https://jenkins.io/event-calendar/[Jenkins events calendar] 
+for dates and times.
 
-Each request will be discussed and recorded in the meeting minutes. Factors beyond the merits of the request itself may also be taken into consideration.  For example:
+While applicants are free to attend the meeting in case there are any questions, we ask they refrain from active participation while their application is being discussed.
+
+Each request will be discussed and recorded in the meeting minutes.
+Applications by active contributors to the Jenkins project are more likely to approved.
+Factors beyond the merits of the request itself may also be taken into consideration.  For example:
 
   * Whether budget for the year has been exceeded or underspent
   * Previous considerations for similar requests.
 
 A vote will then be taken deciding whether to approve the travel grant request. 
 
-You will receive a response at least four weeks before the event.
-This response will include the sponsored amount as well as who to send your receipts (see below) to.
+Applicants will receive a response at least four weeks before the event.
+This response will include the sponsored amount as well as who to send their receipts (see below) to.
 
 === Your duties
 
