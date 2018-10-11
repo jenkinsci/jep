@@ -136,7 +136,7 @@ link:http://meetings.jenkins-ci.org/jenkins/2015/jenkins.2015-09-02-18.00.html[G
 This is an arbitrary amount and it has been pointed out that it is low compared the total travel cost for many events.
 This amount might change in the future. 
 
-=== Special circumstances
+=== Allowing for Special Circumstances
 
 At the Jenkins Governance meeting in August 2018 there was a travel grant request for more than USD$500.
 A fixed amount does not always take into consideration other variables such as city of event as well as whether other submissions have been made in the year.
