@@ -45,13 +45,13 @@ This document describes the process by which travel grants may be requested and 
 === Eligibility
 
 All community members are eligible for travel grants.
-However, as we have very limited funds to support this program, each community member may only receive a travel grant once per year (based on the date of the event they plan to attend).
+However, as we have very limited funds to support this program, each community member may only receive one travel grant per year (based on the date of the event they plan to attend).
 Grants are offered to individual community members, not companies. 
 
 If you have other possible funding sources, please look to them first.
 This will allow more people to attend Jenkins community events.
 
-=== Grant usage and amounts
+=== Grant Usage and Amounts
 
 Funds received via this program may be used to cover any expenses related attending an event including but not limited to conference fees, hotel, and travel to and from the event.  
 Grants will not exceed actual travel costs.
@@ -75,7 +75,7 @@ Requests for 500 USD or less only need to include basic information:
 ** Documentation you wrote
 ** Public presentations made on Jenkins-related topics
 
-==== Special circumstances 
+==== Special Circumstances 
 
 Requests for more than 500 USD should describe any special circumstances that justify the additional expenses, such as:
 
@@ -89,11 +89,11 @@ Requests for more than 500 USD should describe any special circumstances that ju
 
 All applications will be reviewed at a 
 link:https://jenkins.io/project/governance/#meeting[Jenkins project governance meeting].
-This meeting is usually help biweekly, see the 
+This meeting is usually held biweekly, see the 
 link:https://jenkins.io/event-calendar/[Jenkins events calendar] 
 for dates and times.
 
-While applicants are free to attend the meeting in case there are any questions, we ask they refrain from active participation while their application is being discussed.
+While applicants are free to attend the meeting in case there are any questions, they should refrain from active participation while their application is being discussed.
 
 Each request will be discussed and recorded in the meeting minutes.
 Applications by active contributors to the Jenkins project are more likely to approved.
@@ -105,9 +105,9 @@ Factors beyond the merits of the request itself may also be taken into considera
 A vote will then be taken deciding whether to approve the travel grant request. 
 
 Applicants will receive a response at least four weeks before the event.
-This response will include the sponsored amount as well as who to send their receipts (see below) to.
+This response will include the sponsored amount as well as to whom to send their receipts (see below).
 
-=== Your duties
+=== Your Duties
 
 If you are selected for a travel grant, you will be expected to be available for a blog post about this program before the event.
 
@@ -121,7 +121,6 @@ This report should include the following:
 
 We also expect you to submit your receipts via email to the person mentioned in the travel grant confirmation for review.
 
-
 == Motivation
 
 The Jenkins project supports the development of a diverse and inclusive community.
@@ -134,7 +133,7 @@ The Jenkins project has a certain amount of funding to support community develop
 
 The limit of 500 USD for regular grants was agreed to at the
 link:http://meetings.jenkins-ci.org/jenkins/2015/jenkins.2015-09-02-18.00.html[Governance meeting on 2015-09-02].
-This is an arbitrary amount and it has been pointed out that it is low compared the total cost of many events.
+This is an arbitrary amount and it has been pointed out that it is low compared the total travel cost for many events.
 This amount might change in the future. 
 
 === Special circumstances
