@@ -57,7 +57,8 @@ Funds received via this program may be used to cover any expenses related attend
 Grants will not exceed actual travel costs.
 
 Regular travel grants are limited to 500 USD. 
-Travel grants for more than 500 USD may be approved under <<special circumstances>>.
+Travel grants for more than 500 USD may be approved under 
+link:#special-circumstances[special circumstances].
 
 === Application
 
