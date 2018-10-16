@@ -366,6 +366,7 @@ proposal.
 Even for "pre-Draft" discussion, sponsors may find it convient to follow the
 <<submission, JEP Submission>> steps below, including creating a PR,
 but state in PR comments that they not yet ready to submit the JEP.
+In other words, if you are wondering if you should file a JEP, then this is likely you should :-).
 This allows them to use the PR request tools for discussion and modification right away,
 and sets them up for a smooth submission process.
 In this case, the sponsor only needs to notify `@jenkinsci/jep-editors` when they are ready to
