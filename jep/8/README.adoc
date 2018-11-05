@@ -111,13 +111,13 @@ open-source conferences like FOSDEM, etc.
 ** GSoC budget may not be used to cover software license costs.
 The most of the projects are expected to be doable with only open-source or freeware software,
 otherwise it is up to the students and mentors to get the setup.
-** Total project expenses may not exceed the amount being payed by Google per project (as of 2018 - 500 USD)
+** Total project expenses may not exceed the amount being paid by Google per project (as of 2018 - 500 USD)
 4. Promotional materials
 ** GSoC budget may be used to promote Google Summer of Code by distributing swag, e.g. stickers, T-shirts and other items.
 Swag may be sent to participants or distributed at community events.
 ** GSoC budget may be used to cover swag production costs and delivery costs by regular mail
 ** Swag may be sent out to active GSoC participants, including GSoC students, mentors, org admins, applicants, and other contributors who participated in GSoC
-** GSoC budget may not be used for any kind of payed advertisement or
+** GSoC budget may not be used for any kind of paid advertisement or
 payments to external individuals/organizations for promotion.
 ** GSoC budget may not be used to send out promotional materials which explicitly or implicitly reference other trademarks or commercial companies
 
@@ -133,7 +133,7 @@ once submitted (see _Payment process_)
 
 === Payment process
 
-* Jenkins project does not pay for expenses,
+* Jenkins project does not pay for expenses upfront,
 but it reimburses expenses post-factum to students, mentors or Org Admins
 * Reimbursements are performed according to the SPI process defined
 link:https://wiki.jenkins.io/display/JENKINS/Reimbursement+of+Expenses+via+SPI[Reimbursement of Expenses via SPI]
