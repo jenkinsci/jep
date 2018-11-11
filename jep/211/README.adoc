@@ -117,10 +117,22 @@ By default OpenJDK 10 and 11ea just print a warning once on the startup, there i
 === Scope of changes
 
 * Jenkins Core
-* Jenkins Docker Packaging
+* Docker Packaging for Debian
 * Plugins
-* jenkins.io
-* ci.jenkins.io
+* Jenkins website: jenkins.io
+* Jenkins CI instance: ci.jenkins.io and trusted-ci.jenkins.io
+* Maven Build flow
+* Test tools: Jenkins Test Harness, Acceptance Test Harness, Plugin Compatibility Tester
+
+Out of the scope for this JEP:
+
+* Packaging in subprojects: Jenkins X, Jenkins Evergreen, Jenkinsfile Runner, etc.
+  They will be handled in follow-up JEPs if needed.
+* Gradle build flow, as well as other
+* Windows Installers.
+  Their rework and Java removal is a separate project in Platform SIG.
+* Docker packaging for Alpine/Slim.
+  See the reasoning below
 
 === Jenkins core patches
 
@@ -294,7 +306,17 @@ Non-goals in the specification are defined to limit the scope of work.
 The main objective is to get Jenkins running with Java 10+,
 there will be follow-up tasks to cleanup Illegal Reflective Access warnings and to adopt new features.
 
-More reasoning will be added to this section according to the feedback.
+=== Docker packaging for Alpine/Slim
+
+Jenkins offers official slim and Alpine packages for Java 11.
+These images are based on the standard (link:TODO) image.
+Unfortunately there us no packaging provided for Alpine now.
+Hence there is a decision to not include Alpine images to the scope of this JEP.
+
+Current JEP does NOT consider migrating to another base image.
+There is a well-known issue with OpenJDK distributions by Oracle,
+by it is not clear how it is going to impact the Docker images we use.
+The provider may just start building Java on its own.
 
 == Backwards Compatibility
 
