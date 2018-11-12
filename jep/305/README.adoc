@@ -840,10 +840,10 @@ to consume Incrementals, produce Incrementals, or both.
 * An analogous change to
 link:https://github.com/jenkinsci/pom[`jenkinsci/pom`]
 is expected later.
-* link:https://github.com/jglick/git-changelist-maven-extension[`git-changelist-maven-extension`]
-is the Maven extension needed to make it work.
-* link:https://github.com/jglick/incrementals-downstream-publisher[`incrementals-downstream-publisher`]
-is a proposed publishing tool.
+* link:https://github.com/jenkinsci/incrementals-tools[`incrementals-tools`]
+contains the central Maven extension as well as related tooling.
+* link:https://github.com/jenkins-infra/community-functions/blob/master/incrementals-publisher/README.adoc[`incrementals-publisher`]
+is the Azure function used to promote CI builds into the repository.
 
 == References
 
@@ -851,6 +851,5 @@ is a proposed publishing tool.
 * link:https://issues.jenkins-ci.org/browse/JENKINS-50686[JENKINS-50686]
 * link:https://maven.apache.org/maven-ci-friendly.html[Maven CI Friendly Versions]
 * link:https://github.com/jenkinsci/plugin-pom/pull/100[`plugin-pom` PR 100]
-* link:https://github.com/jglick/git-changelist-maven-extension[`git-changelist-maven-extension`]
 * link:https://github.com/jenkins-infra/iep/blob/master/iep-009/README.adoc[IEP-9]
 * link:https://github.com/jenkinsci/incrementals-tools/blob/master/README.md[Usage guide]
