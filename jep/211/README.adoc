@@ -120,8 +120,8 @@ By default OpenJDK 10 and 11ea just print a warning once on the startup, there i
 * Docker Packaging for Debian
 * Plugins
 * Jenkins website: jenkins.io
-* Jenkins CI instance: ci.jenkins.io and trusted-ci.jenkins.io
-* Maven Build flow
+* Jenkins CI instances: ci.jenkins.io and trusted-ci.jenkins.io
+* Maven Build flow (Maven HPI Plugin, etc.)
 * Test tools: Jenkins Test Harness, Acceptance Test Harness, Plugin Compatibility Tester
 
 Out of the scope for this JEP:
@@ -309,13 +309,13 @@ there will be follow-up tasks to cleanup Illegal Reflective Access warnings and 
 === Docker packaging for Alpine/Slim
 
 Jenkins offers official slim and Alpine packages for Java 11.
-These images are based on the standard (link:TODO) image.
-Unfortunately there us no packaging provided for Alpine now.
-Hence there is a decision to not include Alpine images to the scope of this JEP.
+These images are based on the standard link:https://github.com/jenkinsci/docker[jenkins/docker] image.
+Unfortunately there is no packaging provided for Alpine now.
+Hence there is a decision to not add Alpine images to the scope of this JEP.
 
 Current JEP does NOT consider migrating to another base image.
 There is a well-known issue with OpenJDK distributions by Oracle,
-by it is not clear how it is going to impact the Docker images we use.
+but it is not clear how it is going to impact the Docker images we use.
 The provider may just start building Java on its own.
 
 == Backwards Compatibility
