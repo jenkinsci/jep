@@ -38,29 +38,34 @@ endif::[]
 
 == Abstract
 
-Localization plugins separate i10n resource files from Jenkins core and plugins.
-These plugins will be choose when users install a new Jenkins according their browser language setting.
+At first, all languages files were aggregated in one place. There are some drawbacks that we need to improve.
+
+Localization plugins separate i10n resource files from Jenkins core and plugins. This solution could
+provide a way to let more native speakers can contribute localization more efficiently. Also for a single
+Jenkins running instance does not need to load all languages files in most of the case.
 
 == Specification
 
-The proposed Localization plugins suggest every main language has their own localization plugin.
-Such as Chinese Localization plugin.
-Maybe you just wish to install one language localization plugin in most case.
+This propose suggest all languages have their own localization plugin. Such as link:https://github.com/jenkinsci/localization-zh-cn-plugin[Chinese Localization plugin].
+
+In order to keep all languages plugins have the same style. There are some conventions need to follow.
+
+Basically, all localization files that in the plugin should keep the same structure. And everyone could follow the link:https://wiki.jenkins.io/display/JENKINS/Internationalization[guide] to do the contribution. 
+
+Localization plugin naming convention: localization-[language code]-[conuntry code]-plugin。You could add more
+hunman-readable information in file `pom.xml`. For example `<name>Localization: Chinese (Simplified)</name>`。
+
+You should add link:https://github.com/daniel-beck/localization-support-plugin[Localization Support Plugin] as a
+dependency. Please don't add more dependencies if you haven't a strong reason. We need to keep the localization plugin as
+simple as possible. There's an extension point(`LocalizationContributor`) needs to implement. There's only one language
+is allowing. But you can add different variants if the contributors think it's ok.
 
 There are some points need to translation:
 
-* Localization from Jelly views, like `index.jelly`
+* Localization from Jelly/Groovy views
 * Localization from Java source codes
 * Localization from help files
-
-[WARNING]
-====
-*(bitwiseman)*
-This section needs considerably more detail about how this will work, the processes for updating it, etc.
-There are details in the linked discussion that need to be pulled in.
-This JEP should be sufficiently complete that a reader a year from now can read only the JEP and have reasonable understanding of the design of the feature.
-====
-
+* Localization from JavaScript files
 
 == Motivation
 
@@ -69,42 +74,35 @@ Let Jenkins is more easy to use.
 
 == Reasoning
 
-Easy for localization contribution access manage.
-There is someone want to contribute localization, but he may not have permission to commit, and other people perhaps can't do a real review.
-So this process could be very slow.
-
-[WARNING]
-====
-*(bitwiseman)*
-This reasoning section needs considerably more detail regarding the discussion linked in the references.
-This JEP should be sufficiently complete that a reader a year from now can read only the JEP and have reasonable understanding of the why various design choices were made.
-====
-
+Easy for localization contribution access managing.
+There is someone want to contribute localization, but he may not have the permission to commit, and other people perhaps can't do a real review. So this progress could be very slow.
 
 == Backwards Compatibility
 
 Remain all language files, until target language already moved into one localization plugin.
-And all languages install wizard resources file can't be removed.
+
+In order to give a great experience when a first installation is going. All localization files should be kept
+which in the install wizard. And all language localization plugins will present in the language category of suggestion plugins.
 
 In order to keep well compatibility between different versions, you can add a specific version directory.
-For example, there is a help text for a button in ver 1.0, but it has totally different meaning in ver 2.0.
+For example, there is a help text for a button in ver 1.0, but it has a totally different meaning in ver 2.0.
 In this case, you can create two directories to store translation files.
-The language plugin should choose the right languge files by current version.
-Actualy the language plugin should always try to find current version language files first, if it doesn't exist then use the latest one.
-Maybe in most of case, we just need maintain the latest version.
+The language plugin should choose the right language files by the current version.
+Actually, the language plugin should always try to find current version language files first, if it doesn't exist then use the latest one.
+Maybe in most of the case, we just need to maintain the latest version.
+
+There are some issues could arise in the progress of translation, such as wrong or stale translations. For help files, we
+should provide a way to switch two versions between English and specific language.
+
+In a common situation, we keep the latest version for translation in the localization plugin. But it's necessary to keep different versions in the plugin. And the plugin should provide a way to switch them.
+
+Mininum support Jenkins core version is `2.151-20181111.210424-1`.
 
 [WARNING]
 ====
-*(bitwiseman)*
-There was a discussion in the starting PR between @daniel-beck and @LinuxSuRen around some of this,
-but is unclear to me whether it has been properly represented.
-
-Please see https://github.com/jenkinsci/jep/pull/191#issuecomment-417640698 for details and consider whether this is done or need more detail.
+*(linuxsuren)*
+The feature that we needs is working in progress. Change the Jenkins core version later.
 ====
-
-
-Now you can find out the help text comes from which plugin, but the description maybe already is stale.
-So target plugin's version also will be in this note.
 
 == Security
 
@@ -116,25 +114,16 @@ There are no new infrastructure requirements related to this proposal.
 
 == Testing
 
-There are no testing issues related to this proposal.
-
-[WARNING]
-====
-*(bitwiseman)*
-As a tester, this seems completely false to me.
-How do are the translations tested/verified?
-Are they automated?
-If not, who tests them?
-====
+Add junit test case to make sure that only specific language files could be placed in the plugin. For example,
+all files should contain `zh-cn` in `localization-zh-cn-plugin`.
 
 == Prototype Implementation
 
 link:https://github.com/jenkinsci/localization-zh-cn-plugin[Localization: Chinese (Simplified)]
+link:https://github.com/daniel-beck/localization-support-plugin[Localization Support Plugin]
 
 == References
 
 * link:https://groups.google.com/forum/#!msg/jenkinsci-dev/jeKVskUwE8M/gckewoBpDwAJ[Initial discussion]
+* link:https://groups.google.com/forum/#!topic/jenkinsci-dev/8hA5x_CKB9c[Localization plugins: Where do we go from here?]
 * link:https://jenkins.io/sigs/chinese-localization/[Chinese Localization SIG]
-
-
-
