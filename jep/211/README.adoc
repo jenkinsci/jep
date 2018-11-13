@@ -38,7 +38,7 @@ endif::[]
 | JIRA
 |
 link:https://issues.jenkins-ci.org/browse/JENKINS-52012[JENKINS-52012] - Preview in weekly releases,
-link:https://issues.jenkins-ci.org/browse/JENKINS-51805[JENKINS-52012] - GA in weekly releases,
+link:https://issues.jenkins-ci.org/browse/JENKINS-51805[JENKINS-51805] - GA in weekly releases,
 link:https://issues.jenkins-ci.org/browse/JENKINS-52284[JENKINS-52284] - GA in LTS,
 link:https://issues.jenkins-ci.org/browse/JENKINS-51805[JENKINS-51805] - other non-blocker issues
 
