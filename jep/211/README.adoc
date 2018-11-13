@@ -37,9 +37,10 @@ endif::[]
 
 | JIRA
 |
-link:https://issues.jenkins-ci.org/browse/JENKINS-52012[JENKINS-52012] - GA in weekly releases,
+link:https://issues.jenkins-ci.org/browse/JENKINS-52012[JENKINS-52012] - Preview in weekly releases,
+link:https://issues.jenkins-ci.org/browse/JENKINS-51805[JENKINS-51805] - GA in weekly releases,
 link:https://issues.jenkins-ci.org/browse/JENKINS-52284[JENKINS-52284] - GA in LTS,
-link:https://issues.jenkins-ci.org/browse/JENKINS-51805[JENKINS-51805] - other non-blocker issues
+link:https://issues.jenkins-ci.org/browse/JENKINS-40689[JENKINS-40689] - other non-blocker issues
 
 | Discussions-To
 | link:https://groups.google.com/forum/#!forum/jenkins-platform-sig[Jenkins Platform SIG]
@@ -203,7 +204,7 @@ The following policy is suggested:
 ** It is up to maintainers to decide when they are ready to accept such requirement in components they maintain
 * Require such components to retain compatibility with Java 8 (as long as Jenkins Core supports it)
 * Require such components to have Jenkinsfiles running tests on Java 8 and Java 10+
-* Be explicit that all Java 10+ support is available in the experimental mode until Jenkins officially supports it
+* Be explicit that all Java 11 support is available in the experimental mode until Jenkins officially supports it
 (currently we consider Java 10/11 support as a preview mode - docs)
 * if a downstream component includes Java 9+ bits (e.g. lib-process-utils),
 downstream components (e.g. Jenkins core for lib-process-utils) must be still buildable and testable with JDK8
@@ -220,12 +221,18 @@ The rollout procedure should be coordinated within the link:https://jenkins.io/s
 
 ==== Timeline
 
-* Experimental Java 11 Support is available in Jenkins 2.127 +
+* Experimental Java 11 Support is available in Jenkins 2.127+
+** Announced in link:https://jenkins.io/blog/2018/06/17/running-jenkins-with-java10-11/[this blogpost]
 ** We have started integrating some patches starting from 2.127 when the “--enable-future-java” flag was introduced
-* This JEP targets Java 11 support in weekly releases.
-The plan is to announce Java 11 support when it is done, no special timing
-* LTS general availability: Java 11 support will be available in LTS once the LTS baseline updates to the Weekly release.
-** There is no plan to backport changes required for Java 11 support
+** There is no official preview announcement for weekly releases at this stage
+* link:https://issues.jenkins-ci.org/browse/JENKINS-52012[JENKINS-52012] - Preview in weekly releases
+* link:https://issues.jenkins-ci.org/browse/JENKINS-51805[JENKINS-51805] - GA in weekly releases
+* link:https://issues.jenkins-ci.org/browse/JENKINS-52284[JENKINS-52284] - GA in LTS
+** Java 11 support will be available in LTS once the LTS baseline updates to the Weekly release
+** No special timeline set, optimistic ETA is February 2018
+* link:https://issues.jenkins-ci.org/browse/JENKINS-40689[JENKINS-40689] - other non-blocker issues
+
+The referenced EPICs contain the detailed plan for what is included into the each milestone.
 
 ==== Website
 
@@ -268,6 +275,14 @@ SECURITY reports will be triaged by the Jenkins Security Team.
 _Java 11 Support Team_ is responsible to report the project status
 at link:https://jenkins.io/sigs/platform/[Platform SIG] meetings and, if needed,
 at Jenkins Governance meetings.
+
+==== LTS Backporting
+
+All backporting will be done according to the link:https://jenkins.io/download/lts/#backporting-process[LTS Backporting Process].
+
+There is no plan to backport changes required for Java 11 support to previous LTS baselines.
+Particular compatibility fixes may be backported on-demand,
+but major updates will not be considered due to the serious risk of regressions.
 
 == Motivation
 
