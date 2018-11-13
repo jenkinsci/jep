@@ -246,14 +246,15 @@ The plan is to announce Java 11 support when it is done, no special timing
 After the release of Java 11 support, there may be a number of defects created by early adopters.
 It may cause additional workload on plugin and core maintainers, and this JEP sets sets a requirement to assist with triage of issues after the release.
 
-After the weekly release availability the JEP sponsor (or a group of people nominated by him, “Java 11 Maintainers”)
+After the weekly release availability the _Java 11 Support Team_
+(link:https://github.com/orgs/jenkinsci/teams/java11-support[@jenkinsci/java11-support])
 will be responsible to provide an extra support for the issues:
 
-* Java 11 Maintainers will periodically review open defects and triage them (e.g. once per week)
-* Java 11 Maintainers may request additional information from the reporter. Finally, they are expected to communicate the triage outcome.
+* _Java 11 Support Team_ will periodically review open defects and triage them (e.g. once per week)
+* _Java 11 Support Team_ may request additional information from the reporter. Finally, they are expected to communicate the triage outcome.
 * Possible triage outcomes:
-** Accepted by Java 11 Maintainers. In such case one of maintainers assigns the issue to himself and delivers the fix
-** Rejected by Java 11 Maintainers - functional defect in the plugin (e.g. reliance on Java version or private fields in Reflections) or lack of justification for a fix
+** Accepted by _Java 11 Support Team_. In such case one of maintainers assigns the issue to himself and delivers the fix
+** Rejected by _Java 11 Support Team_ - functional defect in the plugin (e.g. reliance on Java version or private fields in Reflections) or lack of justification for a fix
 ** Issue is closed - Not a defect, Duplicate, etc.
 * For accepted issues maintainers will prioritize and schedule the fix
 ** Java 11 support is considered as a “Feature” with an obvious workaround: “Downgrade to Java 8”
@@ -262,7 +263,11 @@ will be responsible to provide an extra support for the issues:
 
 The proposed support model will be in place until “Availability in LTS + 2 months”.
 After this period Jenkins component maintainers will be responsible for triaging and fixing issues in their components.
-SECURITY reports will be triaged by Jenkins Security Team.
+SECURITY reports will be triaged by the Jenkins Security Team.
+
+_Java 11 Support Team_ is responsible to report the project status
+at link:https://jenkins.io/sigs/platform/[Platform SIG] meetings and, if needed,
+at Jenkins Governance meetings.
 
 == Motivation
 
@@ -316,7 +321,8 @@ The following backward compatibility requirements are defined:
 (e.g. Groovy Sandbox escaping in Script Security plugin)
 ** In order to mitigate this risk, Groovy will not be updated to 3.x in the incoming GA release.
 It means that Java 9+-alike features will not be available in Groovy DSLs within Jenkins
-** If a security issue is reported, is will be handled with a high priority by “Java 11 Maintainers” (see below)
+** If a security issue is reported, is will be handled with a high priority by “Java 11 Support Team”
+(see below)
 
 == Infrastructure Requirements
 
@@ -383,3 +389,4 @@ These prototypes include Jenkins core, Docker updates and downstream demo patche
 * link:https://jenkins.io/blog/2018/06/08/jenkins-java10-hackathon/[Jenkins & Java 10+ Hackathon]
 * link:https://jenkins.io/doc/administration/requirements/java/#running-jenkins[Running Jenkins with Java 10 and 11]
 * link:https://docs.google.com/document/d/1oluVrNVpQhXCIwW9CYVm09Y1vPc3H77d3q92LrzcpDw/edit#[Java 11 Testing status document]
+* link:https://github.com/orgs/jenkinsci/teams/java11-support[Jenkins Java 11 Support Team]
