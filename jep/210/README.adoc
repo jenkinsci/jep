@@ -462,7 +462,7 @@ but this is assumed to be a relatively infrequent event.
 == Prototype Implementation
 
 The reference implementation is a
-link:https://github.com/jglick/pipeline-log-fluentd-cloudwatch-plugin[`pipeline-log-fluentd-cloudwatch` plugin]
+link:https://github.com/jenkinsci/pipeline-cloudwatch-logs-plugin/blob/master/README.md[`pipeline-cloudwatch-logs` plugin]
 which depends on a series of Pipeline-related pull requests.
 
 == References
@@ -474,5 +474,5 @@ which depends on a series of Pipeline-related pull requests.
 * link:https://github.com/jenkinsci/workflow-job-plugin/pull/27[workflow-job PR 27]
 * link:https://github.com/jenkinsci/durable-task-plugin/pull/62[durable-task PR 62]
 * link:https://github.com/jenkinsci/workflow-durable-task-step-plugin/pull/21[workflow-durable-task-step PR 21]
-* link:https://github.com/jglick/pipeline-log-fluentd-cloudwatch-plugin[`pipeline-log-fluentd-cloudwatch` plugin]
+* link:https://github.com/jenkinsci/pipeline-cloudwatch-logs-plugin/blob/master/README.md[`pipeline-cloudwatch-logs` plugin]
 * link:https://youtu.be/9lTOtC9wA_I?t=38m21s[Demo] given to Cloud Native SIG (YouTube, ~19m, discussion before and after)
