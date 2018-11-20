@@ -176,10 +176,9 @@ link:https://issues.jenkins-ci.org/browse/JENKINS-40689[JENKINS-40689] EPIC.
 ==== Jenkins Master Images (JENKINS-51985)
 
 * Official jenkins/jenkins image is available for Java 11. Suggested labels:
-** latest-jdk11
-** latest-alpine-jdk11
-** latest-slim-jdk11
-** VERSION-jdk11
+** jdk11
+** lts-jdk11
+** `VERSION`-jdk11
 ** …
 * Automatic build flow on Trusted CI is updated to build and release images. Weekly and LTS releases are performed automatically
 * https://github.com/jenkinsci/docker/tree/java11 experimental branch is integrated into the master branch and deleted to avoid confusion.
@@ -342,6 +341,15 @@ Current JEP does NOT consider migrating to another base image.
 There is a well-known issue with OpenJDK distributions by Oracle,
 but it is not clear how it is going to impact the Docker images we use.
 The provider may just start building Java on its own.
+
+Postponing of Alpine/Slim packaging also postpones the question of multi-classifier images (like `alpine-jdk11`).
+
+=== Docker image labeling for JDK8
+
+As a part of this JEP, we do not change labeling for JDK8. 
+These images will be posted as is without explicit reference to Java version in these images (`latest`, `lts`, `slim`, `alpine`).
+Changing of the image label may be reconsidered once there is a JEP proposed for changing default labels to Java 11 or another base image.
+It is not in the scope for this JEP.
 
 == Backwards Compatibility
 
