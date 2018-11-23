@@ -193,6 +193,16 @@ Based on this:
 . elements annotated databinding annotation will be automatically marked a restricted so they are not exposed as
 "public API" whatever their Java visibility is.
 
+==== Data Model API
+
+Explicit metadata introduced in DataBound component should benefit various mechanisms relying on this, not
+just web UI data binding. Typically structs-plugin and configuration-as-code-plugin replicate some of the
+logic implemented by Stapler using reflection to introspect target components.
+
+A global API to get a data model from a DataBound component with all available metadata has been considered,
+but this discussion is now supperseded by [data-api effort](https://github.com/kohsuke/jep/tree/data-api/jep/0000/1)
+driven by Antonio and Kohsuke.
+
 == Backwards Compatibility
 
 Annotation based databinding comes in addition to the legacy mechanisms supporter by stapler, so don't break
