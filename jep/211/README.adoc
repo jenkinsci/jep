@@ -257,7 +257,8 @@ The referenced EPICs contain the detailed plan for what is included into the eac
 
 ==== Wiki
 
-* There is a Wiki page created to track known Java 11 incompatibilities in the Jenkins Core and Plugins.
+* There is a Wiki page created to track known Java 11 incompatibilities in the Jenkins Core and Plugins:
+** https://wiki.jenkins.io/display/JENKINS/Known+Java+11+Compatibility+issues
 * The page will have format similar to link:https://wiki.jenkins.io/display/JENKINS/Plugins+affected+by+fix+for+JEP-200[Plugins affected by fix for JEP-200] Wiki
 
 ==== Post-release support
