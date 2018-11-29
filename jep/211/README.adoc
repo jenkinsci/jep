@@ -257,7 +257,8 @@ The referenced EPICs contain the detailed plan for what is included into the eac
 
 ==== Wiki
 
-* There is a Wiki page created to track known Java 11 incompatibilities in the Jenkins Core and Plugins.
+* There is a Wiki page created to track known Java 11 incompatibilities in the Jenkins Core and Plugins:
+** https://wiki.jenkins.io/display/JENKINS/Known+Java+11+Compatibility+issues
 * The page will have format similar to link:https://wiki.jenkins.io/display/JENKINS/Plugins+affected+by+fix+for+JEP-200[Plugins affected by fix for JEP-200] Wiki
 
 ==== Post-release support
@@ -427,3 +428,4 @@ These prototypes include Jenkins core, Docker updates and downstream demo patche
 * link:https://jenkins.io/doc/administration/requirements/java/#running-jenkins[Running Jenkins with Java 10 and 11]
 * link:https://docs.google.com/document/d/1oluVrNVpQhXCIwW9CYVm09Y1vPc3H77d3q92LrzcpDw/edit#[Java 11 Testing status document]
 * link:https://github.com/orgs/jenkinsci/teams/java11-support[Jenkins Java 11 Support Team]
+* link:https://wiki.jenkins.io/display/JENKINS/Known+Java+11+Compatibility+issues[Known Java 11 Compatibility issues wiki page]
