@@ -428,3 +428,4 @@ These prototypes include Jenkins core, Docker updates and downstream demo patche
 * link:https://jenkins.io/doc/administration/requirements/java/#running-jenkins[Running Jenkins with Java 10 and 11]
 * link:https://docs.google.com/document/d/1oluVrNVpQhXCIwW9CYVm09Y1vPc3H77d3q92LrzcpDw/edit#[Java 11 Testing status document]
 * link:https://github.com/orgs/jenkinsci/teams/java11-support[Jenkins Java 11 Support Team]
+* link:https://wiki.jenkins.io/display/JENKINS/Known+Java+11+Compatibility+issues[Known Java 11 Compatibility issues wiki page]
