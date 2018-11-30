@@ -38,51 +38,94 @@ endif::[]
 
 == Abstract
 
-At first, all languages files were aggregated in one place. There are some drawbacks that we need to improve.
-
-Localization plugins separate i10n resource files from Jenkins core and plugins. This solution could
-provide a way to let more native speakers can contribute localization more efficiently. Also for a single
-Jenkins running instance does not need to load all languages files in most of the case.
+Localization plugins separate i10n resource files from Jenkins core and plugins. This solution
+provides a way to let more native speakers contribute localization resouces more efficiently. 
+Also for a single Jenkins running instance does not need to load all languages files in most cases.
 
 == Specification
 
-This propose suggest all languages have their own localization plugin. Such as link:https://github.com/jenkinsci/localization-zh-cn-plugin[Chinese Localization plugin].
+For this proposal, each language has single localization plugin, such as
+link:https://github.com/jenkinsci/localization-zh-cn-plugin[Chinese Localization plugin].
 
-In order to keep all languages plugins have the same style. There are some conventions need to follow.
+All language plugins will have share a consistent directory structure. 
+This link:https://wiki.jenkins.io/display/JENKINS/Internationalization[guide] describes the set of conventions to
+be followed when contributing to any language plugin. 
 
-Basically, all localization files that in the plugin should keep the same structure. And everyone could follow the link:https://wiki.jenkins.io/display/JENKINS/Internationalization[guide] to do the contribution. 
+[WARNING]
+====
+*(bitwiseman)*
+Describe directory structure from 
+====
 
-Localization plugin naming convention: localization-[language code]-[conuntry code]-plugin。You could add more
-hunman-readable information in file `pom.xml`. For example `<name>Localization: Chinese (Simplified)</name>`。
+
+=== Creating a Plugin
+
+==== Plugin Naming 
+
+Localization plugin naming convention: `localization-[language code]-[conuntry code]-plugin`. 
+You could add more hunman-readable descriptions in the `pom.xml` file. 
+For example, `<name>Localization: Chinese (Simplified)</name>`.
+
+==== Dependencies 
+
+[WARNING]
+====
+*(bitwiseman)*
+TODO: Move https://github.com/daniel-beck/localization-support-plugin into jenkinsci org.
+====
 
 You should add link:https://github.com/daniel-beck/localization-support-plugin[Localization Support Plugin] as a
-dependency. Please don't add more dependencies if you haven't a strong reason. We need to keep the localization plugin as
-simple as possible. There's an extension point(`LocalizationContributor`) needs to implement. There's only one language
-is allowing. But you can add different variants if the contributors think it's ok.
+dependency. Please don't add more dependencies unless absolutely required. 
+We need to keep the localization plugins as simple as possible. 
+There's an extension point(`LocalizationContributor`) that must to implemented.
+Only one language is allowed per localization plugin. 
+However, you can add multiple variants of one language to single localization plugin, if the contributors agree to it. 
 
-There are some points need to translation:
+=== What resources need translating?   
 
-* Localization from Jelly/Groovy views
-* Localization from Java source codes
-* Localization from help files
-* Localization from JavaScript files
+Each localization plugin should provide translations for the following items:
+
+* Jelly/Groovy views
+* Java source code
+* Help files
+* JavaScript files
+
+=== Access Control 
+
+[WARNING]
+====
+*(bitwiseman)*
+TODO
+====
 
 == Motivation
 
-Localization plugin is targeted on Jenkins plugin developers who want to improve native language UI experience.
-Let Jenkins is more easy to use.
+Previously all language files were aggregated in one place for core and for each plugin.
+For example, see link:https://github.com/jenkinsci/jenkins/tree/master/core/src/main/resources/lib/layout[]
+In that design, when someone might want to contribute localization, but not have the permission to commit. 
+The same could be said for people perhaps who willing to review submissions. 
+This could make progress very slow.
+
+Localization plugins address those limitation by putting each language into a separate plugin in its own repository.
+This lets native speakers own the permission, submission and review process for their plugin,
+speeding the improvement of native language UI experience and make Jenkins easier to use in all languages. 
 
 == Reasoning
 
-Easy for localization contribution access managing.
-There is someone want to contribute localization, but he may not have the permission to commit, and other people perhaps can't do a real review. So this progress could be very slow.
+=== One Global Localization plugin or One per language 
+
+[WARNING]
+====
+*(bitwiseman)*
+TODO
+====
 
 == Backwards Compatibility
 
-Remain all language files, until target language already moved into one localization plugin.
+All existing language files will be retained until a localization plugin is created for the target language and all files have been moved.
 
-In order to give a great experience when a first installation is going. All localization files should be kept
-which in the install wizard. And all language localization plugins will present in the language category of suggestion plugins.
+In order to keep the best installation experience, all localization files for Install Wizard will be kept in Jenkins Core.
+Further, all language localization plugins will be present in the language category of suggested plugins.
 
 In order to keep well compatibility between different versions, you can add a specific version directory.
 For example, there is a help text for a button in ver 1.0, but it has a totally different meaning in ver 2.0.
@@ -114,8 +157,11 @@ There are no new infrastructure requirements related to this proposal.
 
 == Testing
 
-Add junit test case to make sure that only specific language files could be placed in the plugin. For example,
-all files should contain `zh-cn` in `localization-zh-cn-plugin`.
+Add junit test case to make sure that only specific language files can be placed in a specific plugin.
+For example, all files should contain `zh-cn` in `localization-zh-cn-plugin`.
+Automated testing in this area would be extremely time consuming. 
+We will depend on plugin mantainers and contributors to review all changes for quality,
+including manual testing.
 
 == Prototype Implementation
 
