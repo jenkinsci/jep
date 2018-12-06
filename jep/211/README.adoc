@@ -374,8 +374,8 @@ It means that Java 9+-alike features will not be available in Groovy DSLs within
 
 === ci.jenkins.io
 
-* Tool Infrastructure should offer the latest version of JDK 11 (pre-release one) - INFRA-1688 .
-* JDK 11 should be added to `ci.jenkins.io`
+* Tool Infrastructure should offer the latest version of OpenJDK 11 - link:https://issues.jenkins-ci.org/browse/INFRA-1688[INFRA-1688]
+* OpenJDK 11 should be added to `ci.jenkins.io` (`jdk11`)
 
 === Jenkins Pipeline Library
 
