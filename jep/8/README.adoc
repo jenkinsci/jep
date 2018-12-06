@@ -107,7 +107,7 @@ open-source conferences like FOSDEM, etc.
 ** Project expenses should happen within the GSoC timeframe between start of Community Bonding and end of the last coding phase
 ** GSoC budget may not be used to cover generic equipment costs: laptop, IDEs, internet, etc.
 ** GSoC budget may not be used to cover software license costs.
-Should a project require access to non-free resources (software or hardware), the project mentors and student are expected to obtain the resources at no cost to the GSoC budget.
+Should a project require access to non-free resources (software or hardware), the project mentors and student are expected to discuss options with org admins. Org admins may help to reach out to potential sponsors.
 ** Total project expenses may not exceed the amount being paid by Google per project (as of 2018 - 500 USD)
 4. Promotional materials
 ** GSoC budget may be used to promote Google Summer of Code by distributing swag, e.g. stickers, T-shirts and other items.
