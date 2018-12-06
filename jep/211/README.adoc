@@ -122,9 +122,19 @@ By default OpenJDK 11 just prints a warning once on the startup, there is no sho
 * Docker Packaging for Debian
 * Plugins
 * Jenkins website: jenkins.io
-* Jenkins CI instances: ci.jenkins.io and trusted-ci.jenkins.io
-* Maven Build flow (Maven HPI Plugin, Plugin POM, etc.)
-* Test tools: Jenkins Test Harness, Acceptance Test Harness, Plugin Compatibility Tester
+* Jenkins CI instances:
+    link:https://jenkins.io/projects/infrastructure/#jenkins[ci.jenkins.io],
+    trusted-ci.jenkins.io,
+    link:https://jenkins.io/security/#team[Security team]'s instance
+* Maven Build flow (
+    link:https://github.com/jenkinsci/maven-hpi-plugin[Maven HPI Plugin],
+    link:https://github.com/jenkinsci/plugin-pom[Plugin POM],
+    link:https://github.com/jenkinsci/pom[Jenkins POM],
+    etc.)
+* Test tools:
+    link:https://github.com/jenkinsci/jenkins-test-harness[Jenkins Test Harness],
+    link:https://github.com/jenkinsci/acceptance-test-harness[Acceptance Test Harness],
+    link:https://github.com/jenkinsci/plugin-compat-tester[Plugin Compatibility Tester]
 
 Out of the scope for this JEP:
 
