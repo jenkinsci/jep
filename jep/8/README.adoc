@@ -148,7 +148,7 @@ This means:
 * Approval by GSoC org admins does not guarantee the payments
 * Jenkins project, GSoC org admins or SPI cannot guarantee the timing of any payment or, in the worst case,
 the payment itself
-* Jenkins Project or SPI cannot issue guarantee letters for visa applications or other or other travel documents.
+* Jenkins Project or SPI cannot issue guarantee letters for visa applications or other travel documents.
 
 === Unused budget from previous years
 
