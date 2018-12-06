@@ -85,10 +85,8 @@ or to other official Jenkins treasury account.
 === Using the budget
 
 The Google Summer of Code budget can be used ONLY to promote Google Summer of Code in the Jenkins project
-or to fund the ongoing Google Summer of Code
-or Google Code-In projects.
-It should not be used for other purposes,
-unless confirmed with GSoC organization admins.
+or to fund the ongoing Google Summer of Code or Google Code-In projects.
+It should not be used for other purposes unless approved by GSoC organization admins.
 
 Possible usages:
 
@@ -109,8 +107,7 @@ open-source conferences like FOSDEM, etc.
 ** Project expenses should happen within the GSoC timeframe between start of Community Bonding and end of the last coding phase
 ** GSoC budget may not be used to cover generic equipment costs: laptop, IDEs, internet, etc.
 ** GSoC budget may not be used to cover software license costs.
-The most of the projects are expected to be doable with only open-source or freeware software,
-otherwise it is up to the students and mentors to get the setup.
+Should a project require access to non-free resources (software or hardware), the project mentors and student are expected to obtain the resources at no cost to the GSoC budget.
 ** Total project expenses may not exceed the amount being paid by Google per project (as of 2018 - 500 USD)
 4. Promotional materials
 ** GSoC budget may be used to promote Google Summer of Code by distributing swag, e.g. stickers, T-shirts and other items.
@@ -144,16 +141,14 @@ and then seek reimbursement for the expenses. Pre-approval is still required in 
 
 === Liability
 
-Jenkins project has no legal entity which can commit
-on expenses.
+Jenkins project has no legal entity which can commit on expenses.
 
 This means:
 
 * Approval by GSoC org admins does not guarantee the payments
-* Jenkins project, GSoC org admins or SPI cannot guarantee ETA of any payment or, in the worst case,
+* Jenkins project, GSoC org admins or SPI cannot guarantee the timing of any payment or, in the worst case,
 the payment itself
-* Jenkins Project or SPI cannot issue guarantee letters for
-visa applications or other or other travel documents.
+* Jenkins Project or SPI cannot issue guarantee letters for visa applications or other or other travel documents.
 
 === Unused budget from previous years
 
@@ -181,9 +176,7 @@ Due to time constraints,
 travel grants need to be approved in a short timeframe in mid-summer.
 It is a vacation period, and it is difficult to reach out to stakeholders and get approvals during this timeframe.
 
-Having a separate GSoC budget and approval policy would
-give more freedom to Jenkins GSoC Org Admins in order
-to focus on organizational side of GSoC project.
+Having a separate GSoC budget and approval policy would give the Jenkins GSoC administrators the autonomy they need to operate the GSoC program effectively and on a timely fashion with regards to the Google Summer of Code Timeline.
 
 == Reasoning
 
