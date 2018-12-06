@@ -122,9 +122,19 @@ By default OpenJDK 11 just prints a warning once on the startup, there is no sho
 * Docker Packaging for Debian
 * Plugins
 * Jenkins website: jenkins.io
-* Jenkins CI instances: ci.jenkins.io and trusted-ci.jenkins.io
-* Maven Build flow (Maven HPI Plugin, etc.)
-* Test tools: Jenkins Test Harness, Acceptance Test Harness, Plugin Compatibility Tester
+* Jenkins CI instances:
+    link:https://jenkins.io/projects/infrastructure/#jenkins[ci.jenkins.io],
+    trusted-ci.jenkins.io,
+    link:https://jenkins.io/security/#team[Security team]'s instance
+* Maven Build flow (
+    link:https://github.com/jenkinsci/maven-hpi-plugin[Maven HPI Plugin],
+    link:https://github.com/jenkinsci/plugin-pom[Plugin POM],
+    link:https://github.com/jenkinsci/pom[Jenkins POM],
+    etc.)
+* Test tools:
+    link:https://github.com/jenkinsci/jenkins-test-harness[Jenkins Test Harness],
+    link:https://github.com/jenkinsci/acceptance-test-harness[Acceptance Test Harness],
+    link:https://github.com/jenkinsci/plugin-compat-tester[Plugin Compatibility Tester]
 
 Out of the scope for this JEP:
 
@@ -158,7 +168,6 @@ All stories in this EPIC need to be completed.
 * Jenkinsfile is updated to run tests with JDK 11
 ** It includes Unit tests, JTH and ATH smoke tests
 * It is possible to build Jenkins Core with the release profile on JDK 8
-* Dockerfile images are migrated
 
 ==== Plan for other Java 11 patches
 
@@ -206,15 +215,26 @@ There are the following conditions for the GA release:
 Currently we know about 2 plugins which will need to be updated: “Pipeline: Support” plugin (JENKINS-52187), Monitoring Plugin (JENKINS-52092).
 More plugin compatibility issues may be discovered during testing.
 
-=== New policy: Building with JDK 11
+=== New policy: Building Jenkins components/plugins with JDK 11
 
 The following policy is suggested:
 
-* Allow requiring JDK 11 to build Jenkins components
+* All Jenkins core components are required to retain compatibility with Java 8
+  so that Jenkins can run with it
+* All Jenkins plugins are required to retain Java 8 compatibility in GA releases
+  without `alpha`/`beta` prefix
+** Plugins may require Java 11 for `alpha`/`beta` releases **only**,
+   and these versions can be made accessible in the experimental update center for Java 11
+   (link:https://issues.jenkins-ci.org/browse/INFRA-1870[INFRA-1870])
+** In order to Java11-only `alpha`/`beta` releases,
+   the plugins must use Plugin POM with link:https://issues.jenkins-ci.org/browse/JENKINS-20679[JENKINS-20679] patches
+   (3.29 on Dec 06, 2018)
+** The policy may be reconsidered once link:https://issues.jenkins-ci.org/browse/JENKINS-55048[JENKINS-55048] is integrated
+   and widely adopted in Jenkins LTS
+* Allow requiring JDK 11 to *build* Jenkins components
 ** It includes Jenkins core libs, plugins and potentially the core itself
 ** It is up to maintainers to decide when they are ready to accept such requirement in components they maintain
-* Require such components to retain compatibility with Java 8 (as long as Jenkins Core supports it)
-* Require such components to have Jenkinsfiles running tests on Java 8 and Java 10+
+* Require such components to have Jenkinsfiles running tests on Java 8 and Java 11
 * Be explicit that all Java 11 support is available in the experimental mode until Jenkins officially supports it
 (currently we consider Java 10/11 support as a preview mode - docs)
 * if a downstream component includes Java 9+ bits (e.g. lib-process-utils),
@@ -225,6 +245,7 @@ This policy may require patches in parent POMs:
 * 2 Parent POMs should be updated: Jenkins POM and Plugin POM
 * For known issues Maven plugin versions should be updated to versions compatible with JDK10+. Support of JDK 8 is a must (see “Building with JDK 10+”)
 * If builds on Java 11 work correctly after the patches, support of JDK 11 can be released for tools
+* link:https://issues.jenkins-ci.org/browse/JENKINS-20679[JENKINS-20679] - Plugin POM should be updated to support `Minimum-Java-Version` metadata injection
 
 === Rollout plan
 
@@ -352,6 +373,28 @@ These images will be posted as is without explicit reference to Java version in 
 Changing of the image label may be reconsidered once there is a JEP proposed for changing default labels to Java 11 or another base image.
 It is not in the scope for this JEP.
 
+=== Experimental Update Center for Java 11
+
+During the preview availability preparation it was discovered that the
+link:https://plugins.jenkins.io/workflow-support[Pipeline: Support Plugin] compatibility fix (link:https://issues.jenkins-ci.org/browse/JENKINS-51998[JENKINS-51998])
+is being delayed due to the discovered compatibility-breaking changes.
+We discussed an option to ship and `alpha`/`beta` release to the
+link:https://jenkins.io/doc/developer/publishing/releasing-experimental-updates/[Experimental Update Center],
+but this option would cause additional risk for Java 8 users who use this update center.
+
+It was decided to create a new **temporary** update center so that custom
+Java 11 patches can be quickly deployed and used by Java 11 adopters.
+It will complement the timestamped snapshots and Incremental releases link:/jep/305[JEP-305] which can be used by developers.
+
+In order to deliver the patches,
+the Maven HPI Plugin should inject `Minimum-Java-Version` manifest entry
+which will be later processed by the Update Center generator.
+There is a link:https://issues.jenkins-ci.org/browse/JENKINS-20679[JENKINS-20679] for it and
+some patches proposed by Daniel Beck.
+
+The update center deployment is tracked as link:https://issues.jenkins-ci.org/browse/INFRA-1870[INFRA-1870],
+see the specification below.
+
 == Backwards Compatibility
 
 The following backward compatibility requirements are defined:
@@ -393,6 +436,20 @@ so we do not run Java 11 tests on core versions which do not support it
 
 * CD Flow for JDK 11 images is updated to support the Master branch with Java 11 packages
 (link:https://issues.jenkins-ci.org/browse/INFRA-1694[INFRA-1694])
+* If necessary, DockerHub configuration should be adjusted to host official
+  master and agent images for Java 11
+
+=== Temporary Experimental Update Center for Java 11
+
+* A new temporary update center should be deployed
+(link:https://issues.jenkins-ci.org/browse/INFRA-1870[INFRA-1870])
+* The patches must not impact output of the `latest` and `stable` update centers
+* The patch must ensure that Java11-only updates do not get to the standard
+  link:https://jenkins.io/doc/developer/publishing/releasing-experimental-updates/[Experimental Update Center]
+* Name of the update center: `temporary-experimental-java11`
+* This update center will stay available until May 2019 at least.
+  After that the Jenkins infrastructure team may remove it after coordinating the change
+  with the _Java 11 Support Team_
 
 == Testing
 
@@ -413,6 +470,9 @@ Tests to be performed:
 (link:https://issues.jenkins-ci.org/browse/JENKINS-52310[JENKINS-52310])
 * PCT is performed on Java 11, at least for the recommended plugins
 (link:https://issues.jenkins-ci.org/browse/JENKINS-52312[JENKINS-52312])
+
+In order to perform such testing,
+ATH and PCT tools should be updated to support Java 11.
 
 == Prototype Implementation
 
