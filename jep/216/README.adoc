@@ -51,12 +51,10 @@ All language plugins will have share a consistent directory structure.
 This link:https://wiki.jenkins.io/display/JENKINS/Internationalization[guide] describes the set of conventions to
 be followed when contributing to any language plugin. 
 
-[WARNING]
-====
-*(bitwiseman)*
-Describe directory structure from 
-====
-
+Like other Maven projects, we have the directory `src`. All localization files that 
+come from the Jenkins core should be in the `core`. For the numbers of plugins, their 
+localization files will be placed in the `plugins`. You can find the details about this 
+from the prototype implement.
 
 === Creating a Plugin
 
@@ -92,11 +90,11 @@ Each localization plugin should provide translations for the following items:
 
 === Access Control 
 
-[WARNING]
-====
-*(bitwiseman)*
-TODO
-====
+The quality of the localization plugin is very important. The Jenkins core contributor 
+should have the full control of it. If there is a localization SIG for this, the leader 
+could have the permission too. If anyone wants to take the initiative to create or 
+maintain the localization plugin, you can make a request to the Jenkins developers mailling 
+list. 
 
 == Motivation
 
@@ -114,11 +112,10 @@ speeding the improvement of native language UI experience and make Jenkins easie
 
 === One Global Localization plugin or One per language 
 
-[WARNING]
-====
-*(bitwiseman)*
-TODO
-====
+Have one global localization plugin might be more simple. It still can't resolve the problem 
+that many native speakers don't own the permission. Like many other softwares, they have 
+the different language packs. We think that creating one plugin per language is a better 
+solution.
 
 == Backwards Compatibility
 
