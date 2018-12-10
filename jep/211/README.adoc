@@ -405,10 +405,31 @@ The following backward compatibility requirements are defined:
 
 == Security
 
-* Only Java 11 with the latest security fixes will be supported at the moment of the public release
-* Starting from the Java 11 preview availability,
-  Jenkins security issues on Java 11 will be processed according to the
-  standard link:https://jenkins.io/security/[Jenkins Security Process]
+=== Process
+
+Only Java 11 with the latest security fixes will be supported at the moment of the public release
+
+Starting from the Java 11 preview availability,
+we adopt a partial security process for Java 11 issues.
+Approach:
+
+* Security issues for Java 11 should be always reported according
+  to the link:https://jenkins.io/security/#reporting-vulnerabilities[standard vulnerability reporting process].
+  It is mandatory, because it is required potential impact on Java 8 users
+* Security issues for Java 11 will be triaged by the _Java 11 Support Team_,
+  the team should include Security team members
+* Security fixes for Java 11 Preview may be delivered directly to the Core and Plugins in public,
+  the releases will not be coordinated by the Jenkins Security Team
+* Security advisories will not be published unless deemed necessary
+  by the _Java 11 Support Team_ and the Jenkins Security Officer
+
+Starting from the Java 11 general availability,
+Jenkins security issues on Java 11 will be processed according to the
+standard link:https://jenkins.io/security/[Jenkins Security Process].
+
+
+=== Security risks
+
 * In particular cases Java 11 may introduce new security defects
   (e.g. Groovy Sandbox escaping in Script Security plugin)
 ** As a part of the Preview availability,
