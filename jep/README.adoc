@@ -122,7 +122,7 @@
 | link:http://github.com/jglick[Jesse{nbsp}Glick]
 | link:https://github.com/carlossg[Carlos{nbsp}Sanchez]
 
-| Draft{nbsp}:speech_balloon:
+| Accepted{nbsp}:ok_hand:
 | link:211/README.adoc[JEP-211: Java 11 support in Jenkins]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
