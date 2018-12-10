@@ -67,7 +67,7 @@ link:https://issues.jenkins-ci.org/browse/JENKINS-40689[JENKINS-40689] - other n
 Java 11 was released on September 25, 2018.
 It is an LTS version with a long support timeline.
 This Jenkins Enhancement Proposal describes actions required
-to make Java 11 releases publicly available in Weekly and LTS releases.
+to make Jenkins releases for Java 11 publicly available in Weekly and LTS releases.
 
 == Specification
 
@@ -94,26 +94,22 @@ Although we have a plan for some cases (java.xml.bind for JAXB), there may be ot
 * No big bang
 ** The most of core and plugin patches will be delivered in Weekly releases ahead of the Java 11 general availability announcements
 ** We will be landing these patches using the existing code review process and test automation flows
-* Jenkins on Java 11 is available in the preview mode
-** It may be fully supported if this JEP is implemented after its release.
-Otherwise a separate JEP will be submitted for Java 11 support
 
 Non-goals:
 
 * Jenkins is fully clean from “Illegal Reflective Access” warnings
 ** There are many known places where Jenkins prints warnings about Illegal reflective access
 (see link:https://issues.jenkins-ci.org/browse/JENKINS-40689[JENKINS-40689])
-** We acknowledge the problem, but we do not consider it as a blocker for a release with Java 11 support.
+** We acknowledge the problem, but we do not consider it as a blocker for Java 11 support.
 By default OpenJDK 11 just prints a warning once on the startup, there is no short-term plan to change this behavior in OpenJDK
 * All plugins are operational with Java 11
 * Building all components with OpenJDK 11
 ** Some Jenkins components may be updated to support features offered in Java 9+, but there is no plan to update all tools
 * Full multi-release JARs support in Development tools
-* Cleanup of removed/deprecated features.
+* Cleanup of removed/deprecated features
 ** During Jenkins & Java 10+ Hackathon we have discovered several stories, which may impact Jenkins behavior on future versions:
 *** Signal API is deprecated (JENKINS-51995)
 *** Java Web Start is removed from Java 10+ (JENKINS-50301)
-*** …
 * There is no plan to remove all functionality as a part of this JEP, but it may be done and included into the release
 
 === Scope of changes
@@ -142,19 +138,19 @@ Out of the scope for this JEP:
 * Packaging in subprojects: Jenkins X, Jenkins Evergreen, Jenkinsfile Runner, etc.
   They will be handled in follow-up JEPs if needed.
 * Gradle build flow, as well as other
-* Windows Installers.
+* Windows Installers
   Their rework and Java removal is a separate project in Platform SIG.
-* Docker packaging for Alpine/Slim.
+* Docker packaging for Alpine/Slim
   See the reasoning below
 
 === Jenkins core patches
 
 Must-have stories are defined in link:https://issues.jenkins-ci.org/browse/JENKINS-52012[JENKINS-52012].
-All stories in this EPIC need to be completed.
+All stories in this epic need to be completed.
 
 ==== Library updates
 
-* The JENKINS-52012 EPIC includes a number of library updates in the core we know about: Groovy, ASM, etc.
+* The JENKINS-52012 epic includes a number of library updates in the core we know about: Groovy, ASM, etc.
 * Some updates may require downstream plugin updates.
 ** For Example, Groovy update requires cleanup of the Metaspace leak memory in Script Security and Pipeline plugins
 
@@ -227,25 +223,25 @@ The following policy is suggested:
 ** Plugins may require Java 11 for `alpha`/`beta` releases **only**,
    and these versions can be made accessible in the experimental update center for Java 11
    (link:https://issues.jenkins-ci.org/browse/INFRA-1870[INFRA-1870])
-** In order to Java11-only `alpha`/`beta` releases,
+** In order to support Java11-only `alpha`/`beta` releases,
    the plugins must use Plugin POM with link:https://issues.jenkins-ci.org/browse/JENKINS-20679[JENKINS-20679] patches
    (3.29 on Dec 06, 2018)
 ** The policy may be reconsidered once link:https://issues.jenkins-ci.org/browse/JENKINS-55048[JENKINS-55048] is integrated
    and widely adopted in Jenkins LTS
-* Allow requiring JDK 11 to *build* Jenkins components
+* Individual Jenkins components may choose to require JDK 11 to *build*
 ** It includes Jenkins core libs, plugins and potentially the core itself
 ** It is up to maintainers to decide when they are ready to accept such requirement in components they maintain
-* Require such components to have Jenkinsfiles running tests on Java 8 and Java 11
+** Components that choose to require JDK 11 for building must have Jenkinsfiles running tests on Java 8 and Java 11
 * Be explicit that all Java 11 support is available in the experimental mode until Jenkins officially supports it
-(currently we consider Java 10/11 support as a preview mode - docs)
-* if a downstream component includes Java 9+ bits (e.g. lib-process-utils),
+(currently we consider Java 11 support as a preview mode - docs)
+* If a downstream component includes Java 9+ bits (e.g. lib-process-utils),
 downstream components (e.g. Jenkins core for lib-process-utils) must be still buildable and testable with JDK8
 
 This policy may require patches in parent POMs:
 
 * 2 Parent POMs should be updated: Jenkins POM and Plugin POM
-* For known issues Maven plugin versions should be updated to versions compatible with JDK10+. Support of JDK 8 is a must (see “Building with JDK 10+”)
-* If builds on Java 11 work correctly after the patches, support of JDK 11 can be released for tools
+* For known issues Maven plugin versions should be updated to versions compatible with JDK10+. Support of JDK 8 is a must (see “Building with JDK 11”)
+* If builds on Java 11 work correctly after the patches, support for JDK 11 can be released for tools
 * link:https://issues.jenkins-ci.org/browse/JENKINS-20679[JENKINS-20679] - Plugin POM should be updated to support `Minimum-Java-Version` metadata injection
 
 === Rollout plan
@@ -287,8 +283,8 @@ The referenced EPICs contain the detailed plan for what is included into the eac
 
 ==== Post-release support
 
-After the release of Java 11 support, there may be a number of defects created by early adopters.
-It may cause additional workload on plugin and core maintainers, and this JEP sets sets a requirement to assist with triage of issues after the release.
+After the release of Java 11 support, there may be a number of defects reported by early adopters.
+It may cause additional workload on plugin and core maintainers who will need assistance with triage of issues after the release.
 
 After the weekly release availability the _Java 11 Support Team_
 (link:https://github.com/orgs/jenkinsci/teams/java11-support[@jenkinsci/java11-support])
@@ -325,7 +321,7 @@ but major updates will not be considered due to the serious risk of regressions.
 
 In September 2018 we expect Java 11 to be released.
 It is an LTS version with a long support timeline.
-Over last year Jenkins project has been receiving many issue reports about Java 9 and then Java 10 compatibility.
+Over last year the Jenkins project has received many issue reports about Java 9 and then Java 10 compatibility.
 
 * During Jenkins World 2017 hackfest Mark Waite and Baptiste Mathus invested
 some time to explore Jenkins compatibility with Java 9
@@ -339,10 +335,8 @@ we offered preview versions of Jenkins on Java 10 and 11
 * During the hackathon we were able to get major Jenkins features running
 with Java 10 and 11.
 See the summary link:https://docs.google.com/presentation/d/1hWWa6mYv86Kn8Ulu7uGlRJ9h2XTHlvHolO9CeRnnvcI/edit#slide=id.g1a6800f862_0_0[here]
-* We did progress w.r.t Java 11 during the DevOps World | Jenkins World 2018 hackathon,
+* We made progress with regards to Java 11 during the DevOps World | Jenkins World 2018 hackathon,
   key issues like Pipeline metaspace leaks are addressed
-
-//TODO: replace summary by the blogpost
 
 Taking the success of the Jenkins and Java 10+ hackathon,
 there is an interest to continue working on these stories towards making
@@ -372,7 +366,7 @@ Postponing of Alpine/Slim packaging also postpones the question of multi-classif
 
 === Docker image labeling for JDK8
 
-As a part of this JEP, we do not change labeling for JDK8. 
+As a part of this JEP, we do not change labeling for JDK8.
 These images will be posted as is without explicit reference to Java version in these images (`latest`, `lts`, `slim`, `alpine`).
 Changing of the image label may be reconsidered once there is a JEP proposed for changing default labels to Java 11 or another base image.
 It is not in the scope for this JEP.
