@@ -406,12 +406,17 @@ The following backward compatibility requirements are defined:
 == Security
 
 * Only Java 11 with the latest security fixes will be supported at the moment of the public release
-* In particular cases Java 11 may introduce new security defect
-(e.g. Groovy Sandbox escaping in Script Security plugin)
-** In order to mitigate this risk, Groovy will not be updated to 3.x in the incoming GA release.
+* Starting from the Java 11 preview availability,
+  Jenkins security issues on Java 11 will be processed according to the
+  standard link:https://jenkins.io/security/[Jenkins Security Process]
+* In particular cases Java 11 may introduce new security defects
+  (e.g. Groovy Sandbox escaping in Script Security plugin)
+** As a part of the Preview availability,
+   we acknowledge the potential risk of security regressions when running Jenkins with Java 11.
+   Preview versions of Java 11 are supposed to be used for evaluation only
+** In order to mitigate the Groovy update risk, Groovy will not be updated to 3.x in the incoming GA release.
 It means that Java 9+-alike features will not be available in Groovy DSLs within Jenkins
-** If a security issue is reported, is will be handled with a high priority by “Java 11 Support Team”
-(see below)
+** If a security issue is reported, is will be reviewed with a high priority by the _Java 11 Support Team_
 
 == Infrastructure Requirements
 
