@@ -407,7 +407,7 @@ The following backward compatibility requirements are defined:
 
 === Process
 
-Only Java 11 with the latest security fixes will be supported at the moment of the public release
+Only Java 11 with the latest security fixes will be supported at the moment of the public release.
 
 Starting from the Java 11 preview availability,
 we adopt a partial security process for Java 11 issues.
@@ -418,8 +418,9 @@ Approach:
   It is mandatory, because it is required potential impact on Java 8 users
 * Security issues for Java 11 will be triaged by the _Java 11 Support Team_,
   the team should include Security team members
-* Security fixes for Java 11 Preview may be delivered directly to the Core and Plugins in public,
-  the releases will not be coordinated by the Jenkins Security Team
+* Security fixes for Java 11 Preview that do *not* apply to instances with a Java 8 runtime, may be delivered directly to the Core and Plugins in public,
+  the releases will not be coordinated by the Jenkins Security Team in such case
+** Conversely, this means that any security issue targetting both Java 11 *and* Java 8 will obviously be processed in private and as usual by the Jenkins Security Team
 * Security advisories will not be published unless deemed necessary
   by the _Java 11 Support Team_ and the Jenkins Security Officer
 
