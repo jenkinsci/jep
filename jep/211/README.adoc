@@ -135,6 +135,7 @@ By default OpenJDK 11 just prints a warning once on the startup, there is no sho
     link:https://github.com/jenkinsci/jenkins-test-harness[Jenkins Test Harness],
     link:https://github.com/jenkinsci/acceptance-test-harness[Acceptance Test Harness],
     link:https://github.com/jenkinsci/plugin-compat-tester[Plugin Compatibility Tester]
+* User and Developer Documentation
 
 Out of the scope for this JEP:
 
@@ -279,7 +280,10 @@ The referenced EPICs contain the detailed plan for what is included into the eac
 
 * There is a Wiki page created to track known Java 11 incompatibilities in the Jenkins Core and Plugins:
 ** https://wiki.jenkins.io/display/JENKINS/Known+Java+11+Compatibility+issues
-* The page will have format similar to link:https://wiki.jenkins.io/display/JENKINS/Plugins+affected+by+fix+for+JEP-200[Plugins affected by fix for JEP-200] Wiki
+** The page will have format similar to link:https://wiki.jenkins.io/display/JENKINS/Plugins+affected+by+fix+for+JEP-200[Plugins affected by fix for JEP-200] Wiki
+* There is a Wiki page (or jenkins.io page) with developer guidelines explaining how to test plugins
+  with Java 11 and how to resolve common issues
+** https://jenkins.io/redirect/java11-developer-guide
 
 ==== Post-release support
 
@@ -497,3 +501,4 @@ These prototypes include Jenkins core, Docker updates and downstream demo patche
 * link:https://docs.google.com/document/d/1oluVrNVpQhXCIwW9CYVm09Y1vPc3H77d3q92LrzcpDw/edit#[Java 11 Testing status document]
 * link:https://github.com/orgs/jenkinsci/teams/java11-support[Jenkins Java 11 Support Team]
 * link:https://wiki.jenkins.io/display/JENKINS/Known+Java+11+Compatibility+issues[Known Java 11 Compatibility issues wiki page]
+* link:https://jenkins.io/redirect/java11-developer-guide[Developer Guidelines]
