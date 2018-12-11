@@ -366,7 +366,7 @@ Although we are interested to invest into adopting new Java versions,
 it is also out of the scope of this JEP.
 We will not be testing new patches with Java 12 and providing Docker packages with this version.
 Issue reports from early adopters may be triaged,
-but Java 12 won't be officially supported as a part of this JEP.
+but Java versions 12 and above won't be officially supported as a part of this JEP.
 
 === Docker packaging for Alpine/Slim
 
