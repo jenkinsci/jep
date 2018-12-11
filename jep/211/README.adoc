@@ -361,6 +361,7 @@ but _Java 11 Support Team_ will not provide support for Java 10 issue reports
 unless the issues are reproducible on Java 11.
 
 Java 12 is in the early access state at the time this JEP is accepted (Dec 12, 2018).
+With accelerated pace of Java releases, Java 13 and newer versions are also expected soon. 
 Although we are interested to invest into adopting new Java versions,
 it is also out of the scope of this JEP.
 We will not be testing new patches with Java 12 and providing Docker packages with this version.
