@@ -1,0 +1,209 @@
+= JEP-217: Experimental Jenkins organization on DockerHub
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 217
+
+| Title
+| Experimental Jenkins organization on DockerHub
+
+| Sponsor
+| link:https://github.com/oleg-nenashev[Oleg Nenashev]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2018-12-08
+
+| BDFL-Delegate
+| TBD
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+| JIRA
+| https://issues.jenkins-ci.org/browse/INFRA-1936[INFRA-1936]
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+| Discussions-To
+| link:https://jenkins.io/sigs/platform/[Platform SIG]
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+This JEP documents the `jenkins4eval` organization on DockerHub.
+The main purpose of this organization is to provide a storage for experimental Jenkins Docker images
+so that maintainers can build and deploy untrusted images from ci.jenkins.io.
+
+== Specification
+
+The most of the specification is defined in the _Infrastructure Requirements_ section.
+This section contains only specific details about the process.
+
+=== Requesting hosting
+
+1. Hosting requests should be submitted via JIRA issues
+   (`project=INFRA`, component=`dockerhub`)
+2. The following details should be in the issues description:
+** Name of the image to be created
+** Reference to the GitHub repository which defines the Docker image.
+   The repository should be located within one of the Jenkins GitHub organizations
+** Users which should have write access to the repository
+** Build flow to be configured: ci.jenkins.io, manual, automatic builds
+** For link:https://docs.docker.com/docker-hub/builds/[automatic builds on DockerHub],
+   full specification should be provided (branches/tags to build, triggers, locations of Dockerfiles)
+3. Once the request is submitted,
+   it will be reviewed by the Jenkins infrastructure team
+
+
+=== Implementation on ci.jenkins.io
+
+1. Implementation on ci.jenkins.io may be using CLI steps or Docker Pipeline plugin
+   to build and deploy images on agents labeled with the `docker` label
+2. In the case of CLI steps, `infra.withDockerCredentials {}` wrapper
+   should be used to setup credentials in the environment
+3. Jenkinsfile maintainers are responsible to ensure that the credentials
+   are properly escaped in the build logs and not exposed in other ways
+
+Example:
+
+[source, groovy]
+----
+stage('Publish') {
+    infra.withDockerCredentials {
+        sh 'make publish'
+    }
+}
+----
+
+== Motivation
+
+In Jenkins Platform SIG there are projects which target Jenkins Docker packaging:
+Java 11 support and multi-architecture Docker images.
+Both these projects need to update the release flow of the official link:https://github.com/jenkinsci/docker[jenkins/jenkins]
+Docker image.
+Currently this flow is hosted on the Jenkins' Trusted CI instance which is not accessible to the SIG members.
+During the Java 11 support project we had 2 major issues with releases,
+because we were unable to debug the release flow or to troubleshoot the failures.
+In order to simplify development in the future,
+this JEP proposes to create a new DockerHub organization which would be accessible
+from the public ci.jenkins.io instance.
+It would give Docker image maintainers a way to prototype and debug their `Jenkinsfile`s before running them on Trusted CI.
+
+Such organization also gives some extra advantages:
+
+* Image maintainers can setup a CD process for their experimental images by using Jenkins.
+  It allows working around many DockerHub automatic build limitations
+* It is also possible to create repositories with manual deployments and
+  automatic builds on DockerHub
+
+== Reasoning
+
+=== DockerHub vs. custom Docker registry
+
+Usage of a custom Docker registry was proposed as an alternative to the experimental
+organization on DockerHub.
+This approach has the following disadvantages:
+
+* Users need to reconfigure their images to use another Docker registry
+* It is not possible to get
+  link:https://docs.docker.com/docker-hub/builds/[automatic builds on DockerHub],
+  which is essential to some experimental images before the Jenkins flow is deployed
+* Custom infrastructure is required
+
+After the discussion it was decided to go forward with the DockerHub organization approach.
+
+=== DockerHub organization naming
+
+When the DockerHub org name was discussed at the Platform SIG meeting,
+the agreement was to have `jenkins-experimental` as a name of the organization.
+Unfortunately DockerHub does not support naming with dashes
+(link:https://github.com/docker/hub-feedback/issues/373[Issue #373]).
+An alternative name was selected to match the requirement.
+
+== Backwards Compatibility
+
+There is no backward compatibility requirements in this JEP.
+
+== Security
+
+* `jenkins4eval` is explicitly considered as *untrusted* DockerHub organization,
+  because it will be possible to perform deployments to it from ci.jenkins.io
+* Users of the `jenkins4eval` images run the images at their own risk
+* The security considerations will be explicitly documented in the
+  organization description and images
+* DockerHub generic account will have no access to production DockerHub images
+
+== Infrastructure Requirements
+
+=== New Dockerhub organization
+
+A new DockerHub organization should be created.
+
+* Name: `jenkins4eval`.
+* Administrators: same as in https://hub.docker.com/r/jenkins
+
+=== DockerHub generic account for jenkins4eval
+
+In order to enable deployments from ci.jenkins.io,
+a new DockerHub generic account should be created.
+
+* The account has no *WRITE* access to any repository within `jenkins` and `jenkinsci`
+* The account may get write access to some repositories on `jenkins4eval`
+  so that the automated builds can be established on ci.jenkins.io
+
+=== ci.jenkins.io
+
+* New credentials should be created for the generic account
+* Credentials ID should be the same as DockerHub credentials ID being used
+  by Trusted CI to deploy official Docker images
+
+== Testing
+
+Testing will be performed by several reference implementations on ci.jenkins.io.
+
+== Prototype Implementation
+
+* https://hub.docker.com/r/jenkins4eval/
+* link:https://github.com/jenkinsci/docker/pull/719[jenkinsci/docker/pull/719] -
+Multi-architecture Docker images with deployment to DockerHub
+
+== References
+
+* link:https://jenkins.io/sigs/platform/[Platform SIG]
+* link:https://ci.jenkins.io[ci.jenkins.io]
+* link:https://github.com/jenkins-infra/documentation/blob/master/ci.adoc[Documentation: ci.jenkins.io]
+
