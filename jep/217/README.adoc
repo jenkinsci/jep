@@ -1,4 +1,4 @@
-= JEP-0000: Experimental Jenkins organization on DockerHub
+= JEP-217: Experimental Jenkins organization on DockerHub
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -13,7 +13,7 @@ endif::[]
 [cols="1h,1"]
 |===
 | JEP
-| 0000
+| 217
 
 | Title
 | Experimental Jenkins organization on DockerHub
@@ -23,7 +23,7 @@ endif::[]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
-| Not Submitted :information_source:
+| Draft :speech_balloon:
 
 | Type
 | Standards
@@ -100,13 +100,14 @@ This section contains only specific details about the process.
 
 Example:
 
-```groovy
-    stage('Publish') {
-        infra.withDockerCredentials {
-            sh 'make publish'
-        }
+[source, groovy]
+----
+stage('Publish') {
+    infra.withDockerCredentials {
+        sh 'make publish'
     }
-```
+}
+----
 
 == Motivation
 
@@ -129,7 +130,6 @@ Such organization also gives some extra advantages:
 * It is also possible to create repositories with manual deployments and
   automatic builds on DockerHub
 
-
 == Reasoning
 
 === DockerHub vs. custom Docker registry
@@ -139,7 +139,8 @@ organization on DockerHub.
 This approach has the following disadvantages:
 
 * Users need to reconfigure their images to use another Docker registry
-* It is not possible to get link:https://docs.docker.com/docker-hub/builds/[automatic builds on DockerHub],
+* It is not possible to get
+  link:https://docs.docker.com/docker-hub/builds/[automatic builds on DockerHub],
   which is essential to some experimental images before the Jenkins flow is deployed
 * Custom infrastructure is required
 

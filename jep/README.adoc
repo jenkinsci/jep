@@ -63,7 +63,7 @@
 | TBD
 
 | Draft{nbsp}:speech_balloon:
-| link:12/README.adoc[JEP-12: Travel Grant Proposal Update]
+| link:12/README.adoc[JEP-12: Travel Grant Program]
 | link:https://github.com/tracymiranda[Tracy{nbsp}Miranda]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
@@ -150,6 +150,11 @@
 | Draft{nbsp}:speech_balloon:
 | link:216/README.adoc[JEP-216: Localization Plugin]
 | link:https://github.com/LinuxSuRen[Zhao{nbsp}Xiaojie]
+| TBD
+
+| Draft{nbsp}:speech_balloon:
+| link:217/README.adoc[JEP-217: Experimental Jenkins organization on DockerHub]
+| link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | TBD
 
 | Accepted{nbsp}:ok_hand:
