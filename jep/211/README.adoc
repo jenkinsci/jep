@@ -350,6 +350,24 @@ Non-goals in the specification are defined to limit the scope of work.
 The main objective is to get Jenkins running with Java 11,
 there will be follow-up tasks to cleanup Illegal Reflective Access warnings and to adopt new features.
 
+=== Support of Java 10 and 12+
+
+Originally this JEP was targeting support of Java 10 and Java 11 early access.
+Java 10 is in the End of Life starting from 25.09.2018 when Java 11 was officially released.
+To limit the scope, Java 10 support was excluded from this JEP.
+We will neither be testing new patches with Java 10 nor providing Docker packages with this version.
+It may be possible to run Jenkins WAR files with Java 10 as it is described link:https://jenkins.io/blog/2018/06/17/running-jenkins-with-java10-11/[here],
+but _Java 11 Support Team_ will not provide support for Java 10 issue reports
+unless the issues are reproducible on Java 11.
+
+Java 12 is in the early access state at the time this JEP is accepted (Dec 12, 2018).
+With accelerated pace of Java releases, Java 13 and newer versions are also expected soon. 
+Although we are interested to invest into adopting new Java versions,
+it is also out of the scope of this JEP.
+We will neither be testing new patches with Java 12+ nor providing Docker packages with these versions.
+Issue reports from early adopters may be triaged,
+but Java versions 12 and above won't be officially supported as a part of this JEP.
+
 === Docker packaging for Alpine/Slim
 
 Jenkins offers official slim and Alpine packages for Java 11.
