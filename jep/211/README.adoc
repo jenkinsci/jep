@@ -364,7 +364,7 @@ Java 12 is in the early access state at the time this JEP is accepted (Dec 12, 2
 With accelerated pace of Java releases, Java 13 and newer versions are also expected soon. 
 Although we are interested to invest into adopting new Java versions,
 it is also out of the scope of this JEP.
-We will not be testing new patches with Java 12 and providing Docker packages with this version.
+We will neither be testing new patches with Java 12+ nor providing Docker packages with these versions.
 Issue reports from early adopters may be triaged,
 but Java versions 12 and above won't be officially supported as a part of this JEP.
 
