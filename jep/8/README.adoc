@@ -122,6 +122,7 @@ payments to external individuals/organizations for promotion.
 
 * All expenses should be pre-approved with
 Jenkins GSoC org admins before the expenses are incurred, and as a pre-condition for payment
+* Send the expense requests to the link:mailto:jenkinsci-gsoc-orgs@googlegroups.com[Jenkins GSoC Org Admins mailing list]
 * Jenkins org admins are eligible to approve the requests only within the GSoC budget defined in this JEP
 * All payments beyond this budget should be approved by Jenkins Governance Meeting or Jenkins Board
 * According to the SPI process,
@@ -133,6 +134,9 @@ once submitted (see _Payment process_)
 * Jenkins GSoC org admins should respond within 2 weeks to an expense request
 ** If one or more Jenkins GSoC org admins have not responded within the 2 weeks, the remaining org admins can decide by consensus
 ** If no Jenkins GSoC org admins have responded at the end of the the 2 week period, the expense request needs to be presented to Jenkins Governance meeting
+* To minimize delays, we kindly ask requesters to:
+** Send a request at least 2 days before the Weekly GSoC meeting
+** Join the Weekly GSoC meeting and discuss it with the Jenkins GSoC org admins on the call
 
 === Payment process
 
