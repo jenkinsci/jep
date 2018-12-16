@@ -64,7 +64,7 @@ endif::[]
 
 == Abstract
 
-This JEP documents the `jenkins4eval` organization on DockerHub.
+This JEP documents the `jenkinsfutures` organization on DockerHub.
 The main purpose of this organization is to provide a storage for experimental Jenkins Docker images
 so that maintainers can build and deploy untrusted images from ci.jenkins.io.
 
@@ -160,9 +160,9 @@ There is no backward compatibility requirements in this JEP.
 
 == Security
 
-* `jenkins4eval` is explicitly considered as *untrusted* DockerHub organization,
+* `jenkinsfutures` is explicitly considered as *untrusted* DockerHub organization,
   because it will be possible to perform deployments to it from ci.jenkins.io
-* Users of the `jenkins4eval` images run the images at their own risk
+* Users of the `jenkinsfutures` images run the images at their own risk
 * The security considerations will be explicitly documented in the
   organization description and images
 * DockerHub generic account will have no access to production DockerHub images
@@ -173,16 +173,16 @@ There is no backward compatibility requirements in this JEP.
 
 A new DockerHub organization should be created.
 
-* Name: `jenkins4eval`.
+* Name: `jenkinsfutures`.
 * Administrators: same as in https://hub.docker.com/r/jenkins
 
-=== DockerHub generic account for jenkins4eval
+=== DockerHub generic account for jenkinsfutures
 
 In order to enable deployments from ci.jenkins.io,
 a new DockerHub generic account should be created.
 
 * The account has no *WRITE* access to any repository within `jenkins` and `jenkinsci`
-* The account may get write access to some repositories on `jenkins4eval`
+* The account may get write access to some repositories on `jenkinsfutures`
   so that the automated builds can be established on ci.jenkins.io
 
 === ci.jenkins.io
@@ -197,7 +197,7 @@ Testing will be performed by several reference implementations on ci.jenkins.io.
 
 == Prototype Implementation
 
-* https://hub.docker.com/r/jenkins4eval/
+* https://hub.docker.com/r/jenkinsfutures/
 * link:https://github.com/jenkinsci/docker/pull/719[jenkinsci/docker/pull/719] -
 Multi-architecture Docker images with deployment to DockerHub
 
