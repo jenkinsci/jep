@@ -296,7 +296,7 @@ It is true, but detaching of the plugin has the following motivation:
 * The plugin will have a separate release cycle so that changes in it
   can be delivered and backported independently from the core's release cycle
 * The approach allows keeping the patches on the core's side minimal
-* The approach allows integrating with Pipeline Log Storage API introduced in Pipeline plugins (JEP-200)
+* The approach allows integrating with Pipeline Log Storage API introduced in Pipeline plugins (JEP-210)
 
 All External Log Storage implementations are expected to extend this plugin
 instead of just using API provided by the Core.
@@ -342,7 +342,7 @@ taking the current state,
 because a lot of code would need to be updated so that the events get captured properly.
 Opinion of the JEP sponsor is that this JEP offers a foundation layer
 so that it may be implemented.
-Reworking the entire Jenkins API to events is NOT an objective for this JEP-200,
+Reworking the entire Jenkins API to events is NOT an objective for this JEP-212,
 but it may be added in subsequent JEPs.
 
 === Why do we need JSON layer?
