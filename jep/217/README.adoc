@@ -68,6 +68,13 @@ This JEP documents the `jenkins4eval` organization on DockerHub.
 The main purpose of this organization is to provide a storage for experimental Jenkins Docker images
 so that maintainers can build and deploy untrusted images from ci.jenkins.io.
 
+[WARNING]
+====
+`jenkins4eval` is a proposed name which is under the discussion in the Platform SIG.
+This name is used in the prototype impmenetations,
+but it may change before the JEP gets accepted.
+====
+
 == Specification
 
 The most of the specification is defined in the _Infrastructure Requirements_ section.
