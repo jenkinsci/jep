@@ -102,7 +102,9 @@ This section contains only specific details about the process.
    to build and deploy images on agents labeled with the `docker` label
 2. In the case of CLI steps, `infra.withDockerCredentials {}` wrapper
    should be used to setup credentials in the environment
-3. Jenkinsfile maintainers are responsible to ensure that the credentials
+** `DOCKERHUB_ORGANISATION` environment variable will be set to reference the target DockerHub organization
+** `DOCKER_CONFIG` environment variable with proper credentials will be automatically set by the wrapper
+4. Jenkinsfile maintainers are responsible to ensure that the credentials
    are properly escaped in the build logs and not exposed in other ways
 
 Example:
@@ -111,7 +113,7 @@ Example:
 ----
 stage('Publish') {
     infra.withDockerCredentials {
-        sh 'make publish'
+        sh "make docker-publish -e tag ${env.DOCKERHUB_ORGANISATION}/myimage"
     }
 }
 ----
@@ -207,6 +209,8 @@ Testing will be performed by several reference implementations on ci.jenkins.io.
 * https://hub.docker.com/r/jenkins4eval/
 * link:https://github.com/jenkinsci/docker/pull/719[jenkinsci/docker/pull/719] -
 Multi-architecture Docker images with deployment to DockerHub
+* link:https://github.com/jenkins-infra/pipeline-library/pull/81[jenkins-infra/pipeline-library/pull/81] -
+Pipeline Library patch
 
 == References
 
