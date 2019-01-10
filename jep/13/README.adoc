@@ -1,4 +1,4 @@
-= JEP-0000: Jenkins YouTube Channel Policy for Contributors
+= JEP-13: Jenkins YouTube Channel Policy for Contributors
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -13,7 +13,7 @@ endif::[]
 [cols="1h,1"]
 |===
 | JEP
-| 0000
+| 13
 
 | Title
 | Jenkins YouTube Channel Policy for Contributors
@@ -23,7 +23,7 @@ endif::[]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
-| Not Submitted :information_source:
+| Draft :speech_balloon:
 
 | Type
 | Process
@@ -170,7 +170,7 @@ so that more contributors can run meetings on their own.
 
 == Reasoning
 
-=== Permission request process and requeirements
+=== Permission request process and requirements
 
 These sections are documented according to the discussion in the Infrastructure mailing list in June 2018.
 Thread subject: _Granting YouTube/HoA access to Ewelina and Martin_.

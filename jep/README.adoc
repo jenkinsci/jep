@@ -67,6 +67,11 @@
 | link:https://github.com/tracymiranda[Tracy{nbsp}Miranda]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
+| Draft{nbsp}:speech_balloon:
+| link:13/README.adoc[JEP-13: Jenkins YouTube Channel Policy for Contributors]
+| link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
+| TBD
+
 | Final{nbsp}:lock:
 | link:200/README.adoc[JEP-200: Switch Remoting/XStream blacklist to a whitelist]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
