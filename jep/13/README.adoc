@@ -90,6 +90,8 @@ Jenkins YouTube channel has the following roles:
     https://github.com/olblak[Olivier Vernin],
     https://github.com/bitwiseman[Liam Newman]
 * **Primary Owner** - Jenkins' Google Account
+* **Communications Manager** - This setting allows users to response to feedback but not change videos.
+  This is not currently used by the Jenkins project.
 
 === Account Managers
 
