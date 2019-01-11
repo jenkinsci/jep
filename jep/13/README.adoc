@@ -1,0 +1,221 @@
+= JEP-13: Jenkins YouTube Channel Policy for Contributors
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 13
+
+| Title
+| Jenkins YouTube Channel Policy for Contributors
+
+| Sponsor
+| link:https://github.com/oleg-nenashev[Oleg Nenashev]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Process
+
+| Created
+| 2019-01-10
+
+| BDFL-Delegate
+| TBD
+
+| JIRA
+| https://issues.jenkins-ci.org/browse/INFRA-1929[INFRA-1929]
+
+| Discussions-To
+| link:https://jenkins.io/mailing-lists/#infralists-jenkins-ci-org[infra@lists.jenkins-ci.org],
+  link:https://groups.google.com/forum/#!forum/jenkins-advocacy-and-outreach-sig[Advocacy and Outreach SIG]
+
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+This JEP documents the policy for link:https://www.youtube.com/user/jenkinsci[Jenkins YouTube account] management.
+It defines the management approaches and the process for getting management permissions.
+This is a process JEP which may be updated in the future.
+
+== Specification
+
+Jenkins YouTube Channel is currently implemented as a user channel.
+
+* URL: https://www.youtube.com/user/jenkinsci
+
+=== YouTube Channel Ownership
+
+Jenkins YouTube account and channel are managed by the
+link:https://jenkins.io/projects/infrastructure/[Jenkins Infrastructure Team].
+
+=== Roles
+
+Jenkins YouTube channel has the following roles:
+
+* **Manager** - Contributor with the content management permissions
+** Action examples: manage events, run broadcasts,
+  organize playlists, edit videos, moderate comments, etc.
+* **Owner** - Contributor who can manage permissions for others
+** Action examples: add/remove channel _Managers_
+** Account owners on Jan 10, 2019:
+    https://github.com/kohsuke[Kohsuke Kawaguchi],
+    https://github.com/rtyler[R. Tyler Croy],
+    https://github.com/olblak[Olivier Vernin],
+    https://github.com/bitwiseman[Liam Newman]
+* **Primary Owner** - Jenkins' Google Account
+* **Communications Manager** - This setting allows users to response to feedback but not change videos.
+  This is not currently used by the Jenkins project.
+
+=== Account Managers
+
+==== Eligibility
+
+The following categories of contributors are eligible to get **Manager** permissions
+in the YouTube channel.
+
+* Jenkins Board members and Jenkins officers (link:https://wiki.jenkins.io/display/JENKINS/Governance+Board[list])
+* Jenkins Infrastructure Team members
+* link:https://jenkins.io/sigs/[Special Interest Group] Leaders
+* link:https://jenkins.io/projects/[Sub-project] Leaders
+
+Other Jenkins contributors may also request permissions.
+In such case the decision will be made by the YouTube channel owners
+depending on the provided justification and the requester's contribution history.
+
+==== Responsibilities
+
+YouTube channel managers are responsible for managing the content they create there.
+The responsibilities include but not limited to:
+
+* Run and moderate events within the scope of the request
+* Properly categorize videos (descriptions, labels, playlists) so that
+  the account can be successfully shared within the Jenkins organization
+* Ensure that the content is compliant with the project's link:https://jenkins.io/project/conduct/[Code of Conduct]
+* Ensure that the content does not disclose security issues until advisories are published
+  (see below)
+* Handle video edit requests: amendment, removal of sensitive/private information disclosures, etc.
+
+If a channel manager is not available, YouTube account owners or other channel managers act as a backup.
+
+==== Requirements
+
+* The requester has a Google account (personal or corporate)
+  which is clearly mapped to a single person.
+  Shared accounts are not permitted
+* The Google account has a link:https://www.google.com/landing/2step/[Two-factor authentication] enabled
+* The requester has a signed and approved/merged
+  link:https://github.com/jenkinsci/infra-cla#individual-cla[Individual Contributor License Agreement]
+* The requested has an account in Jenkins JIRA
+
+==== Requesting permissions
+
+Permissions should be requested by creating a new Jenkins JIRA ticket
+(project: *INFRA*, component: *youtube*).
+Requests should contain the following information:
+
+* Justification: purpose of the requests with references to the projects/SIGs
+* Explicit confirmation that Two-factor authentication is configured for the account
+
+=== Account Owners
+
+Account owner permissions may be granted by the current account owners upon request.
+There is no special process for that.
+
+=== Issue management
+
+YouTube Channel issues are managed in the link:https://issues.jenkins-ci.org/[Jenkins JIRA].
+
+* Project: *INFRA*
+* Component: *youtube*
+
+Security-related issues are managed according to the standard
+link:https://issues.jenkins-ci.org/[Jenkins Security Process].
+
+== Motivation
+
+With introduction of Special Interest Groups in 2018,
+we have started a lot of various meetings.
+Some of these meetings are broadcasted via YouTube Live (Hangouts-on-Air)
+by a number of contributors who have permissions to manage and run events in YouTube.
+
+Some SIG and sub-project leaders cannot manage events on their own,
+because nowadays they have no permissions to create events.
+It would be great to document how users get permissions
+so that more contributors can run meetings on their own.
+
+== Reasoning
+
+=== Permission request process and requirements
+
+These sections are documented according to the discussion in the Infrastructure mailing list in June 2018.
+Thread subject: _Granting YouTube/HoA access to Ewelina and Martin_.
+
+== Backwards Compatibility
+
+N/A, process JEP
+
+== Security
+
+=== Sensitive information
+
+YouTube channel is a potential way of disclosing sensitive information about the Jenkins project.
+For example, some security issues may be unintentionally disclosed during the screenshare sessions or recorded discussions.
+All channel owners and managers are responsible to ensure that the published materials
+do not disclose security issues, personal data or other sensitive information.
+
+In the case of security disclosures (existing or new issues),
+owners and managers are responsible to...
+
+* Cleanup the content (e.g. by editing the video recording)
+* Report the issue to the Security team (link:https://jenkins.io/security/#reporting-vulnerabilities[process])
+
+=== Access limitations
+
+Access to the Jenkins YouTube account is limited to a number of contributors.
+Additional requirements are set to ensure the limited access (e.g. Two-factor authentication for account managers).
+
+== Infrastructure Requirements
+
+* "youtube" component is created within the Jenkins _INFRA_ project in JIRA
+* "youtube" component is created within the Jenkins _SECURITY_ project in JIRA
+
+== Testing
+
+N/A, process JEP
+
+== Prototype Implementation
+
+N/A, process JEP
+
+== References
+
+* lin:https://www.youtube.com/user/jenkinsci[Jenkins YouTube channel]
+* link:https://jenkins.io/projects/infrastructure/[Jenkins Infrastructure Team]
+
