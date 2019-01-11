@@ -23,7 +23,7 @@ endif::[]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
-| Not Submitted :information_source:
+| Draft :speech_balloon:
 
 | Type
 | Standards
@@ -66,6 +66,8 @@ endif::[]
 
 Multiple security issues have been identified in the way that Stapler request handling interacts with common design patterns in Jenkins and plugins.
 This JEP describes additions to Stapler and Jenkins that limit request handling from behaving in unsafe ways, addressing multiple security fixes.
+This was developed as SECURITY-595 in private and published as part of the updates for the
+link:https://jenkins.io/security/advisory/2018-12-05/#SECURITY-595[2018-12-05 Jenkins Security Advisory].
 
 == Specification
 
@@ -345,6 +347,8 @@ This was developed as SECURITY-595 in private and published as part of the updat
 * https://github.com/stapler/stapler/commit/28e8eba822a0df9dcd64d20eb63d8ab5f6ee2980[SECURITY-595 in Stapler]
 * https://github.com/jenkinsci/jenkins/commit/47f38d714c99e1841fb737ad1005618eb26ed852[SECURITY-595 in Jenkins core]
 * https://github.com/jenkinsci/lib-jenkins-stapler-support[Jenkins Stapler Support library with annotations for plugin developers]
+
+== References
 
 === Public Documentation
 
