@@ -1,0 +1,362 @@
+= JEP-0000: Stapler Request Dispatcher Filtering
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 0000
+
+| Title
+| Stapler Request Dispatcher Filtering
+
+| Sponsor
+| link:https://github.com/daniel-beck[Daniel Beck]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2018-08-21
+
+| BDFL-Delegate
+| TBD
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+Multiple security issues have been identified in the way that Stapler request handling interacts with common design patterns in Jenkins and plugins.
+This JEP describes additions to Stapler and Jenkins that limit request handling from behaving in unsafe ways, addressing multiple security fixes.
+This was developed as SECURITY-595 in private and published as part of the updates for the
+link:https://jenkins.io/security/advisory/2018-12-05/#SECURITY-595[2018-12-05 Jenkins Security Advisory].
+
+== Specification
+
+=== Stapler
+
+Multiple Service Provider Interfaces (SPIs) that allow for the rejection of dispatchers as they are initialized in `MetaClass` are added to Stapler:
+
+* `FunctionList.Filter` SPI to inspect potential getters
+* `FunctionList.Filter` SPI to inspect potential web methods (`do*`)
+* `FieldRef.Filter` SPI to inspect potential public fields
+
+If these reject a given dispatcher, instead of dispatching, a message is sent to one of the corresponding `Filtered*TriggerListener` SPI implementations.
+
+By default, Stapler allows all dispatches (as before this fix), and has listener implementations that log a warning.
+
+The actual implementations for these SPIs are in Jenkins core.
+
+=== Jenkins Core
+
+==== Filtering Heuristics
+
+Three separate types of dispatchers need to be filtered:
+
+* implied web methods (matching the `do*` naming convention),
+* fields,
+* getter methods
+
+Each type has different filtering properties.
+
+===== Web Methods
+
+In the case of implied web methods, any indicator that the method is intended to be routable is needed:
+
+* Any applicable annotation (e.g. `@RequirePOST`) recognized by Stapler
+* Any inferable parameter type, e.g. `StaplerRequest`
+* Any applicable parameter annotation (e.g. `@AncestorInPath`) recognized by Stapler
+* Any declared exception type implementing `HttpResponse` (e.g. `HttpResponseException`)
+* A return type implementing `HttpResponse`
+
+If none of these are the case, the method is not considered routable, unless annotated `@StaplerDispatchable`.
+
+NOTE: The terms _routable_ and _dispatchable_ are used interchangeably.
+
+[NOTE]
+====
+This comes with a high potential risk for regressions in the case of public `do*` methods without arguments.
+However, these methods are fairly rare due to the uncommon naming pattern, and are easily enumerable by inspecting all Jenkins core and plugin code.
+====
+
+===== Getters and Fields
+
+Getters and fields share much of their filters:
+
+* Getter methods must be invokable by Stapler, i.e. have no complex non-inferable argument types.
+  This is unchanged from before.
+* Getters and fields must not be `static` to participate in routing.
+* The declared (return) type must be considered _relevant_ to Stapler routing:
+** Any class implementing `StaplerProxy`, `StaplerFallback`, or `StaplerOverridable` is considered _relevant_.
+** Any class with a method considered _relevant_ is _relevant_.
+   A method is considered _relevant_ if any of the following are true:
+*** The method is annotated with a Stapler-related annotation.
+*** The method has at least one parameter that is annotated with a Stapler-related annotation.
+*** The method has at least one parameter with the type `StaplerRequest`, `StaplerResponse`, `HttpServletRequest`, or `HttpServletResponse`.
+// This check is a bit too forgiving, I think.
+*** The method passes the web method check described above.
+** The class is annotated with `@StaplerAccessibleType`
+** The class has a superclass (transitively) that is _relevant_.
+
+If none of these are the case, the getter or field is not considered routable, unless annotated `@StaplerDispatchable`.
+
+[NOTE]
+====
+It should be noted that return types of getter methods are not checked recursively.
+Therefore a getter method returning a type that has a getter returning a type that would pass the checks above might not be considered relevant.
+
+In other words, every type in a chain of getter invocations will need to be considered relevant for the chain to be routable.
+====
+
+[NOTE]
+====
+If code declares a very generic type, such as `Object`, it will no longer be routable.
+Additionally, Jenkins no longer supports Stapler's special handling for collections (`List` and `Map` specifically) by default.
+Affected getters or fields need to be whitelisted or annotated.
+====
+
+==== Reserved Names
+
+The getter names `getTarget` and `getStaplerFallback` for methods without arguments are not considered routable unless specifically whitelisted or annotated, as they have special meaning for Stapler (see `StaplerFallback` and `StaplerProxy`).
+
+The getter name `getDynamic` with a first argument of type `String` and any number of further arguments is also not considered routable unless specifically whitelisted or annotated, due to its special behavior in Stapler.
+
+==== Caching
+
+To speed up Stapler dispatcher creation after the first time a type is considered, caches are used.
+
+As reflection only looks at specific classes and their supertypes, this cache does not need to be invalidated as new plugins are loaded.
+
+==== User Configuration
+
+Users can disable the majority of the filtering described above by setting the system property `jenkins.security.stapler.TypedFilter.skipTypeCheck` / static field `TypedFilter.SKIP_TYPE_CHECK`.
+Setting this to `true` will largely disable the protection from this security fix.
+
+Several other system properties allow customizing the behavior of this JEP:
+
+* The system property `jenkins.security.stapler.StaticRoutingDecisionProvider.whitelist` allows overriding the location of the user configurable Stapler routing whitelist.
+  If undefined, it uses the file `stapler-whitelist.txt` in the Jenkins home directory.
+* A system property `jenkins.security.stapler.TypedFilter.prohibitStaticAccess` / static field `TypedFilter.PROHIBIT_STATIC_ACCESS` (default `true`) allows routing to all static methods and fields, which is otherwise prohibited.
+
+===== Whitelist customization
+
+The whitelist API is designed to be easy to use from the Jenkins script console.
+
+----
+jenkins.security.stapler.StaticRoutingDecisionProvider.WHITELIST_PATH='/absolute/path/to/whitelist.txt'
+jenkins.security.stapler.StaticRoutingDecisionProvider.get().reload() // load new file if previous line present, otherwise reload from disk
+jenkins.security.stapler.StaticRoutingDecisionProvider.get().add('signature here') // add to whitelist, persist to disk, and invalidate caches
+----
+
+The exact signature to use for a given method or field can be seen in warning messages logged when a route is rejected due to the changes in this JEP, but can also be obtained by executing the following script in the script console:
+
+----
+com.acme.package.ClassName.class.methods.each {
+  println new org.kohsuke.stapler.Function.InstanceFunction(it).signature
+}
+com.acme.package.ClassName.class.fields.each {
+  println org.kohsuke.stapler.lang.FieldRef.wrap(it).signature
+}
+----
+
+This will print all method and field signatures of the given class, `org.acme.package.ClassName` in this example.
+Select the appropriate one, and call `#add(String)` as in the previous example.
+
+==== Plugin Developer Support
+
+A new library with annotations, https://github.com/jenkinsci/lib-jenkins-stapler-support[`jenkins-stapler-support`], is created and published as part of this fix.
+
+The following annotations can be used to override the default routing behavior:
+
+* `@StaplerDispatchable` on a method or field will allow dispatching to that method or field
+* `@StaplerAccessibleType` on a class will allow dispatching to fields or methods that declare that class as type or return type.
+* `@StaplerNotDispatchable` on a method or field will prohibit dispatching to that method or field.
+  This annotation takes precedence over `@StaplerDispatchable`
+
+
+== Motivation
+
+During exploratory testing, the Jenkins security team discovered a class of vulnerabilities in Jenkins.
+They all have in common that the source are unintentionally callable methods in the Jenkins code base, libraries, and Java platform due to how Stapler dispatches requests.
+
+* Any public getter can be called by accessing specially crafted URLs, if it has no, or simple (String, long, int, etc.) arguments, including `Object#getClass()`, `Thread#getContextClassLoader()`, etc.
+* Any public field can be accessed in a similar manner.
+* Any method whose name started with `do` could be called, if it had no arguments.
+
+The above worked regardless of whether the classes involves were defined in Jenkins core or plugins, libraries, or the Java platform libraries.
+
+== Reasoning
+
+=== Rejection of Design Overhaul
+
+In early discussions related to the identified security vulnerabilities, a major overhaul of Stapler request dispatching has been discussed.
+This would involve mandatory annotations in all components, unless they were operating in a legacy mode.
+link:https://groups.google.com/d/msg/jenkinsci-dev/UrVVT8wbHIE/_1O35oU4AgAJ[This jenkinsci-dev thread was motivated by these early discussions].
+
+The benefits would be an explicitly defined behavior of Stapler.
+
+The drawbacks were numerous, especially given the constraints around security fix development and publication, most notably around the need for backwards compatibility while addressing the known (or suspected) vulnerabilities.
+The security team then explored a simpler approach that uses annotations optionally to override more restrictive behaviors.
+This simpler approach is the basis of this JEP.
+
+=== Stapler Service Provider Interface
+
+Stapler defines only an SPI for filtering to allow for more flexible implementation (Stapler does not know about Jenkins or plugins).
+This keeps the changes to Stapler fairly contained, and it allows for more rapid iteration during development.
+
+The changes to Jenkins (core) are largely in a new package which allows for easier review and more flexible fix delivery.
+
+=== Rejection of Classpath Scan
+
+An early version of the fix and of this JEP described the use of the https://github.com/classgraph/classgraph[ClassGraph library] to scan Jenkins core and plugins for subtypes and class-related resource directories as used for Stapler views.
+This approach considered any type to be relevant that had a corresponding resource directory, or had supertypes or subtypes with such directories.
+
+An advantage of this approach was that fewer types needed additional `@StaplerAccessibleType` annotations.
+
+There were several drawbacks:
+
+* The ClassGraph scan delayed Jenkins startup, and tests took longer, increasing the total build duration of Jenkins about 15%.
+* The scan result required 100+ MB of additional memory.
+* Loading plugins necessitated invalidating the caches, and re-scanning the classpath.
+* Subclasses needed to be scanned as well, since types such as `Item` would otherwise not be considered relevant.
+* To prevent false positives if a library uses the same resource directory scheme as Stapler, a code location scan, similar to JEP-200, was added.
+* The scan needed to be configured to only look at actual plugin and core JAR files, and not their dependencies, otherwise tests would regularly time out.
+  During development, this optimization was considered to increase the risk for this fix in case Jenkins is deployed on unusual application servers.
+
+Based on reviewer feedback, a variant of this fix was developed that did not scan the classpath, and instead mostly relied on annotations on types such as `ModelObject`.
+Despite requiring several additional annotations on various types, it appeared to work as well, or better, than the ClassGraph based approach in preventing access to types that should not be routable, while not having the drawbacks listed above.
+
+=== Inspection of Superclasses
+
+Experiments have shown that it is not sufficient to inspect just a specific declared field or method return type.
+Superclasses need to be considered for obvious reasons -- they could define all the relevant methods and resources.
+
+=== Separate Annotation Library
+
+To allow plugin developers to make use of the annotations that override dispatcher filtering, a new library, `jenkins-stapler-support` is created.
+This allows augmenting plugin code with hints on how Jenkins releases with this fix should behave, without requiring a very recent Jenkins core dependency.
+
+=== Debug Strings
+
+Stapler will, at least for a time, include dispatchers for all rejected dispatchers, with a note indicating that the dispatcher is unavailable.
+This is intended to make it easier for developers to understand why a dispatch no longer works when it was previously available.
+
+=== Static fields and getter methods
+
+We determined based on tests and telemetry data that static fields and getter methods are not commonly used for Stapler routing.
+Therefore they are prohibited to reduce the number of unintentionally acceptable Stapler routes.
+
+=== Blacklist
+
+The implementation supporting the whitelist of signatures to be allowed also supports defining blacklist entries.
+
+While not used out of the box, this is intended to be used in case unsafe Stapler routes are discovered:
+Users will be able to mitigate undesired behavior by blacklisting certain methods.
+
+=== Precedence of annotations over whitelist
+
+The whitelist functionality included in Jenkins for this JEP, both the built-in entries, as well as user customizable entries, is primarily intended to retain (or restore) compatibility with existing plugins.
+
+For that reason, `@StaplerDispatchable`/`@StaplerNotDispatchable` annotations on methods take precedence over whitelist or blacklist entries.
+This allows plugin developer to disallow routes for use by Stapler that would otherwise be allowed, and vice versa.
+
+=== Improved user experience for getDynamic
+
+An occasional problem for existing uses of `#getDynamic(String)` was the presence of "reserved" names:
+URL path fragments such as `class` would never result in an invocation of `#getDynamic()`, thereby limiting the usefulness of the "catch all" `getDynamic`.
+https://groups.google.com/d/msg/jenkinsci-dev/fJ2n9RA9TPw/H_0j20KgEQAJ[One such issue was mentioned on the Jenkins Developers mailing list in August].
+https://github.com/jenkinsci/workflow-support-plugin/blob/b56766dfb0a4b281c0e146a4374f044c411c82a2/src/main/java/org/jenkinsci/plugins/workflow/support/actions/WorkspaceActionImpl.java#L101[Another example in the source code of workflow-support plugin].
+
+With this change, dispatching will fall through to the `getDynamic` method if any applicable more specific getters are not considered relevant.
+
+== Backwards Compatibility
+
+This JEP comes with a significant risk of backward incompatibility.
+Due to how Stapler request dispatchers work, any public field or getter is potentially used in request routing.
+This, coupled with typically low integration test coverage for plugins, makes it very difficult to determine the impact on existing plugins beforehand.
+
+In fact, multiple plugins have been identified whose functionality is impacted by this change.
+
+To mitigate the negative impact, multiple strategies are implemented:
+
+* A static whitelist of methods and fields that will be accessible is shipped with the security fix, addressing all known impacted plugins' problems.
+* Support for a user-configurable whitelist, both on disk and dynamically via script console, that is informed by warning messages logged whenever newly-illegal dispatchers are accessed.
+* A survey of Jenkins instances and their actually used dispatchers was performed prior to release to understand which dispatchers are actually used.
+* Plugin compatibility tester (PCT) and Acceptance Test Harness (ATH) were exercised, to the extent possible, to identify dispatchers that need whitelisting.
+* Plugin authors are given clear instructions how to annotate code in their plugins to make it work with any release of Jenkins (before and after this fix).
+
+The author considers the above strategies sufficient preparation for a release of the fix, given the substantial security risks associated with them.
+
+== Security
+
+This JEP fixes a potentially unbounded number of security vulnerabilities in Jenkins core and plugins due to how Stapler dispatchers work.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+As it is impossible to exhaustively test all plugins in the Jenkins plugin ecosystem for potential regressions, the strategies listed in the section "Backwards Compatibility" are used to mitigate potential impact.
+
+In (expected to be rare) cases that the implemented heuristics fail, plugin authors are expected to use the annotation library made available as part of the fix to override the default behavior.
+Meanwhile, Jenkins will print log messages with the information necessary for administrators to restore the functionality of any rejected Stapler routes.
+
+== Implementation
+
+This was developed as SECURITY-595 in private and published as part of the updates for the 2018-12-05 security advisory.
+
+* https://github.com/stapler/stapler/commit/28e8eba822a0df9dcd64d20eb63d8ab5f6ee2980[SECURITY-595 in Stapler]
+* https://github.com/jenkinsci/jenkins/commit/47f38d714c99e1841fb737ad1005618eb26ed852[SECURITY-595 in Jenkins core]
+* https://github.com/jenkinsci/lib-jenkins-stapler-support[Jenkins Stapler Support library with annotations for plugin developers]
+
+== References
+
+=== Public Documentation
+
+* https://jenkins.io/security/advisory/2018-12-05/#SECURITY-595[SECURITY-595 in the 2018-12-05 Jenkins Security Advisory]
+
+=== Telemetry
+
+* https://groups.google.com/d/msg/jenkinsci-dev/UrVVT8wbHIE/_1O35oU4AgAJ (proposal for general Jenkins telemetry)
+* https://github.com/jenkinsci/jep/tree/master/jep/214[JEP-214: Jenkins Telemetry]
+* link:https://github.com/stapler/stapler/pull/148[stapler/stapler#148]
+* link:https://github.com/jenkinsci/jenkins/pull/3688[jenkinsci/jenkins#3688]
