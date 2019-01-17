@@ -118,7 +118,7 @@ link:https://jenkins.io/conduct[Code of Conduct].
 * Define a unique SIG identifier (`${sigId}` below):
 ** Permitted symbols: `a-z`, `0-9`, `-`
 ** Length: up to 32 symbols
-** Examples: `platform` (Platform SIG), `cloud-native-jenkins`, etc.
+** Examples: `platform` (Platform SIG), `cloud-native`, `advocacy-and-outreach`, etc.
 * Organize meetings using video or text as needed. No need to wait for the a
   regularly scheduled Jenkins Governance meeting to discuss. Please report
   summary of ad hoc SIG meetings to the the SIG mailing list.
@@ -194,13 +194,14 @@ and grants the organization no special power or voice in that SIG.
 
 Video meetings should be recorded with Hangouts on Air via the Jenkins projects
 link:https://www.youtube.com/c/jenkinscicd[YouTube Channel].
-
 Each SIG Lead wishing to host video meetings should file an INFRA ticket to
-request
-link:https://support.google.com/accounts/answer/7311601?visit_id=1-636590077002254769-397511081&p=brand_accounts_managers&rd=1[Manager access]
-to the YouTube channel. Manager access allows SIG Leads to schedule a
+request _Manager_ permissions to the YouTube channel.
+link:https://github.com/jenkinsci/jep/blob/master/jep/13/README.adoc[JEP-13]
+defines the process of getting these permissions.
+
+Manager access allows SIG Leads to schedule a
 link:https://www.youtube.com/my_live_events[Live Streaming Event]
-which will allow meeting contributors to use Google Hangouts to discuss, while
+which will allow meeting contributors to use Google Hangouts on Air to discuss, while
 allowing participants to view the YouTube live stream, or after the fact, the
 recording.
 
