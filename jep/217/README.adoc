@@ -32,7 +32,7 @@ endif::[]
 | 2018-12-08
 
 | BDFL-Delegate
-| TBD
+| link:https://github.com/oleg-nenashev[Oleg Nenashev]
 
 //
 //
