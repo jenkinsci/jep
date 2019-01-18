@@ -32,7 +32,7 @@ endif::[]
 | 2019-01-10
 
 | BDFL-Delegate
-| TBD
+| link:https://github.com/bitwiseman[Liam Newman]
 
 | JIRA
 | https://issues.jenkins-ci.org/browse/INFRA-1929[INFRA-1929]
