@@ -32,11 +32,9 @@ endif::[]
 | Created
 | 2018-07-17
 
-//| BDFL-Delegate
-//| :bulb: Link to github user page :bulb:
-//
-//
-//
+| BDFL-Delegate
+| link:https://github.com/oleg-nenashev[Oleg Nenashev]
+
 // Uncomment if there is an associated placeholder JIRA issue.
 //| JIRA
 //| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
