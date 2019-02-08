@@ -120,9 +120,9 @@ Spawn agents on demand to scale Jenkins workloads.
 
 Provide secure configuration as the default option.
 
-==== Make backup of Jenkins jobs history
+==== Make backup of Jenkins build history
 
-Backup Jenkins jobs history using tools provided by Kubernetes itself and optionally a cloud provider.
+Backup Jenkins build history using tools provided by Kubernetes itself and optionally a cloud provider.
 
 ==== Make errors more visible for end users
 
@@ -132,20 +132,65 @@ Validate and visualise problems in configuration provided by the user.
 
 == Motivation
 
-Jenkins Operator contains complex knowledge about operating Jenkins, in particular running it on Kubernetes.
-Given that it shouldn't be a part Jenkins implementation.
+People who want to run Jenkins on Kubernetes most often use the
+link:https://github.com/helm/charts/tree/master/stable/jenkins[Jenkins Helm chart] or they build their own custom
+distribution themselves.
+
+=== Problems
+
+* no visibility that Jenkins is correctly configured
+* no visibility what happens to Jenkins
+* plugins management
+* Jenkins may not start again after restart(PVC detaching/attaching issue)
+* no security by default
+* reinventing a wheel(custom distribution)
+* lack of tests
+* no production ready solution
 
 == Reasoning
 
-This document does not propose a specific design or implementation, as other JEPs might. This is intentional.
-This document specifies the concept of "Jenkins Operator" and the mission and priorities of the project.
-Later related JEPs will address design and implementation. Limiting the scope of this JEP to high-level goals will let
-us build a solid consensus for that direction separate from the design of individual features.
+link:https://coreos.com/blog/introducing-operator-framework[Operator pattern] introduced by CoreOS can resolve all
+problems mentioned in <<Motivation>> section. This solution gives you the ability to monitor and maintain your Jenkins
+state. Kubernetes platforms is a dynamic environment for all applications. The operator can react quickly to any changes
+(change of configuration, restart Jenkins). In addition, the operator can apply the configuration to Jenkins without
+restarting it.
+
+=== Rejected Alternative Approaches
+
+==== Custom distribution
+
+Custom distribution contains Kubernetes resources and docker image of Jenkins master. In the most cases plugins are
+built in a custom docker image. User applies Kubernetes resources via `kubectl` command.
+
+===== Disadvantages
+
+This solution doesn't resolve any problems mentioned in <<Motivation>> section.
+
+==== Helm chart
+
+[quote, taken from https://docs.helm.sh/developing_charts/]
+Helm uses a packaging format called charts. A chart is a collection of files that describe a related set of Kubernetes
+resources. A single chart might be used to deploy something simple, like a memcached pod, or something complex, like a
+full web app stack with HTTP servers, databases, caches, and so on. Charts are created as files laid out in a particular
+directory tree, then they can be packaged into versioned archives to be deployed.
+
+===== Disadvantages
+
+* this solution doesn't resolve all problems mentioned in <<Motivation>> section.
+* there is a risk that the link:https://github.com/helm/charts/tree/master/stable/jenkins[official helm chart] may not
+provide all the required features and users are forced to create their own custom distribution which they must maintain
+themselves
+* helm causes more problems than solves,
+link:https://medium.com/virtuslab/think-twice-before-using-helm-25fbb18bc822[Think twice before using Helm]
+* change in configuration causes restart of Jenkins master
+* restart of Jenkins master causes install new version of plugins(some plugin's feature may stop working)
 
 == Backwards Compatibility
 
 Jenkins Operator is intended to run as an separate program and not require dedicated extension integrated in
-jenkins-core nor specific API implemented by plugins.
+jenkins-core. It requires the following plugins installed in Jenkins: kubernetes, workflow-job, workflow-aggregator,
+git, job-dsl and configuration-as-code. Users will be able to resolve backwards compatibilities issues by change plugins
+versions, Jenkins version or Jenkins Operator version.
 
 === CRD schema changes
 
@@ -182,6 +227,5 @@ and Jenkins on a link:https://github.com/kubernetes/minikube[Minikube] Kubernete
 == References
 
 * link:https://groups.google.com/forum/#!msg/jenkinsci-dev/GmnXsHduQfU/tRcZzKY_FQAJ[Mailing list discussion]
-
 
 
