@@ -1,0 +1,233 @@
+= JEP-0000: Jenkins Kubernetes Operator
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.**JEP Template**
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 0000
+
+| Title
+| Jenkins Kubernetes Operator
+
+| Sponsor
+| link:https://github.com/tomaszsek[Tomasz Sęk] from link:https://virtuslab.com/[VirtusLab]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2019-01-31
+
+| BDFL-Delegate
+| TBD
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+
+| Discussions-To
+| https://groups.google.com/forum/#!forum/jenkins-cloud-native-sig
+
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+Running Jenkins on Kubernetes cluster is not trivial work. Kubernetes platform was released ten years after first
+version of Hudson project. It means Jenkins couldn't be designed to run on top of it.
+
+Jenkins Operator helps to deploy, configure and manage Jenkins on Kubernetes clusters in an immutable, scalable, secure way.
+
+== Specification
+
+This specification describes the problem, and the overall proposed solution,
+as it relates to the Jenkins project and existing structures.
+
+The details of the exact behavior and implementation of most areas will be addressed in one or more separate JEPs.
+
+=== Target Audience
+
+Jenkins Operator is targeted at existing and new Jenkins users (system administrators, DevOps engineers or regular programmers)
+who are not necessarily interested in becoming Jenkins experts, but rather wish to use Jenkins as a means to an end.
+That end being: *building, testing, and delivering their projects*, with as *little overhead* as possible.
+Potential users wish to use a stable and reliable CI/CD tool.
+
+Jenkins Operator is going to be the best solution for everybody who is interested in running Jenkins
+on Kubernetes cluster.
+
+=== Goals
+
+==== Run Jenkins on top of Kubernetes
+
+Use link:https://coreos.com/blog/introducing-operator-framework[operator pattern] to manage complex Jenkins stateful
+application on top of Kubernetes.
+
+==== Jenkins configuration in one place
+
+Put all information needed to configure Jenkins in a single
+link:https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[CRD] Kubernetes resource.
+
+==== Keep Jenkins instance configured
+
+Watch all changes made to Jenkins configuration
+link:https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[CR] and apply it to the live
+instance.
+
+==== Make Jenkins immutable
+
+Jenkins master instance should be restorable to the desired (configured) state at any point in time.
+Any changes made to the Jenkins configuration that are *not* in
+link:https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[CR]
+should be removed after Jenkins master restart to *avoid snowflake* problem.
+
+==== Scale Jenkins agents
+
+Spawn agents on demand to scale Jenkins workloads.
+
+==== Make default configuration secure
+
+Provide secure configuration as the default option.
+
+==== Make backup of Jenkins build history
+
+Backup Jenkins build history using tools provided by Kubernetes itself and optionally a cloud provider.
+
+==== Make errors more visible for end users
+
+Validate and visualise problems in configuration provided by the user.
+
+==== Reduce Jenkins master unavailability
+
+== Motivation
+
+People who want to run Jenkins on Kubernetes most often use the
+link:https://github.com/helm/charts/tree/master/stable/jenkins[Jenkins Helm chart] or they build their own custom
+distribution themselves.
+
+=== Problems
+
+* no visibility that Jenkins is correctly configured
+* no visibility what happens to Jenkins
+* plugins management
+* Jenkins may not start again after restart(PVC detaching/attaching issue)
+* no security by default
+* reinventing a wheel(custom distribution)
+* lack of tests
+* no production ready solution
+
+== Reasoning
+
+link:https://coreos.com/blog/introducing-operator-framework[Operator pattern] introduced by CoreOS can resolve all
+problems mentioned in <<Motivation>> section. This solution gives you the ability to monitor and maintain your Jenkins
+state. Kubernetes platforms is a dynamic environment for all applications. The operator can react quickly to any changes
+(change of configuration, restart Jenkins). In addition, the operator can apply the configuration to Jenkins without
+restarting it.
+
+=== Rejected Alternative Approaches
+
+==== Custom distribution
+
+Custom distribution contains Kubernetes resources and docker image of Jenkins master. In the most cases plugins are
+built in a custom docker image. User applies Kubernetes resources via `kubectl` command.
+
+===== Disadvantages
+
+This solution doesn't resolve any problems mentioned in <<Motivation>> section.
+
+==== Helm chart
+
+[quote, taken from https://docs.helm.sh/developing_charts/]
+Helm uses a packaging format called charts. A chart is a collection of files that describe a related set of Kubernetes
+resources. A single chart might be used to deploy something simple, like a memcached pod, or something complex, like a
+full web app stack with HTTP servers, databases, caches, and so on. Charts are created as files laid out in a particular
+directory tree, then they can be packaged into versioned archives to be deployed.
+
+===== Disadvantages
+
+* this solution doesn't resolve all problems mentioned in <<Motivation>> section.
+* there is a risk that the link:https://github.com/helm/charts/tree/master/stable/jenkins[official helm chart] may not
+provide all the required features and users are forced to create their own custom distribution which they must maintain
+themselves
+* helm causes more problems than solves,
+link:https://medium.com/virtuslab/think-twice-before-using-helm-25fbb18bc822[Think twice before using Helm]
+* change in configuration causes restart of Jenkins master
+* restart of Jenkins master causes install new version of plugins(some plugin's feature may stop working)
+
+== Backwards Compatibility
+
+Jenkins Operator is intended to run as an separate program and not require dedicated extension integrated in
+jenkins-core. It requires the following plugins installed in Jenkins: kubernetes, workflow-job, workflow-aggregator,
+git, job-dsl and configuration-as-code. Users will be able to resolve backwards compatibilities issues by change plugins
+versions, Jenkins version or Jenkins Operator version.
+
+=== CRD schema changes
+
+The specific version of Jenkins Operator supports a specific version of the Jenkins configuration saved in the CRD.
+Jenkins operator will inform the user of any inconsistencies contained in the CR for the version of the CRD he supports.
+Changing the Jenkins CRD configuration version requires changing the Jenkins Operator version.
+The migration process from one version to another will require from user to manually rewrite the Jenkins configuration
+to the new version and changes to the Jenkins Operator version.
+
+== Security
+
+Every sensitive information will be stored as link:https://kubernetes.io/docs/concepts/configuration/secret/[Kubernetes secrets].
+Only Jenkins Operator and Jenkins master will have access to those secrets. Access to secrets will be secured by
+link:https://kubernetes.io/docs/reference/access-authn-authz/rbac/[Kubernetes RBAC policies] and
+link:https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/[Kubernetes Service Accounts].
+Communication between Jenkins Operator and Jenkins master will be secured using TLS.
+
+== Infrastructure Requirements
+
+The infrastructure dependencies for the `virtuslab/jenkins-operator` image are mostly on
+services external to the Jenkins project such as link:https://hub.docker.com[Docker Hub].
+
+== Testing
+
+Testing is performed within the context of the existing automated testing in the
+link:https://github.com/VirtusLab/jenkins-operator[VirtusLab/jenkins-operator]
+repository. This includes the expected amount of unit tests, and end-to-end tests which run Jenkins Operator
+and Jenkins on a link:https://github.com/kubernetes/minikube[Minikube] Kubernetes cluster.
+
+== Prototype Implementation
+
+* https://github.com/VirtusLab/jenkins-operator
+
+== References
+
+* link:https://groups.google.com/forum/#!msg/jenkinsci-dev/GmnXsHduQfU/tRcZzKY_FQAJ[Mailing list discussion]
+
+
