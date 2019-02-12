@@ -7,11 +7,6 @@
 .^| Sponsor(s)
 .^| BDFL Delegate
 
-| Not Submitted{nbsp}:information_source:
-| link:0000/README.adoc[JEP-219: Jenkins Kubernetes Operator]
-| link:https://github.com/tomaszsek[Tomasz{nbsp}Sęk] from{nbsp}link:https://virtuslab.com/[VirtusLab]
-| TBD
-
 | Active{nbsp}:smile:
 | link:1/README.adoc[JEP-1: Jenkins Enhancement Proposal Format]
 | link:https://github.com/rtyler[R{nbsp}Tyler{nbsp}Croy], link:https://github.com/bitwiseman[Liam{nbsp}Newman]
@@ -173,7 +168,7 @@
 | TBD
 
 | Draft{nbsp}:speech_balloon:
-| link:219/README.adoc[JEP-0000: Jenkins Kubernetes Operator]
+| link:219/README.adoc[JEP-219: Jenkins Kubernetes Operator]
 | link:https://github.com/tomaszsek[Tomasz{nbsp}Sęk] from{nbsp}link:https://virtuslab.com/[VirtusLab]
 | TBD
 
