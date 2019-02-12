@@ -1,4 +1,4 @@
-= JEP-0000: Jenkins Kubernetes Operator
+= JEP-219: Jenkins Kubernetes Operator
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -15,7 +15,7 @@ endif::[]
 [cols="1h,1"]
 |===
 | JEP
-| 0000
+| 219
 
 | Title
 | Jenkins Kubernetes Operator
