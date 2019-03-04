@@ -97,7 +97,7 @@
 | link:http://github.com/imeredith[Ivan{nbsp}Meredith]
 | _not{nbsp}delegated_
 
-| Draft{nbsp}:speech_balloon:
+| Withdrawn{nbsp}:hand:
 | link:205/README.adoc[JEP-205: Declarative Data Binding]
 | link:https://github.com/ndeloof[ndeloof]
 | _not{nbsp}delegated_
