@@ -70,7 +70,7 @@ There are four stages of changes:
 2. Replace aggregation of per-step log files with a single log stream annotated by step ID.
 3. Make the traditional *Console* view use semantic markup of steps and CSS.
 4. Permit the entire log to be sent to a pluggable external service:
-   in the reference implementation, Amazon CloudWatch Logs via Fluentd.
+   in the reference implementation, Amazon CloudWatch Logs.
 
 #1 is implemented as a set of independently releasable branches.
 (It is tracked by
@@ -84,8 +84,8 @@ The scope does not include other project types (freestyle),
 or other types of logging (system, branch indexing).
 link:https://github.com/jenkinsci/jep/blob/master/jep/207/README.adoc[JEP-207]
 covers at least freestyle build logs,
-and is expected to be integrated with these changes via this
-link:https://github.com/jenkinsci/jep/pull/151[unsubmitted JEP].
+and could be integrated with these changes via
+link:https://github.com/jenkinsci/jep/blob/master/jep/212/README.adoc[JEP-212].
 
 Together, the effect is that the `TaskListener` associated with the overall build,
 as well as with each individual step,
@@ -160,6 +160,11 @@ Console annotations (which are ignored by Blue Ocean)
 continue to be written to the log file
 using serialized, signed, and Base64-encoded `ConsoleNote` objects.
 
+Log lines produced on the agent side are temporarily buffered
+before being streamed to the master in relatively large chunks,
+to avoid putting too much load on the Remoting channel,
+so remote tasks need to `flush` before exiting.
+
 === Semantic markup in HTML console
 
 Every sequence of consecutive lines in the “classic UI” HTML output (`AnnotatedLargeText.writeHtmlTo`)
@@ -212,7 +217,14 @@ An implementation which streams to external storage
 therefore needs only to ensure that all fields are truly serializable
 and that the code to connect to a storage service can be run on a remote node.
 There is a variant which records a `FlowNode.id` association.
-The reference implementation creates JSON-format records to be sent to Fluentd.
+The reference implementation creates JSON-format records to be sent to CloudWatch Logs.
+
+`ConsoleNote` instances need to be created on the master side so that they may be signed.
+Signed and serialized note constants may be transmitted to agents to handle this in simple cases.
+Many traditional uses of this API, however, can be replaced by a new `TaskListenerDecorator` interface
+that improves on the old `ConsoleLogFilter` extension point.
+`ConsoleAnnotatorFactory` has also been improved for Pipeline use and can replace some uses of `ConsoleNote`.
+The `timestamper` and `ansicolor` plugins have been reworked accordingly.
 
 On the read side, the plugin can supply an `AnnotatedLargeText`
 for either the build as a whole or one node.
@@ -224,9 +236,9 @@ based on JSON filter patterns to select messages by build and optionally node.
 A subtle issue is the use of `LargeText.isCompleted` by UI callers,
 which determines whether a given log is considered finalized,
 in which case no further “AJAX” calls need be made to fetch subsequent content.
-Yet Fluentd does not guarantee that a given record
-has been received by CloudWatch Logs when the log event is sent,
-and in the standard configuration in fact delays log flushes up to a second,
+Yet CloudWatch Logs does not guarantee that a given record
+has been committed to permanent storage when the log event is sent,
+and outbound records and queued and coalesced in a buffer,
 so without any special effort a build log would sometimes stop refreshing before the end.
 This is solved with a utility class `TimestampTracker`
 (which could if necessary be pushed into a lower layer)
@@ -333,13 +345,12 @@ without consuming bandwidth on the Remoting channel.
 An earlier draft implementation exposed a simpler SPI to plugins:
 they could only supply a `TaskListener` for the overall build,
 and an `InputStream` for the overall build content.
-This SPI is effectively still available via `StreamLogStorage`,
-but it has proven inadequate for the CloudWatch Logs implementation at least.
+A special marker was inserted into the text to indicate the `FlowNode.id` associated with each line.
 
+This however had performance issues, and was ill suited to the CloudWatch Logs implementation.
 Most obviously, the `InputStream` interface forces the implementation to serve a complete build log
 even when the text for only a single step (~ `FlowNode.id`) has been requested.
 The CloudWatch Logs implementation can do better by using a server-side filter.
-This avoids any need for the `¦` separator used by `StreamLogStorage`.
 
 More subtly, the `InputStream` interface lacked any room for indicating
 that the build content was incomplete.
@@ -351,8 +362,9 @@ originally it was attempted to use a special `ConsoleNote` to mark which step pr
 This worked, but resulted in unacceptably bloated raw logs:
 the serialized form, after GZIPping and Base64-encoding, was over 200 characters per line;
 and rendered typical raw logs more or less unreadable.
-Therefore the `¦` separator (later used only by `StreamLogStorage`) was introduced,
+Therefore a text marker was introduced,
 as it adds minimal space overhead and does not interfere with legibility.
+This in turn was later replaced even in the default file-based implementation (see above).
 
 === Core dependencies
 
@@ -361,6 +373,7 @@ For example, `ConsoleAnnotators` could be replaced by a proper API;
 some `LargeText` / `AnnotatedLargeText` methods could be better designed for subclassing;
 and some overrides in `WorkflowRun` would make sense pulled up into `Run`.
 For now, these considerations were outweighed by the convenience of running on stock versions of Jenkins LTS.
+JEP-207 tracks some, though not all, of these proposals.
 
 === Logging from `Launcher`
 
@@ -400,7 +413,6 @@ must already have been `Serializable` (to be saved in `program.dat`),
 this is not as significant a restriction as it might at first appear.
 It does mean that besides being careful about state (non-`transient` instance fields),
 implementations may not assume they are running inside the master JVM.
-Integration testing is likely to uncover any critical problems in widely-used filters.
 
 Completed ``FlowNode``s using the old `LogActionImpl` will continue to serve log text from the per-step file.
 This applies both to completed historical builds,
@@ -413,6 +425,12 @@ as well as to the per-step log.
 Historical builds using `WorkflowRunConsoleNote` should continue to render logs,
 but without the new semantic markup features.
 
+Plugins remoting a `TaskListener` need to take care to `flush` the stream after completing a task,
+as output may have been buffered.
+
+Plugins calling `Run.getLogFile` will produce a warning.
+If the actual log is remote, a temporary file will be produced with a copy of the log text.
+
 == Security
 
 Any `ConsoleLogFilter` with security-sensitive fields
@@ -422,22 +440,12 @@ where that data is vulnerable to retrieval or even manipulation by rogue builds.
 In the case of `withCredentials` this is not an issue,
 since the agent already received these same secrets as environment variables.
 
-Currently the Fluentd logger in the reference implementation
-assumes that the Fluentd server is accessible anonymously.
-A production-grade implementation should prevent a rogue build
-from writing log lines to a build of an unrelated job.
-This would presume some kind of Fluentd authentication plugin
-capable of processing generated tokens scoped to a particular JSON field,
-which is not yet known to exist.
-Alternately, logs could be sent directly to CloudWatch Logs,
-but this would then perhaps require the master to be able to use IAM
-to create temporary roles and tokens.
+The reference implementation uses IAM to create temporary access tokens for use by agents.
+See [this detailed explanation](https://github.com/jenkinsci/pipeline-cloudwatch-logs-plugin/blob/8e5024f02698db2aeed90374a92b90960fa32f9b/README.md#security).
 
 == Infrastructure Requirements
 
-There are no new infrastructure requirements related to this proposal,
-beyond what may arise in the course of testing external log implementations
-based on live services such as CloudWatch Logs.
+Properly testing the reference implementation would require a CI server to have an AWS account as discussed below.
 
 == Testing
 
@@ -446,24 +454,20 @@ such as the fact that with a suitably remotable `TaskListener`,
 a `sh` step will in fact deliver messages to the log sink constructed on the agent side.
 
 Functional tests for open-source, cluster-based implementations such as ElasticSearch could be run using `docker-fixtures`.
-Tests for SaaS-based implementations such as CloudWatch would require either mocks,
+Tests for SaaS-based implementations such as CloudWatch require either mocks,
 and/or live tests run on restricted CI machines.
-
-Integration testing against uncommon plugins and usage modes will be needed,
-which will likely use standard mechanisms such as `plugin-compat-tester`;
-and some exploratory testing is expected.
 
 The nature of performance testing remains to be defined.
 The principal constraint is that the production of logs during a build should be efficient;
 Jenkins-based display of logs during a running build or of a completed build
 may involve some overhead to retrieve and collate messages,
 but this is assumed to be a relatively infrequent event.
+A disabled test in `workflow-job` demonstrates a typical heavy log load scenario for the file-based implementation.
 
 == Prototype Implementation
 
 The reference implementation is a
-link:https://github.com/jenkinsci/pipeline-cloudwatch-logs-plugin/blob/master/README.md[`pipeline-cloudwatch-logs` plugin]
-which depends on a series of Pipeline-related pull requests.
+link:https://github.com/jenkinsci/pipeline-cloudwatch-logs-plugin/blob/master/README.md[`pipeline-cloudwatch-logs` plugin].
 
 == References
 
