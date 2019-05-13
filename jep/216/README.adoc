@@ -66,13 +66,7 @@ For example, `<name>Localization: Chinese (Simplified)</name>`.
 
 ==== Dependencies 
 
-[WARNING]
-====
-*(bitwiseman)*
-TODO: Move https://github.com/daniel-beck/localization-support-plugin into jenkinsci org.
-====
-
-You should add link:https://github.com/daniel-beck/localization-support-plugin[Localization Support Plugin] as a
+You should add link:https://github.com/jenkinsci/localization-support-plugin[Localization Support Plugin] as a
 dependency. Please don't add more dependencies unless absolutely required. 
 We need to keep the localization plugins as simple as possible. 
 There's an extension point(`LocalizationContributor`) that must to implemented.
@@ -136,13 +130,7 @@ should provide a way to switch two versions between English and specific languag
 
 In a common situation, we keep the latest version for translation in the localization plugin. But it's necessary to keep different versions in the plugin. And the plugin should provide a way to switch them.
 
-Mininum support Jenkins core version is `2.151-20181111.210424-1`.
-
-[WARNING]
-====
-*(linuxsuren)*
-The feature that we needs is working in progress. Change the Jenkins core version later.
-====
+Mininum support Jenkins core version is `2.173`.
 
 == Security
 
@@ -163,7 +151,7 @@ including manual testing.
 == Prototype Implementation
 
 link:https://github.com/jenkinsci/localization-zh-cn-plugin[Localization: Chinese (Simplified)]
-link:https://github.com/daniel-beck/localization-support-plugin[Localization Support Plugin]
+link:https://github.com/jenkinsci/localization-support-plugin[Localization Support Plugin]
 
 == References
 
