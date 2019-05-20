@@ -1,0 +1,316 @@
+= JEP-0000: Opt-in Continuous Delivery of Jenkins Plugin Releases
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.**JEP Template**
+[TIP]
+====
+In this document, all text in a "Tip" block (or inline text with with a ":bulb:" on either side)
+MUST be removed and/or replaced with text appropriate to this JEP before submission.
+
+Sections may include aditional help and advice in comments.
+":bulb:" entries in comments only need to be filled in if that text is uncommented.
+
+See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for full and accurate description of the JEP process and what is required in each section.
+====
+
+[TIP]
+====
+*BDFL-Delegate* is uncommented by default.
+As part of the in initial conversation or the JEP submission the sponsor should
+look for a BDFL Delegate.
+While not required, it is better for the community if Delegates perform most reviews.
+If no suitable BDFL-Delegate can be found, that row may be commented out.
+====
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 0000
+
+| Title
+| Opt-in Continuous Delivery of Jenkins Plugin Releases from Trusted CI
+
+| Sponsor
+| link:https://github.com/daniel-beck[Daniel Beck]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Process :bulb:
+
+| Created
+| Date (2019-05-15) :bulb:
+
+| BDFL-Delegate
+| TBD
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+At present, Jenkins plugins are, typically, not released on a continous basis. They 
+are also not released from a single source of truth, such as a trusted Continuous 
+Integration server like link:https://ci.jenkins.io[https://ci.jenkins.io]. 
+
+The notion of continuous delivery of plugin releases has been discussed previously *need footnote*. 
+Considering that Jenkins is a system used to facilitate Continuous Delivery for many users, it makes 
+sense -- and builds credibility -- for the Jenkins developer community to adopt this same practice. 
+
+Having a centralized release system made available to plugin maintainers also provides additional 
+confidence that security best practices are being followed *need footnote without surfacing some 
+awful security problem* 
+
+Continuous celivery from trusted CI is something which plugin maintainers can opt into, but is 
+not required. If a plugin maintainer chooses to continue to follow their own path for releasing 
+versions of their code, they remain free to do so.
+
+== Specification
+
+This proposal describes an approach by which plugin maintainers can have merges to a branch of their 
+choice occur, an automated release process is launched. It is anticipated that the typical scenario 
+will be `master`. In other words, once a commit is merged to master in the repository hosted in 
+link:https://github.com/jenkinsci/[the jenkinsci organization on GitHub], a webhook will be sent to 
+`super-trusted-ci.jenkins.io`. The specifics of this webhook, and the trusted CI server `super-trusted`, 
+will be described on their own in an IEP document.
+
+We use semantic versioning, because such version numbers are generally well understood by the Jenkins 
+community at large.
+
+=== Setup
+
+Two main things:
+
+A new Maven profile will be created, most likely in the 
+link:https://github.com/jenkinsci/plugin-pom[Jenkins plugin parent POM]. 
+
+* enable-autorelease
+
+A YAML markerfile, stored in the plugin's own repository. Absence of this markerfile will In the following example, we'll use a fictional plugin, called `fancy-branch-source`
+
+```
+plugin: fancy-branch-source
+kind: plugin
+metadata:
+  autoreleaseEnabled: true
+  triggeringBranch: master
+  appendMergeSHA: true
+```
+
+In the above example, we can see the following:
+
+`plugin: fancy-branch-source`:: 
+This is the name of the plugin, and it matches the repository 
+name on GitHub.
+`kind`:: 
+The type of project which is being set up for autorelease. In our first iteration of 
+autorelease, this will only be set to `plugin`. The field is here should the Jenkins project 
+want to expand the use of autorelease, such as for building core, or components
+`metadata`:: 
+Contains the following fields:
+** `autoreleaseEnabled`: A boolean value, indicating whether or not this plugin is participating in autorelease
+** `triggeringBranch`: Sets the branch which maintainers will merge to in order to trigger 
+an autorelease webhook. Although this is expected to usually be set to `master`, plugin 
+maintainers can choose a branch name of their preference, e.g., `autorelease`, `release`, 
+etc.
+** `appendMergeSHA`: A boolean value, indicating whether or not the resultant release will 
+be version numbered including the merge SHA, for example, `2.5.2-1a2b3c4`. This will maintain 
+compatibility with the existing Incrementals versioning.
+
+=== Adoption
+
+To illustrate how this would be used by a plugin maintainer, we'll continue with our fictional example.
+Plugin maintainer Karl has decided that he would like to automatically release fancy-branch-source 
+automatically, each time he merges to a branch called `release-the-fanciness`. 
+
+Karl's plugin is already making use of Incrementals, and the relevant lines of his `pom.xml` file 
+look like:
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>plugin</artifactId>
+        <version>4.56</version>
+        <relativePath />
+    </parent>
+    <artifactId>fancy-branch-source</artifactId>
+    <version>${revision}${changelist}</version>
+    <packaging>hpi</packaging>
+    <name>Fancy Branch Source Plugin</name>
+    <url>
+        <!--Something like https://wiki.jenkins-ci.org/display/JENKINS/Fancy+Branch+Source+Plugin-->
+    </url>
+    <description>A useful description.</description>
+    <licenses>
+        <license>
+            <name>MIT</name>
+            <url>http://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+
+    <properties>
+        <revision>3.1.4</revision>
+        <changelist>-SNAPSHOT</changelist>
+        <java.level>8</java.level>
+        <jenkins.version>2.138.4</jenkins.version>
+    </properties>
+
+````
+
+This is all pretty run-of-the-mill stuff for a Jenkins plugin, and is well understood already 
+by Karl and the rest of the plugin maintainer community. To enable autorelease, Karl would 
+create a file at the top level of his repository, called `Autorelease.yaml`:
+
+```
+plugin: fancy-branch-source
+kind: plugin
+metadata:
+  autoreleaseEnabled: true
+  triggeringBranch: release-the-fanciness
+  appendMergeSHA: true
+```
+
+When Karl merges a commit into the `release-the-fanciness` branch, that merge commit has the 
+SHA `1a2b3c4`. The following takes place:
+* A webhook is sent to super-trusted-thing, and a build is performed there. 
+* If the build passes all its tests, a release is generated. In our example, 
+that release number would be `3.1.4-1a2b3c4`, because Karl has chosen to append the merge commit 
+SHA to the end of his autorelease version numbers.
+* The built plugin gets deployed to Nexus
+* The resulting plugin appears on the Jenkins Update Center
+
+== Motivation
+
+It's no secret that the Jenkins plugin ecosystem is complex. It's also no secret that Jenkins plugins 
+are often developed in a very non-continuous way. This proposal seeks to change this. By offering the 
+ability to do continuous, merge-driven releases, plugin maintainers can readily make the claim that 
+Jenkins itself is being worked on in a continuous way. This would be a big win for Jenkins' 
+credibility in an increasingly demanding market space.
+
+[TIP]
+====
+Explain why the existing code base or process is inadequate to address the problem that the JEP solves.
+This section may also contain any historical context such as how things were done before this proposal.
+
+* Do not discuss design choices or alternative designs that were rejected - those belong in the Reasoning section.
+====
+
+== Reasoning
+
+Oh boy the UX for this could really suck. People are going to be overrun with upgrades they think they 
+need to do.
+
+Maybe we need an "urgent" flag for those?
+
+[TIP]
+====
+Explain why particular design decisions were made.
+Describe alternate designs that were considered and related work. For example, how the feature is supported in other systems.
+Provide evidence of consensus within the community and discuss important objections or concerns raised during discussion.
+
+* Use sub-headings to organize this section for ease of readability.
+* Do not talk about history or why this needs to be done - that is part of Motivation section.
+====
+
+== Backwards Compatibility
+
+[TIP]
+====
+Describe any incompatibilities and their severity.
+Describe how the JEP proposes to deal with these incompatibilities.
+
+If there are no backwards compatibility concerns, this section may simply say:
+There are no backwards compatibility concerns related to this proposal.
+====
+
+With any plugin upgrade, there are backwards compatibility concerns, and autorelease is no different 
+in that regard. In fact, it could be made worse, because users will get overrun with upgrades. Jenkins 
+existing plugin system only allows for uninstalling one revision. 
+
+
+
+== Security
+
+This should make things more secure, because they all come from a trusted CI. Rules 
+can be put in place on this trusted CI system which prevent people from doing silly things.
+It also eliminates the potential for MitM attacks.
+
+== Infrastructure Requirements
+
+We will need:
+1. The webhook. 
+2. The trusted Jenkins server doing these builds will need to be smart enough to understand the 
+`Autorelease.yaml` file, and act according to its settings
+3. Probably `buildPlugin` will need some code added to validate the contents of `Autorelease.yaml`. 
+Otherwise there's no telling what people might put in there. This needs to be well-hardened before 
+people start using it.
+
+== Testing
+
+Autorelease brings with it a heightened importance for quality automated tests. However, there will be 
+no rules governing this. As before, plugin maintainers are encouraged to release only well-tested code, but
+there is little to stop someone from releasing something which is under-tested. Autorelease does not change 
+this in any way.
+
+== Prototype Implementation
+
+[TIP]
+====
+Link to any open source reference implementation of code changes for this proposal.
+The implementation need not be completed before the JEP is
+link:https://github.com/jenkinsci/jep/tree/master/jep/1#accepted[accepted],
+but must be completed before any JEP is given
+"link:https://github.com/jenkinsci/jep/tree/master/jep/1#final[Final]" status.
+
+JEPs which will not include code changes may omit this section.
+====
+
+== References
+
+[TIP]
+====
+Provide links to any related documents.
+This will include links to discussions on the mailing list, pull requests, and meeting notes.
+====
+
+
+
