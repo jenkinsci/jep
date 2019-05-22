@@ -115,14 +115,22 @@ community at large.
 
 === Setup
 
-Two main things:
+==== The autorelease Maven profile
 
-A new Maven profile will be created, most likely in the 
+I actually don't know that this is necessary. A new Maven profile can be created, 
+most likely in the 
 link:https://github.com/jenkinsci/plugin-pom[Jenkins plugin parent POM]. 
 
-* enable-autorelease
+==== Changes to `buildPlugin`
 
-A YAML markerfile, stored in the plugin's own repository. Absence of this markerfile will In the following example, we'll use a fictional plugin, called `fancy-branch-source`
+The commonly used library link:https://github.com/jenkins-infra/pipeline-library/blob/master/vars/buildPlugin.groovy[`buildPlugin`] will need to be modified to check for, and validate, a markerfile, called `Autorelease.yaml`.
+
+==== Autorelease.yaml
+
+A YAML markerfile, stored in the plugin's own repository. Absence of this markerfile will 
+be functionally equivalent to the plugin maintainer opting out of Autorelease. 
+
+In the following example, we'll use a fictional plugin, called `fancy-branch-source`
 
 ```
 plugin: fancy-branch-source
@@ -133,7 +141,7 @@ metadata:
   appendMergeSHA: true
 ```
 
-In the above example, we can see the following:
+In the above example `Autorelease.yaml`, we can see the following:
 
 `plugin: fancy-branch-source`:: 
 This is the name of the plugin, and it matches the repository 
@@ -194,7 +202,7 @@ look like:
         <jenkins.version>2.138.4</jenkins.version>
     </properties>
 
-````
+```
 
 This is all pretty run-of-the-mill stuff for a Jenkins plugin, and is well understood already 
 by Karl and the rest of the plugin maintainer community. To enable autorelease, Karl would 
@@ -211,6 +219,7 @@ metadata:
 
 When Karl merges a commit into the `release-the-fanciness` branch, that merge commit has the 
 SHA `1a2b3c4`. The following takes place:
+
 * A webhook is sent to super-trusted-thing, and a build is performed there. 
 * If the build passes all its tests, a release is generated. In our example, 
 that release number would be `3.1.4-1a2b3c4`, because Karl has chosen to append the merge commit 
@@ -226,47 +235,20 @@ ability to do continuous, merge-driven releases, plugin maintainers can readily 
 Jenkins itself is being worked on in a continuous way. This would be a big win for Jenkins' 
 credibility in an increasingly demanding market space.
 
-[TIP]
-====
-Explain why the existing code base or process is inadequate to address the problem that the JEP solves.
-This section may also contain any historical context such as how things were done before this proposal.
-
-* Do not discuss design choices or alternative designs that were rejected - those belong in the Reasoning section.
-====
-
 == Reasoning
 
-Oh boy the UX for this could really suck. People are going to be overrun with upgrades they think they 
-need to do.
+=== Why Maven?
+With Incrementals having gained fairly wide adoption by plugin maintainers, it seems reasonable to use maven 
 
-Maybe we need an "urgent" flag for those?
 
-[TIP]
-====
-Explain why particular design decisions were made.
-Describe alternate designs that were considered and related work. For example, how the feature is supported in other systems.
-Provide evidence of consensus within the community and discuss important objections or concerns raised during discussion.
-
-* Use sub-headings to organize this section for ease of readability.
-* Do not talk about history or why this needs to be done - that is part of Motivation section.
-====
+=== Why a trusted CI system?
+Containment of credentials. By using a single system of record for these builds, a service account, maintained by the JENKINS-CERT team, can be used to access GitHub, deploy to Nexus, and deploy to the update centers.
 
 == Backwards Compatibility
-
-[TIP]
-====
-Describe any incompatibilities and their severity.
-Describe how the JEP proposes to deal with these incompatibilities.
-
-If there are no backwards compatibility concerns, this section may simply say:
-There are no backwards compatibility concerns related to this proposal.
-====
 
 With any plugin upgrade, there are backwards compatibility concerns, and autorelease is no different 
 in that regard. In fact, it could be made worse, because users will get overrun with upgrades. Jenkins 
 existing plugin system only allows for uninstalling one revision. 
-
-
 
 == Security
 
@@ -293,24 +275,19 @@ this in any way.
 
 == Prototype Implementation
 
-[TIP]
-====
-Link to any open source reference implementation of code changes for this proposal.
-The implementation need not be completed before the JEP is
-link:https://github.com/jenkinsci/jep/tree/master/jep/1#accepted[accepted],
-but must be completed before any JEP is given
+As a proof of concept, the (github-branch-source?) plugin will be the first to adopt. This provides 
+the initiative with a heavily used plugin, which sees relatively frequent releases already.
+
+A sample fork of github-branch-source could be provided as a reference implementation for 
+this proposal. It is understood that this need not be completed before this JEP is 
+"link:https://github.com/jenkinsci/jep/tree/master/jep/1#accepted[accepted]", but will need to 
+be made available before this JEP is given 
 "link:https://github.com/jenkinsci/jep/tree/master/jep/1#final[Final]" status.
 
-JEPs which will not include code changes may omit this section.
-====
 
 == References
 
-[TIP]
-====
-Provide links to any related documents.
-This will include links to discussions on the mailing list, pull requests, and meeting notes.
-====
+None yet.
 
 
 
