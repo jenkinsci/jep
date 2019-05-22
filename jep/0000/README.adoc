@@ -220,15 +220,29 @@ credibility in an increasingly demanding market space.
 === Why a trusted CI system?
 Containment of credentials. By using a single system of record for these builds, a service account, maintained by the JENKINS-CERT team, can be used to access GitHub, deploy to Nexus, and deploy to the update centers.
 
+=== Why YAML?
+YAML is becoming increasingly common in the Jenkins community, for many reasons. YAML is:
+
+* Already in use by the Tekton project in Jenkins-X
+* Human readable
+* In use for things like the Kubernetes plugin
+* Easily parsed by any number of publily available libraries
+* 
+
 == Backwards Compatibility
+
+Autorelease introduces no new risks with regard to backwards compatibility or a lack thereof.
 
 With any plugin upgrade, there are backwards compatibility concerns, and Autorelease is no different 
 in that regard. Without Autorelease, there is still nothing stopping a plugin maintainer from releasing 
 a backwards-breaking change.
 
+Plugin maintainers are also not required to use Autorelease at all. By taking no action, these 
+maintainers will see no change at all to the way they do their Jenkins plugin work.
+
 == Security
 
-This should make things more secure, because they all come from `${trusted-ci-server}`. Rules 
+Autorelease should make things more secure, because they all come from `${trusted-ci-server}`. Rules 
 can be put in place on `${trusted-ci-server}` which prevent people from doing silly things.
 It also eliminates the potential for MitM attacks.
 
@@ -236,7 +250,7 @@ It also eliminates the potential for MitM attacks.
 
 We will need:
 
-1. The webhook. 
+1. The webhook. Security implications of this are a bit beyond the scope of this document so far.
 2. The trusted Jenkins server doing these builds will need to be smart enough to understand the 
 `Autorelease.yaml` file, and act according to its settings 
 3. Probably `buildPlugin` will need some code added to validate the contents of `Autorelease.yaml`. 
@@ -247,8 +261,9 @@ people start using it.
 == Testing
 
 Autorelease brings with it a heightened importance for quality automated tests. However, there will be 
-no rules governing this. As before, plugin maintainers are encouraged to release only well-tested code, but
-there is little to stop someone from releasing something which is under-tested. Autorelease does not change this in any way.
+no rules governing this. As is the case today, plugin maintainers are encouraged to release only 
+well-tested code, but there is little to stop someone from releasing something which is under-tested. 
+Autorelease does not change this in any way.
 
 == Prototype Implementation
 
