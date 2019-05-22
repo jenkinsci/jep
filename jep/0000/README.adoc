@@ -99,12 +99,6 @@ The first of which would be changes to the
 link:https://github.com/jenkins-infra/pipeline-library/blob/master/vars/buildPlugin.groovy[`buildPlugin`] shared 
 library, which is commonly used to build Jenkins plugins. 
 
-==== [line-through]#The autorelease Maven profile#
-
-[line-through]#I actually don't know that this is necessary. A new Maven profile can be created, 
-most likely in the 
-link:https://github.com/jenkinsci/plugin-pom[Jenkins plugin parent POM].#
-
 ==== Changes to `buildPlugin`
 
 The commonly used library link:https://github.com/jenkins-infra/pipeline-library/blob/master/vars/buildPlugin.groovy[`buildPlugin`] will need to be modified to check for, and validate, a markerfile, called `Autorelease.yaml`. This 
@@ -223,18 +217,14 @@ credibility in an increasingly demanding market space.
 
 == Reasoning
 
-=== Why Maven?
-With Incrementals having gained fairly wide adoption by plugin maintainers, it seems reasonable to use maven 
-
-
 === Why a trusted CI system?
 Containment of credentials. By using a single system of record for these builds, a service account, maintained by the JENKINS-CERT team, can be used to access GitHub, deploy to Nexus, and deploy to the update centers.
 
 == Backwards Compatibility
 
-With any plugin upgrade, there are backwards compatibility concerns, and autorelease is no different 
-in that regard. In fact, it could be made worse, because users will get overrun with upgrades. Jenkins 
-existing plugin system only allows for uninstalling one revision. 
+With any plugin upgrade, there are backwards compatibility concerns, and Autorelease is no different 
+in that regard. Without Autorelease, there is still nothing stopping a plugin maintainer from releasing 
+a backwards-breaking change.
 
 == Security
 
@@ -245,19 +235,20 @@ It also eliminates the potential for MitM attacks.
 == Infrastructure Requirements
 
 We will need:
+
 1. The webhook. 
 2. The trusted Jenkins server doing these builds will need to be smart enough to understand the 
-`Autorelease.yaml` file, and act according to its settings
+`Autorelease.yaml` file, and act according to its settings 
 3. Probably `buildPlugin` will need some code added to validate the contents of `Autorelease.yaml`. 
 Otherwise there's no telling what people might put in there. This needs to be well-hardened before 
 people start using it.
+4. Perhaps a mechanism by which we can verify the authenticity of incoming build requests. But this should be handled by GitHub repository permissions themselves. In other words, if Janet Plugin has merge rights to `the-janet-plugin`, she has that already today.
 
 == Testing
 
 Autorelease brings with it a heightened importance for quality automated tests. However, there will be 
 no rules governing this. As before, plugin maintainers are encouraged to release only well-tested code, but
-there is little to stop someone from releasing something which is under-tested. Autorelease does not change 
-this in any way.
+there is little to stop someone from releasing something which is under-tested. Autorelease does not change this in any way.
 
 == Prototype Implementation
 
