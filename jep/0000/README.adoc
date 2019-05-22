@@ -68,7 +68,7 @@ At present, Jenkins plugins are, typically, not released on a continous basis. T
 are also not released from a single source of truth, such as a trusted Continuous 
 Integration server like link:https://ci.jenkins.io[https://ci.jenkins.io]. 
 
-The notion of continuous delivery of plugin releases has been discussed previously *need footnote*. 
+The notion of continuous delivery of plugin releases has been discussed previously <<footnote-1,^(1)^>>.
 Considering that Jenkins is a system used to facilitate Continuous Delivery for many users, it makes 
 sense -- and builds credibility -- for the Jenkins developer community to adopt this same practice. 
 
@@ -89,20 +89,27 @@ link:https://github.com/jenkinsci/[the jenkinsci organization on GitHub], a webh
 `super-trusted-ci.jenkins.io`. The specifics of this webhook, and the trusted CI server `super-trusted`, 
 will be described on their own in an IEP document.
 
-We use semantic versioning, because such version numbers are generally well understood by the Jenkins 
-community at large.
+We suggest the use of 
+link:https://semver.org/[semantic versioning], although it is not required.
 
 === Setup
 
-==== The autorelease Maven profile
+Setup could be as simple as making two changes to the way plugins are released. 
+The first of which would be changes to the 
+link:https://github.com/jenkins-infra/pipeline-library/blob/master/vars/buildPlugin.groovy[`buildPlugin`] shared 
+library, which is commonly used to build Jenkins plugins. 
 
-I actually don't know that this is necessary. A new Maven profile can be created, 
+==== [line-through]#The autorelease Maven profile#
+
+[line-through]#I actually don't know that this is necessary. A new Maven profile can be created, 
 most likely in the 
-link:https://github.com/jenkinsci/plugin-pom[Jenkins plugin parent POM]. 
+link:https://github.com/jenkinsci/plugin-pom[Jenkins plugin parent POM].#
 
 ==== Changes to `buildPlugin`
 
-The commonly used library link:https://github.com/jenkins-infra/pipeline-library/blob/master/vars/buildPlugin.groovy[`buildPlugin`] will need to be modified to check for, and validate, a markerfile, called `Autorelease.yaml`.
+The commonly used library link:https://github.com/jenkins-infra/pipeline-library/blob/master/vars/buildPlugin.groovy[`buildPlugin`] will need to be modified to check for, and validate, a markerfile, called `Autorelease.yaml`. This 
+markerfile will be the mechanism that tells `${trusted-ci-server}` that this plugin should be automatically 
+released.
 
 ==== Autorelease.yaml
 
@@ -199,7 +206,7 @@ metadata:
 When Karl merges a commit into the `release-the-fanciness` branch, that merge commit has the 
 SHA `1a2b3c4`. The following takes place:
 
-* A webhook is sent to super-trusted-thing, and a build is performed there. 
+* A webhook is sent to `${trusted-ci-server}`, and a build is performed there. 
 * If the build passes all its tests, a release is generated. In our example, 
 that release number would be `3.1.4-1a2b3c4`, because Karl has chosen to append the merge commit 
 SHA to the end of his autorelease version numbers.
@@ -231,8 +238,8 @@ existing plugin system only allows for uninstalling one revision.
 
 == Security
 
-This should make things more secure, because they all come from a trusted CI. Rules 
-can be put in place on this trusted CI system which prevent people from doing silly things.
+This should make things more secure, because they all come from `${trusted-ci-server}`. Rules 
+can be put in place on `${trusted-ci-server}` which prevent people from doing silly things.
 It also eliminates the potential for MitM attacks.
 
 == Infrastructure Requirements
@@ -266,7 +273,7 @@ be made available before this JEP is given
 
 == References
 
-None yet.
+[[footnote-1]]1. Jenkins World 2017, Contributor Summit Notes, pp. 11-12
 
 
 
