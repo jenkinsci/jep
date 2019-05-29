@@ -74,28 +74,44 @@ the Jenkins project
 
 == Specification
 
-This proposal describes an approach by which plugin maintainers can have merges to a branch of their 
-choice occur, an automated release process is launched. It is anticipated that the typical scenario 
-will be `master`. In other words, once a commit is merged to master in the repository hosted in 
-link:https://github.com/jenkinsci/[the jenkinsci organization on GitHub], a webhook will be sent to 
-`super-trusted-ci.jenkins.io`. The specifics of this webhook, and the trusted CI server `super-trusted`, 
-will be described on their own in an IEP document.
+=== Overview
 
-We suggest the use of 
-link:https://semver.org/[semantic versioning], although it is not required.
+We'll use a short story to illustrate what Autorelease will look like when a plugin maintainer 
+decides that they want to take part.
 
-=== Setup
+Karl, a plugin developer who owns the fancy-branch-plugin, wants to add CD to his project. To do so, 
+he will:
 
-Setup could be as simple as making two changes to the way plugins are released. 
-The first of which would be changes to the 
-link:https://github.com/jenkins-infra/pipeline-library/blob/master/vars/buildPlugin.groovy[`buildPlugin`] shared 
-library, which is commonly used to build Jenkins plugins. 
+1. Verify support. Karl's plugin is already in the jenkinsci Organization on GitHub, and is 
+using `buildPlugin` when built on ci.jenkins.io.
 
-==== Changes to `buildPlugin`
+2. Choose a branch from which to release. Karl decides he wants to release from the `master` branch, 
+as that is the simplest.
 
-The commonly used library link:https://github.com/jenkins-infra/pipeline-library/blob/master/vars/buildPlugin.groovy[`buildPlugin`] will need to be modified to check for, and validate, a markerfile, called `Autorelease.yaml`. This 
-markerfile will be the mechanism that tells `${trusted-ci-server}` that this plugin should be automatically 
-released.
+3. Settle on a version numbering scheme. Becuase it's in fairly wide use across the Jenkins 
+ecosystem, Karl settles on link:https://semver.org/[semantic versioning].
+
+4. Add a file to the top directory of his repository called `Autorelease.yaml`. 
+
+5. A webhook is configured on Karl's repository on GitHub to point to `{the-webhook-receiver}`
+
+Once ready to create a new release of his plugin, Karl merges some changes to the `master` branch. 
+At which point, the following takes place under the covers: 
+
+1. A webhook is sent to `{the-webhook-receiver}` by GitHub
+
+2. The receiver forwards this hook to `${trusted-ci-server}`, which is protected by a VPN
+
+3. `${trusted-ci-server}` uses the enhanced version of `buildPlugin` to validate the correctness of 
+Karl's `Autorelease.yaml` file, and the consistency of Karl's chosen version numbering.
+
+4. Once `Autorelease.yaml` has been validated, a plugin build is performed on `${trusted-ci-server}` 
+as one would expect.
+
+5. After the build is successful, `${trusted-ci-server}` handles deployment of the built plugin to 
+Artifactory and the Jenkins Update Center.
+
+=== Detailed Setup
 
 ==== Autorelease.yaml
 
@@ -110,7 +126,7 @@ kind: plugin
 metadata:
   autoreleaseEnabled: true
   triggeringBranch: master
-  appendMergeSHA: true
+  versionNumberFields: 3
 ```
 
 In the above example `Autorelease.yaml`, we can see the following:
@@ -129,15 +145,12 @@ Contains the following fields:
 an autorelease webhook. Although this is expected to usually be set to `master`, plugin 
 maintainers can choose a branch name of their preference, e.g., `autorelease`, `release`, 
 etc.
-** `appendMergeSHA`: A boolean value, indicating whether or not the resultant release will 
-be version numbered including the merge SHA, for example, `2.5.2-1a2b3c4`. This will maintain 
-compatibility with the existing Incrementals versioning.
+** `versionNumberFields`: An integer, indicating the number of fields which `buildPlugin` should expect.
+This is important, because sticking to a consistent numbering scheme makes for easier sorting by version.
+For this example plugin, Karl has set the value to `3`, because he's usuing semantic versioning, e.g., 
+3.1.4.
 
-=== Adoption
-
-To illustrate how this would be used by a plugin maintainer, we'll continue with our fictional example.
-Plugin maintainer Karl has decided that he would like to automatically release fancy-branch-source 
-automatically, each time he merges to a branch called `release-the-fanciness`. 
+==== Maven POM file changes
 
 Karl's plugin is already making use of Incrementals, and the relevant lines of his `pom.xml` file 
 look like:
@@ -176,20 +189,24 @@ look like:
 
 ```
 
-This is all pretty run-of-the-mill stuff for a Jenkins plugin, and is well understood already 
-by Karl and the rest of the plugin maintainer community. To enable autorelease, Karl would 
-create a file at the top level of his repository, called `Autorelease.yaml`:
+No additional changes need to be made to `pom.xml` by Karl, he's good to go.
 
-```
-plugin: fancy-branch-source
-kind: plugin
-metadata:
-  autoreleaseEnabled: true
-  triggeringBranch: release-the-fanciness
-  appendMergeSHA: true
-```
+=== What happens when a release is created
 
-When Karl merges a commit into the `release-the-fanciness` branch, that merge commit has the 
+==== Changes to `buildPlugin`
+
+The commonly used library link:https://github.com/jenkins-infra/pipeline-library/blob/master/vars/buildPlugin.groovy[`buildPlugin`] will need to be modified to check for, and validate, the markerfile, called `Autorelease.yaml`. This 
+markerfile will be the mechanism that tells `${trusted-ci-server}` that this plugin should be automatically 
+released.
+
+Validation will include:
+
+1. The 
+
+If validation of `Autorelease.yaml` fails for any reason, the build is not performed and nothing gets deployed.
+
+
+When Karl merges a commit into the `master` branch, that merge commit has the 
 SHA `1a2b3c4`. The following takes place:
 
 * A webhook is sent to `${trusted-ci-server}`, and a build is performed there. 
@@ -232,7 +249,9 @@ YAML is becoming increasingly common in the Jenkins community, for many reasons.
 
 == Backwards Compatibility
 
-Autorelease introduces no new risks with regard to backwards compatibility or a lack thereof.
+Autorelease introduces no new risks with regard to backwards compatibility of plugins themselves. 
+However, there will be a requirement for plugin maintainers to use a consistent version numbering 
+scheme. Consistent version numbering will prevent problems with sorting versions 
 
 With any plugin upgrade, there are backwards compatibility concerns, and Autorelease is no different 
 in that regard. Without Autorelease, there is still nothing stopping a plugin maintainer from releasing 
@@ -244,7 +263,8 @@ maintainers will see no change at all to the way they do their Jenkins plugin wo
 == Security
 
 Autorelease should make things more secure, because they all come from `${trusted-ci-server}`. Rules 
-can be put in place on `${trusted-ci-server}` which prevent people from doing silly things.
+can be put in place on `${trusted-ci-server}`, which can provide implicit enforcement of the 
+Jenkins infrastructure team's security best practices.
 
 == Infrastructure Requirements
 
@@ -252,12 +272,13 @@ We will need:
 
 1. The webhook. Security implications of this are a bit beyond the scope of this document so far.
 ALSO a receiver for the webhook. This 
-2. The trusted Jenkins server doing these builds will need to be smart enough to understand the 
+2. A receiver for the aforementioned webhook, because the `${trusted-ci-server}` will be protected 
+behind a VPN
+3. The trusted Jenkins server doing these builds will need to be smart enough to understand the 
 `Autorelease.yaml` file, and act according to its settings 
-3. Probably `buildPlugin` will need some code added to validate the contents of `Autorelease.yaml`. 
-Otherwise there's no telling what people might put in there. This needs to be well-hardened before 
-people start using it.
-4. Perhaps a mechanism by which we can verify the authenticity of incoming build requests. But this should be handled by GitHub repository permissions themselves. In other words, if Janet Plugin has merge rights to `the-janet-plugin`, she has that already today.
+4. `buildPlugin` will need some code added to validate `Autorelease.yaml` for correctness, and 
+build the plugin according to the settings described therein
+5. Perhaps a mechanism by which we can verify the authenticity of incoming build requests. But this should be handled by GitHub repository permissions themselves. In other words, if Janet Plugin has merge rights to `the-janet-plugin`, she has that already today.
 
 == Testing
 
@@ -283,4 +304,13 @@ be made available before this JEP is given
 [[footnote-1]]1. Jenkins World 2017, link:http://bit.ly/2x1lCUZ[Contributor Summit Notes], pp. 11-12
 
 
+
+
+We need to either enforce a fixed number of elements in version numbers,
+OR
+have it confiurable, so that:
+    - More than the spec, gets rejected
+    - Less than the spec, `0` gets appended
+
+We know the problem, fixed length is one approach to fixing it.
 
