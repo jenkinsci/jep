@@ -64,21 +64,13 @@ endif::[]
 
 == Abstract
 
-At present, Jenkins plugins are, typically, not released on a continous basis. They 
-are also not released from a single source of truth, such as a trusted Continuous 
-Integration server like link:https://ci.jenkins.io[https://ci.jenkins.io]. 
+This JEP introduces a new system, which enables Jenkins plugin maintainers to add Continuous 
+Delivery to their projects. It is:
 
-The notion of continuous delivery of plugin releases has been discussed previously <<footnote-1,^(1)^>>.
-Considering that Jenkins is a system used to facilitate Continuous Delivery for many users, it makes 
-sense -- and builds credibility -- for the Jenkins developer community to adopt this same practice. 
-
-Having a centralized release system made available to plugin maintainers also provides additional 
-confidence that security best practices are being followed *need footnote without surfacing some 
-awful security problem* 
-
-Continuous celivery from trusted CI is something which plugin maintainers can opt into, but is 
-not required. If a plugin maintainer chooses to continue to follow their own path for releasing 
-versions of their code, they remain free to do so.
+* Opt-in: plugin maintainers can choose to use this
+* Simple to configure: very little needs to be changed in order to enable CD
+* Trusted CI/CD: deployments are produced from a single source of truth, which is managed by 
+the Jenkins project
 
 == Specification
 
@@ -209,11 +201,21 @@ SHA to the end of his autorelease version numbers.
 
 == Motivation
 
-It's no secret that the Jenkins plugin ecosystem is complex. It's also no secret that Jenkins plugins 
-are often developed in a very non-continuous way. This proposal seeks to change this. By offering the 
-ability to do continuous, merge-driven releases, plugin maintainers can readily make the claim that 
-Jenkins itself is being worked on in a continuous way. This would be a big win for Jenkins' 
-credibility in an increasingly demanding market space.
+At present, Jenkins plugins are, typically, not released on a continous basis. They 
+are also not released from a single source of truth, such as a trusted Continuous 
+Integration server like link:https://ci.jenkins.io[https://ci.jenkins.io]. 
+
+The notion of continuous delivery of plugin releases has been discussed previously <<footnote-1,^(1)^>>.
+Considering that Jenkins is a system used to facilitate Continuous Delivery for many users, it makes 
+sense -- and builds credibility -- for the Jenkins developer community to adopt this same practice. 
+
+Having a centralized release system made available to plugin maintainers also provides additional 
+confidence that security best practices are being followed *need footnote without surfacing some 
+awful security problem* 
+
+Continuous celivery from trusted CI is something which plugin maintainers can opt into, but is 
+not required. If a plugin maintainer chooses to continue to follow their own path for releasing 
+versions of their code, they remain free to do so.
 
 == Reasoning
 
