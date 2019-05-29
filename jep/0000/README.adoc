@@ -229,7 +229,6 @@ YAML is becoming increasingly common in the Jenkins community, for many reasons.
 * Human readable
 * In use for things like the Kubernetes plugin
 * Easily parsed by any number of publily available libraries
-* 
 
 == Backwards Compatibility
 
@@ -246,13 +245,13 @@ maintainers will see no change at all to the way they do their Jenkins plugin wo
 
 Autorelease should make things more secure, because they all come from `${trusted-ci-server}`. Rules 
 can be put in place on `${trusted-ci-server}` which prevent people from doing silly things.
-It also eliminates the potential for MitM attacks.
 
 == Infrastructure Requirements
 
 We will need:
 
 1. The webhook. Security implications of this are a bit beyond the scope of this document so far.
+ALSO a receiver for the webhook. This 
 2. The trusted Jenkins server doing these builds will need to be smart enough to understand the 
 `Autorelease.yaml` file, and act according to its settings 
 3. Probably `buildPlugin` will need some code added to validate the contents of `Autorelease.yaml`. 
