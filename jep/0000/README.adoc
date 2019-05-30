@@ -141,7 +141,9 @@ autorelease, this will only be set to `plugin`. The field is here should the Jen
 want to expand the use of autorelease, such as for building core, or components
 `metadata`:: 
 Contains the following fields:
-** `autoreleaseEnabled`: A boolean value, indicating whether or not this plugin is participating in autorelease
+** `autoreleaseEnabled`: A boolean value, indicating whether or not this plugin is participating 
+in autorelease. Allows the maintainer to turn Autorelease on or off, without deleting the file 
+entirely.
 ** `triggeringBranch`: Sets the branch which maintainers will merge to in order to trigger 
 an autorelease webhook. Although this is expected to usually be set to `master`, plugin 
 maintainers can choose a branch name of their preference, e.g., `autorelease`, `release`, 
@@ -194,21 +196,23 @@ No additional changes need to be made to `pom.xml` by Karl, he's good to go.
 
 ==== Autorelease.yaml verification in `buildPlugin`
 
-The commonly used library link:https://github.com/jenkins-infra/pipeline-library/blob/master/vars/buildPlugin.groovy[`buildPlugin`] will need to be modified to check for, and validate, the markerfile, called `Autorelease.yaml`. This 
+The commonly used library link:https://github.com/jenkins-infra/pipeline-library/blob/master/vars/buildPlugin.groovy[`buildPlugin`] will need to be modified to check for the presence of, and validate, `Autorelease.yaml`. This 
 markerfile will be the mechanism that tells `${trusted-ci-server}` that this plugin should be automatically 
-released.
+released. 
 
 Validation will include:
 
 1. `pluginName` field must match the repository name
 
 2. `versionNumberFields` must match the `revision` property in `pom.xml`. E.g., if `versionNumberFields` is 
-set to `3`, and the `revision` is set to `3.1.4.5`, validation will fail.
+set to `3` (three fields), and the `revision` in `pom.xml` is set to `3.1.4.5` (four fields), validation 
+will fail.
 
 3. Validation that no extra fields are present in the file. Comments are allowed, but any unexpected 
 lines will cause validation to fail.
 
-If validation of `Autorelease.yaml` fails for any reason, the build is not performed and nothing gets deployed.
+If validation of `Autorelease.yaml` fails for any reason, the build is not performed nothing gets deployed, 
+and GitHub is notified of the failure.
 
 ==== Deployment of a successful release
 
@@ -218,8 +222,8 @@ SHA `1a2b3c4`. The following takes place:
 * A webhook is sent to `${trusted-ci-server}`, and `Autorelease.yaml` is validated.
 * Once validation passes, a build is performed. If the build passes all its tests, a release 
 is generated. In our example, that release number would be `3.1.4-150-1a2b3c4`
-* The built plugin gets deployed to Nexus
-* The resulting plugin appears on the Jenkins Update Center, as Fancy Branch Plugin version 3.1.4-150-1a2b3c
+* The built plugin gets deployed to Artifactory
+* The resulting plugin appears on the Jenkins Update Center, as Fancy Branch Plugin version `3.1.4-150-1a2b3c`.
 
 == Motivation
 
@@ -232,8 +236,7 @@ Considering that Jenkins is a system used to facilitate Continuous Delivery for 
 sense -- and builds credibility -- for the Jenkins developer community to adopt this same practice. 
 
 Having a centralized release system made available to plugin maintainers also provides additional 
-confidence that security best practices are being followed *need footnote without surfacing some 
-awful security problem* 
+confidence that security best practices are being followed. 
 
 Continuous celivery from trusted CI is something which plugin maintainers can opt into, but is 
 not required. If a plugin maintainer chooses to continue to follow their own path for releasing 
@@ -244,21 +247,23 @@ versions of their code, they remain free to do so.
 === What's with the version numbering?
 
 Jenkins plugin maintainers are already familiar with the way that Incrementals appends a commit 
-number, pluse a merge SHA, to version numbers. These mechanically-generated version numbers offer 
+number, plus a SHA, to version numbers. These mechanically-generated version numbers offer 
 the ability to predictably sort them, so that external systems, such as the Jenkins update center, 
 can correctly publish the "newest" version. The addition of a merge SHA also allows for at-a-glance 
 feedback to tell people which commits went into the release.
 
 NOTE: This version number management scheme is only one of several possible choices. We expect 
-some lively debate around this topic. But it's very important to ensure that versions can be 
-easily sorted by systems such as the Jenkins update center.
+some _lively debate_ around this topic. But it's very important to ensure that versions can be 
+easily sorted by systems such as the Jenkins update center. Also under consideration is defining 
+a fixed number of fields in version numbers, and considering any deviation from that a validation 
+failure.
 
 === Why YAML?
 YAML is becoming increasingly common in the Jenkins community, for many reasons. YAML is:
 
 * Already in use by the Tekton project in Jenkins-X
 * Human readable
-* In use for things like the Kubernetes plugin
+* In use by things like the Kubernetes plugin
 * Easily parsed by any number of publily available libraries
 
 === Aren't we missing some details about infrastructrue requirements?
@@ -283,13 +288,16 @@ maintainers will see no change at all to the way they do their Jenkins plugin wo
 
 == Security
 
-Autorelease can make things more secure
+Autorelease can help to make Jenkins plugins, and their release processes, more secure in a 
+number of ways. Including, but not limited to:
 
 === Containment of credentials
 
 By using a single system of record for these builds, a service account, maintained by the 
 JENKINS-CERT team, can be used to access GitHub, deployment to Nexus, and deployment to 
-the update centers.
+the update centers. Plugin maintainers need not leave their own credentials on a CI server 
+which they don't own, and permissions already in place in their GitHub repositories provide 
+the required controls over who can merge and release.
 
 === Automatic enforcement of security best practices
 Autorelease builds will all come from `${trusted-ci-server}`. Rules 
@@ -299,17 +307,17 @@ something that plugin maintainers need not worry about.
 
 == Infrastructure Requirements
 
-We will need:
+We will need a number of things to get this going. The low level technical details will be described 
+in a separate Infrastructure Enhancement Request, so, this should be considered a summary for now:
 
 1. The webhook, configured on each participating plugin . Security implications of this are a bit beyond the scope of this document so far.
-ALSO a receiver for the webhook. This 
 2. A receiver for the aforementioned webhook, because the `${trusted-ci-server}` will be protected 
 behind a VPN
-3. The trusted Jenkins server doing these builds will need to be smart enough to understand the 
-`Autorelease.yaml` file, and act according to its settings 
-4. `buildPlugin` will need some code added to validate `Autorelease.yaml` for correctness, and 
+3. A trusted Jenkins server for performing builds and deployments. 
+4. `buildPlugin` will need code added to validate `Autorelease.yaml` for correctness, and 
 build the plugin according to the settings described therein
-5. Perhaps a mechanism by which we can verify the authenticity of incoming build requests. But this should be handled by GitHub repository permissions themselves. In other words, if Janet Plugin has merge rights to `the-janet-plugin`, she has that already today.
+5. Service account(s), managed by the Jenkins Infrastructure team, which provide secure credentials 
+to systems such as Artifactory
 
 == Testing
 
