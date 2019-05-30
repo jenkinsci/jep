@@ -320,6 +320,8 @@ build the plugin according to the settings described therein
 5. Service account(s), managed by the Jenkins Infrastructure team, which provide secure credentials 
 to systems such as Artifactory
 
+CAUTION: TODO: Things such as service accounts and new servers will be handled in a separate IEP.
+
 == Testing
 
 Autorelease brings with it a heightened importance for quality automated tests. However, there will be 
@@ -342,15 +344,3 @@ be made available before this JEP is given
 == References
 
 [[footnote-1]]1. Jenkins World 2017, link:http://bit.ly/2x1lCUZ[Contributor Summit Notes], pp. 11-12
-
-
-
-
-We need to either enforce a fixed number of elements in version numbers,
-OR
-have it confiurable, so that:
-    - More than the spec, gets rejected
-    - Less than the spec, `0` gets appended
-
-We know the problem, fixed length is one approach to fixing it.
-
