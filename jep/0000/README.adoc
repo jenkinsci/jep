@@ -252,11 +252,12 @@ the ability to predictably sort them, so that external systems, such as the Jenk
 can correctly publish the "newest" version. The addition of a merge SHA also allows for at-a-glance 
 feedback to tell people which commits went into the release.
 
-NOTE: This version number management scheme is only one of several possible choices. We expect 
-some _lively debate_ around this topic. But it's very important to ensure that versions can be 
-easily sorted by systems such as the Jenkins update center. Also under consideration is defining 
-a fixed number of fields in version numbers, and considering any deviation from that a validation 
-failure.
+WARNING: We know the problem of consistent version numbering, and the resulting ability to 
+sort versions, is important. The scheme discussed here is only one of several possible 
+choices. We expect some _lively debate_ around this topic. But it's very important to ensure 
+that versions can be easily sorted by systems such as the Jenkins update center. Also under 
+consideration is defining a fixed number of fields in version numbers, and considering any 
+deviation from that a validation failure.
 
 === Why YAML?
 YAML is becoming increasingly common in the Jenkins community, for many reasons. YAML is:
