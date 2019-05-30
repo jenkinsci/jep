@@ -77,12 +77,12 @@ the Jenkins project
 === Overview
 
 We'll use a short story to illustrate what Autorelease will look like when a plugin maintainer 
-decides that they want to take part.
+named Karl decides that he wants to perform continuous delivery of his Fancy Branch Plugin.
 
-Karl, a plugin developer who owns the fancy-branch-plugin, wants to add CD to his project. To do so, 
-he will:
+To do so, Karl will:
 
-1. Verify support. Karl's plugin is already in the jenkinsci Organization on GitHub, and is 
+1. Verify support. Karl's plugin is already in the 
+link:https://github.com/jenkinsci[jenkinsci Organization on GitHub], and is 
 using `buildPlugin` when built on ci.jenkins.io.
 
 2. Choose a branch from which to release. Karl decides he wants to release from the `master` branch, 
@@ -118,7 +118,8 @@ Artifactory and the Jenkins Update Center.
 A YAML markerfile, stored in the plugin's own repository. Absence of this markerfile will 
 be functionally equivalent to the plugin maintainer opting out of Autorelease. 
 
-In the following example, we'll use a fictional plugin, called `fancy-branch-source`
+In the following example, we'll stick with plugin developer Karl, and his fictional 
+plugin `fancy-branch-source`. Karl's `Autorelease.yaml` file looks like this:
 
 ```
 plugin: fancy-branch-source
