@@ -77,7 +77,7 @@ the Jenkins project
 === Overview
 
 We'll use a short story to illustrate what Autorelease will look like when a plugin maintainer 
-named Karl decides that he wants to perform continuous delivery of his Fancy Branch Plugin.
+named Karl decides that he wants to perform continuous delivery of his (fictional) Karl-Plugin.
 
 To do so, Karl will:
 
@@ -119,10 +119,10 @@ A YAML markerfile, stored in the plugin's own repository. Absence of this marker
 be functionally equivalent to the plugin maintainer opting out of Autorelease. 
 
 In the following example, we'll stick with plugin developer Karl, and his fictional 
-plugin `fancy-branch-source`. Karl's `Autorelease.yaml` file looks like this:
+plugin `karl-plugin`. Karl's `Autorelease.yaml` file looks like this:
 
 ```
-plugin: fancy-branch-source
+plugin: karl
 kind: plugin
 metadata:
   autoreleaseEnabled: true
@@ -132,13 +132,13 @@ metadata:
 
 In the above example `Autorelease.yaml`, we can see the following:
 
-`plugin: fancy-branch-source`:: 
+`plugin: karl`:: 
 This is the name of the plugin, and it matches the repository 
 name on GitHub.
 `kind`:: 
 The type of project which is being set up for autorelease. In our first iteration of 
 autorelease, this will only be set to `plugin`. The field is here should the Jenkins project 
-want to expand the use of autorelease, such as for building core, or components
+want to expand the use of autorelease, such as for building core, or components.
 `metadata`:: 
 Contains the following fields:
 ** `autoreleaseEnabled`: A boolean value, indicating whether or not this plugin is participating 
@@ -168,14 +168,14 @@ look like:
         <version>4.56</version>
         <relativePath />
     </parent>
-    <artifactId>fancy-branch-source</artifactId>
+    <artifactId>karl</artifactId>
     <version>${revision}${changelist}</version>
     <packaging>hpi</packaging>
-    <name>Fancy Branch Source Plugin</name>
+    <name>Karl Plugin</name>
     <url>
-        <!--Something like https://wiki.jenkins-ci.org/display/JENKINS/Fancy+Branch+Source+Plugin-->
+        <!--Something like https://wiki.jenkins-ci.org/display/JENKINS/Karl+Plugin-->
     </url>
-    <description>A useful description.</description>
+    <description>A useful description of the Karl plugin.</description>
     <licenses>
         <license>
             <name>MIT</name>
@@ -223,7 +223,7 @@ SHA `1a2b3c4`. The following takes place:
 * Once validation passes, a build is performed. If the build passes all its tests, a release 
 is generated. In our example, that release number would be `3.1.4-150-1a2b3c4`
 * The built plugin gets deployed to Artifactory
-* The resulting plugin appears on the Jenkins Update Center, as Fancy Branch Plugin version `3.1.4-150-1a2b3c`.
+* The resulting plugin appears on the Jenkins Update Center, as Karl Plugin version `3.1.4-150-1a2b3c4`.
 
 == Motivation
 
@@ -238,7 +238,7 @@ sense -- and builds credibility -- for the Jenkins developer community to adopt 
 Having a centralized release system made available to plugin maintainers also provides additional 
 confidence that security best practices are being followed. 
 
-Continuous celivery from trusted CI is something which plugin maintainers can opt into, but is 
+Continuous delivery from trusted CI is something which plugin maintainers can opt into, but is 
 not required. If a plugin maintainer chooses to continue to follow their own path for releasing 
 versions of their code, they remain free to do so.
 
@@ -262,7 +262,6 @@ deviation from that a validation failure.
 === Why YAML?
 YAML is becoming increasingly common in the Jenkins community, for many reasons. YAML is:
 
-* Already in use by the Tekton project in Jenkins-X
 * Human readable
 * In use by things like the Kubernetes plugin
 * Easily parsed by any number of publily available libraries
