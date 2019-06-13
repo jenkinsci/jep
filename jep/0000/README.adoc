@@ -200,7 +200,7 @@ The commonly used library link:https://github.com/jenkins-infra/pipeline-library
 markerfile will be the mechanism that tells `${trusted-ci-server}` that this plugin should be automatically 
 released. 
 
-Validation will include:
+Validation must include, but will not be limited to, the following:
 
 1. `pluginName` field must match the repository name
 
