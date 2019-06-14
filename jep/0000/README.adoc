@@ -88,8 +88,7 @@ using `buildPlugin` when built on ci.jenkins.io.
 2. Choose a branch from which to release. Karl decides he wants to release from the `master` branch, 
 as that is the simplest.
 
-3. Settle on a version numbering scheme. Becuase it's in fairly wide use across the Jenkins 
-ecosystem, Karl settles on link:https://semver.org/[semantic versioning].
+3. Settle on a version numbering scheme. Karl decides on link:https://semver.org/[semantic versioning].
 
 4. Add a file to the top directory of his repository called `Autorelease.yaml`. 
 
@@ -192,7 +191,7 @@ No additional changes need to be made to `pom.xml` by Karl, he's good to go.
 ==== Autorelease.yaml verification in `buildPlugin`
 
 The commonly used library link:https://github.com/jenkins-infra/pipeline-library/blob/master/vars/buildPlugin.groovy[`buildPlugin`] will need to be modified to check for the presence of, and validate, `Autorelease.yaml`. This 
-markerfile will be the mechanism that tells `${trusted-ci-server}` that this plugin should be automatically 
+markerfile will be the mechanism that tells the trusted CI server that this plugin should be automatically 
 released. 
 
 Validation must include, but will not be limited to, the following:
@@ -214,11 +213,14 @@ and GitHub is notified of the failure.
 When Karl merges a commit into the `master` branch, that merge commit is link:https://github.com/jenkinsci/jep/blob/master/jep/305/README.adoc#basic-usage[commit number] 150, and has the 
 SHA `1a2b3c4`. The following takes place:
 
-* A webhook is sent to `${trusted-ci-server}`, and `Autorelease.yaml` is validated.
+* A webhook is sent from GitHub, to the webhook receiver. That hook is forwarded  to 
+the trusted CI server.
+* `Autorelease.yaml` is validated.
 * Once validation passes, a build is performed. If the build passes all its tests, a release 
 is generated. In our example, that release number would be `3.1.4-150-1a2b3c4`
 * The built plugin gets deployed to Artifactory
-* The resulting plugin appears on the Jenkins Update Center, as Karl Plugin version `3.1.4-150-1a2b3c4`.
+* link:https://github.com/jenkins-infra/update-center2/blob/master/README.md[The UC generator] makes
+the plugin available on the Jenkins Update Center, as Karl Plugin version `3.1.4-150-1a2b3c4`.
 
 == Motivation
 
@@ -261,6 +263,12 @@ YAML is becoming increasingly common in the Jenkins community, for many reasons.
 * In use by things like the Kubernetes plugin
 * Easily parsed by any number of publicly available libraries
 
+=== Testing Considerations
+Continuous Delivery brings with it a heightened importance for quality automated tests. However, 
+there will be no rules governing this. As is the case today, plugin maintainers are encouraged to 
+release only well-tested code, but there is little to stop someone from releasing something which 
+is under-tested. Continuous delivery does not change this in any way.
+
 === Aren't we missing some details about infrastructure requirements?
 
 In short, yes, we are. This JEP exists to get the conversation started. Once consensus has been reached, 
@@ -269,17 +277,13 @@ be premature to describe every detail of implementation before consensus is reac
 
 == Backwards Compatibility
 
-Autorelease introduces no new risks with regard to backwards compatibility of plugins themselves. 
-However, there will be a requirement for plugin maintainers to use a consistent version numbering 
-scheme. Consistent version numbering will prevent problems with sorting versions. This is discussed 
-elsewhere in this document.
+Plugin maintainers will need to be mindful of the fact that merging a PR to their `triggeringBranch` 
+constitutes a public release. For this reason, the `triggeringBranch` setting in `Autorelease.yaml` can 
+be set to something other than `master`, should the maintainer wish to do so.
 
-With any plugin upgrade, there are backwards compatibility concerns, and Autorelease is no different 
-in that regard. Without Autorelease, there is still nothing stopping a plugin maintainer from releasing 
-a backwards-breaking change.
-
-Plugin maintainers are also not required to use Autorelease at all. By taking no action, these 
-maintainers will see no change at all to the way they do their Jenkins plugin work.
+Continuous delivery introduces no new risks with regard to backwards compatibility of plugins 
+themselves. Even without it, there is still nothing stopping a plugin maintainer from releasing 
+a backwards-breaking change. 
 
 == Security
 
@@ -292,11 +296,12 @@ By using a single system of record for these builds, a service account, maintain
 Jenkins CERT team, can be used to access GitHub, deployment to Nexus, and deployment to 
 the update centers. Plugin maintainers need not leave their own credentials on a CI server 
 which they don't own, and permissions already in place in their GitHub repositories provide 
-the required controls over who can merge and release.
+the required controls over who can merge and release. What's more, they need not have 
+Artifactory credentials at all.
 
 === Automatic enforcement of security best practices
-Autorelease builds will all come from `${trusted-ci-server}`. Rules 
-can be put in place on `${trusted-ci-server}`, which can provide implicit enforcement of the 
+Autorelease builds will all come from a trusted CI server, which resides on a VPN. Rules 
+can be put in place on this CI server, which can provide implicit enforcement of the 
 Jenkins infrastructure team's security best practices. Compliance to these best practices becomes 
 something that plugin maintainers need not worry about.
 
@@ -305,9 +310,10 @@ something that plugin maintainers need not worry about.
 We will need a number of things to get this going. The low-level technical details will be described 
 in a separate Infrastructure Enhancement Request, so, this should be considered a summary for now:
 
-1. The webhook, configured on each participating plugin. Security implications of this are a bit beyond the scope of this document so far.
-2. [[webhook-receiver]]A receiver for the aforementioned webhook, because the `${trusted-ci-server}` will be protected 
-behind a VPN
+1. The webhook, configured on each participating plugin. Security implications of this are a bit 
+beyond the scope of this document so far.
+2. [[webhook-receiver]]A receiver for the aforementioned webhook, because the trusted CI 
+server will be protected behind a VPN
 3. A trusted Jenkins server for performing builds and deployments. 
 4. `buildPlugin` will need code added to validate `Autorelease.yaml` for correctness, and 
 build the plugin according to the settings described therein
@@ -318,10 +324,8 @@ CAUTION: TODO: Things such as service accounts and new servers will be handled i
 
 == Testing
 
-Autorelease brings with it a heightened importance for quality automated tests. However, there will be 
-no rules governing this. As is the case today, plugin maintainers are encouraged to release only 
-well-tested code, but there is little to stop someone from releasing something which is under-tested. 
-Autorelease does not change this in any way.
+Testing of this process will be performed interactively. The biggest code change involved here 
+will be the validation getting added to `buildPlugin`.
 
 == Prototype Implementation
 
