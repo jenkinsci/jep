@@ -77,7 +77,7 @@ the Jenkins project
 === Overview
 
 We'll use a short story to illustrate what Autorelease will look like when a plugin maintainer 
-named Karl decides that he wants to perform continuous delivery of his (fictional) Karl-Plugin.
+named Karl decides that he wants to perform continuous delivery of his (fictional) `karl-plugin`.
 
 To do so, Karl will:
 
@@ -308,10 +308,10 @@ something that plugin maintainers need not worry about.
 
 == Infrastructure Requirements
 
-We will need a number of things to get this going. The low level technical details will be described 
+We will need a number of things to get this going. The low-level technical details will be described 
 in a separate Infrastructure Enhancement Request, so, this should be considered a summary for now:
 
-1. The webhook, configured on each participating plugin . Security implications of this are a bit beyond the scope of this document so far.
+1. The webhook, configured on each participating plugin. Security implications of this are a bit beyond the scope of this document so far.
 2. A receiver for the aforementioned webhook, because the `${trusted-ci-server}` will be protected 
 behind a VPN
 3. A trusted Jenkins server for performing builds and deployments. 
