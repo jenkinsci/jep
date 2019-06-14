@@ -16,7 +16,7 @@ endif::[]
 | 0000
 
 | Title
-| Opt-in Continuous Delivery of Jenkins Plugin Releases from Trusted CI
+| Continuous Delivery of Jenkins Plugins
 
 | Sponsor
 | link:https://github.com/daniel-beck[Daniel Beck]
