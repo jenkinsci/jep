@@ -29,7 +29,7 @@ endif::[]
 | Process :bulb:
 
 | Created
-| Date (2019-05-15) :bulb:
+| :bulb:
 
 | BDFL-Delegate
 | TBD
