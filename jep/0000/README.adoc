@@ -76,7 +76,7 @@ the Jenkins project
 
 === Overview
 
-We'll use a short story to illustrate what Autorelease will look like when a plugin maintainer 
+We'll use a short story to illustrate what it will look like when a plugin maintainer 
 named Karl decides that he wants to perform continuous delivery of his (fictional) `karl-plugin`.
 
 To do so, Karl will:
@@ -191,7 +191,7 @@ look like:
         <jenkins.version>2.138.4</jenkins.version>
     </properties>
 
-```
+----
 
 No additional changes need to be made to `pom.xml` by Karl, he's good to go.
 
