@@ -97,7 +97,7 @@ as that is the simplest.
 Once ready to create a new release of his plugin, Karl merges some changes to the `master` branch. 
 At which point, the following takes place under the covers: 
 
-1. A webhook is sent to the webhook receier by GitHub
+1. A webhook is sent to the webhook receiver by GitHub
 
 2. The webhook receiver forwards this hook to a trusted CI server, which is protected by a VPN
 
