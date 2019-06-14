@@ -93,23 +93,25 @@ ecosystem, Karl settles on link:https://semver.org/[semantic versioning].
 
 4. Add a file to the top directory of his repository called `Autorelease.yaml`. 
 
-5. A webhook is configured on Karl's repository on GitHub to point to `{the-webhook-receiver}`
+5. A webhook is configured on Karl's repository on GitHub to point to a webhook receiver. 
 
 Once ready to create a new release of his plugin, Karl merges some changes to the `master` branch. 
 At which point, the following takes place under the covers: 
 
-1. A webhook is sent to `{the-webhook-receiver}` by GitHub
+1. A webhook is sent to the webhook receier by GitHub
 
-2. The receiver forwards this hook to `${trusted-ci-server}`, which is protected by a VPN
+2. The webhook receiver forwards this hook to a trusted CI server, which is protected by a VPN
 
-3. `${trusted-ci-server}` uses the enhanced version of `buildPlugin` to validate the correctness of 
-Karl's `Autorelease.yaml` file, and the consistency of Karl's chosen version numbering.
+3. The trusted CI server, upon getting the webhook from the trusted receiver, uses the 
+enhanced version of `buildPlugin` to validate the correctness of Karl's `Autorelease.yaml` 
+file, and the consistency of Karl's chosen version numbering.
 
-4. Once `Autorelease.yaml` has been validated, a plugin build is performed on `${trusted-ci-server}` 
-as one would expect.
+4. Once `Autorelease.yaml` has been validated, a plugin build is performed on the trusted CI server.
 
-5. After the build is successful, `${trusted-ci-server}` handles deployment of the built plugin to 
-Artifactory and the Jenkins Update Center.
+5. After the build is successful, the trusted CI server handles deployment of the built plugin to
+Artifactory, at which point 
+link:https://github.com/jenkins-infra/update-center2/blob/master/README.md[the existing UC generator] 
+makes the plugin available on the update center.
 
 === Detailed Setup
 
@@ -121,34 +123,26 @@ be functionally equivalent to the plugin maintainer opting out of Autorelease.
 In the following example, we'll stick with plugin developer Karl, and his fictional 
 plugin `karl-plugin`. Karl's `Autorelease.yaml` file looks like this:
 
-```
-plugin: karl
-kind: plugin
-metadata:
-  autoreleaseEnabled: true
-  triggeringBranch: master
-  versionNumberFields: 3
-```
+[source,yaml]
+----
+kind: plugin <1>
+triggeringBranch: master <2>
+versionNumberFields: 3 <3>
+----
 
-In the above example `Autorelease.yaml`, we can see the following:
-
-`plugin: karl`:: 
-This is the name of the plugin, and it matches the repository 
-name on GitHub.
-`kind`:: 
+<1> `kind`
 The type of project which is being set up for autorelease. In our first iteration of 
 autorelease, this will only be set to `plugin`. The field is here should the Jenkins project 
 want to expand the use of autorelease, such as for building core, or components.
-`metadata`:: 
-Contains the following fields:
-** `autoreleaseEnabled`: A boolean value, indicating whether or not this plugin is participating 
-in autorelease. Allows the maintainer to turn Autorelease on or off, without deleting the file 
-entirely.
-** `triggeringBranch`: Sets the branch which maintainers will merge to in order to trigger 
+
+<2> `triggeringBranch`
+Sets the branch which maintainers will merge to in order to trigger 
 an autorelease webhook. Although this is expected to usually be set to `master`, plugin 
 maintainers can choose a branch name of their preference, e.g., `autorelease`, `release`, 
 etc.
-** `versionNumberFields`: An integer, indicating the number of fields which `buildPlugin` should expect.
+
+<3> `versionNumberFields`
+An integer, indicating the number of fields which `buildPlugin` should expect.
 This is important, because sticking to a consistent numbering scheme makes for easier sorting by version.
 For this example plugin, Karl has set the value to `3`, because he's usuing semantic versioning, e.g., 
 3.1.4.
@@ -312,7 +306,7 @@ We will need a number of things to get this going. The low-level technical detai
 in a separate Infrastructure Enhancement Request, so, this should be considered a summary for now:
 
 1. The webhook, configured on each participating plugin. Security implications of this are a bit beyond the scope of this document so far.
-2. A receiver for the aforementioned webhook, because the `${trusted-ci-server}` will be protected 
+2. [[webhook-receiver]]A receiver for the aforementioned webhook, because the `${trusted-ci-server}` will be protected 
 behind a VPN
 3. A trusted Jenkins server for performing builds and deployments. 
 4. `buildPlugin` will need code added to validate `Autorelease.yaml` for correctness, and 
