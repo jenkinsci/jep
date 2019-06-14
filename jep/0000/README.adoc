@@ -211,7 +211,7 @@ and GitHub is notified of the failure.
 
 ==== Deployment of a successful release
 
-When Karl merges a commit into the `master` branch, that merge commit is commit number 150, and has the 
+When Karl merges a commit into the `master` branch, that merge commit is link:https://github.com/jenkinsci/jep/blob/master/jep/305/README.adoc#basic-usage[commit number] 150, and has the 
 SHA `1a2b3c4`. The following takes place:
 
 * A webhook is sent to `${trusted-ci-server}`, and `Autorelease.yaml` is validated.
