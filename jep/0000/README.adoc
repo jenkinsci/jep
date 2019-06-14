@@ -64,8 +64,8 @@ endif::[]
 
 == Abstract
 
-This JEP introduces a new system, which enables Jenkins plugin maintainers to add Continuous 
-Delivery to their projects. It is:
+This JEP introduces a new system which enables Jenkins plugin maintainers to add Continuous Delivery (CD) to their projects.
+It is:
 
 * Opt-in: plugin maintainers can choose to use this
 * Simple to configure: very little needs to be changed in order to enable CD
@@ -155,10 +155,11 @@ For this example plugin, Karl has set the value to `3`, because he's usuing sema
 
 ==== Maven POM file changes
 
-Karl's plugin is already making use of Incrementals, and the relevant lines of his `pom.xml` file 
+Karl's plugin is already making use of link:https://github.com/jenkinsci/incrementals-tools/blob/master/README.md#usage-in-plugin-poms[Incrementals], and the relevant lines of his `pom.xml` file 
 look like:
 
-```
+[source,xml]
+----
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -238,7 +239,7 @@ sense -- and builds credibility -- for the Jenkins developer community to adopt 
 Having a centralized release system made available to plugin maintainers also provides additional 
 confidence that security best practices are being followed. 
 
-Continuous delivery from trusted CI is something which plugin maintainers can opt into, but is 
+Continuous delivery from trusted CI is something which plugin maintainers can opt in to, but is 
 not required. If a plugin maintainer chooses to continue to follow their own path for releasing 
 versions of their code, they remain free to do so.
 
@@ -264,9 +265,9 @@ YAML is becoming increasingly common in the Jenkins community, for many reasons.
 
 * Human readable
 * In use by things like the Kubernetes plugin
-* Easily parsed by any number of publily available libraries
+* Easily parsed by any number of publicly available libraries
 
-=== Aren't we missing some details about infrastructrue requirements?
+=== Aren't we missing some details about infrastructure requirements?
 
 In short, yes, we are. This JEP exists to get the conversation started. Once consensus has been reached, 
 a separate Infrastructure Enhancement Proposal (IEP) will be created to go along with this JEP. It would 
@@ -289,12 +290,12 @@ maintainers will see no change at all to the way they do their Jenkins plugin wo
 == Security
 
 Autorelease can help to make Jenkins plugins, and their release processes, more secure in a 
-number of ways. Including, but not limited to:
+number of ways, including but not limited to:
 
 === Containment of credentials
 
 By using a single system of record for these builds, a service account, maintained by the 
-JENKINS-CERT team, can be used to access GitHub, deployment to Nexus, and deployment to 
+Jenkins CERT team, can be used to access GitHub, deployment to Nexus, and deployment to 
 the update centers. Plugin maintainers need not leave their own credentials on a CI server 
 which they don't own, and permissions already in place in their GitHub repositories provide 
 the required controls over who can merge and release.
