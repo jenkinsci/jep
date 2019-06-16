@@ -205,7 +205,7 @@ will fail.
 3. Validation that no extra fields are present in the file. Comments are allowed, but any unexpected 
 lines will cause validation to fail.
 
-If validation of `Autorelease.yaml` fails for any reason, the build is not performed nothing gets deployed, 
+If validation of `Autorelease.yaml` fails for any reason, the build is not performed, nothing gets deployed, 
 and GitHub is notified of the failure.
 
 ==== Deployment of a successful release
