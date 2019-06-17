@@ -315,7 +315,7 @@ number of ways, including but not limited to:
 === Containment of credentials
 
 By using a single system of record for these builds, a service account, maintained by the 
-Jenkins CERT team, can be used to access GitHub, deployment to Nexus, and deployment to 
+Jenkins CERT team, can be used to access GitHub, deploy to Nexus, and thus deploy to 
 the update centers. Plugin maintainers need not leave their own credentials on a CI server 
 which they don't own, and permissions already in place in their GitHub repositories provide 
 the required controls over who can merge and release. What's more, they need not have 
