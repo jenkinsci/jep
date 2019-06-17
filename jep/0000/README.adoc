@@ -97,7 +97,7 @@ as that is the simplest.
 Once ready to create a new release of his plugin, Karl merges some changes to the `master` branch. 
 At which point, the following takes place under the covers: 
 
-1. A webhook is sent to the webhook receiver by GitHub
+1. A webhook is sent to a webhook receiver by GitHub
 
 2. The webhook receiver forwards this hook to a trusted CI server, which is protected by a VPN
 
@@ -262,6 +262,28 @@ YAML is becoming increasingly common in the Jenkins community, for many reasons.
 * Human readable
 * In use by things like the Kubernetes plugin
 * Easily parsed by any number of publicly available libraries
+
+=== Webhooks and the Webhook Receiver
+Webhooks will be used to trigger the builds on the trusted CI server. The hooks themselves 
+will be configured on a per-repository basis. The reasons for choosing individual hooks, 
+as opposed to an organization wide hook, are:
+
+* Security of the build systems. Because this trusted CI server will reside on a non-public 
+network, there needs to be a proxy server of sorts, which can accept these webhooks and send 
+them, securely, to the trusted CI server.
+
+
+* Traceability. An organization-wide webhook would send those hooks to the receiver far more 
+often than is actually necessary. In the event that something goes wrong with this process - 
+the receiver goes down, there is a network outage, etc. - it will be easier for the Infra 
+team to triage problems if they're only looking at hooks from plugins which are intended 
+to be released via CD.
+
+* Flexibility for plugin maintainers. Let's say that Karl maintains two plugins - his archaic 
+`old-timey-plugin`, and his fancy new `karl-plugin` which we've already talked about. If 
+Karl wants to use CD on karl-plugin, but continue to release `old-timey-plugin` from his laptop 
+like he's always done, he can do so, by only setting the webhook up on `karl-plugin`.
+
 
 === Testing Considerations
 Continuous Delivery brings with it a heightened importance for quality automated tests. However, 
