@@ -212,19 +212,19 @@ Communication between Jenkins Operator and Jenkins master will be secured using 
 
 == Infrastructure Requirements
 
-The infrastructure dependencies for the `virtuslab/jenkins-operator` image are mostly on
+The infrastructure dependencies for the `jenkinsci/kubernetes-operator` image are mostly on
 services external to the Jenkins project such as link:https://hub.docker.com[Docker Hub].
 
 == Testing
 
 Testing is performed within the context of the existing automated testing in the
-link:https://github.com/VirtusLab/jenkins-operator[VirtusLab/jenkins-operator]
+link:https://github.com/jenkinsci/kubernetes-operator[jenkinsci/kubernetes-operator]
 repository. This includes the expected amount of unit tests, and end-to-end tests which run Jenkins Operator
 and Jenkins on a link:https://github.com/kubernetes/minikube[Minikube] Kubernetes cluster.
 
 == Prototype Implementation
 
-* https://github.com/VirtusLab/jenkins-operator
+* https://github.com/jenkinsci/kubernetes-operator
 
 == References
 
