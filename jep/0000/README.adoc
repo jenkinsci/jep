@@ -196,7 +196,7 @@ Additional whitelist entries can be specified by the file `$JENKINS_HOME/stapler
 During exploratory testing, the Jenkins security team discovered a class of vulnerabilities in Jenkins.
 Common to all these vulnerabilities is the fact that Stapler does not make a distinction between views that are meant to be dispatched directly versus those meant to only be included in other views.
 This lack of distinction causes numerous problems in Jenkins where URLs can be constructed to directly access fragment views of models which oftentimes do not perform their own permission checks or other initialization logic.
-It was discovered through analysis of existing well-behaved views that they all had implicit or explicit use of page initialization logic including setting an response `Content-Type`.
+It was discovered through analysis of existing well-behaved views that they all had implicit or explicit use of page initialization logic including setting a response `Content-Type`.
 Most views would do this implicitly through the `l:layout` or `l:ajax` Jelly tags.
 Fragment views, on the other hand, do not normally use either of those tags, nor do they perform any page initialization logic of their own.
 Instead, fragments assume their environment has been properly set up to be included into a proper view.
