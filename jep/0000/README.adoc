@@ -197,7 +197,7 @@ During exploratory testing, the Jenkins security team discovered a specific type
 This vulnerability allows for many fragment views to be directly dispatched by Stapler using specifically crafted URLs.
 Stapler does not make a distinction between views that are meant to be dispatchable and those that are meant to only be included as fragment views.
 Fragment views rarely enforce permission checks of their own as they expect an implicit containing view to handle that.
-Some of these fragment views can leak information when dispatched directly, though many fragments will err early on due to referencing uninitialized variables.
+Some of these fragment views can leak information when dispatched directly, though many fragments will throw an exception early on due to referencing uninitialized variables or functions.
 
 Reviewing a large codebase of Jenkins plugins, several different patterns emerged that provide hints as to whether or not a view was likely meant to be dispatchable or not.
 The most useful of these is the fact that all dispatchable views declare a `Content-Type` HTTP header either explicitly or implicitly through the `l:layout` and `l:ajax` Jelly tags from `/lib/layout`.
@@ -250,7 +250,7 @@ This approach would prevent further dispatchers such as `doDynamic` from operati
 === Rejection of Standard Request Attribute Approach
 
 A fairly similar implementation to the one described in this JEP was previously developed with more of the validation business logic exposed in Stapler.
-This defined a specific servlet request attribute that would be used to storing the current request's dispatch filter status along with an API for manipulating that attribute.
+This defined a specific servlet request attribute that would be used for storing the current request's dispatch filter status along with an API for manipulating that attribute.
 This approach was rejected due to exposing too many unnecessary implementation details inside Stapler that preferrably belong inside Jenkins.
 
 == Backwards Compatibility
