@@ -1,4 +1,4 @@
-= JEP-0000: Dispatchable Views and View Fragments in Stapler
+= JEP-220: Dispatchable Views and View Fragments in Stapler
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -14,7 +14,7 @@ endif::[]
 [cols="1h,1"]
 |===
 | JEP
-| 0000
+| 220
 
 | Title
 | Dispatchable Views and View Fragments in Stapler
