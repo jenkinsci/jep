@@ -172,6 +172,11 @@
 | link:https://github.com/tomaszsek[Tomasz{nbsp}Sęk] from{nbsp}link:https://virtuslab.com/[VirtusLab]
 | TBD
 
+| Draft{nbsp}:speech_balloon:
+| link:220/README.adoc[JEP-220: Dispatchable Views and View Fragments in Stapler]
+| https://github.com/jvz[Matt{nbsp}Sicker]
+| TBD
+
 | Accepted{nbsp}:ok_hand:
 | link:300/README.adoc[JEP-300: Jenkins Evergreen]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
