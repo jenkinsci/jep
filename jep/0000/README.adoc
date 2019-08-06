@@ -202,6 +202,12 @@ Validation must include, but will not be limited to, the following:
 set to `3` (three fields), and the `revision` in `pom.xml` is set to `3.1.4.5` (four fields), validation 
 will fail.
 
+[WARNING]
+====
+*(bitwiseman)* 
+There's a long thread here: https://github.com/jenkinsci/jep/pull/244/files#r293534268 that needs to be integrated into this. 
+====
+
 3. Validation that no extra fields are present in the file. Comments are allowed, but any unexpected 
 lines will cause validation to fail.
 
