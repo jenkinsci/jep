@@ -92,6 +92,8 @@ as that is the simplest.
 
 4. Add a file to the top directory of his repository called `Autorelease.yaml`. 
 
+WARNING: *jvz* Couldn't this be done as an argument to buildPlugin()?
+
 5. A webhook is configured on Karl's repository on GitHub to point to a webhook receiver. 
 
 Once ready to create a new release of his plugin, Karl merges some changes to the `master` branch. 
