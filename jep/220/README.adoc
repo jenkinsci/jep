@@ -1,0 +1,299 @@
+= JEP-220: Dispatchable Views and View Fragments in Stapler
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.**JEP Template**
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 220
+
+| Title
+| Dispatchable Views and View Fragments in Stapler
+
+| Sponsor
+| https://github.com/jvz[Matt Sicker]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2019-07-17
+
+| BDFL-Delegate
+| TBD
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+Multiple security issues have been found in Jenkins due to a previous oversight in the dispatchability rules for invoking views in the Stapler web framework.
+This JEP describes the new APIs and rules for controlling whether or not a view should be dispatched.
+The Stapler feature was developed as SECURITY-534 in private and published as part of the updates for the https://jenkins.io/security/advisory/2019-07-17/#SECURITY-534[2019-07-17 Jenkins Security Advisory].
+
+== Specification
+
+In Stapler, requests are matched against a list of possible `Dispatcher` instances that return `true` or `false` depending on whether or not that `Dispatcher` could successfully handle the request.
+The view dispatchers used in Jenkins consist of ones backed by script engines (also called _facets_) to allow for different programming languages to be used to write response content such as Jelly and Groovy.
+
+This JEP specifies the interface `DispatchValidator` to allow for finer-grained control over how views are dispatched along with the interface `ScriptExecutor` for rendering views in response.
+Facets using validating dispatchers will first verify that a view is not explicitly denied by the validator.
+After loading the view, the executor has the responsibility of performing a final check for an explicitly allowed dispatch before any response output is written.
+If at either of these points the dispatch is cancelled, then the dispatcher returns `false` which allows lower priority dispatchers to attempt dispatching the request.
+
+The default Jenkins implementation of `DispatchValidator` allows for views to be identified as dispatchable or fragments.
+
+* Views can use one of `l:view`, `l:layout`, or `l:ajax` from the `/lib/layout` Jelly tag library as described in <<views>>.
+* Views named `index` are automatically considered to be dispatchable.
+* Views that set an HTTP `Content-Type` header before writing any output are considered dispatchable.
+* Models can be annotated with `@StaplerViews` and `@StaplerFragments` as described in <<model-class-annotations>>.
+* A whitelist file can be provided listing model class names and their corresponding dispatchable views and fragment views as described in <<whitelist-file>>.
+
+=== Definitions
+
+Facet::
+Strategy for dispatching views written in different programming languages or other resource types.
+Most facets are script engines that dynamically render a response from a model and view.
+Dispatch::
+Execution phase of HTTP request handling where responses are formed and responded.
+Model::
+Object node used inside views to render response data.
+Oftentimes referred to as `it` in Jenkins views.
+View::
+Scripts supplied with a model as input and render HTTP response data as output.
+Views have corresponding HTTP MIME types, typically `text/html`.
+Dispatchable view::
+View that is meant to be dispatched directly from Stapler.
+Oftentimes referred to as just a _view_ for short.
+Fragment view::
+View that is meant to be included from dispatchable views and never dispatched directly.
+Referred to as a _fragment_ for short.
+
+=== Views
+
+Jenkins views must use one of `l:layout`, `l:ajax`, or `l:view` Jelly tags defined in `/lib/layout`.
+To be more specific, a view must set an HTTP `Content-Type` header before any output is rendered.
+Most UI elements are already written using one of the first two tags, while some more specialized views are written with `l:view`.
+For example, using Jelly:
+
+[source,xml]
+----
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout">
+  <l:view contentType="text/html;charset=UTF-8">
+    <html>
+      <!-- fancy SPA -->
+    </html>
+  </l:view>
+</j:jelly>
+----
+
+Or using Groovy:
+
+[source,groovy]
+----
+def l = namespace('/lib/layout')
+l.view(contentType: 'text/html;charset=UTF-8') {
+  html {
+    // ...
+  }
+}
+----
+
+=== Model Class Annotations
+
+A model class can be annotated with `@StaplerViews` to list out which views are dispatchable.
+Likewise, using `@StaplerFragments`, the list of views considered fragments are declared.
+Any views not listed in those annotations on the model class or any of its parents remain unaffected by this filtering.
+Use of these annotations takes precedence over the presence of the layout tags listed in the above subsection.
+
+This provides methods to specify and override default views and fragments.
+For example, suppose Jenkins defines an abstract class `BaseClass` which has views `index`, `configure`, `create`, and `delete`.
+Implementation classes are expected to provide their own fragment view `config` which gets included in `configure` and `create`.
+This can be encoded explicitly in the model class:
+
+[source,java]
+----
+@StaplerViews({"configure", "create", "delete"}) // index is implicit
+@StaplerFragments("config")
+public abstract class BaseClass {
+    ...
+}
+----
+
+By adding the annotations to Jenkins, implementation classes (typically from plugins) can be filtered explicitly via the parent annotations without updating the downstream code.
+Implementation classes may further define additional views or fragments.
+For example, suppose `ExtendedClass` extends `BaseClass` and adds its own optional fragment view `advanced` which its implementation classes can include.
+
+[source,java]
+----
+@StaplerFragments("advanced")
+public class ExtendedClass extends BaseClass {
+    ...
+}
+----
+
+=== Whitelist File
+
+Jenkins ships with a default whitelist of common, known views in plugins that would otherwise be broken by the above rules.
+This file consists of class names and their respective views and fragments.
+These entries have the same effect as annotating the listed classes with the above annotations.
+The syntax for this file is defined below.
+
+[source,bnf]
+----
+<line> ::= <fully-qualified-model-class-name> <ws> <view-list>
+<view-list> ::= <view-entry> | <view-entry> <ws> <view-list>
+<view-entry> ::= <view-name> | "!" <view-name>
+<ws> ::= " " | " " <ws>
+----
+
+For each view entry, if the view name is prefixed by a `!`, then it is added as a fragment view.
+Otherwise, the view name is added as a dispatchable view.
+
+Additional whitelist entries can be specified by the file `$JENKINS_HOME/stapler-views-whitelist.txt` or whatever path is specified by the system property `jenkins.security.stapler.StaplerDispatchValidator.whitelist`.
+
+== Motivation
+
+During exploratory testing, the Jenkins security team discovered a specific type of vulnerability spread throughout the ecosystem of Jenkins and Jenkins plugins.
+This vulnerability allows for many fragment views to be directly dispatched by Stapler using specifically crafted URLs.
+Stapler does not make a distinction between views that are meant to be dispatchable and those that are meant to only be included as fragment views.
+Fragment views rarely enforce permission checks of their own as they expect an implicit containing view to handle that.
+Some of these fragment views can leak information when dispatched directly, though many fragments will throw an exception early on due to referencing uninitialized variables or functions.
+
+Reviewing a large codebase of Jenkins plugins, several different patterns emerged that provide hints as to whether or not a view was likely meant to be dispatchable or not.
+The most useful of these is the fact that all dispatchable views declare a `Content-Type` HTTP header either explicitly or implicitly through the `l:layout` and `l:ajax` Jelly tags from `/lib/layout`.
+Fragment views, on the other hand, do not normally use either of those tags, nor do they ever write out a `Content-Type` HTTP header.
+
+== Reasoning
+
+The Jenkins security team cannot simply patch every single fragment view to apply permission checks or other necessary guards.
+Other similar ideas that require changing affected plugins are out of scope due to the immense scale of such an endeavour.
+Instead, an automated solution is devised to detect if a view being dispatched from Stapler should be rejected or not.
+Using the heuristic obtained for well-behaved views described in <<motivation>>, an extensible dispatch filtering system is needed to fix these vulnerabilities all at once.
+After some iterations explained below, a Stapler SPI is proposed that fulfills these goals.
+
+=== Stapler SPI
+
+Stapler defines a `DispatchValidator` SPI to offload most of the dispatchability logic to that implementation.
+Similar to JEP-218, this is done to make changes to Stapler fairly contained which allows for more rapid iterations of development.
+This also allows for Stapler to remain backward compatible in its behavior while allowing Jenkins to move forward with a safer web framework.
+Stapler also defines a `ScriptExecutor` interface to reduce duplication of dispatch validation logic between different facets.
+
+=== Separate Annotation Library
+
+To allow plugin developers to make use of the new and updated annotations, the previously created `jenkins-stapler-support` annotation library is updated with `@StaplerViews` and `@StaplerFragments` in version 1.1.
+This allows plugins to use the annotations without requiring a recent release of Jenkins as a dependency.
+
+=== Lack of JSP and JRuby Support
+
+Stapler supports views written in other languages besides Jelly and Groovy.
+However, the vast majority of views in Jenkins and Jenkins plugins are written in those two languages.
+The existing facets and dispatchers for JSP and ERB (JRuby) views do not support view dispatch filtering and will instead continue to be dispatched as before.
+
+=== Rejection of Fragment Filename Syntax Approach
+
+One proposed way to indicate that a view is a fragment was to prefix fragment view filenames with an underscore.
+For example, a view named `configure.jelly` may include a descriptor list of `_config.jelly` fragments.
+Transparent rewrites of includes to fragment views would preserve compatibility between plugins.
+This idea was rejected eventually due to combinatorical compatibility complexities.
+
+=== Rejection of META-INF Service Approach
+
+One approach considered to the SPI was using service discovery via `META-INF/services/` implementations.
+This approach adds too much complexity in maintaining compatibility with both a default behavior for Stapler as well as an overriding behavior in Jenkins.
+Composite filters are outside the scope of this SPI.
+
+=== Rejection of 404 Not Found Approach
+
+During development, view dispatch was cancelled by responding with a 404 Not Found error.
+This approach would prevent further dispatchers such as `doDynamic` from operating along with any other dispatcher with lower precedence than view dispatch.
+
+=== Rejection of Standard Request Attribute Approach
+
+A fairly similar implementation to the one described in this JEP was previously developed with more of the validation business logic exposed in Stapler.
+This defined a specific servlet request attribute that would be used for storing the current request's dispatch filter status along with an API for manipulating that attribute.
+This approach was rejected due to exposing too many unnecessary implementation details inside Stapler that preferrably belong inside Jenkins.
+
+== Backwards Compatibility
+
+This JEP comes with a significant risk of backward incompatibility due to using a heuristic approach by default to determine whether or not a view should be dispatchable.
+Combined with the typically low integration test coverage for plugins, it's possible that some views may be blocked that would otherwise not be.
+To mitigate this, several strategies are implemented:
+
+* Views can use the `l:view` tag to declare themselves as views if not using `l:layout` or `l:ajax` already to conveniently set a `Content-Type` HTTP header.
+* Views that are named `index` or set an HTTP `Content-Type` response header before writing output are automatically considered dispatchable.
+* Model classes can be updated with `@StaplerViews` and `@StaplerFragments` to explicitly list out which views should be dispatchable or not.
+* A default whitelist file is included for popular plugins derived from automated testing.
+* Additional dispatchable views and fragments views can be declared in a configurable whitelist file.
+
+== Security
+
+This JEP fixes a potentially unbounded number of security vulnerabilities involving unexpected fragment view access by dispatching views that aren't meant to be dispatched directly.
+However, this does not fix any similar problems in JSP, JRuby, or other more exotic view types that aren't typically used in plugins.
+
+== Infrastructure Requirements
+
+A new redirect `https://jenkins.io/redirect/stapler-facet-restrictions` has been created to be a permalink used in log messages related to dispatch filtering.
+This provides information for administrators and plugin developers about how to handle whitelist violations.
+
+== Testing
+
+Automated test cases are provided to test for the new dispatchability override features.
+Existing test cases, particularly ones involving JTH or ATH, help exercise the UI which can help find any incorrectly filtered views.
+Due to the lack of explicit test coverage in verifying UI pages rendering, this change must be manually verified with various plugins to ensure nothing has broken.
+Explicit log messages similar to JEP-218 are provided so that users who discover a broken view can see why and report an issue upstream.
+Exploration of existing plugins has helped identify common problematic patterns used in views that would have otherwise been broken by this validation.
+Any plugins affected by this fix after publication are being tracked https://wiki.jenkins.io/display/JENKINS/Plugins+affected+by+the+SECURITY-534+fix[in this wiki page].
+
+== Implementation
+
+This was initially implemented in Jenkins 2.176.2 (LTS) and 2.186 (weekly) as part of a security update.
+
+* https://github.com/jenkinsci/lib-jenkins-stapler-support/commit/6fd2805b3b379eb4a34139cb406c39558ca486d3
+* https://github.com/stapler/stapler/commit/19637555a9f32d3875356b47234131d8b1e9fee4
+* https://github.com/jenkinsci/jenkins/commit/279d8109eddb7a494428baf25af9756c2e33576b
+
+== References
+
+* https://jenkins.io/security/advisory/2019-07-17/#SECURITY-534[Security advisory announcement]
+* https://jenkins.io/doc/developer/views/SECURITY-534/[Developer documentation]
+* https://jenkins.io/redirect/stapler-facet-restrictions[Stapler facet restrictions]
