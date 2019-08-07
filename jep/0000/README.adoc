@@ -366,4 +366,4 @@ be made available before this JEP is given
 
 == References
 
-[[footnote-1]]1. Jenkins World 2017, link:http://bit.ly/2x1lCUZ[Contributor Summit Notes], pp. 11-12
+[[footnote-1]]1. Jenkins World 2017, link:https://docs.google.com/document/d/1JSxYNI_RuA8ITlxVmxBdFg1A-sOKz-w7a9tzuPfWmr4/edit#heading=h.n2d90ci56ugy[Contributor Summit Notes]
