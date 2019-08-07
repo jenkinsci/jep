@@ -225,13 +225,12 @@ SHA `1a2b3c4`. The following takes place:
 the trusted CI server.
 * `Autorelease.yaml` is validated.
 * Once validation passes, a build is performed. If the build passes all its tests, a release 
-
-WARNING: Some clarification needed based on https://github.com/jenkinsci/jep/pull/244/files#r293536274 .
-
 is generated. In our example, that release number would be `3.1.4-150-1a2b3c4`
 * The built plugin gets deployed to Artifactory
 * link:https://github.com/jenkins-infra/update-center2/blob/master/README.md[The UC generator] makes
 the plugin available on the Jenkins Update Center, as Karl Plugin version `3.1.4-150-1a2b3c4`.
+
+WARNING: Some clarification needed based on https://github.com/jenkinsci/jep/pull/244/files#r302487016.
 
 == Motivation
 
