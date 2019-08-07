@@ -275,19 +275,19 @@ YAML is becoming increasingly common in the Jenkins community, for many reasons.
 * Easily parsed by any number of publicly available libraries
 
 === Webhooks and the Webhook Receiver
-Webhooks will be used to trigger the builds on the trusted CI server. The hooks themselves 
-will be configured on a per-repository basis. The reasons for choosing individual hooks, 
-as opposed to an organization wide hook, are:
+Webhooks will be used to trigger the builds on the trusted CI server. Because this trusted CI 
+server will reside on a non-public network, there needs to be a proxy server of sorts, which 
+can accept these webhooks and send them securely to the trusted CI server.
 
-* Security of the build systems. Because this trusted CI server will reside on a non-public 
-network, there needs to be a proxy server of sorts, which can accept these webhooks and send 
-them, securely, to the trusted CI server.
+The hooks themselves will be configured on a per-repository basis. Per-repository hooks 
+allow for easier traceability. An organization-wide webhook would send those hooks to the 
+receiver far more often than is actually necessary. In the event that something goes wrong 
+with this process - the receiver goes down, there is a network outage, etc. - it will be 
+easier for the Infra team to triage problems if they're only looking at hooks from plugins 
+which are intended to be released via CD.
 
-* Traceability. An organization-wide webhook would send those hooks to the receiver far more 
-often than is actually necessary. In the event that something goes wrong with this process - 
-the receiver goes down, there is a network outage, etc. - it will be easier for the Infra 
-team to triage problems if they're only looking at hooks from plugins which are intended 
-to be released via CD.
+WARNING: The use of per-repository webhooks versus a single, organization-wide hook, is 
+open for discussion. There are good reasons to do it either way.
 
 === Testing Considerations
 Continuous Delivery brings with it a heightened importance for quality automated tests. However, 
@@ -346,7 +346,7 @@ build the plugin according to the settings described therein
 5. Service account(s), managed by the Jenkins Infrastructure team, which provide secure credentials 
 to systems such as Artifactory
 
-CAUTION: TODO: Things such as service accounts and new servers will be handled in a separate IEP.
+WARNING: Things such as service accounts and new servers will be documented in a separate IEP.
 
 == Testing
 
