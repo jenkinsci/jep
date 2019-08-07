@@ -65,14 +65,24 @@ endif::[]
 == Abstract
 
 This JEP introduces a new system which enables Jenkins plugin maintainers to add Continuous Delivery (CD) to their projects.
-It is:
-
-* Opt-in: plugin maintainers can choose to use this
-* Simple to configure: very little needs to be changed in order to enable CD
-* Trusted CI/CD: deployments are produced from a single source of truth, which is managed by 
-the Jenkins project
 
 == Specification
+
+=== Features
+
+* *Trusted CI/CD*:
+    Deployments are produced from a single source of truth, which is managed by the Jenkins project.
+* *Opt-in*:
+    Plugin maintainers can choose to use or not this service.
+    Those who choose not to use it will see no change to their engineering process.
+* *Easy to use*:
+    Turning on this functionality is easy, requiring little to no additional configuration.
+* *Source control driven*:
+    Depoloyments are triggered by changes to the source repository and are otherwise no-touch for users.
+* *Assumes usage of current CI tools*:
+    For simplicity and stablity this system assumes plugin already uses `buildPlugin` and `incrementals`.
+* *Simple configuration*:
+    The system supports configuration of a limited set of options, such as version numbering scheme and source branch.
 
 === Overview
 
@@ -207,7 +217,8 @@ will fail.
 [WARNING]
 ====
 *(bitwiseman)* 
-There's a long thread here: https://github.com/jenkinsci/jep/pull/244/files#r293534268 that needs to be integrated into this. 
+There's a long thread here: https://github.com/jenkinsci/jep/pull/244#discussion_r293534268 that needs to be integrated into this JEP.
+It seems to point to significantly simpler potential design.  
 ====
 
 3. Validation that no extra fields are present in the file. Comments are allowed, but any unexpected 
