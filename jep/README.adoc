@@ -177,6 +177,11 @@
 | https://github.com/jvz[Matt{nbsp}Sicker]
 | TBD
 
+| Draft{nbsp}:speech_balloon:
+| link:221/README.adoc[JEP-221: Continuous Delivery of Jenkins Plugins]
+| link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
+| TBD
+
 | Accepted{nbsp}:ok_hand:
 | link:300/README.adoc[JEP-300: Jenkins Evergreen]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]

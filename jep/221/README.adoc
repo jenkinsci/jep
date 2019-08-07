@@ -1,0 +1,369 @@
+= JEP-221: Continuous Delivery of Jenkins Plugins
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 221
+
+| Title
+| Continuous Delivery of Jenkins Plugins
+
+| Sponsor
+| link:https://github.com/daniel-beck[Daniel Beck]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Process 
+
+| Created
+| 2019-07-13
+
+| BDFL-Delegate
+| TBD
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+This JEP introduces a new system which enables Jenkins plugin maintainers to add Continuous Delivery (CD) to their projects.
+It is:
+
+* Opt-in: plugin maintainers can choose to use this
+* Simple to configure: very little needs to be changed in order to enable CD
+* Trusted CI/CD: deployments are produced from a single source of truth, which is managed by 
+the Jenkins project
+
+== Specification
+
+=== Overview
+
+We'll use a short story to illustrate what it will look like when a plugin maintainer 
+named Karl decides that he wants to perform continuous delivery of his (fictional) `karl-plugin`.
+
+To do so, Karl will:
+
+1. Verify support. Karl's plugin is already in the 
+link:https://github.com/jenkinsci[jenkinsci Organization on GitHub], and is 
+using `buildPlugin` when built on ci.jenkins.io.
+
+2. Choose a branch from which to release. Karl decides he wants to release from the `master` branch, 
+as that is the simplest.
+
+3. Settle on a version numbering scheme. Karl decides on link:https://semver.org/[semantic versioning].
+
+4. Add a file to the top directory of his repository called `Autorelease.yaml`. 
+
+WARNING: *jvz* Couldn't this be done as an argument to buildPlugin()?
+
+5. A webhook is configured on Karl's repository on GitHub to point to a webhook receiver. 
+
+Once ready to create a new release of his plugin, Karl merges some changes to the `master` branch. 
+At which point, the following takes place under the covers: 
+
+1. A webhook is sent to a webhook receiver by GitHub
+
+2. The webhook receiver forwards this hook to a trusted CI server, which is protected by a VPN
+
+3. The trusted CI server, upon getting the webhook from the trusted receiver, uses the 
+enhanced version of `buildPlugin` to validate the correctness of Karl's `Autorelease.yaml` 
+file, and the consistency of Karl's chosen version numbering.
+
+4. Once `Autorelease.yaml` has been validated, a plugin build is performed on the trusted CI server.
+
+5. After the build is successful, the trusted CI server handles deployment of the built plugin to
+Artifactory, at which point 
+link:https://github.com/jenkins-infra/update-center2/blob/master/README.md[the existing UC generator] 
+makes the plugin available on the update center.
+
+=== Detailed Setup
+
+==== Autorelease.yaml
+
+A YAML markerfile, stored in the plugin's own repository. Absence of this markerfile will 
+be functionally equivalent to the plugin maintainer opting out of Autorelease. 
+
+In the following example, we'll stick with plugin developer Karl, and his fictional 
+plugin `karl-plugin`. Karl's `Autorelease.yaml` file looks like this:
+
+[source,yaml]
+----
+kind: plugin <1>
+triggeringBranch: master <2>
+versionNumberFields: 3 <3>
+----
+
+<1> `kind`
+The type of project which is being set up for autorelease. In our first iteration of 
+autorelease, this will only be set to `plugin`. The field is here should the Jenkins project 
+want to expand the use of autorelease, such as for building core, or components.
+
+<2> `triggeringBranch`
+Sets the branch which maintainers will merge to in order to trigger 
+an autorelease webhook. Although this is expected to usually be set to `master`, plugin 
+maintainers can choose a branch name of their preference, e.g., `autorelease`, `release`, 
+etc.
+
+<3> `versionNumberFields`
+An integer, indicating the number of fields which `buildPlugin` should expect.
+This is important, because sticking to a consistent numbering scheme makes for easier sorting by version.
+For this example plugin, Karl has set the value to `3`, because he's usuing semantic versioning, e.g., 
+3.1.4.
+
+==== Maven POM file changes
+
+Karl's plugin is already making use of link:https://github.com/jenkinsci/incrementals-tools/blob/master/README.md#usage-in-plugin-poms[Incrementals], and the relevant lines of his `pom.xml` file 
+look like:
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>plugin</artifactId>
+        <version>4.56</version>
+        <relativePath />
+    </parent>
+    <artifactId>karl</artifactId>
+    <version>${revision}${changelist}</version>
+    <packaging>hpi</packaging>
+    <name>Karl Plugin</name>
+    <url>
+        <!--Something like https://wiki.jenkins-ci.org/display/JENKINS/Karl+Plugin-->
+    </url>
+    <description>A useful description of the Karl plugin.</description>
+    <licenses>
+        <license>
+            <name>MIT</name>
+            <url>http://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+
+    <properties>
+        <revision>3.1.4</revision>
+        <changelist>-SNAPSHOT</changelist>
+        <java.level>8</java.level>
+        <jenkins.version>2.138.4</jenkins.version>
+    </properties>
+
+----
+
+No additional changes need to be made to `pom.xml` by Karl, he's good to go.
+
+==== Autorelease.yaml verification in `buildPlugin`
+
+The commonly used library link:https://github.com/jenkins-infra/pipeline-library/blob/master/vars/buildPlugin.groovy[`buildPlugin`] will need to be modified to check for the presence of, and validate, `Autorelease.yaml`. This 
+markerfile will be the mechanism that tells the trusted CI server that this plugin should be automatically 
+released. 
+
+Validation must include, but will not be limited to, the following:
+
+1. `pluginName` field must match the repository name
+
+2. `versionNumberFields` must match the `revision` property in `pom.xml`. E.g., if `versionNumberFields` is 
+set to `3` (three fields), and the `revision` in `pom.xml` is set to `3.1.4.5` (four fields), validation 
+will fail.
+
+[WARNING]
+====
+*(bitwiseman)* 
+There's a long thread here: https://github.com/jenkinsci/jep/pull/244/files#r293534268 that needs to be integrated into this. 
+====
+
+3. Validation that no extra fields are present in the file. Comments are allowed, but any unexpected 
+lines will cause validation to fail.
+
+If validation of `Autorelease.yaml` fails for any reason, the build is not performed, nothing gets deployed, 
+and GitHub is notified of the failure.
+
+==== Deployment of a successful release
+
+When Karl merges a commit into the `master` branch, that merge commit is link:https://github.com/jenkinsci/jep/blob/master/jep/305/README.adoc#basic-usage[commit number] 150, and has the 
+SHA `1a2b3c4`. The following takes place:
+
+* A webhook is sent from GitHub, to the webhook receiver. That hook is forwarded  to 
+the trusted CI server.
+* `Autorelease.yaml` is validated.
+* Once validation passes, a build is performed. If the build passes all its tests, a release 
+is generated. In our example, that release number would be `3.1.4-150-1a2b3c4`
+* The built plugin gets deployed to Artifactory
+* link:https://github.com/jenkins-infra/update-center2/blob/master/README.md[The UC generator] makes
+the plugin available on the Jenkins Update Center, as Karl Plugin version `3.1.4-150-1a2b3c4`.
+
+WARNING: Some clarification needed based on https://github.com/jenkinsci/jep/pull/244/files#r302487016.
+
+== Motivation
+
+At present, Jenkins plugins are, typically, not released on a continous basis. They 
+are also not released from a single source of truth, such as a trusted Continuous 
+Integration server like link:https://ci.jenkins.io[https://ci.jenkins.io]. 
+
+The notion of continuous delivery of plugin releases has been discussed previously <<footnote-1,^(1)^>>.
+Considering that Jenkins is a system used to facilitate Continuous Delivery for many users, it makes 
+sense -- and builds credibility -- for the Jenkins developer community to adopt this same practice. 
+
+Having a centralized release system made available to plugin maintainers also provides additional 
+confidence that security best practices are being followed. 
+
+Continuous delivery from trusted CI is something which plugin maintainers can opt in to, but is 
+not required. If a plugin maintainer chooses to continue to follow their own path for releasing 
+versions of their code, they remain free to do so.
+
+== Reasoning
+
+=== What's with the version numbering?
+
+Jenkins plugin maintainers are already familiar with the way that Incrementals appends a commit 
+number, plus a SHA, to version numbers. These mechanically-generated version numbers offer 
+the ability to predictably sort them, so that external systems, such as the Jenkins update center, 
+can correctly publish the "newest" version. The addition of a merge SHA also allows for at-a-glance 
+feedback to tell people which commits went into the release.
+
+WARNING: We know the problem of consistent version numbering, and the resulting ability to 
+sort versions, is important. The scheme discussed here is only one of several possible 
+choices. We expect some _lively debate_ around this topic. But it's very important to ensure 
+that versions can be easily sorted by systems such as the Jenkins update center. Also under 
+consideration is defining a fixed number of fields in version numbers, and considering any 
+deviation from that a validation failure.
+
+=== Why YAML?
+YAML is becoming increasingly common in the Jenkins community, for many reasons. YAML is:
+
+* Human readable
+* In use by things like the Kubernetes plugin
+* Easily parsed by any number of publicly available libraries
+
+=== Webhooks and the Webhook Receiver
+Webhooks will be used to trigger the builds on the trusted CI server. Because this trusted CI 
+server will reside on a non-public network, there needs to be a proxy server of sorts, which 
+can accept these webhooks and send them securely to the trusted CI server.
+
+The hooks themselves will be configured on a per-repository basis. Per-repository hooks 
+allow for easier traceability. An organization-wide webhook would send those hooks to the 
+receiver far more often than is actually necessary. In the event that something goes wrong 
+with this process - the receiver goes down, there is a network outage, etc. - it will be 
+easier for the Infra team to triage problems if they're only looking at hooks from plugins 
+which are intended to be released via CD.
+
+WARNING: The use of per-repository webhooks versus a single, organization-wide hook, is 
+open for discussion. There are good reasons to do it either way.
+
+=== Testing Considerations
+Continuous Delivery brings with it a heightened importance for quality automated tests. However, 
+there will be no rules governing this. As is the case today, plugin maintainers are encouraged to 
+release only well-tested code, but there is little to stop someone from releasing something which 
+is under-tested. Continuous delivery does not change this in any way.
+
+=== Aren't we missing some details about infrastructure requirements?
+
+In short, yes, we are. This JEP exists to get the conversation started. Once consensus has been reached, 
+a separate Infrastructure Enhancement Proposal (IEP) will be created to go along with this JEP. It would 
+be premature to describe every detail of implementation before consensus is reached.
+
+== Backwards Compatibility
+
+Plugin maintainers will need to be mindful of the fact that merging a PR to their `triggeringBranch` 
+constitutes a public release. For this reason, the `triggeringBranch` setting in `Autorelease.yaml` can 
+be set to something other than `master`, should the maintainer wish to do so.
+
+Continuous delivery introduces no new risks with regard to backwards compatibility of plugins 
+themselves. Even without it, there is still nothing stopping a plugin maintainer from releasing 
+a backwards-breaking change. 
+
+== Security
+
+Autorelease can help to make Jenkins plugins, and their release processes, more secure in a 
+number of ways, including but not limited to:
+
+=== Containment of credentials
+
+By using a single system of record for these builds, a service account, maintained by the 
+Jenkins CERT team, can be used to access GitHub, deploy to Nexus, and thus deploy to 
+the update centers. Plugin maintainers need not leave their own credentials on a CI server 
+which they don't own, and permissions already in place in their GitHub repositories provide 
+the required controls over who can merge and release. What's more, they need not have 
+Artifactory credentials at all.
+
+=== Automatic enforcement of security best practices
+Autorelease builds will all come from a trusted CI server, which resides on a VPN. Rules 
+can be put in place on this CI server, which can provide implicit enforcement of the 
+Jenkins infrastructure team's security best practices. Compliance to these best practices becomes 
+something that plugin maintainers need not worry about.
+
+== Infrastructure Requirements
+
+We will need a number of things to get this going. The low-level technical details will be described 
+in a separate Infrastructure Enhancement Request, so, this should be considered a summary for now:
+
+1. The webhook, configured on each participating plugin. Security implications of this are a bit 
+beyond the scope of this document so far.
+2. [[webhook-receiver]]A receiver for the aforementioned webhook, because the trusted CI 
+server will be protected behind a VPN
+3. A trusted Jenkins server for performing builds and deployments. 
+4. `buildPlugin` will need code added to validate `Autorelease.yaml` for correctness, and 
+build the plugin according to the settings described therein
+5. Service account(s), managed by the Jenkins Infrastructure team, which provide secure credentials 
+to systems such as Artifactory
+
+WARNING: Things such as service accounts and new servers will be documented in a separate IEP.
+
+== Testing
+
+Testing of this process will be performed interactively. The biggest code change involved here 
+will be the validation getting added to `buildPlugin`.
+
+== Prototype Implementation
+
+As a proof of concept, the (github-branch-source?) plugin will be the first to adopt. This provides 
+the initiative with a heavily used plugin, which sees relatively frequent releases already.
+
+A sample fork of github-branch-source could be provided as a reference implementation for 
+this proposal. It is understood that this need not be completed before this JEP is 
+"link:https://github.com/jenkinsci/jep/tree/master/jep/1#accepted[accepted]", but will need to 
+be made available before this JEP is given 
+"link:https://github.com/jenkinsci/jep/tree/master/jep/1#final[Final]" status.
+
+
+== References
+
+[[footnote-1]]1. Jenkins World 2017, link:https://docs.google.com/document/d/1JSxYNI_RuA8ITlxVmxBdFg1A-sOKz-w7a9tzuPfWmr4/edit#heading=h.n2d90ci56ugy[Contributor Summit Notes]
