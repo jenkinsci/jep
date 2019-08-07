@@ -1,4 +1,4 @@
-= JEP-0000: Continuous Delivery of Jenkins Plugins
+= JEP-221: Continuous Delivery of Jenkins Plugins
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -13,7 +13,7 @@ endif::[]
 [cols="1h,1"]
 |===
 | JEP
-| 0000
+| 221
 
 | Title
 | Continuous Delivery of Jenkins Plugins
@@ -26,10 +26,10 @@ endif::[]
 | Draft :speech_balloon:
 
 | Type
-| Process :bulb:
+| Process 
 
 | Created
-| :bulb:
+| 2019-07-13
 
 | BDFL-Delegate
 | TBD
