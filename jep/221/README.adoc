@@ -80,7 +80,8 @@ This JEP introduces a new system which enables Jenkins plugin maintainers to add
 * *Source control driven*:
     Deployments are triggered by changes to the source repository and are otherwise no-touch for users.
 * *Assumes usage of current CI tools*:
-    For simplicity and stablity this system assumes plugin already uses `buildPlugin` and `incrementals`.
+    For simplicity and stablity this system assumes plugin already uses `buildPlugin` and
+    link:https://github.com/jenkinsci/jep/blob/master/jep/305/README.adoc[JEP-305].
 * *Simple configuration*:
     The system supports configuration of a limited set of options, such as version numbering scheme and source branch.
 
