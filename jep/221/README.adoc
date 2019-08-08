@@ -73,10 +73,10 @@ This JEP introduces a new system which enables Jenkins plugin maintainers to add
 * *Trusted CI/CD*:
     Deployments are produced from a single source of truth, which is managed by the Jenkins project.
 * *Opt-in*:
-    Plugin maintainers can choose to use or not this service.
+    Plugin maintainers can choose whether or not to use this service.
     Those who choose not to use it will see no change to their engineering process.
 * *Easy to use*:
-    Turning on this functionality is easy, requiring little to no additional configuration.
+    Turning on this functionality is easy, requiring minimal additional configuration.
 * *Source control driven*:
     Deployments are triggered by changes to the source repository and are otherwise no-touch for users.
 * *Assumes usage of current CI tools*:
@@ -304,7 +304,7 @@ with this process - the receiver goes down, there is a network outage, etc. - it
 easier for the Infra team to triage problems if they're only looking at hooks from plugins 
 which are intended to be released via CD.
 
-WARNING: The use of per-repository webhooks versus a single, organization-wide hook, is 
+WARNING: The use of per-repository webhooks versus a single organization-wide hook is 
 open for discussion. There are good reasons to do it either way.
 
 === Testing Considerations
