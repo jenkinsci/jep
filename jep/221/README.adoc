@@ -78,7 +78,7 @@ This JEP introduces a new system which enables Jenkins plugin maintainers to add
 * *Easy to use*:
     Turning on this functionality is easy, requiring little to no additional configuration.
 * *Source control driven*:
-    Depoloyments are triggered by changes to the source repository and are otherwise no-touch for users.
+    Deployments are triggered by changes to the source repository and are otherwise no-touch for users.
 * *Assumes usage of current CI tools*:
     For simplicity and stablity this system assumes plugin already uses `buildPlugin` and `incrementals`.
 * *Simple configuration*:
