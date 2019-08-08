@@ -221,7 +221,7 @@ There's been a bunch of information in
 link:https://github.com/jenkinsci/jep/pull/244#discussion_r293534268[PR-244#discussion_r293534268] 
 and
 link:https://github.com/jenkinsci/jep/pull/244#issuecomment-510611838[PR-244#issuecomment-510611838]
-including refernce to 
+including reference to 
 link:https://issues.jenkins-ci.org/browse/INFRA-1570[INFRA-1570].
 All this seems to point to significantly simpler potential design.  
 That feedback needs to be discussed and integrated into this JEP, 
