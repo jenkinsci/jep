@@ -207,7 +207,7 @@
 | link:https://github.com/batmat[Baptiste{nbsp}Mathus]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Draft{nbsp}:speech_balloon:
+| Final{nbsp}:lock:
 | link:305/README.adoc[JEP-305: Publishing incremental commits as Maven releases]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
