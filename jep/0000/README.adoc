@@ -40,17 +40,17 @@ If no suitable BDFL-Delegate can be found, that row may be commented out.
 | Sensible Permissions
 
 | Sponsor
-| :bulb: Link to github user page (if multiple, comma separated on one line). Example: link:https://github.com/username[User Name], link:https://github.com/username2[User Name 2] :bulb:
+| link:https://github.com/mikecirioli[Mike Cirioli], link:https://github.com/aHenryJard[Angelique Jard], link:https://github.com/EstherAF[Esther Álvarez Feijoo] 
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
 | Not Submitted :information_source:
 
 | Type
-| :bulb: Standards, Informational, or Process :bulb:
+| :bulb: Standards :bulb:
 
 | Created
-| :bulb: Date (YYYY-MM-DD) :bulb:
+| :bulb: (2019-11-01) :bulb:
 
 | BDFL-Delegate
 | TBD
@@ -85,14 +85,6 @@ If no suitable BDFL-Delegate can be found, that row may be commented out.
 
 == Abstract
 
-[TIP]
-====
-Give a short (200 word) description of the technical issue addressed.
-
-* Use present tense - describe what the proposal "does" (as if it were already done), not what it will do.
-* Do not go into technical details and instead put those in the Specification section.
-* Do not talk about history or why this needs to be done. Instead, add the history to the Motivation section.
-====
 The permission types `Jenkins.RUN_SCRIPTS`, `Jenkins.CONFIGURE_UPDATECENTER`, and `Jenkins.UPLOAD_PLUGINS` provide a false sense of security, as a user is able to escalate this limited privilege to `Jenkins.ADMINISTER`.  These permissions are being marked as `@Deprecated` and are now consolidated as `Jenkins.ADMINISTER`.  
 
 A new permission type, `Jenkins.CONFIGURE` (implied by `Jenkins.ADMINISTER`) has been created for actions that allow for the management of Jenkins configuration items that do not require `Jenkins.ADMINISTER`.  This new permission is used to create a clear separation between settings that impact the entirety of a Jenkins instance (particularly with regards to security) and those that can be used to manage other aspects of an installation. 
@@ -100,22 +92,6 @@ A new permission type, `Jenkins.CONFIGURE` (implied by `Jenkins.ADMINISTER`) has
 
 
 == Specification
-
-[TIP]
-====
-Provide a detailed specification of what is being proposed.
-Be as technical and detailed as needed to allow new or existing Jenkins developers
-to reasonably understand the scope/impact of an implementation.
-
-* Use present tense - describe what the proposal "does" (as if it were already done), not what it will do.
-* Do not discuss alternative designs that were rejected - those belong in the Reasoning section.
-* Avoid in-depth discussion or justification of design choices - that belongs in the Reasoning section.
-====
-
-[]
-====
-Angelique - need to add additional info about Jenkins.READ?
-====
 
 The following permission types are now marked as `@Deprecated` and `@Restricted(NoExternalUse.class)`:
 
@@ -129,6 +105,48 @@ Methods that formerly checked for these permissions will instead check for `Jenk
 
 All other methods that check for `Jenkins.ADMINISTER` will be evaluated to determine if the use of the new `Jenkins.CONFIGURE` permission type is appropriate.  The general rule of thumb is that configuration item which does not let you change the underlying security model (either directly, or through a malicious plugin or groovy script), or change fundamental configurations such as hostnames, proxy configuration, etc. are likely candidates to use the `Jenkins.CONFIGURE`.
 
+Here is a design of the new Permission model. Existing permissions are in Grey and, new deprecations are in Red, and the new permission is in Green.
+
+image::Targetted_permission_model.png[Design of the new permission model.]
+
+=== The new UX for Jenkins
+
+The main change for the new `Jenkins.CONFIGURE_JENKINS` permission is on the manage page. 
+
+We used the `Matrix Authorization` plugin to create two users, each one with only one permission: `Jenkins.ADMINISTER` or `Jenkins.CONFIGURE_JENKINS`.
+
+image::UX_matrix_auth.png[Permissions configuration with matrix authorization plugin.]
+
+See below how we splitted the permissions between `Jenkins.ADMINISTER` and `Jenkins.CONFIGURE_JENKINS`.
+
+image::UX_manage_page.png[User interface for the new permission.]
+
+For most of menu item, they are avalaible for both users or only `Jenkins.ADMINISTER` on the whole. It's a full authorize or not for `Jenkins.CONFIGURE_JENKINS`. The only exception is for (4) "Configure System".
+
+By default, all menu in the "/manage" page required `Jenkins.ADMINISTER`, the links that are authorized for `Jenkins.CONFIGURE_JENKINS` are precised one by one. That means that if a plugin adds some ManagementLink, it will have to override `getRequiredPermission()` to return `Jenkins.CONFIGURE_JENKINS`. For exemple :
+
+```java
+public class CustomLink extends ManagementLink {
+
+    @Override
+    public Permission getRequiredPermission() {
+        return Jenkins.CONFIGURE_JENKINS;
+    }
+}
+```
+Plugin may have to change also permission on jelly files to allow `Jenkins.CONFIGURE_JENKINS` on management links.
+
+First of all (1), system information messages are only for `Jenkins.ADMINISTER`, it's not showed with `Jenkins.CONFIGURE_JENKINS` because this message can contains some button that can lead to sensible modifications. We choose to not show a subset of safe message, because it can lead to an false feeling of well configured Jenkins to the `Jenkins.CONFIGURE_JENKINS`. Some critical message could be only displayed to `Jenkins.ADMINISTER` and a user with `Jenkins.CONFIGURE_JENKINS` can think that everything is fine because nothing is showed but it's not.
+
+User management and security configuration (2) needs `Jenkins.ADMINISTER` because managing user can allow someone to grant himself to `Jenkins.ADMINISTER` and then do anything on Jenkins.
+
+Plugin management (3) also needs `Jenkins.ADMINISTER` to be configured, because plugin can contains security issue and moreover custom plugin could contain intentionnal backdoor. Some right could be interesting for `Jenkins.CONFIGURE_JENKINS` on plugins, like install plugin only from trusted update center. That kind of feature need more design and more work so we authorize `Jenkins.ADMINISTER` only for this feature.
+
+Configure System (4) is the root need of this feature, so we authorized this menu for `Jenkins.CONFIGURE_JENKINS` filtered items that can be configured by `Jenkins.CONFIGURE_JENKINS`.
+
+image::UX_config_tools.png[Configure System details.]
+
+`Global properties` and `# of executor` needs ADMINISTER to be modified.
 []
 ====
 proviide more detail about what plugins, etc
@@ -174,6 +192,54 @@ The permissions that are considered "dangerous" effectively provide the user wit
 === Deprecating "dangerous" permissions vs. removing them
 Due to the large number of plugins available for Jenkins, the decision was made to mark these "dangerous" permissions as `@Deprecated` and `@Restricted(NoExternalUse.class)`.  This will allow for backwards compatibility with existing plugins while minimizing any new usages.  This approach will encourage plugin authors to update their code in future releases that depend upon the new Jenkins Core baseline.
 
+
+=== Open questions
+
+==== Which permissions should Jenkins.CONFIGURE imply
+
+We have considered which other permissions should be implied by `Jenkins.CONFIGURE`
+
+We are hesitating about `Jenkins.READ` (a.k.a `Overall Read`). 
+
+This permission is required to access the web or use the CLI, and is only implied by `Jenkins.ADMINISTER`, which means that currently any other permission allows to access the web, and it has to be given explicitly.
+
+However, it is reasonable for `Jenkins.CONFIGURE`, as a permission of Jenkins/Overall scope, to imply it.
+
+At the same time, the current implementation of `Permission` makes impossible to make `Jenkins.CONFIGURE` imply `Jenkins.READ`, because a permission can not be implied by more than one, and `Jenkins.READ` is already implied by `Permission.READ`
+
+image::CONFIGURE-and-READ-permissions.svg[]
+
+These are the different solutions we are considering:
+
+. `Jenkins.CONFIGURE` is not enough to access the website. 
+	* Pros:
+        ** Same behaviour that with any other permission (except `Jenkins.ADMINISTER`)
+        ** No changes in currently implemented permission.
+	* Cons:
+        ** For a user, seems counterintuitive: `Overall Configure` is not enough to access the website, and they will need to also provide `Overall Read`
+
+. Make `Jenkins.CONFIGURE` to imply `Permission.READ`. 
+	* Pros:
+        ** User doesn’t have to provide “Overall Read” to allow a user with “Overall Configure” to access the website
+	* Cons:
+        ** Security Risk: `Jenkins.CONFIGURE` would allow to see all jobs, views, and any other item in plugins with READ permission implied by `Permission.READ` (credentials?)
+        ** The permission would be less fined grained
+        Some users may want to have a role to configure jenkins, but without the ability to see the jobs executed by jenkins, which can give information about private customers or projects.
+
+. Change the places were Jenkins.READ is required, to also allow Jenkins.CONFIGURE:
+https://github.com/mikecirioli/jenkins/pull/20
+    * Pros:
+        ** User doesn’t have to provide “Overall Read” to allow a user with “Overall Configure” to access the website
+        ** We can choose in more detail what a `Jenkins.CONFIGURE` allows to see, allowing differences with existent READ permissions
+    * Cons:
+        ** This would be introducing a new mechanism to enforce authorization that can lead to an implementation even more difficult to understand and maintain.
+
+. Change Permission class, to allow a permission be implied by more than one, and make Jenkins.READ be implied by Jenkins.CONFIGURE.
+    * Pros:
+        ** User doesn’t have to provide “Overall Read” to allow a user with “Overall Configure” to access the website
+        ** This change in Permission class supports implementing more complex permission schema, which can be useful in the future 
+    * Cons:
+        ** The change can be difficult, specially to avoid breaking compatibility
 == Backwards Compatibility
 
 [TIP]
