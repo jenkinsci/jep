@@ -304,17 +304,18 @@ There are no testing issues related to this proposal.
 Existing tests that validate permissions, or make assumptions about the permissions being used, will be updated to conform to the new permission model.  Additional tests will be written that validate the new permission type cannot be used when the more restrictive `Jenkins.ADMINISTER` is needed.
 
 == Prototype Implementation
+[NOTE]
+The prototype code found below will be moved to a proper _DRAFT_ pull request in the near future
 
-[TIP]
-====
-Link to any open source reference implementation of code changes for this proposal.
-The implementation need not be completed before the JEP is
-link:https://github.com/jenkinsci/jep/tree/master/jep/1#accepted[accepted],
-but must be completed before any JEP is given
-"link:https://github.com/jenkinsci/jep/tree/master/jep/1#final[Final]" status.
+A WIP prototype implementation can be found at:
 
-JEPs which will not include code changes may omit this section.
-====
+* link:https://github.com/mikecirioli/jenkins/tree/FGP[WIP branch with proposed changes]
+
+Additional pending PRs:
+
+* link:https://github.com/mikecirioli/jenkins/pull/21[FGP: Fix some authorizations and their tests, and add some new ones]
+
+* link:https://github.com/mikecirioli/jenkins/pull/20[Jenkins homepage is ok for CONFIGURE_JENKINS without READ]
 
 == References
 
