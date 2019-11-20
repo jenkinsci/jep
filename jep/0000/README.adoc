@@ -85,7 +85,7 @@ If no suitable BDFL-Delegate can be found, that row may be commented out.
 
 == Abstract
 
-When using matrix-based access control the permission types `Jenkins.RUN_SCRIPTS`, `Jenkins.CONFIGURE_UPDATECENTER`, and `Jenkins.UPLOAD_PLUGINS` provide a false sense of security, as a user is able to escalate this limited privilege to `Jenkins.ADMINISTER`.  
+When using matrix-based access control the permission types `Jenkins.RUN_SCRIPTS`, `PluginManager.CONFIGURE_UPDATECENTER`, and `PluginManager.UPLOAD_PLUGINS` provide a false sense of security, as a user is able to escalate this limited privilege to `Jenkins.ADMINISTER`.  
 These permissions are being marked as `@Deprecated` and are now consolidated as `Jenkins.ADMINISTER`.
 
 A new permission type, `Jenkins.CONFIGURE` (implied by `Jenkins.ADMINISTER`)has been created for actions that allow for the management of Jenkins configuration items that do not require `Jenkins.ADMINISTER`.
@@ -125,7 +125,7 @@ public class CustomLink extends ManagementLink {
 
     @Override
     public Permission getRequiredPermission() {
-        return Jenkins.CONFIGURE_JENKINS;
+        return Jenkins.CONFIGURE;
     }
 }
 ```
@@ -184,7 +184,7 @@ This section may also contain any historical context such as how things were don
 ====
 
 The current permission model provides a false sense of security for Jenkins administrators.
-The motivation was to allow some users the ability to configure limited aspects of a Jenkins instance without granting them full `Jenkins.ADMINISTER` privileges; however, it is trivial for a motivated user to grant themselves the additional privileges by means of the groovy console (`Jenkins.RUN_SCRIPTS`), or by means of a malicious plugin (`Jenkins.UPLOAD_PLUGINS`, `Jenkins.CONFIGURE_UPDATECENTER`).
+The motivation was to allow some users the ability to configure limited aspects of a Jenkins instance without granting them full `Jenkins.ADMINISTER` privileges; however, it is trivial for a motivated user to grant themselves the additional privileges by means of the groovy console (`PluginManager.RUN_SCRIPTS`), or by means of a malicious plugin (`PluginManager.UPLOAD_PLUGINS`, `PluginManager.CONFIGURE_UPDATECENTER`).
 
 By consolidating all permission types that effectively allow a user to have full `root` access on a Jenkins instance, and introducing a new permission (`Jenkins.CONFIGURE`) that allows a limited amount of access to configure certain non-critical functionality, a Jenkins administrator can safely delegate configuration aspects while being confident that security concerns are being met.
 
