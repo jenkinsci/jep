@@ -86,24 +86,14 @@ If no suitable BDFL-Delegate can be found, that row may be commented out.
 == Abstract
 
 When using matrix-based access control the permission types `Jenkins.RUN_SCRIPTS`, `PluginManager.CONFIGURE_UPDATECENTER`, and `PluginManager.UPLOAD_PLUGINS` provide a false sense of security, as a user is able to escalate this limited privilege to `Jenkins.ADMINISTER`.  
-These permissions are being marked as `@Deprecated` and are now consolidated as `Jenkins.ADMINISTER`.
+link:https://jenkins.io/security/advisory/2017-04-10/#matrix-authorization-strategy-plugin-allowed-configuring-dangerous-permissions[SECURITY-410] removed the ability to individually grant these permissions, as they are effectively equivalent to `Jenkins.ADMINISTER`.
 
-A new permission type, `Jenkins.CONFIGURE` (implied by `Jenkins.ADMINISTER`)has been created for actions that allow for the management of Jenkins configuration items that do not require `Jenkins.ADMINISTER`.
+A new permission type, `Jenkins.CONFIGURE` (implied by `Jenkins.ADMINISTER`) has been created for actions that allow for the management of Jenkins configuration items that do not require `Jenkins.ADMINISTER`.
 This new permission is used to create a clear separation between settings that impact the entirety of a Jenkins instance (particularly with regards to security) and those that can be used to manage other aspects of an installation. 
 
 == Specification
 
-The following permission types are now marked as `@Deprecated` and `@Restricted(NoExternalUse.class)`:
-
-* `Jenkins.RUN_SCRIPTS`
-* `PluginManager.CONFIGURE_UPDATECENTER`
-* `PluginManager.UPLOAD_PLUGINS`
-
-This allows for backwards compatiblilty with plugins while providing motivation to refactor any usages of the deprecated checks in future releases.
-
-Methods that formerly checked for these permissions will instead check for `Jenkins.ADMINISTER`.
-
-All other methods that check for `Jenkins.ADMINISTER` will be evaluated to determine if the use of the new `Jenkins.CONFIGURE` permission type is appropriate.
+Any methods that check for `Jenkins.ADMINISTER`, `Jenkins.RUN_SCRIPTS`, `PluginManager.CONFIGURE_UPDATECENTER`, and `PluginManager.UPLOAD_PLUGINS` will be evaluated to determine if the use of the new `Jenkins.CONFIGURE` permission type is appropriate.
 The general rule of thumb is that configuration item which does not let you change the underlying security model (either directly, or through a malicious plugin or groovy script), or change fundamental configurations such as hostnames, proxy configuration, etc. are likely candidates to use the `Jenkins.CONFIGURE`.
 
 The changes to the existing permissions are detailed in the diagram below.  Existing permissions are in Grey, new deprecations are in Red, and the new permission is in Green.
@@ -183,8 +173,7 @@ This section may also contain any historical context such as how things were don
 * Do not discuss design choices or alternative designs that were rejected - those belong in the Reasoning section.
 ====
 
-The current permission model provides a false sense of security for Jenkins administrators.
-The motivation was to allow some users the ability to configure limited aspects of a Jenkins instance without granting them full `Jenkins.ADMINISTER` privileges; however, it is trivial for a motivated user to grant themselves the additional privileges by means of the groovy console (`PluginManager.RUN_SCRIPTS`), or by means of a malicious plugin (`PluginManager.UPLOAD_PLUGINS`, `PluginManager.CONFIGURE_UPDATECENTER`).
+The current permission model provides does not provide a means by which some aspects of Jenkins administration can be delegated to a user without also giving them the ability (directly or indirectly) to modify configuration settings that globablly impact the instance.
 
 By consolidating all permission types that effectively allow a user to have full `root` access on a Jenkins instance, and introducing a new permission (`Jenkins.CONFIGURE`) that allows a limited amount of access to configure certain non-critical functionality, a Jenkins administrator can safely delegate configuration aspects while being confident that security concerns are being met.
 
@@ -203,17 +192,9 @@ Provide evidence of consensus within the community and discuss important objecti
 * Do not talk about history or why this needs to be done - that is part of Motivation section.
 ====
 
-=== Consolidating "dangerous" permissions
-The permissions that are considered "dangerous" effectively provide the user with the means to grant themselves the "ultimate" permission, `Jenkins.ADMINISTER`, thereby making their existence redundant.
-Consolidating these permissions into `Jenkins.ADMINISTER` removes ambiguity concerning what a user is or is not permitted to do.
-
-=== Deprecating "dangerous" permissions vs. removing them
-Due to the large number of plugins available for Jenkins, the decision was made to mark these "dangerous" permissions as `@Deprecated` and `@Restricted(NoExternalUse.class)`.
-This will allow for backwards compatibility with existing plugins while minimizing any new usages.  This approach will encourage plugin authors to update their code in future releases that depend upon the new Jenkins Core baseline.
-
 === Administrative Monitors only shown to users with `Jenkins.ADMINISTER`
 We choose to not show a subset of safe message, because it can lead to an false feeling of well configured Jenkins to the `Jenkins.CONFIGURE`.
-Some critical message could be only displayed to `Jenkins.ADMINISTER` and a user with `Jenkins.CONFIGURE can think that everything is fine because nothing is showed but it's not.
+Some critical message could be only displayed to `Jenkins.ADMINISTER` and a user with `Jenkins.CONFIGURE` can think that everything is fine because nothing is showed but it's not.
 
 == Backwards Compatibility
 
@@ -288,7 +269,7 @@ If this proposal will have no impact on security, this section may simply say:
 There are no security risks related to this proposal.
 ====
 The intent of this proposal is to improve overall security for Jenkins instances that are using some form of matrix authorization.
-All configuration items that require `Jenkins.ADMINISTER` are being reviewed to determine if they can be changed to require the new `Jenkins.CONFIGURE` permission type.
+All configuration items that require `Jenkins.ADMINISTER`, `Jenkins.RUN_SCRIPTS`, `PluginManager.CONFIGURE_UPDATECENTER`, and `PluginManager.UPLOAD_PLUGINS`  are being reviewed to determine if they can be changed to require the new `Jenkins.CONFIGURE` permission type.
 The greatest risk is that some configuration may be _more restrictive_ than necessary, either because it was overlooked or due to differences in opinion during the review process.
 
 == Infrastructure Requirements
