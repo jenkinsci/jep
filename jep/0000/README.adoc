@@ -113,12 +113,12 @@ image::Targetted_permission_model.png[Design of the new permission model.]
 === Jenkins UX Changes
 Changing the permission model primarily impacts the Jenkins UX in two ways; the permissions shown when configuring matrix-based authentication, and on the `Manage Jenkins` page. 
 
-Using the `Matrix Authorization` plugin, create two users, each with only one permission: `Jenkins.ADMINISTER` or `Jenkins.CONFIGURE_JENKINS`.
+Using the `Matrix Authorization` plugin, create two users, each with only one permission: `Jenkins.ADMINISTER` or `Jenkins.CONFIGURE`.
 
 image::UX_matrix_auth.png[Permissions configuration with matrix authorization plugin.]
 
 By default, all of the configuration sections in the `/manage` page require `Jenkins.ADMINISTER`.
-Each configuration section that is accessbile by a user with `Jenkins.CONFIGURE_JENKINS` are explicitly allowed by overriding `ManagementLink.getRequiredPermission()` to return `Jenkins.CONFIGURE_JENKINS`. For exemple :
+Each configuration section that is accessbile by a user with `Jenkins.CONFIGURE` are explicitly allowed by overriding `ManagementLink.getRequiredPermission()` to return `Jenkins.CONFIGURE`. For exemple :
 
 ```java
 public class CustomLink extends ManagementLink {
@@ -130,7 +130,7 @@ public class CustomLink extends ManagementLink {
 }
 ```
 
-Plugins may also need to change also permission on jelly files to allow `Jenkins.CONFIGURE_JENKINS` on management links.
+Plugins may also need to change also permission on jelly files to allow `Jenkins.CONFIGURE` on management links.
 
 image::UX_manage_page.png[User interface for the new permission.]
 
@@ -150,8 +150,8 @@ update screenshot to reflect ne numbering
 
 4. *Manage Users* - Managing users includes the ability to delete any user, so this link will only be shown to users with the `Jenkins.ADMINISTER` permission.
 
-5. *Configure System* - As it is currently implemented, the Jenkins _Configure System_ page contains a mix of items, some of which should require `Jenkins.ADMINISTER` and some which are safe to delegate to a user with the `Jenkins.CONFIGURE_JENKINS` permission.  
-Splitting these into seperate pages is outside the scope of this JEP, so the _Configure System_ link will be visible to users with either `Jenkins.ADMINISTER` or `Jenkins.CONFIGURE_JENKINS`.
+5. *Configure System* - As it is currently implemented, the Jenkins _Configure System_ page contains a mix of items, some of which should require `Jenkins.ADMINISTER` and some which are safe to delegate to a user with the `Jenkins.CONFIGURE` permission.  
+Splitting these into seperate pages is outside the scope of this JEP, so the _Configure System_ link will be visible to users with either `Jenkins.ADMINISTER` or `Jenkins.CONFIGURE`.
 A detailed description of the permission changes for this page can be found below.
  
 image::UX_config_tools.png[Configure System details.]
@@ -170,7 +170,7 @@ TODO: discuss/update these specifics
 
 [NOTE]
 ====
-Plugins that contribute to the settings on on the `Configure Jenkins` page should carefully consider if allowing a user with only `Jenkins.CONFIGURE_JENKINS` could result in an unintended privelege escalation.
+Plugins that contribute to the settings on on the `Configure Jenkins` page should carefully consider if allowing a user with only `Jenkins.CONFIGURE` could result in an unintended privelege escalation.
 ====
 
 == Motivation
@@ -212,8 +212,8 @@ Due to the large number of plugins available for Jenkins, the decision was made 
 This will allow for backwards compatibility with existing plugins while minimizing any new usages.  This approach will encourage plugin authors to update their code in future releases that depend upon the new Jenkins Core baseline.
 
 === Administrative Monitors only shown to users with `Jenkins.ADMINISTER`
-We choose to not show a subset of safe message, because it can lead to an false feeling of well configured Jenkins to the `Jenkins.CONFIGURE_JENKINS`.
-Some critical message could be only displayed to `Jenkins.ADMINISTER` and a user with `Jenkins.CONFIGURE_JENKINS` can think that everything is fine because nothing is showed but it's not.
+We choose to not show a subset of safe message, because it can lead to an false feeling of well configured Jenkins to the `Jenkins.CONFIGURE`.
+Some critical message could be only displayed to `Jenkins.ADMINISTER` and a user with `Jenkins.CONFIGURE can think that everything is fine because nothing is showed but it's not.
 
 == Backwards Compatibility
 
