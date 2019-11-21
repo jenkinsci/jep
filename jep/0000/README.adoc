@@ -98,7 +98,7 @@ The Jakarta EE-style annotation-based registration (`@ServerEndpoint`) would be 
 but merely adding the relevant Jetty modules to the runtime and using such annotations did not work.
 
 Reusing Jetty’s JSR implementation classes (such as `JsrSession`) did not seem feasible,
-due to the number of ++@ManagedObject++s involved which would need to be “wired” into place.
+due to the number of ``@ManagedObject``s involved which would need to be “wired” into place.
 
 Reimplementing JSR interfaces from scratch looked complicated,
 and there would be many methods which are not needed for basic use cases
