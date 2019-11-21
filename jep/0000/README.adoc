@@ -1,0 +1,229 @@
+= JEP-0000: :bulb: WebSocket Services :bulb:
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 0000
+
+| Title
+| WebSocket Services
+
+| Sponsor
+| link:https://github.com/jglick[Jesse Glick]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2019-11-21
+
+| BDFL-Delegate
+| TBD
+
+|===
+
+== Abstract
+
+Jenkins offers an API allowing WebSocket services to be implemented.
+This is available using the Stapler `HttpResponse` idiom,
+served as the final action after the regular Stapler routing mechanism.
+Unlike regular HTTP endpoints, bidirectional streaming communication is possible.
+
+The principal service exposed in this way is a new Remoting transport for inbound build agents at an HTTP(S) URL.
+The agent itself (typically named `slave.jar`) includes a WebSocket client capable of connecting to this endpoint.
+This provides an alternative to using the `JNLP4-connect` protocol on the Jenkins TCP port.
+Otherwise the regular behavior of inbound agents (`JNLPLauncher`) applies.
+
+The Jenkins CLI could also be served via WebSocket in place of the SSHD port or the problematic “full-duplex HTTP” transport.
+
+The implementation relies on APIs avalable in the built-in Jetty (“Winstone”) servlet container,
+but Jetty APIs are not reëxported to plugins.
+JSR 356 is not used on the server side.
+
+== Specification
+
+=== WebSocket service interfaces
+
+*TODO*
+
+=== Inbound agents
+
+*TODO*
+
+=== CLI
+
+*TODO*
+
+== Motivation
+
+=== Reverse proxies, load balancers, and the TCP port
+
+*TODO*
+
+=== Full-duplex HTTP transport
+
+*TODO*
+
+== Reasoning
+
+Several alternate approaches to the fundamental problems listed above were explored.
+
+=== JSR 356
+
+Ideally the programmer interface to exposing a WebSocket service would follow JSR 356,
+the `javax.websocket` API (particularly `Endpoint`, `Session`, `RemoteEndpoint`, and `MessageHandler`).
+
+After some exploration, however, this appeared difficult to implement in the context of Jenkins.
+While Jetty includes an implementation of the JSR,
+it is not aligned in any obvious way with the `WebSocketServletFactory` interface
+which allows a WebSocket upgrade from an existing servlet HTTP handler,
+as would be present at the terminal stage of Stapler routing.
+
+The Jakarta EE-style annotation-based registration (`@ServerEndpoint`) would be acceptable
+(at the expense of any integration with Stapler routing),
+but merely adding the relevant Jetty modules to the runtime and using such annotations did not work.
+
+Reusing Jetty’s JSR implementation classes (such as `JsrSession`) did not seem feasible,
+due to the number of ++@ManagedObject++s involved which would need to be “wired” into place.
+
+Reimplementing JSR interfaces from scratch looked complicated,
+and there would be many methods which are not needed for basic use cases
+and would have no reasonable implementation based on delegating to what `WebSocketServletFactory` offers.
+
+Project Tyrus offers a “standalone” mode for serving WebSocket connections in an arbitrary Java program.
+This is intended to control the entire HTTP port service, however,
+and would likely clash with Jetty’s socket management if it worked at all.
+Listening on _another_ HTTP port would add too much complexity to the Jenkins installation.
+
+Therefore for now it was decided to keep the implementation simple and use what is known to work:
+Jetty’s `WebSocketServletFactory`.
+Subsequent research may reveal a straightforward way to use the server mode of JSR 356 from Winstone/Stapler/Jenkins,
+in which case the existing Jenkins APIs could be deprecated or amended to link to `javax.websocket`.
+
+=== Exposing Jetty APIs directly
+
+*TODO*
+
+=== Extension point for WebSocket services
+
+*TODO*
+
+=== gRPC
+
+*TODO*
+
+=== Outbound agents
+
+*TODO*
+
+=== Dedicated `ComputerLauncher`
+
+*TODO*
+
+== Backwards Compatibility
+
+=== TCP vs. WebSocket selection
+
+*TODO*
+
+=== Non-Jetty containers
+
+*TODO*
+
+== Security
+
+=== Stapler routing and request authorization
+
+*TODO*
+
+=== Inbound agent authentication
+
+*TODO*
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+=== WebSocket-based agent connections
+
+`WebSocketAgentsTest` provides a functional test demonstrating that the agent can connect to a WebSocket endpoint on localhost.
+
+(The existing `JNLPLauncherTest` continues to test TCP connections using `JNLP4-connect`.)
+
+=== Interactive tests
+
+Several sanity checks were performed of using the WebSocket protocol to set up a bidirectional connection with Jenkins,
+or run a (Pipeline) build on an inbound agent,
+under complex realistic conditions:
+
+* Against a CloudBees Core installation running on EKS using the nginx ingress controller terminating TLS.
+* Against CloudBees Core running on GKE using Google’s native ingress controller based on an external load balancer.
+* Against CloudBees Core running on OpenShift 4.2 using a `Route` and TLS termination.
+
+Connecting directly to Jenkins also works.
+Other reverse proxies, such as Apache, have not been specifically tested.
+
+Basic connectivity and “keep-alive” behavior can be established using a script such as:
+
+[source,bash]
+----
+(while :; do date; sleep 5m; done) | websocat -vv wss://$jenkins/wsecho
+----
+
+The main finding was that GKE requires minor customization to service definitions to prevent the connection from closing too soon:
+
+[source,yaml]
+----
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins
+  annotations:
+    beta.cloud.google.com/backend-config: '{"ports": {"80":"jenkins"}}'
+type: NodePort
+# …
+---
+apiVersion: cloud.google.com/v1beta1
+kind: BackendConfig
+metadata:
+  name: jenkins
+spec:
+  timeoutSec: 999999
+----
+
+and nginx requires a WebSocket ping/pong at less than 60s intervals.
+
+== Prototype Implementation
+
+See the references section for proposed patches to Jenkins core, Remoting,
+and some utility repositories that make use of Jetty.
+
+== References
+
+* link:https://tools.ietf.org/html/rfc6455[RFC 6455: The WebSocket Protocol]
+* link:https://www.eclipse.org/jetty/documentation/current/websocket-intro.html[WebSocket in Jetty]
+* link:https://www.eclipse.org/jetty/javadoc/9.4.22.v20191022/org/eclipse/jetty/websocket/servlet/WebSocketServletFactory.html[Jetty’s `WebSocketServletFactory`]
+* link:https://jakarta.ee/specifications/websocket/1.1/[Jakarta EE WebSocket 1.1]
+* link:https://jcp.org/en/jsr/detail?id=356[JSR 356]
+* link:https://tyrus-project.github.io/[Project Tyrus]
+* link:https://github.com/facundofarias/awesome-websockets#java[List of Java WebSocket implementations]
+* link:https://github.com/vi/websocat[websocat]
+* link:https://nginx.org/en/docs/http/websocket.html[WebSocket in nginx]
+* link:https://cloud.google.com/kubernetes-engine/docs/concepts/ingress#support_for_websocket[WebSocket ingress in GKE]
+* *TODO* draft PRs
