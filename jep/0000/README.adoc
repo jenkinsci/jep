@@ -1,4 +1,4 @@
-= JEP-0000: :bulb: WebSocket Services :bulb:
+= JEP-0000: WebSocket Services
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
