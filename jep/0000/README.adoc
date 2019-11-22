@@ -58,15 +58,37 @@ JSR 356 is not used on the server side.
 
 === WebSocket service interfaces
 
-*TODO*
+A new `jenkins.websocket` package contains an entry point `WebSockets.upgrade`
+which issues an HTTP upgrade response and initiates a WebSocket connection.
+The service implementor provides a `WebSocketSession` implementation,
+which both receives callbacks (for example when a text or binary frame is received)
+and can be acted upon (for example to send a frame).
+
+WebSocket ping/pong frames are not explicitly modelled.
+Rather, a service can elect to send pings automatically at a fixed interval.
+This suffices to keep a connection alive when a proxy server might otherwise have closed it.
 
 === Inbound agents
 
-*TODO*
+An HTTP endpoint `/wsagents/`, implemented by `WebSocketAgents`,
+forms the server side of an agent Remoting transport
+suitable for use with a computer configured via `JNLPLauncher`.
+
+`hudson.remoting.Engine` correspondingly can make a WebSocket connection to this address
+and open the client side of a Remoting transport.
+The client is implemented using the JSR 356 API and Project Tyrus library running in standalone mode.
+
+The connection in this mode supports client authentication as well as Remoting protocol capability negotiation.
+There is no need to implement any encryption, as this is covered by HTTPS in Jenkins generally.
+Some of the complexity of the TCP transport regarding packet framing is also unnecessary, as WebSocket provides this.
+
+Some affiliated APIs such as `JnlpConnectionState` and `JnlpAgentReceiver` may be implemented as time permits.
 
 === CLI
 
-*TODO*
+The Jenkins CLI after the removal of Remoting supported two transports:
+SSH and a custom protocol over “full duplex” HTTP.
+These could be augmented with a simpler and less problematic WebSocket transport.
 
 == Motivation
 
@@ -89,6 +111,9 @@ Reverse proxies and L7 load balancers are normally handling HTTP traffic,
 and multiplexing by `Host` header or URI path demands it.
 Ensuring that connections can be made to an opaque TCP port is often much trickier
 and may constrain the choice of proxy software.
+
+(The same issues apply to the SSH port used by some Jenkins features, notably the CLI.
+In principle the SSH protocol could support L7 proxies, but this is unlikely.)
 
 When agents are to be connected to a master from outside the LAN,
 the Jenkins HTTP(S) URL is already specified;
