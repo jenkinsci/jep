@@ -327,8 +327,10 @@ and nginx requires a WebSocket ping/pong at less than 60s intervals.
 
 == Prototype Implementation
 
-See the references section for proposed patches to Jenkins core, Remoting,
-and some utility repositories that make use of Jetty.
+* link:https://github.com/jenkinsci/jenkins/pull/4369[jenkins #4369]
+* link:https://github.com/jenkinsci/remoting/pull/357[remoting #357]
+* link:https://github.com/jenkinsci/winstone/pull/79[winstone #79]
+* link:https://github.com/jenkinsci/jenkins-test-harness/pull/183[jenkins-test-harness #183]
 
 == References
 
@@ -344,4 +346,3 @@ and some utility repositories that make use of Jetty.
 * link:https://cloud.google.com/kubernetes-engine/docs/concepts/ingress#support_for_websocket[WebSocket ingress in GKE]
 * link:https://docs.cloudbees.com/docs/cloudbees-core/latest/eks-install-guide/eks-post-install#eks-jnlp-agent[Adding external inbound agents on CloudBees Core]
 * link:https://issues.jenkins-ci.org/browse/JENKINS-53461[JENKINS-53461: Add support of Remoting connections to masters without Web UI]
-* *TODO* draft PRs
