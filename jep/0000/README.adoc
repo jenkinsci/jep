@@ -128,7 +128,19 @@ in which case the existing Jenkins APIs could be deprecated or amended to link t
 
 === Outbound agents
 
-*TODO*
+“Outbound” agents, those using any common launcher other than `JNLPLauncher` (such as SSH),
+do not suffer from the problem of exposing ports on the Jenkins master.
+However, some users have difficulty setting up such agents:
+
+* Installing an SSH server on Windows has traditionally been cumbersome.
+* Many administrators have little familiarity with SSH and run into problems with obscure misconfigurations.
+* The network hosting the agent computer may not allow inbound connections
+  (whereas we presume the network hosting the Jenkins master _does_, since it must serve a web UI).
+
+Note that outbound agents remain a reasonable option for the Jenkinsfile Runner (JFR) scenario,
+where you would prefer for the Jenkins “master” to expose no ports.
+link:https://issues.jenkins-ci.org/browse/JENKINS-53461[JENKINS-53461]
+allows _only_ a TCP port to be exposed (no HTTP), though it would be better to expose neither.
 
 === Dedicated `ComputerLauncher`
 
