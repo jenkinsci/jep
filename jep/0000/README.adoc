@@ -72,11 +72,40 @@ JSR 356 is not used on the server side.
 
 === Reverse proxies, load balancers, and the TCP port
 
-*TODO*
+Traditionally, inbound agents (using the somewhat misleadingly-named `JNLPLauncher`)
+have connected to a special TCP port in Jenkins handled by `TcpSlaveAgentListener`.
+This socket listener handles pluggable ``AgentProtocol``s,
+such as `JnlpSlaveAgentProtocol4` with the identifier `JNLP4-connect`
+which implements a Remoting transport for agents with TLS encryption support.
+If the administrator allows this port to be open (it is a security configuration option),
+then agents first make an HTTP metadata request to Jenkins to find the (fixed or random) port number,
+and then connect to the TCP port with the desired protocol.
+
+The key problem with this system is not just the use of a secondary port to connect to Jenkins (besides 80/443),
+but the fact that the port serves non-HTTP traffic.
+If Jenkins is serving traffic directly to all clients (HTTP or not), this is not an issue,
+but increasingly these connections are intermediated so as to allow TLS termination or network ingress.
+Reverse proxies and L7 load balancers are normally handling HTTP traffic,
+and multiplexing by `Host` header or URI path demands it.
+Ensuring that connections can be made to an opaque TCP port is often much trickier
+and may constrain the choice of proxy software.
+
+When agents are to be connected to a master from outside the LAN,
+the Jenkins HTTP(S) URL is already specified;
+it is much less hassle if that is the only connection that needs to be routed.
 
 === Full-duplex HTTP transport
 
-*TODO*
+The Jenkins CLI has long been able to run over the HTTP port.
+(When Remoting was used, this was offered as an alternative to the TCP port;
+after the removal of CLI-over-Remoting, the newer “plain text” protocol runs over HTTP.)
+
+This transport is implemented via the `FullDuplexHttpStream` and `FullDuplexHttpService` APIs in Jenkins,
+which effectively simulate a TCP socket using HTTP connections and “chunked” encoding.
+Unfortunately this trick stretches the boundaries of acceptable HTTP handler behavior,
+and is known to break in certain reverse proxies or otherwise cause complications.
+For example, with nginx ingress for Kubernetes, the CLI will not work unless you set the annotation
+`nginx.ingress.kubernetes.io/proxy-request-buffering: off`.
 
 == Reasoning
 
@@ -116,15 +145,30 @@ in which case the existing Jenkins APIs could be deprecated or amended to link t
 
 === Exposing Jetty APIs directly
 
-*TODO*
+`org.eclipse.jetty.websocket.api` could have been exposed directly to Jenkins code,
+assuming Jetty permits this class loader linkage.
+However this would tie too much code to Jetty specifics,
+and pose problems for users of non-Winstone containers.
 
 === Extension point for WebSocket services
 
-*TODO*
+By analogy with the JSR’s `@ServerEndpoint`,
+a Jenkins `ExtensionPoint` could have been defined for each WebSocket-based service.
+This would however clash with URIs used by the existing `UnprotectedRootAction` interface
+and not allow interoperation with other Stapler features such as hierarchical navigation
+or with the standard Jenkins authentication filters.
 
 === gRPC
 
-*TODO*
+link:https://grpc.io/[gRPC] was also considered as a mechanism for bidirectional streaming.
+It works at a higher layer than WebSocket, however;
+for purposes of a Remoting transport, for example, simple framing suffices,
+and there is no need for additional machinery
+(Remoting is after all _another_ remote procedure call framework).
+
+The use of HTTP/2 could also be problematic.
+It is several years newer than WebSocket,
+and likely has poorer compatibility with reverse proxies.
 
 === Outbound agents
 
@@ -144,7 +188,11 @@ allows _only_ a TCP port to be exposed (no HTTP), though it would be better to e
 
 === Dedicated `ComputerLauncher`
 
-*TODO*
+Support for inbound WebSocket connections could be developed as a fresh `ComputerLauncher` implementation.
+However, this would fail to reuse a fair amount of subtle code
+which is already available in `JNLPLauncher` and the matching client code in `slave.jar`,
+such as the `slave-agent.jnlp` endpoint and the secret handling system.
+It seems simpler to behave as a mode of `JNLPLauncher` selecting an alternate transport.
 
 == Backwards Compatibility
 
