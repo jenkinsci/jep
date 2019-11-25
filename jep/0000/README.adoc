@@ -44,7 +44,7 @@ served as the final action after the regular Stapler routing mechanism.
 Unlike regular HTTP endpoints, bidirectional streaming communication is possible.
 
 The principal service exposed in this way is a new Remoting transport for inbound build agents at an HTTP(S) URL.
-The agent itself (typically named `slave.jar`) includes a WebSocket client capable of connecting to this endpoint.
+The agent itself (typically named `agent.jar`) includes a WebSocket client capable of connecting to this endpoint.
 This provides an alternative to using the `JNLP4-connect` protocol on the Jenkins TCP port.
 Otherwise the regular behavior of inbound agents (`JNLPLauncher`) applies.
 
@@ -215,7 +215,7 @@ allows _only_ a TCP port to be exposed (no HTTP), though it would be better to e
 
 Support for inbound WebSocket connections could be developed as a fresh `ComputerLauncher` implementation.
 However, this would fail to reuse a fair amount of subtle code
-which is already available in `JNLPLauncher` and the matching client code in `slave.jar`,
+which is already available in `JNLPLauncher` and the matching client code in `agent.jar`,
 such as the `slave-agent.jnlp` endpoint and the secret handling system.
 It seems simpler to behave as a mode of `JNLPLauncher` selecting an alternate transport.
 
@@ -223,7 +223,7 @@ It seems simpler to behave as a mode of `JNLPLauncher` selecting an alternate tr
 
 === TCP vs. WebSocket selection
 
-A single `slave.jar` can make either TCP or WebSocket inbound connections
+A single `agent.jar` can make either TCP or WebSocket inbound connections
 via either `hudson.remoting.Main` with `-jnlpUrl` or `hudson.remoting.jnlp.Main`
 (along with “outbound” modes typically selected via `hudson.remoting.Main` without `-jnlpUrl`).
 Therefore it must be able to decide which to use in a given circumstance:
