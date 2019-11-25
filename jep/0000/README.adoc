@@ -40,7 +40,7 @@ If no suitable BDFL-Delegate can be found, that row may be commented out.
 | Sensible Permissions
 
 | Sponsor
-| link:https://github.com/mikecirioli[Mike Cirioli], link:https://github.com/aHenryJard[Angelique Jard], link:https://github.com/EstherAF[Esther Álvarez Feijoo] 
+| link:https://github.com/mikecirioli[Mike Cirioli], link:https://github.com/aHenryJard[Angélique Jard], link:https://github.com/EstherAF[Esther Álvarez Feijoo] 
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
@@ -58,8 +58,8 @@ If no suitable BDFL-Delegate can be found, that row may be commented out.
 //
 //
 // Uncomment if there is an associated placeholder JIRA issue.
-//| JIRA
-//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+| JIRA
+| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-60266[JENKINS-60266] :bulb:
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
@@ -301,17 +301,9 @@ Additional tests will be written that validate the new permission type cannot be
 
 == Prototype Implementation
 [NOTE]
-The prototype code found below will be moved to a proper _DRAFT_ pull request in the near future
+The prototype code can be found at:
 
-A WIP prototype implementation can be found at:
-
-* link:https://github.com/mikecirioli/jenkins/tree/FGP[WIP branch with proposed changes]
-
-Additional pending PRs:
-
-* link:https://github.com/mikecirioli/jenkins/pull/21[FGP: Fix some authorizations and their tests, and add some new ones]
-
-* link:https://github.com/mikecirioli/jenkins/pull/20[Jenkins homepage is ok for CONFIGURE_JENKINS without READ]
+* link:https://github.com/jenkinsci/jenkins/pull/4374[PR with proposed changes and tests]
 
 == References
 
