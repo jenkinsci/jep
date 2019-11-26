@@ -127,10 +127,6 @@ image::UX_manage_page.png[User interface for the new permission.]
 
 Most configuration links are fully avalaible for users with either permission, with the following exceptions:
 
-[]
-====
-update screenshot to reflect ne numbering
-====
 
 1. *Administrative Monitors* - Administrattive Monitor messages will only be shown if the user has the permission `Jenkins.ADMINISTER` because they may containan action button that can lead to security modifications. 
 
@@ -145,17 +141,19 @@ Splitting these into seperate pages is outside the scope of this JEP, so the _Co
 A detailed description of the permission changes for this page can be found below.
  
 image::UX_config_tools.png[Configure System details.]
-The following configuration settings found under `/configure` will only be shown if the user has the permission `Jenkins.ADMINISTER`:
+The following configuration settings found under `/configure` will only be shown and allowed to modify to users with `Jenkins.ADMINISTER` permission, because they can lead to permissions escalation:
 []
 ====
 TODO: discuss/update these specifics
 ====
 * # of executors
-* Jenkins URL
-* System Admin e-mail address
-* Resource root
+* Jenkins URL [TODO: it is displayed in the screenshot]
+* System Admin e-mail address [TODO: it is displayed in the screenshot]
+* Resource root [TODO: it is displayed in the screenshot]
 * Global properties
-* Administrative monitors configuration
+    * Environment variables
+    * Tool Locations
+* Administrative monitors configuration: this doesn't allow permissions escalation by itself, but a user can change these settings to hide security warnings messages from Administer.
 * Shell executable path
 
 [NOTE]
