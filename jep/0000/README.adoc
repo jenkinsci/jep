@@ -96,7 +96,7 @@ This new permission is used to create a clear separation between settings that i
 Any methods that check for `Jenkins.ADMINISTER`, `Jenkins.RUN_SCRIPTS`, `PluginManager.CONFIGURE_UPDATECENTER`, and `PluginManager.UPLOAD_PLUGINS` will be evaluated to determine if the use of the new `Jenkins.CONFIGURE` permission type is appropriate.
 The general rule of thumb is that configuration item which does not let you change the underlying security model (either directly, or through a malicious plugin or groovy script), or change fundamental configurations such as hostnames, proxy configuration, etc. are likely candidates to use the `Jenkins.CONFIGURE`.
 
-The changes to the existing permissions are detailed in the diagram below.  Existing permissions are in Grey, new deprecations are in Red, and the new permission is in Green.
+The changes to the existing permissions are detailed in the diagram below. 
 
 image::Targetted_permission_model.png[Design of the new permission model.]
 
