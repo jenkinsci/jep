@@ -51,7 +51,7 @@ Otherwise the regular behavior of inbound agents (`JNLPLauncher`) applies.
 The Jenkins CLI could also be served via WebSocket in place of the SSHD port or the problematic “full-duplex HTTP” transport.
 
 The implementation relies on APIs avalable in the built-in Jetty (“Winstone”) servlet container,
-but Jetty APIs are not reëxported to plugins.
+but Jetty APIs are not re-exported to plugins.
 JSR 356 is not used on the server side.
 
 == Specification
