@@ -155,6 +155,7 @@ TODO: discuss/update these specifics
     * Tool Locations
 * Administrative monitors configuration: this doesn't allow permissions escalation by itself, but a user can change these settings to hide security warnings messages from Administer.
 * Shell executable path
+* Primary view
 
 [NOTE]
 ====
