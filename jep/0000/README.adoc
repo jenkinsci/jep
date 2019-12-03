@@ -108,7 +108,7 @@ Using the `Matrix Authorization` plugin, create two users, each with only one pe
 image::UX_matrix_auth.png[Permissions configuration with matrix authorization plugin.]
 
 By default, all of the configuration sections in the `/manage` page require `Jenkins.ADMINISTER`.
-Each configuration section that is accessbile by a user with `Jenkins.CONFIGURE` are explicitly allowed by overriding `ManagementLink.getRequiredPermission()` to return `Jenkins.CONFIGURE`. For exemple :
+Each configuration section that is accessbile by a user with `Jenkins.CONFIGURE` are explicitly allowed by overriding `ManagementLink.getRequiredPermission()` to return `Jenkins.CONFIGURE`. For example :
 
 ```java
 public class CustomLink extends ManagementLink {
@@ -142,20 +142,15 @@ A detailed description of the permission changes for this page can be found belo
  
 image::UX_config_tools.png[Configure System details.]
 The following configuration settings found under `/configure` will only be shown and allowed to modify to users with `Jenkins.ADMINISTER` permission, because they can lead to permissions escalation:
-[]
-====
-TODO: discuss/update these specifics
-====
-* # of executors
-* Jenkins URL [TODO: it is displayed in the screenshot]
-* System Admin e-mail address [TODO: it is displayed in the screenshot]
-* Resource root [TODO: it is displayed in the screenshot]
-* Global properties
-    * Environment variables
-    * Tool Locations
-* Administrative monitors configuration: this doesn't allow permissions escalation by itself, but a user can change these settings to hide security warnings messages from Administer.
-* Shell executable path
-* Primary view
+
+* `# of executors`: to avoid a user to set a non-zero value 
+* `Jenkins URL`: can be used to redirect users to another jenkins instance, leading to a phishing attack
+* `Resource root`: can be used to point to a host with malicicus code and cause a XSS atack on jenkins users
+* `Global properties`: can be used to missconfigure the existant tools and execute malicius code in its place
+    * `Environment variables`
+    * `Tool Locations`
+* `Administrative monitors configuration`: this doesn't allow permissions escalation by itself, but a user can change monitors settings to hide security warnings from Administer.
+* `Shell executable path`: can be used to point to a executable with malicius code and escalate permissions
 
 [NOTE]
 ====
