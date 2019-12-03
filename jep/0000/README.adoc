@@ -96,7 +96,7 @@ This new permission is used to create a clear separation between settings that i
 Any methods that check for `Jenkins.ADMINISTER`, `Jenkins.RUN_SCRIPTS`, `PluginManager.CONFIGURE_UPDATECENTER`, and `PluginManager.UPLOAD_PLUGINS` will be evaluated to determine if the use of the new `Jenkins.CONFIGURE` permission type is appropriate.
 The general rule of thumb is that configuration item which does not let you change the underlying security model (either directly, or through a malicious plugin or groovy script), or change fundamental configurations such as hostnames, proxy configuration, etc. are likely candidates to use the `Jenkins.CONFIGURE`.
 
-The changes to the existing permissions are detailed in the diagram below.  Existing permissions are in Grey, new deprecations are in Red, and the new permission is in Green.
+The changes to the existing permissions are detailed in the diagram below. 
 
 image::Targetted_permission_model.png[Design of the new permission model.]
 
@@ -108,7 +108,7 @@ Using the `Matrix Authorization` plugin, create two users, each with only one pe
 image::UX_matrix_auth.png[Permissions configuration with matrix authorization plugin.]
 
 By default, all of the configuration sections in the `/manage` page require `Jenkins.ADMINISTER`.
-Each configuration section that is accessbile by a user with `Jenkins.CONFIGURE` are explicitly allowed by overriding `ManagementLink.getRequiredPermission()` to return `Jenkins.CONFIGURE`. For exemple :
+Each configuration section that is accessbile by a user with `Jenkins.CONFIGURE` are explicitly allowed by overriding `ManagementLink.getRequiredPermission()` to return `Jenkins.CONFIGURE`. For example :
 
 ```java
 public class CustomLink extends ManagementLink {
@@ -127,10 +127,6 @@ image::UX_manage_page.png[User interface for the new permission.]
 
 Most configuration links are fully avalaible for users with either permission, with the following exceptions:
 
-[]
-====
-update screenshot to reflect ne numbering
-====
 
 1. *Administrative Monitors* - Administrattive Monitor messages will only be shown if the user has the permission `Jenkins.ADMINISTER` because they may containan action button that can lead to security modifications. 
 
@@ -145,18 +141,16 @@ Splitting these into seperate pages is outside the scope of this JEP, so the _Co
 A detailed description of the permission changes for this page can be found below.
  
 image::UX_config_tools.png[Configure System details.]
-The following configuration settings found under `/configure` will only be shown if the user has the permission `Jenkins.ADMINISTER`:
-[]
-====
-TODO: discuss/update these specifics
-====
-* # of executors
-* Jenkins URL
-* System Admin e-mail address
-* Resource root
-* Global properties
-* Administrative monitors configuration
-* Shell executable path
+The following configuration settings found under `/configure` will only be shown and allowed to modify to users with `Jenkins.ADMINISTER` permission, because they can lead to permissions escalation:
+
+* `# of executors`: to avoid a user to set a non-zero value 
+* `Jenkins URL`: can be used to redirect users to another jenkins instance, leading to a phishing attack
+* `Resource root`: can be used to point to a host with malicicus code and cause a XSS atack on jenkins users
+* `Global properties`: can be used to missconfigure the existant tools and execute malicius code in its place
+    * `Environment variables`
+    * `Tool Locations`
+* `Administrative monitors configuration`: this doesn't allow permissions escalation by itself, but a user can change monitors settings to hide security warnings from Administer.
+* `Shell executable path`: can be used to point to a executable with malicius code and escalate permissions
 
 [NOTE]
 ====
