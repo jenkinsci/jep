@@ -182,6 +182,11 @@
 | link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
 | TBD
 
+| Draft{nbsp}:speech_balloon:
+| link:222/README.adoc[JEP-222: WebSocket Services]
+| link:https://github.com/jglick[Jesse{nbsp}Glick]
+| TBD
+
 | Accepted{nbsp}:ok_hand:
 | link:300/README.adoc[JEP-300: Jenkins Evergreen]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
