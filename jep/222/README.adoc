@@ -219,6 +219,25 @@ which is already available in `JNLPLauncher` and the matching client code in `ag
 such as the `slave-agent.jnlp` endpoint and the secret handling system.
 It seems simpler to behave as a mode of `JNLPLauncher` selecting an alternate transport.
 
+=== Automatic mode switch
+
+Rather than introducing a new agent option `-webSocket`
+and making `slave-agent.jnlp` and other launching code (such as in the Docker image and the `kubernetes` plugin) aware of the choice,
+the agent could try one transport, then fall back to the other.
+This would minimize the number of components that need to be modified.
+
+Besides making behavior more opaque and thus hard to diagnose, this has some problems.
+If WebSocket mode is preferred, agents which were working fine in TCP mode might suddenly switch behavior.
+Since the WebSocket code is new, this could be alarming.
+Also if the agent is inside the same local network as the master and TLS encryption is applied externally,
+this would mean loss of encryption of the Remoting channel.
+
+If TCP mode is preferred, the behavior is more compatible,
+but then when WebSocket connections _are_ wanted,
+there are extra network round trips in the best case
+(to get the `X-Jenkins-JNLP-Port` header from Jenkins over HTTP, then to make a TCP connection);
+and in the worst case the TCP connection might hang rather than failing cleanly.
+
 == Backwards Compatibility
 
 === TCP vs. WebSocket selection
@@ -229,9 +248,8 @@ via either `hudson.remoting.Main` with `-jnlpUrl` or `hudson.remoting.jnlp.Main`
 Therefore it must be able to decide which to use in a given circumstance:
 some servers will support only TCP, some only WebSocket, some both.
 
-One possibility would be to try one transport, then fall back to the other.
-Another possibility would be to introduce a new option such as `-websocket`,
-meaning the `slave-agent.jnlp` or other launching code must be made aware of the choice.
+Since the WebSocket mode is activated only with a `-webSocket` option to the launcher,
+existing agent installations are unaffected.
 
 === Non-Jetty containers
 
@@ -269,6 +287,12 @@ which could be abused to perform unrelated actions.
 
 The WebSocket-based agent service retains this system:
 the HTTP connection is made anonymously, and the secret is passed in a header.
+
+=== Channel encryption
+
+Unlike the `JNLP4-connect` protocol, which impls a custom TLS handshake,
+any encryption of traffic between the agent and the master is done either by the servlet container
+or by some reverse proxy in front of Jenkins.
 
 == Infrastructure Requirements
 
@@ -331,6 +355,8 @@ and nginx requires a WebSocket ping/pong at less than 60s intervals.
 * link:https://github.com/jenkinsci/remoting/pull/357[remoting #357]
 * link:https://github.com/jenkinsci/winstone/pull/79[winstone #79]
 * link:https://github.com/jenkinsci/jenkins-test-harness/pull/183[jenkins-test-harness #183]
+* link:https://github.com/jenkinsci/docker-jnlp-slave/pull/130[docker-jnlp-slave #130]
+* link:https://github.com/jenkinsci/kubernetes-plugin/pull/661[kubernetes-plugin #661]
 
 == References
 
