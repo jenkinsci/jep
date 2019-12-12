@@ -202,33 +202,9 @@ Admittedly, the example use case above is not all that exciting.  However, the c
 ====
 
 == Reasoning
-
-[TIP]
-====
-Explain why particular design decisions were made.
-Describe alternate designs that were considered and related work. For example, how the feature is supported in other systems.
-Provide evidence of consensus within the community and discuss important objections or concerns raised during discussion.
-
-* Use sub-headings to organize this section for ease of readability.
-* Do not talk about history or why this needs to be done - that is part of Motivation section.
-====
-
 === Administrative Monitors only shown to users with `Jenkins.ADMINISTER`
-We choose to not show a subset of safe message, because it can lead to an false feeling of well configured Jenkins to the `Jenkins.CONFIGURE`.
-Some critical message could be only displayed to `Jenkins.ADMINISTER` and a user with `Jenkins.CONFIGURE` can think that everything is fine because nothing is showed but it's not.
-
-== Backwards Compatibility
-
-[TIP]
-====
-Describe any incompatibilities and their severity.
-Describe how the JEP proposes to deal with these incompatibilities.
-
-If there are no backwards compatibility concerns, this section may simply say:
-There are no backwards compatibility concerns related to this proposal.
-====
-No existing permission types are being removed at this point, which will allow for existing plugins that make use of them to continue to function.
-Removing code references to the "dangerous" permissions is outside the scope of this JEP.
+We choose to not show a subset of "safe" Administrative Monitors because it could lead to an false sense of security from the perspecitve of a user with the `Jenkins.CONFIGURE` permission. 
+Some critical messages would be only displayed to `Jenkins.ADMINISTER` and a user with `Jenkins.CONFIGURE` might think that everything is fine because nothing is showed but it's not.
 
 === Jenkins.CONFIGURE implies no other permission
 
@@ -244,6 +220,19 @@ About `Jenkins.READ` (a.k.a `Overall Read`, required to access the web or use th
 image::CONFIGURE-and-READ-permissions.svg[]
 
 This means that in order to provide access with `Jenkins.CONFIGURE` permission, the Administer will have to check both `Overall Read` and `Overall Configure`
+
+== Backwards Compatibility
+
+[TIP]
+====
+Describe any incompatibilities and their severity.
+Describe how the JEP proposes to deal with these incompatibilities.
+
+If there are no backwards compatibility concerns, this section may simply say:
+There are no backwards compatibility concerns related to this proposal.
+====
+No existing permission types are being removed at this point, which will allow for existing plugins that make use of them to continue to function.
+Removing code references to the "dangerous" permissions is outside the scope of this JEP.
 
 == Security
 
