@@ -179,7 +179,13 @@ Admittedly, the example use case above is not all that exciting.  However, the c
 We choose to not show a subset of "safe" Administrative Monitors because it could lead to an false sense of security from the perspecitve of a user with the `Jenkins.CONFIGURE` permission. 
 Some critical messages would be only displayed to `Jenkins.ADMINISTER` and a user with `Jenkins.CONFIGURE` might think that everything is fine because nothing is showed but it's not.
 
-=== Jenkins.CONFIGURE implies no other permission
+=== `Jenkins.CONFIGURE` does not allow installation of plugins available in Update Center
+There has been some discussion on the jenkinsci-dev mailing list about wether `Jenkins.CONFIGURE` should allow the installation of plugins available in Update Center (see <<References>>).  
+The abiltiy to install or update plugins introduces the possibility (even if it is small) for a malicious user to escalate their privelege to that of `Jenkins.ADMINISTER`.  
+Additionally, some administrators may not want users who can update plugin versions to also have the ability manage other aspects of a Jenkins instance.
+Because of this, it makes more sense to consider this as a potentially new permission type in the future.
+
+=== `Jenkins.CONFIGURE` implies no other permission
 
 For the sake of customization, we are designing this permission to not imply other permissions that can be granted separately, as long as they are not needed for `Jenkins.CONFIGURE` 's main purpose (see <<Motivation>>).
 
@@ -221,6 +227,9 @@ The prototype code can be found at:
 * link:https://github.com/jenkinsci/jenkins/pull/4374[PR with proposed changes and tests]
 
 == References
+=== Mailing List Discussions
+* link:https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!msg/jenkinsci-dev/lThSifB8G4k/HqaHxNoNCgAJ[Should Jenkins.CONFIGURE allow installation of plugins available in Update Center]
+
 === Related efforts
 * link:https://jenkins.io/security/advisory/2017-04-10/#matrix-authorization-strategy-plugin-allowed-configuring-dangerous-permissions[SECIRUTY-410 - Matrix Authorization Strategy Plugin allowed configuring dangerous permissions]
 
