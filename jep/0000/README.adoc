@@ -174,6 +174,33 @@ By consolidating all permission types that effectively allow a user to have full
 The `Jenkins.CONFIGURE` permission type is not intended to replace any `Item` level permissions.
 It is solely for the purpose of seperating sensistive, security related Jenkins configuration settings from those that a non-root administrator might be expected to manage.
 
+=== Example Use Case
+**Alice** - DevOps Admin - responsible for overall Jenkins infrastructure supporting 100 developers across 6 teams each with their own jenkins instances.  Responsible for defining and enforcing security policies across all teams.
+
+**Bob** - DevOps lead for the FooBar team
+
+==== Scenario
+
+Alice has defined the following company wide security policies:
+
+* AuthN will be handled via SSO backed by the corporate LDAP server
+* Role-Based AuthZ is provided by the matrix-auth plugin
+* All jenkins instances must only use the company approved update-center
+* Only users with Jenkins.ADMINISTER privileges can upload plugins outside of the update-center
+
+
+Additionally, Alice wants to allow individual DevOps leads to manage other aspects of their Jenkins instances as they deem appropriate for their own teams.  Ex. Bob can configure:
+
+* Project naming conventions
+* System Admin e-mail address
+* Labels
+* View system information
+
+[NOTE]
+====
+Admittedly, the example use case above is not all that exciting.  However, the change proposed in this JEP creates the foundation for other plugins to begin to differentiate between high-risk (ie. Administer only) settings and those that can be safely delegated to a user with the `Configure` permission.
+====
+
 == Reasoning
 
 [TIP]
