@@ -221,12 +221,12 @@ The prototype code can be found at:
 * link:https://github.com/jenkinsci/jenkins/pull/4374[PR with proposed changes and tests]
 
 == References
+=== Related efforts
+* link:https://jenkins.io/security/advisory/2017-04-10/#matrix-authorization-strategy-plugin-allowed-configuring-dangerous-permissions[SECIRUTY-410 - Matrix Authorization Strategy Plugin allowed configuring dangerous permissions]
 
-[TIP]
-====
-Provide links to any related documents.
-This will include links to discussions on the mailing list, pull requests, and meeting notes.
-====
-TBD: include a list of jenkins issues that are relevant here
+* link:https://issues.jenkins-ci.org/browse/JENKINS-60406[Deprecate Jenkins.RUN_SCRIPTS, PluginManager.UPLOAD_PLUGINS, & PluginManager.CONFIGURE_UPDATECENTER]
+** Parallel effort to officially deprecate (in the code) permissions which effectively equate to `Jenkins.ADMINISTER`
+
+* link:https://issues.jenkins-ci.org/browse/JENKINS-12548[Read-only configuration summary page support]
 
 
