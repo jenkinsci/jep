@@ -24,8 +24,6 @@ documenting the design decisions that have gone into Jenkins.
 There is also a video of a presentation giving an
 link:https://youtu.be/d7Oy4Qq-Tjw[overview of the JEP Process].
 
-Each week we have Jenkins Enhancement Proposal Office Hours. The time and link to these can be found on https://jenkins.io/event-calendar/.
-
 == License
 
 This repository's contents are considered under the
