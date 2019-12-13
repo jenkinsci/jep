@@ -200,6 +200,10 @@ image::CONFIGURE-and-READ-permissions.svg[]
 
 This means that in order to provide access with `Jenkins.CONFIGURE` permission, the Administer will have to check both `Overall Read` and `Overall Configure`
 
+=== Decisions we are on the fence about
+There are a number of specific permission checks that do not have a clear answer, such as the ability to view log files, or viewing environment variables. 
+For the most current discussions on these points (and more) please refer to link:https://github.com/jenkinsci/jenkins/pull/4374[the prototype PR for this JEP].
+
 == Backwards Compatibility
 
 No existing permission types are being removed at this point, which will allow for existing plugins that make use of them to continue to function.
