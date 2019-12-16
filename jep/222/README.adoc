@@ -88,7 +88,16 @@ Some affiliated APIs such as `JnlpConnectionState` and `JnlpAgentReceiver` may b
 
 The Jenkins CLI after the removal of Remoting supported two transports:
 SSH and a custom protocol over “full duplex” HTTP.
-These could be augmented with a simpler and less problematic WebSocket transport.
+These are augmented with a simpler and less problematic WebSocket transport.
+The existing `/cli` endpoint is retained,
+but a new `/cli/ws` endpoint is added.
+`jenkins-cli.jar` attempts to use the WebSocket transport,
+falling back to full duplex for compatibility upon receiving a 404 error.
+
+The existing `PlainCLIProtocol` is retained over the WebSocket transport,
+though since framing is handled by the transport,
+frames are not encoded in the protocol.
+Thus every (binary) frame is a one-byte opcode followed by a payload.
 
 == Motivation
 
@@ -238,6 +247,45 @@ there are extra network round trips in the best case
 (to get the `X-Jenkins-JNLP-Port` header from Jenkins over HTTP, then to make a TCP connection);
 and in the worst case the TCP connection might hang rather than failing cleanly.
 
+=== More natural CLI framing
+
+Rather than reusing `PlainCLIProtocol` from the full-duplex HTTP transport,
+the WebSocket-based CLI endpoint could be designed to be friendlier to generic clients such as `websocat`.
+For example, `CLICommand.stdin` could be streamed from incoming frames,
+and `CLICommand.stdout` could be chunked into outgoing frames.
+Some features of the Jenkins CLI fit naturally into this model,
+such as the use of `Accept-Charset` and `Accept-Language` headers.
+
+However, several obstacles seemed to make this approach more trouble than it would be worth:
+
+* Unlike the SSH protocol, there is no simple way to enumerate a command name and arguments in the request:
+  you would need to use query parameters or HTTP headers in an awkward fashion.
+  (And ensuring that arguments containing spaces or other special characters are supported would complicate the scheme.)
+* Again unlike SSH, there is no standard way to differentiate `stdout` from `stderr`;
+  binary vs. text frames (respectively) could be used for this,
+  but generic clients are unlikely to honor the distinction.
+* Again unlike SSH, there is no standard way to represent an exit code:
+  an HTTP header is not an option in interactive mode (the exit code is determined after the upgrade response is sent),
+  so a special frame syntax would be needed.
+
+If and when there is a need for a protocol which can be used easily from a generic client,
+this could be implemented in a plugin.
+In fact the link:https://plugins.jenkins.io/cli-commander[CLI Commander plugin]
+already link:https://github.com/jenkinsci/cli-commander-plugin/blob/4831bf13711f5e382610980eedc815e4dd3f0c0d/src/main/java/org/jenkinsci/plugins/clicommander/Commander.java#L81-L138[does something similar]
+for the case of noninteractive commands
+(though in that case the primary use case is via a browser UI rather than something like `curl`).
+
+=== Explicit WebSocket mode for the CLI
+
+The new transport for the CLI could be opted into,
+for example with an option `-webSocket` or by selecting a `ws`/`wss`-protocol URL.
+However, it was decided to select the WebSocket transport automatically due to the easier connectivity.
+The considerations which led to a conservative choice of transport selection for agents are less relevant in this case:
+
+* The _previous_ (but post-Remoting) transport is based on HTTP(S) and offers no encryption of its own.
+* Performance is typically not a key consideration.
+* The client is often used interactively, so a regression is less likely to mean an urgent outage after upgrade.
+
 == Backwards Compatibility
 
 === TCP vs. WebSocket selection
@@ -250,6 +298,15 @@ some servers will support only TCP, some only WebSocket, some both.
 
 Since the WebSocket mode is activated only with a `-webSocket` option to the launcher,
 existing agent installations are unaffected.
+
+=== Full duplex HTTP vs. WebSocket for the CLI
+
+The new `jenkins-cli.jar` attempts to make a WebSocket connection by default.
+If this fails because the Jenkins server is too old or WebSocket is not supported,
+it falls back automatically to full duplex HTTP mode.
+The old client will always use the full duplex mode.
+
+`-ssh` mode is unaffected.
 
 === Non-Jetty containers
 
@@ -293,6 +350,14 @@ the HTTP connection is made anonymously, and the secret is passed in a header.
 Unlike the `JNLP4-connect` protocol, which impls a custom TLS handshake,
 any encryption of traffic between the agent and the master is done either by the servlet container
 or by some reverse proxy in front of Jenkins.
+
+=== CLI
+
+CLI security is as before:
+the endpoint itself is anonymous,
+but all commands other than `help` and `who-am-i` perform an *Overall/Read* check,
+and specific commands typically perform additional checks.
+Authentication is via HTTP headers, typically API token.
 
 == Infrastructure Requirements
 
