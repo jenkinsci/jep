@@ -92,6 +92,7 @@ These are augmented with a simpler and less problematic WebSocket transport.
 The existing `/cli` endpoint is retained,
 but a new `/cli/ws` endpoint is added.
 `jenkins-cli.jar` can be asked to use the WebSocket transport with the `-webSocket` option.
+The client is implemented using the JSR 356 API and Project Tyrus library running in standalone mode.
 
 The existing `PlainCLIProtocol` is retained over the WebSocket transport,
 though since framing is handled by the transport,
@@ -289,6 +290,12 @@ The considerations which led to a conservative choice of transport selection for
 
 Nonetheless, for now it is safest to not change the default behavior.
 A change of default can be considered after the new implementation has been field-tested.
+
+=== WebSocket clients
+
+A number of WebSocket clients are available for Java.
+The “standalone” client from Project Tyrus was chosen for both the Remoting and CLI
+since it is the reference implementation of the official Java API.
 
 == Backwards Compatibility
 
