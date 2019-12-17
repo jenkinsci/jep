@@ -91,8 +91,7 @@ SSH and a custom protocol over “full duplex” HTTP.
 These are augmented with a simpler and less problematic WebSocket transport.
 The existing `/cli` endpoint is retained,
 but a new `/cli/ws` endpoint is added.
-`jenkins-cli.jar` attempts to use the WebSocket transport,
-falling back to full duplex for compatibility upon receiving a 404 error.
+`jenkins-cli.jar` can be asked to use the WebSocket transport with the `-webSocket` option.
 
 The existing `PlainCLIProtocol` is retained over the WebSocket transport,
 though since framing is handled by the transport,
@@ -275,16 +274,21 @@ already link:https://github.com/jenkinsci/cli-commander-plugin/blob/4831bf13711f
 for the case of noninteractive commands
 (though in that case the primary use case is via a browser UI rather than something like `curl`).
 
-=== Explicit WebSocket mode for the CLI
+=== WebSocket mode by default for the CLI
 
-The new transport for the CLI could be opted into,
-for example with an option `-webSocket` or by selecting a `ws`/`wss`-protocol URL.
-However, it was decided to select the WebSocket transport automatically due to the easier connectivity.
+The new transport for the CLI could be made the default,
+perhaps a fallback to `-http` mode in case the server is too old or does not support WebSocket
+(both of which can be detected via a 404 response code from `/cli/ws`).
 The considerations which led to a conservative choice of transport selection for agents are less relevant in this case:
 
 * The _previous_ (but post-Remoting) transport is based on HTTP(S) and offers no encryption of its own.
 * Performance is typically not a key consideration.
 * The client is often used interactively, so a regression is less likely to mean an urgent outage after upgrade.
+* An explicit gesture must be made to download a new version of the client.
+  (Sometimes also true for agents, depending on the details of the launch mode.)
+
+Nonetheless, for now it is safest to not change the default behavior.
+A change of default can be considered after the new implementation has been field-tested.
 
 == Backwards Compatibility
 
@@ -301,10 +305,8 @@ existing agent installations are unaffected.
 
 === Full duplex HTTP vs. WebSocket for the CLI
 
-The new `jenkins-cli.jar` attempts to make a WebSocket connection by default.
-If this fails because the Jenkins server is too old or WebSocket is not supported,
-it falls back automatically to full duplex HTTP mode.
-The old client will always use the full duplex mode.
+The new `jenkins-cli.jar` continues to run in `-http` mode by default for now.
+`-webSocket` mode can still be selected if desired.
 
 `-ssh` mode is unaffected.
 
