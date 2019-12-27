@@ -176,8 +176,17 @@ Admittedly, the example use case above is not all that exciting.  However, the c
 
 == Reasoning
 === Administrative Monitors only shown to users with `Jenkins.ADMINISTER`
-We choose to not show a subset of "safe" Administrative Monitors because it could lead to an false sense of security from the perspecitve of a user with the `Jenkins.CONFIGURE` permission. 
+We choose to not show a subset of "safe" Administrative Monitors because it could lead to a false sense of security from the perspecitve of a user with the `Jenkins.CONFIGURE` permission. 
 Some critical messages would be only displayed to `Jenkins.ADMINISTER` and a user with `Jenkins.CONFIGURE` might think that everything is fine because nothing is showed but it's not.
+
+=== System Log is only accesible with `Jenkins.ADMINISTER`
+In theory, logs shouldn't show sensitive values at any level, and a pluggin logging secrets can be considered a security issue in the actual plugin.
+However, it is highly likely that some plugins are logging sensitive values in lowest levels like `FINE`.
+
+Because of this, `Jenkins.CONFIGURE` will not be allowed to access to the System Log or managing Log Recorders.
+
+As part of a future enhancement, a more sophisticated solution might be considered, so someone with `Jenkins.CONFIGURE` can see the log levels considered safe.
+
 
 === `Jenkins.CONFIGURE` does not allow installation of plugins available in Update Center
 There has been some discussion on the jenkinsci-dev mailing list about wether `Jenkins.CONFIGURE` should allow the installation of plugins available in Update Center (see <<References>>).  
