@@ -187,6 +187,11 @@
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | TBD
 
+| Draft{nbsp}:speech_balloon:
+| link:223/README.adoc[JEP-213: Sensible Permissions]
+| link:https://github.com/mikecirioli[Mike{nbsp}Cirioli], link:https://github.com/aHenryJard[Angélique{nbsp}Jard], link:https://github.com/EstherAF[Esther{nbsp}Álvarez{nbsp}Feijoo] 
+| TBD
+
 | Accepted{nbsp}:ok_hand:
 | link:300/README.adoc[JEP-300: Jenkins Evergreen]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
