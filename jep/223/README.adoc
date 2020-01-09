@@ -1,0 +1,254 @@
+= JEP-213: Sensible Permissions
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.**JEP Template**
+
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 213
+
+| Title
+| Sensible Permissions
+
+| Sponsor
+| link:https://github.com/mikecirioli[Mike Cirioli], link:https://github.com/aHenryJard[Angélique Jard], link:https://github.com/EstherAF[Esther Álvarez Feijoo] 
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| :bulb: Standards :bulb:
+
+| Created
+| :bulb: (2019-11-01) :bulb:
+
+| BDFL-Delegate
+| TBD
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+| JIRA
+| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-60266[JENKINS-60266] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+| Discussions-To
+| :bulb: https://groups.google.com/forum/#!topic/jenkinsci-dev/lThSifB8G4k :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+When using matrix-based access control the permission types `Jenkins.RUN_SCRIPTS`, `PluginManager.CONFIGURE_UPDATECENTER`, and `PluginManager.UPLOAD_PLUGINS` provide a false sense of security, as a user is able to escalate this limited privilege to `Jenkins.ADMINISTER`.  
+link:https://jenkins.io/security/advisory/2017-04-10/#matrix-authorization-strategy-plugin-allowed-configuring-dangerous-permissions[SECURITY-410] removed the ability to individually grant these permissions, as they are effectively equivalent to `Jenkins.ADMINISTER`.
+
+A new permission type, `Jenkins.CONFIGURE` (implied by `Jenkins.ADMINISTER`) has been created for actions that allow for the management of Jenkins configuration items that do not require `Jenkins.ADMINISTER`.
+This new permission is used to create a clear separation between settings that impact the entirety of a Jenkins instance (particularly with regards to security) and those that can be used to manage other aspects of an installation. 
+
+== Specification
+
+Any methods that check for `Jenkins.ADMINISTER`, `Jenkins.RUN_SCRIPTS`, `PluginManager.CONFIGURE_UPDATECENTER`, and `PluginManager.UPLOAD_PLUGINS` will be evaluated to determine if the use of the new `Jenkins.CONFIGURE` permission type is appropriate.
+The general rule of thumb is that configuration item which does not let you change the underlying security model (either directly, or through a malicious plugin or groovy script), or change fundamental configurations such as hostnames, proxy configuration, etc. are likely candidates to use the `Jenkins.CONFIGURE`.
+
+The changes to the existing permissions are detailed in the diagram below. 
+
+image::Targetted_permission_model.png[Design of the new permission model.]
+
+=== Jenkins UX Changes
+Changing the permission model primarily impacts the Jenkins UX in two ways; the permissions shown when configuring matrix-based authentication, and on the `Manage Jenkins` page. 
+
+Using the `Matrix Authorization` plugin, create two users, each with only one permission: `Jenkins.ADMINISTER` or `Jenkins.CONFIGURE`.
+
+image::UX_matrix_auth.png[Permissions configuration with matrix authorization plugin.]
+
+By default, all of the configuration sections in the `/manage` page require `Jenkins.ADMINISTER`.
+Each configuration section that is accessbile by a user with `Jenkins.CONFIGURE` are explicitly allowed by overriding `ManagementLink.getRequiredPermission()` to return `Jenkins.CONFIGURE`. For example :
+
+```java
+public class CustomLink extends ManagementLink {
+
+    @Override
+    public Permission getRequiredPermission() {
+        return Jenkins.CONFIGURE;
+    }
+}
+```
+
+Plugins may also need to change also permission on jelly files to allow `Jenkins.CONFIGURE` on management links.
+
+image::UX_manage_page.png[User interface for the new permission.]
+
+
+Most configuration links are fully avalaible for users with either permission, with the following exceptions:
+
+
+1. *Administrative Monitors* - Administrattive Monitor messages will only be shown if the user has the permission `Jenkins.ADMINISTER` because they may containan action button that can lead to security modifications. 
+
+2. *Configure Global Security* - A user who can make changes here is able to configure Jenkins to use a less secure realm, or grant themselves additional permissions, thus this configuration link will only be shown to users with the `Jenkins.ADMINISTER` permission.
+
+3. *Manage Plugins* - A user with the ability to manage plugins is able to remove or replace security related plugins, or even upload a malicious plugin, thus this configuration link will only be shown to users with the `Jenkins.ADMINISTER` permission.
+
+4. *Manage Users* - Managing users includes the ability to delete any user, so this link will only be shown to users with the `Jenkins.ADMINISTER` permission.
+
+5. *Configure System* - As it is currently implemented, the Jenkins _Configure System_ page contains a mix of items, some of which should require `Jenkins.ADMINISTER` and some which are safe to delegate to a user with the `Jenkins.CONFIGURE` permission.  
+Splitting these into seperate pages is outside the scope of this JEP, so the _Configure System_ link will be visible to users with either `Jenkins.ADMINISTER` or `Jenkins.CONFIGURE`.
+A detailed description of the permission changes for this page can be found below.
+ 
+image::UX_config_tools.png[Configure System details.]
+The following configuration settings found under `/configure` will only be shown and allowed to modify to users with `Jenkins.ADMINISTER` permission, because they can lead to permissions escalation:
+
+* `# of executors`: to avoid a user to set a non-zero value 
+* `Jenkins URL`: can be used to redirect users to another jenkins instance, leading to a phishing attack
+* `Resource root`: can be used to point to a host with malicicus code and cause a XSS atack on jenkins users
+* `Global properties`: can be used to missconfigure the existant tools and execute malicius code in its place
+    * `Environment variables`
+    * `Tool Locations`
+* `Administrative monitors configuration`: this doesn't allow permissions escalation by itself, but a user can change monitors settings to hide security warnings from Administer.
+* `Shell executable path`: can be used to point to a executable with malicius code and escalate permissions
+
+[NOTE]
+====
+Plugins that contribute to the settings on on the `Configure Jenkins` page should carefully consider if allowing a user with only `Jenkins.CONFIGURE` could result in an unintended privelege escalation.
+====
+
+== Motivation
+
+The current permission model provides does not provide a means by which some aspects of Jenkins administration can be delegated to a user without also giving them the ability (directly or indirectly) to modify configuration settings that globablly impact the instance.
+
+By consolidating all permission types that effectively allow a user to have full `root` access on a Jenkins instance, and introducing a new permission (`Jenkins.CONFIGURE`) that allows a limited amount of access to configure certain non-critical functionality, a Jenkins administrator can safely delegate configuration aspects while being confident that security concerns are being met.
+
+The `Jenkins.CONFIGURE` permission type is not intended to replace any `Item` level permissions.
+It is solely for the purpose of seperating sensistive, security related Jenkins configuration settings from those that a non-root administrator might be expected to manage.
+
+=== Example Use Case
+**Alice** - DevOps Admin - responsible for overall Jenkins infrastructure supporting 100 developers across 6 teams each with their own jenkins instances.  Responsible for defining and enforcing security policies across all teams.
+
+**Bob** - DevOps lead for the FooBar team
+
+==== Scenario
+
+Alice has defined the following company wide security policies:
+
+* AuthN will be handled via SSO backed by the corporate LDAP server
+* Role-Based AuthZ is provided by the matrix-auth plugin
+* All jenkins instances must only use the company approved update-center
+* Only users with Jenkins.ADMINISTER privileges can upload plugins outside of the update-center
+
+Additionally, Alice wants to allow individual DevOps leads to manage other aspects of their Jenkins instances as they deem appropriate for their own teams.  Ex. Bob can configure:
+
+* Project naming conventions
+* System Admin e-mail address
+* Labels
+* View system information
+
+[NOTE]
+====
+Admittedly, the example use case above is not all that exciting.  However, the change proposed in this JEP creates the foundation for other plugins to begin to differentiate between high-risk (ie. Administer only) settings and those that can be safely delegated to a user with the `Configure` permission.
+====
+
+== Reasoning
+=== Administrative Monitors only shown to users with `Jenkins.ADMINISTER`
+We choose to not show a subset of "safe" Administrative Monitors because it could lead to a false sense of security from the perspecitve of a user with the `Jenkins.CONFIGURE` permission. 
+Some critical messages would be only displayed to `Jenkins.ADMINISTER` and a user with `Jenkins.CONFIGURE` might think that everything is fine because nothing is showed but it's not.
+
+=== System Log is only accesible with `Jenkins.ADMINISTER`
+In theory, logs shouldn't show sensitive values at any level, and a pluggin logging secrets can be considered a security issue in the actual plugin.
+However, it is highly likely that some plugins are logging sensitive values in lowest levels like `FINE`.
+
+Because of this, `Jenkins.CONFIGURE` will not be allowed to access to the System Log or managing Log Recorders.
+
+As part of a future enhancement, a more sophisticated solution might be considered, so someone with `Jenkins.CONFIGURE` can see the log levels considered safe.
+
+
+=== `Jenkins.CONFIGURE` does not allow installation of plugins available in Update Center
+There has been some discussion on the jenkinsci-dev mailing list about wether `Jenkins.CONFIGURE` should allow the installation of plugins available in Update Center (see <<References>>).  
+The abiltiy to install or update plugins introduces the possibility (even if it is small) for a malicious user to escalate their privelege to that of `Jenkins.ADMINISTER`.  
+Additionally, some administrators may not want users who can update plugin versions to also have the ability manage other aspects of a Jenkins instance.
+Because of this, it makes more sense to consider this as a potentially new permission type in the future.
+
+=== `Jenkins.CONFIGURE` implies no other permission
+
+For the sake of customization, we are designing this permission to not imply other permissions that can be granted separately, as long as they are not needed for `Jenkins.CONFIGURE` 's main purpose (see <<Motivation>>).
+
+Hence, it will not imply any `Job`, `View` or `Agent` level permission.
+
+About `Jenkins.READ` (a.k.a `Overall Read`, required to access the web or use the CLI), we have decided to *not* imply it for the following reasons:
+
+* To follow the current standard: Every other permission (except `Jenkins.ADMINISTER`) is not implying it. 
+* Technical limitation: the current implementation of `Permission` makes impossible to make `Jenkins.CONFIGURE` imply `Jenkins.READ`, because a permission can not be implied by more than one, and `Jenkins.READ` is already implied by `Permission.READ`. 
+
+image::CONFIGURE-and-READ-permissions.svg[]
+
+This means that in order to provide access with `Jenkins.CONFIGURE` permission, the Administer will have to check both `Overall Read` and `Overall Configure`
+
+=== Decisions we are on the fence about
+There are a number of specific permission checks that do not have a clear answer, such as the ability to view log files, or viewing environment variables. 
+For the most current discussions on these points (and more) please refer to link:https://github.com/jenkinsci/jenkins/pull/4374[the prototype PR for this JEP].
+
+== Backwards Compatibility
+
+No existing permission types are being removed at this point, which will allow for existing plugins that make use of them to continue to function.
+Removing code references to the "dangerous" permissions is outside the scope of this JEP.
+
+== Security
+
+The intent of this proposal is to improve overall security for Jenkins instances that are using some form of matrix authorization.
+All configuration items that require `Jenkins.ADMINISTER`, `Jenkins.RUN_SCRIPTS`, `PluginManager.CONFIGURE_UPDATECENTER`, and `PluginManager.UPLOAD_PLUGINS`  are being reviewed to determine if they can be changed to require the new `Jenkins.CONFIGURE` permission type.
+The greatest risk is that some configuration may be _more restrictive_ than necessary, either because it was overlooked or due to differences in opinion during the review process.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+Existing tests that validate permissions, or make assumptions about the permissions being used, will be updated to conform to the new permission model.
+Additional tests will be written that validate the new permission type cannot be used when the more restrictive `Jenkins.ADMINISTER` is needed.
+
+== Prototype Implementation
+[NOTE]
+The prototype code can be found at:
+
+* link:https://github.com/jenkinsci/jenkins/pull/4374[PR with proposed changes and tests]
+
+== References
+=== Mailing List Discussions
+* link:https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!msg/jenkinsci-dev/lThSifB8G4k/HqaHxNoNCgAJ[Should Jenkins.CONFIGURE allow installation of plugins available in Update Center]
+
+=== Related efforts
+* link:https://jenkins.io/security/advisory/2017-04-10/#matrix-authorization-strategy-plugin-allowed-configuring-dangerous-permissions[SECIRUTY-410 - Matrix Authorization Strategy Plugin allowed configuring dangerous permissions]
+
+* link:https://issues.jenkins-ci.org/browse/JENKINS-60406[Deprecate Jenkins.RUN_SCRIPTS, PluginManager.UPLOAD_PLUGINS, & PluginManager.CONFIGURE_UPDATECENTER]
+** Parallel effort to officially deprecate (in the code) permissions which effectively equate to `Jenkins.ADMINISTER`
+
+* link:https://issues.jenkins-ci.org/browse/JENKINS-12548[Read-only configuration summary page support]
+
+
