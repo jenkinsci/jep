@@ -1,4 +1,4 @@
-= JEP-213: Sensible Permissions
+= JEP-213: Create a new "Limited Administer" permission named "Configure" for managing non-security aspects of a Jenkins instance
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -19,7 +19,7 @@ endif::[]
 | 213
 
 | Title
-| Sensible Permissions
+| Create a new "Limited Administer" permission named "Configure" for managing non-security aspects of a Jenkins instance
 
 | Sponsor
 | link:https://github.com/mikecirioli[Mike Cirioli], link:https://github.com/aHenryJard[Angélique Jard], link:https://github.com/EstherAF[Esther Álvarez Feijoo] 
