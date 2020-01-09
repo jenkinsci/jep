@@ -1,0 +1,448 @@
+= JEP-222: WebSocket Services
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 222
+
+| Title
+| WebSocket Services
+
+| Sponsor
+| link:https://github.com/jglick[Jesse Glick]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2019-11-21
+
+| BDFL-Delegate
+| TBD
+
+|===
+
+== Abstract
+
+Jenkins offers an API allowing WebSocket services to be implemented.
+This is available using the Stapler `HttpResponse` idiom,
+served as the final action after the regular Stapler routing mechanism.
+Unlike regular HTTP endpoints, bidirectional streaming communication is possible.
+
+The principal service exposed in this way is a new Remoting transport for inbound build agents at an HTTP(S) URL.
+The agent itself (typically named `agent.jar`) includes a WebSocket client capable of connecting to this endpoint.
+This provides an alternative to using the `JNLP4-connect` protocol on the Jenkins TCP port.
+Otherwise the regular behavior of inbound agents (`JNLPLauncher`) applies.
+
+The Jenkins CLI could also be served via WebSocket in place of the SSHD port or the problematic “full-duplex HTTP” transport.
+
+The implementation relies on APIs avalable in the built-in Jetty (“Winstone”) servlet container,
+but Jetty APIs are not re-exported to plugins.
+JSR 356 is not used on the server side.
+
+== Specification
+
+=== WebSocket service interfaces
+
+A new `jenkins.websocket` package contains an entry point `WebSockets.upgrade`
+which issues an HTTP upgrade response and initiates a WebSocket connection.
+The service implementor provides a `WebSocketSession` implementation,
+which both receives callbacks (for example when a text or binary frame is received)
+and can be acted upon (for example to send a frame).
+
+WebSocket ping/pong frames are not explicitly modelled.
+Rather, a service can elect to send pings automatically at a fixed interval.
+This suffices to keep a connection alive when a proxy server might otherwise have closed it.
+
+=== Inbound agents
+
+An HTTP endpoint `/wsagents/`, implemented by `WebSocketAgents`,
+forms the server side of an agent Remoting transport
+suitable for use with a computer configured via `JNLPLauncher`.
+
+`hudson.remoting.Engine` correspondingly can make a WebSocket connection to this address
+and open the client side of a Remoting transport.
+The client is implemented using the JSR 356 API and Project Tyrus library running in standalone mode.
+
+The connection in this mode supports client authentication as well as Remoting protocol capability negotiation.
+There is no need to implement any encryption, as this is covered by HTTPS in Jenkins generally.
+Some of the complexity of the TCP transport regarding packet framing is also unnecessary, as WebSocket provides this.
+
+Some affiliated APIs such as `JnlpConnectionState` and `JnlpAgentReceiver` may be implemented as time permits.
+
+=== CLI
+
+The Jenkins CLI after the removal of Remoting supported two transports:
+SSH and a custom protocol over “full duplex” HTTP.
+These are augmented with a simpler and less problematic WebSocket transport.
+The existing `/cli` endpoint is retained,
+but a new `/cli/ws` endpoint is added.
+`jenkins-cli.jar` can be asked to use the WebSocket transport with the `-webSocket` option.
+The client is implemented using the JSR 356 API and Project Tyrus library running in standalone mode.
+
+The existing `PlainCLIProtocol` is retained over the WebSocket transport,
+though since framing is handled by the transport,
+frames are not encoded in the protocol.
+Thus every (binary) frame is a one-byte opcode followed by a payload.
+
+== Motivation
+
+=== Reverse proxies, load balancers, and the TCP port
+
+Traditionally, inbound agents (using the somewhat misleadingly-named `JNLPLauncher`)
+have connected to a special TCP port in Jenkins handled by `TcpSlaveAgentListener`.
+This socket listener handles pluggable ``AgentProtocol``s,
+such as `JnlpSlaveAgentProtocol4` with the identifier `JNLP4-connect`
+which implements a Remoting transport for agents with TLS encryption support.
+If the administrator allows this port to be open (it is a security configuration option),
+then agents first make an HTTP metadata request to Jenkins to find the (fixed or random) port number,
+and then connect to the TCP port with the desired protocol.
+
+The key problem with this system is not just the use of a secondary port to connect to Jenkins (besides 80/443),
+but the fact that the port serves non-HTTP traffic.
+If Jenkins is serving traffic directly to all clients (HTTP or not), this is not an issue,
+but increasingly these connections are intermediated so as to allow TLS termination or network ingress.
+Reverse proxies and L7 load balancers are normally handling HTTP traffic,
+and multiplexing by `Host` header or URI path demands it.
+Ensuring that connections can be made to an opaque TCP port is often much trickier
+and may constrain the choice of proxy software.
+
+(The same issues apply to the SSH port used by some Jenkins features, notably the CLI.
+In principle the SSH protocol could support L7 proxies, but this is unlikely.)
+
+When agents are to be connected to a master from outside the LAN,
+the Jenkins HTTP(S) URL is already specified;
+it is much less hassle if that is the only connection that needs to be routed.
+
+=== Full-duplex HTTP transport
+
+The Jenkins CLI has long been able to run over the HTTP port.
+(When Remoting was used, this was offered as an alternative to the TCP port;
+after the removal of CLI-over-Remoting, the newer “plain text” protocol runs over HTTP.)
+
+This transport is implemented via the `FullDuplexHttpStream` and `FullDuplexHttpService` APIs in Jenkins,
+which effectively simulate a TCP socket using HTTP connections and “chunked” encoding.
+Unfortunately this trick stretches the boundaries of acceptable HTTP handler behavior,
+and is known to break in certain reverse proxies or otherwise cause complications.
+For example, with nginx ingress for Kubernetes, the CLI will not work unless you set the annotation
+`nginx.ingress.kubernetes.io/proxy-request-buffering: off`.
+
+== Reasoning
+
+Several alternate approaches to the fundamental problems listed above were explored.
+
+=== JSR 356
+
+Ideally the programmer interface to exposing a WebSocket service would follow JSR 356,
+the `javax.websocket` API (particularly `Endpoint`, `Session`, `RemoteEndpoint`, and `MessageHandler`).
+
+After some exploration, however, this appeared difficult to implement in the context of Jenkins.
+While Jetty includes an implementation of the JSR,
+it is not aligned in any obvious way with the `WebSocketServletFactory` interface
+which allows a WebSocket upgrade from an existing servlet HTTP handler,
+as would be present at the terminal stage of Stapler routing.
+
+The Jakarta EE-style annotation-based registration (`@ServerEndpoint`) would be acceptable
+(at the expense of any integration with Stapler routing),
+but merely adding the relevant Jetty modules to the runtime and using such annotations did not work.
+
+Reusing Jetty’s JSR implementation classes (such as `JsrSession`) did not seem feasible,
+due to the number of ``@ManagedObject``s involved which would need to be “wired” into place.
+
+Reimplementing JSR interfaces from scratch looked complicated,
+and there would be many methods which are not needed for basic use cases
+and would have no reasonable implementation based on delegating to what `WebSocketServletFactory` offers.
+
+Project Tyrus offers a “standalone” mode for serving WebSocket connections in an arbitrary Java program.
+This is intended to control the entire HTTP port service, however,
+and would likely clash with Jetty’s socket management if it worked at all.
+Listening on _another_ HTTP port would add too much complexity to the Jenkins installation.
+
+Therefore for now it was decided to keep the implementation simple and use what is known to work:
+Jetty’s `WebSocketServletFactory`.
+Subsequent research may reveal a straightforward way to use the server mode of JSR 356 from Winstone/Stapler/Jenkins,
+in which case the existing Jenkins APIs could be deprecated or amended to link to `javax.websocket`.
+
+=== Exposing Jetty APIs directly
+
+`org.eclipse.jetty.websocket.api` could have been exposed directly to Jenkins code,
+assuming Jetty permits this class loader linkage.
+However this would tie too much code to Jetty specifics,
+and pose problems for users of non-Winstone containers.
+
+=== Extension point for WebSocket services
+
+By analogy with the JSR’s `@ServerEndpoint`,
+a Jenkins `ExtensionPoint` could have been defined for each WebSocket-based service.
+This would however clash with URIs used by the existing `UnprotectedRootAction` interface
+and not allow interoperation with other Stapler features such as hierarchical navigation
+or with the standard Jenkins authentication filters.
+
+=== gRPC
+
+link:https://grpc.io/[gRPC] was also considered as a mechanism for bidirectional streaming.
+It works at a higher layer than WebSocket, however;
+for purposes of a Remoting transport, for example, simple framing suffices,
+and there is no need for additional machinery
+(Remoting is after all _another_ remote procedure call framework).
+
+The use of HTTP/2 could also be problematic.
+It is several years newer than WebSocket,
+and likely has poorer compatibility with reverse proxies.
+
+=== Outbound agents
+
+“Outbound” agents, those using any common launcher other than `JNLPLauncher` (such as SSH),
+do not suffer from the problem of exposing ports on the Jenkins master.
+However, some users have difficulty setting up such agents:
+
+* Installing an SSH server on Windows has traditionally been cumbersome.
+* Many administrators have little familiarity with SSH and run into problems with obscure misconfigurations.
+* The network hosting the agent computer may not allow inbound connections
+  (whereas we presume the network hosting the Jenkins master _does_, since it must serve a web UI).
+
+Note that outbound agents remain a reasonable option for the Jenkinsfile Runner (JFR) scenario,
+where you would prefer for the Jenkins “master” to expose no ports.
+link:https://issues.jenkins-ci.org/browse/JENKINS-53461[JENKINS-53461]
+allows _only_ a TCP port to be exposed (no HTTP), though it would be better to expose neither.
+
+=== Dedicated `ComputerLauncher`
+
+Support for inbound WebSocket connections could be developed as a fresh `ComputerLauncher` implementation.
+However, this would fail to reuse a fair amount of subtle code
+which is already available in `JNLPLauncher` and the matching client code in `agent.jar`,
+such as the `slave-agent.jnlp` endpoint and the secret handling system.
+It seems simpler to behave as a mode of `JNLPLauncher` selecting an alternate transport.
+
+=== Automatic mode switch
+
+Rather than introducing a new agent option `-webSocket`
+and making `slave-agent.jnlp` and other launching code (such as in the Docker image and the `kubernetes` plugin) aware of the choice,
+the agent could try one transport, then fall back to the other.
+This would minimize the number of components that need to be modified.
+
+Besides making behavior more opaque and thus hard to diagnose, this has some problems.
+If WebSocket mode is preferred, agents which were working fine in TCP mode might suddenly switch behavior.
+Since the WebSocket code is new, this could be alarming.
+Also if the agent is inside the same local network as the master and TLS encryption is applied externally,
+this would mean loss of encryption of the Remoting channel.
+
+If TCP mode is preferred, the behavior is more compatible,
+but then when WebSocket connections _are_ wanted,
+there are extra network round trips in the best case
+(to get the `X-Jenkins-JNLP-Port` header from Jenkins over HTTP, then to make a TCP connection);
+and in the worst case the TCP connection might hang rather than failing cleanly.
+
+=== More natural CLI framing
+
+Rather than reusing `PlainCLIProtocol` from the full-duplex HTTP transport,
+the WebSocket-based CLI endpoint could be designed to be friendlier to generic clients such as `websocat`.
+For example, `CLICommand.stdin` could be streamed from incoming frames,
+and `CLICommand.stdout` could be chunked into outgoing frames.
+Some features of the Jenkins CLI fit naturally into this model,
+such as the use of `Accept-Charset` and `Accept-Language` headers.
+
+However, several obstacles seemed to make this approach more trouble than it would be worth:
+
+* Unlike the SSH protocol, there is no simple way to enumerate a command name and arguments in the request:
+  you would need to use query parameters or HTTP headers in an awkward fashion.
+  (And ensuring that arguments containing spaces or other special characters are supported would complicate the scheme.)
+* Again unlike SSH, there is no standard way to differentiate `stdout` from `stderr`;
+  binary vs. text frames (respectively) could be used for this,
+  but generic clients are unlikely to honor the distinction.
+* Again unlike SSH, there is no standard way to represent an exit code:
+  an HTTP header is not an option in interactive mode (the exit code is determined after the upgrade response is sent),
+  so a special frame syntax would be needed.
+
+If and when there is a need for a protocol which can be used easily from a generic client,
+this could be implemented in a plugin.
+In fact the link:https://plugins.jenkins.io/cli-commander[CLI Commander plugin]
+already link:https://github.com/jenkinsci/cli-commander-plugin/blob/4831bf13711f5e382610980eedc815e4dd3f0c0d/src/main/java/org/jenkinsci/plugins/clicommander/Commander.java#L81-L138[does something similar]
+for the case of noninteractive commands
+(though in that case the primary use case is via a browser UI rather than something like `curl`).
+
+=== WebSocket mode by default for the CLI
+
+The new transport for the CLI could be made the default,
+perhaps a fallback to `-http` mode in case the server is too old or does not support WebSocket
+(both of which can be detected via a 404 response code from `/cli/ws`).
+The considerations which led to a conservative choice of transport selection for agents are less relevant in this case:
+
+* The _previous_ (but post-Remoting) transport is based on HTTP(S) and offers no encryption of its own.
+* Performance is typically not a key consideration.
+* The client is often used interactively, so a regression is less likely to mean an urgent outage after upgrade.
+* An explicit gesture must be made to download a new version of the client.
+  (Sometimes also true for agents, depending on the details of the launch mode.)
+
+Nonetheless, for now it is safest to not change the default behavior.
+A change of default can be considered after the new implementation has been field-tested.
+
+=== WebSocket clients
+
+A number of WebSocket clients are available for Java.
+The “standalone” client from Project Tyrus was chosen for both the Remoting and CLI
+since it is the reference implementation of the official Java API.
+
+== Backwards Compatibility
+
+=== TCP vs. WebSocket selection
+
+A single `agent.jar` can make either TCP or WebSocket inbound connections
+via either `hudson.remoting.Main` with `-jnlpUrl` or `hudson.remoting.jnlp.Main`
+(along with “outbound” modes typically selected via `hudson.remoting.Main` without `-jnlpUrl`).
+Therefore it must be able to decide which to use in a given circumstance:
+some servers will support only TCP, some only WebSocket, some both.
+
+Since the WebSocket mode is activated only with a `-webSocket` option to the launcher,
+existing agent installations are unaffected.
+
+=== Full duplex HTTP vs. WebSocket for the CLI
+
+The new `jenkins-cli.jar` continues to run in `-http` mode by default for now.
+`-webSocket` mode can still be selected if desired.
+
+`-ssh` mode is unaffected.
+
+=== Non-Jetty containers
+
+Jenkins is occasionally run in other servlet containers such as Tomcat
+(or even Jetty but not using the built-in Winstone launcher).
+WebSocket support will not be offered in these modes,
+and dependent features such as WebSocket-based agents will not be available.
+There should be no loss of functionality for these users.
+
+(The Jenkins project rarely if ever tests these scenarios and occasionally breaks them inadvertently.
+Users are encouraged to run Winstone.
+A future JEP may explicitly drop support for custom containers.)
+
+== Security
+
+=== Stapler routing and request authorization
+
+The `WebSockets.upgrade` return value is used as the return value (or throwable) of a regular Stapler web method,
+terminating the Stapler handling process.
+Thus service implementors are free to use the usual Stapler/Jenkins URI routing techniques
+such as `TransientActionFactory` or Java getters.
+
+Regular Jenkins servlet filters also handle request authentication,
+and Stapler routing will then follow `AccessControlled` permission checks.
+If Jenkins authentication is unwanted (as it is for handling `JNLPLauncher`),
+the usual `UnprotectedRootAction` API makes it textually clear that the implementation is opting out of access control.
+
+=== Inbound agent authentication
+
+Inbound agents traditionally have authenticated to a particular Jenkins `SlaveComputer`
+by using a secret token (an HMAC of the agent name).
+This is necessary since Jenkins lacks service accounts;
+otherwise a build machine would need to store the personal API token of a Jenkins user,
+which could be abused to perform unrelated actions.
+
+The WebSocket-based agent service retains this system:
+the HTTP connection is made anonymously, and the secret is passed in a header.
+
+=== Channel encryption
+
+Unlike the `JNLP4-connect` protocol, which impls a custom TLS handshake,
+any encryption of traffic between the agent and the master is done either by the servlet container
+or by some reverse proxy in front of Jenkins.
+
+=== CLI
+
+CLI security is as before:
+the endpoint itself is anonymous,
+but all commands other than `help` and `who-am-i` perform an *Overall/Read* check,
+and specific commands typically perform additional checks.
+Authentication is via HTTP headers, typically API token.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+=== WebSocket-based agent connections
+
+`WebSocketAgentsTest` provides a functional test demonstrating that the agent can connect to a WebSocket endpoint on localhost.
+
+(The existing `JNLPLauncherTest` continues to test TCP connections using `JNLP4-connect`.)
+
+=== Interactive tests
+
+Several sanity checks were performed of using the WebSocket protocol to set up a bidirectional connection with Jenkins,
+or run a (Pipeline) build on an inbound agent,
+under complex realistic conditions:
+
+* Against a CloudBees Core installation running on EKS using the nginx ingress controller terminating TLS.
+* Against CloudBees Core running on GKE using Google’s native ingress controller based on an external load balancer.
+* Against CloudBees Core running on OpenShift 4.2 using a `Route` and TLS termination.
+
+Connecting directly to Jenkins also works.
+Other reverse proxies, such as Apache, have not been specifically tested.
+
+Basic connectivity and “keep-alive” behavior can be established using a script such as:
+
+[source,bash]
+----
+(while :; do date; sleep 5m; done) | websocat -vv wss://$jenkins/wsecho
+----
+
+The main finding was that GKE requires minor customization to service definitions to prevent the connection from closing too soon:
+
+[source,yaml]
+----
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins
+  annotations:
+    beta.cloud.google.com/backend-config: '{"ports": {"80":"jenkins"}}'
+type: NodePort
+# …
+---
+apiVersion: cloud.google.com/v1beta1
+kind: BackendConfig
+metadata:
+  name: jenkins
+spec:
+  timeoutSec: 999999
+----
+
+and nginx requires a WebSocket ping/pong at less than 60s intervals.
+
+== Prototype Implementation
+
+* link:https://github.com/jenkinsci/jenkins/pull/4369[jenkins #4369]
+* link:https://github.com/jenkinsci/remoting/pull/357[remoting #357]
+* link:https://github.com/jenkinsci/winstone/pull/79[winstone #79]
+* link:https://github.com/jenkinsci/jenkins-test-harness/pull/183[jenkins-test-harness #183]
+* link:https://github.com/jenkinsci/docker-jnlp-slave/pull/130[docker-jnlp-slave #130]
+* link:https://github.com/jenkinsci/kubernetes-plugin/pull/661[kubernetes-plugin #661]
+
+== References
+
+* link:https://tools.ietf.org/html/rfc6455[RFC 6455: The WebSocket Protocol]
+* link:https://www.eclipse.org/jetty/documentation/current/websocket-intro.html[WebSocket in Jetty]
+* link:https://www.eclipse.org/jetty/javadoc/9.4.22.v20191022/org/eclipse/jetty/websocket/servlet/WebSocketServletFactory.html[Jetty’s `WebSocketServletFactory`]
+* link:https://jakarta.ee/specifications/websocket/1.1/[Jakarta EE WebSocket 1.1]
+* link:https://jcp.org/en/jsr/detail?id=356[JSR 356]
+* link:https://tyrus-project.github.io/[Project Tyrus]
+* link:https://github.com/facundofarias/awesome-websockets#java[List of Java WebSocket implementations]
+* link:https://github.com/vi/websocat[websocat]
+* link:https://nginx.org/en/docs/http/websocket.html[WebSocket in nginx]
+* link:https://cloud.google.com/kubernetes-engine/docs/concepts/ingress#support_for_websocket[WebSocket ingress in GKE]
+* link:https://docs.cloudbees.com/docs/cloudbees-core/latest/eks-install-guide/eks-post-install#eks-jnlp-agent[Adding external inbound agents on CloudBees Core]
+* link:https://issues.jenkins-ci.org/browse/JENKINS-53461[JENKINS-53461: Add support of Remoting connections to masters without Web UI]
