@@ -1,4 +1,4 @@
-= JEP-0000: Sensible Permissions
+= JEP-213: Sensible Permissions
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -16,7 +16,7 @@ endif::[]
 [cols="1h,1"]
 |===
 | JEP
-| 0000
+| 213
 
 | Title
 | Sensible Permissions
