@@ -1,4 +1,4 @@
-= JEP-222: WebSocket Services
+= JEP-222: WebSocket Support for Jenkins Remoting and CLI
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -16,7 +16,7 @@ endif::[]
 | 222
 
 | Title
-| WebSocket Services
+| WebSocket Support for Jenkins Remoting and CLI
 
 | Sponsor
 | link:https://github.com/jglick[Jesse Glick]
