@@ -1,4 +1,4 @@
-= JEP-213: Sensible Permissions
+= JEP-223: Create a new "Limited Administer" permission named "Configure" for managing non-security aspects of a Jenkins instance
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -16,10 +16,10 @@ endif::[]
 [cols="1h,1"]
 |===
 | JEP
-| 213
+| 223
 
 | Title
-| Sensible Permissions
+| Create a new "Limited Administer" permission named "Configure" for managing non-security aspects of a Jenkins instance
 
 | Sponsor
 | link:https://github.com/mikecirioli[Mike Cirioli], link:https://github.com/aHenryJard[Angélique Jard], link:https://github.com/EstherAF[Esther Álvarez Feijoo] 
@@ -72,6 +72,7 @@ link:https://jenkins.io/security/advisory/2017-04-10/#matrix-authorization-strat
 
 A new permission type, `Jenkins.CONFIGURE` (implied by `Jenkins.ADMINISTER`) has been created for actions that allow for the management of Jenkins configuration items that do not require `Jenkins.ADMINISTER`.
 This new permission is used to create a clear separation between settings that impact the entirety of a Jenkins instance (particularly with regards to security) and those that can be used to manage other aspects of an installation. 
+This type of permission is a form of "Limited Administer" capability, a term used to describe permissions that can be used to delegate the ability to manage specifc aspects of an instance without granting an overall administrative capability.
 
 == Specification
 
