@@ -444,5 +444,5 @@ and nginx requires a WebSocket ping/pong at less than 60s intervals.
 * link:https://github.com/vi/websocat[websocat]
 * link:https://nginx.org/en/docs/http/websocket.html[WebSocket in nginx]
 * link:https://cloud.google.com/kubernetes-engine/docs/concepts/ingress#support_for_websocket[WebSocket ingress in GKE]
-* link:https://docs.cloudbees.com/docs/cloudbees-core/latest/eks-install-guide/eks-post-install#eks-jnlp-agent[Adding external inbound agents on CloudBees Core]
+* link:https://docs.cloudbees.com/docs/cloudbees-core/latest/cloud-setup-guide/configure-ports-jnlp-agents[Configuring ports for JNLP agents on CloudBees Core]
 * link:https://issues.jenkins-ci.org/browse/JENKINS-53461[JENKINS-53461: Add support of Remoting connections to masters without Web UI]
