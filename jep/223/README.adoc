@@ -204,7 +204,7 @@ Hence, it will not imply any `Job`, `View` or `Agent` level permission.
 About `Jenkins.READ` (a.k.a `Overall Read`, required to access the web or use the CLI), we have decided to *not* imply it for the following reasons:
 
 * To follow the current standard: Every other permission (except `Jenkins.ADMINISTER`) is not implying it. 
-* Technical limitation: the current implementation of `Permission` makes impossible to make `Jenkins.CONFIGURE` imply `Jenkins.READ`, because a permission can not be implied by more than one, and `Jenkins.READ` is already implied by `Permission.READ`. 
+* Technical limitation: the current implementation of `Permission` makes it impossible for `Jenkins.CONFIGURE` to imply `Jenkins.READ`, because a permission can not be implied by more than one, and `Jenkins.READ` is already implied by `Permission.READ`. 
 
 image::CONFIGURE-and-READ-permissions.svg[]
 
