@@ -1,4 +1,4 @@
-= JEP-223: New "Limited Administer" permission for managing non-security aspects of a Jenkins instance
+= JEP-223: "Limited Administer" permission for managing non-security aspects of a Jenkins instance
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -19,7 +19,7 @@ endif::[]
 | 223
 
 | Title
-| New "Limited Administer" permission for managing non-security aspects of a Jenkins instance
+| "Limited Administer" permission for managing non-security aspects of a Jenkins instance
 
 | Sponsor
 | link:https://github.com/mikecirioli[Mike Cirioli], link:https://github.com/aHenryJard[Angélique Jard], link:https://github.com/EstherAF[Esther Álvarez Feijoo] 
@@ -251,5 +251,4 @@ The prototype code can be found at:
 ** Parallel effort to officially deprecate (in the code) permissions which effectively equate to `Jenkins.ADMINISTER`
 
 * link:https://issues.jenkins-ci.org/browse/JENKINS-12548[Read-only configuration summary page support]
-
 
