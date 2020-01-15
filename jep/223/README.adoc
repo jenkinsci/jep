@@ -245,7 +245,7 @@ The prototype code can be found at:
 * link:https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!msg/jenkinsci-dev/lThSifB8G4k/HqaHxNoNCgAJ[Should Jenkins.CONFIGURE allow installation of plugins available in Update Center]
 
 === Related efforts
-* link:https://jenkins.io/security/advisory/2017-04-10/#matrix-authorization-strategy-plugin-allowed-configuring-dangerous-permissions[SECIRUTY-410 - Matrix Authorization Strategy Plugin allowed configuring dangerous permissions]
+* link:https://jenkins.io/security/advisory/2017-04-10/#matrix-authorization-strategy-plugin-allowed-configuring-dangerous-permissions[SECURITY-410 - Matrix Authorization Strategy Plugin allowed configuring dangerous permissions]
 
 * link:https://issues.jenkins-ci.org/browse/JENKINS-60406[Deprecate Jenkins.RUN_SCRIPTS, PluginManager.UPLOAD_PLUGINS, & PluginManager.CONFIGURE_UPDATECENTER]
 ** Parallel effort to officially deprecate (in the code) permissions which effectively equate to `Jenkins.ADMINISTER`
