@@ -220,10 +220,16 @@ No existing permission types are being removed at this point, which will allow f
 Removing code references to the "dangerous" permissions is outside the scope of this JEP.
 Since the granting of the `Jenkins.CONFIGURE` is optional, administrators who find the new permission does not provide value for them can simply continue to grant `Jenkins.ADMINISTER` to users who need overall administrator access (`Jenkins.CONFIGURE` is implied by `Jenkins.ADMINISTER`).
 While we do not anticipate that this change will introduce any regressions, we do acknowledge that some cases may be found after the initial release that may result in confusing or broken behavior for some plugins (ex. a configure link is shown for some plugin, but clicking it results in a permission failure when actually accessing its management link).  
-Because of this, we are committed to the following support policy:
+Because of this, we (the JEP-223 sponsors) are committed to the following support policy:
+
 * For issues raised against Jenkins Core, we will review and fix (or provide justification for not fixing) problems related to this change
 * For issues raised against plugins that are bundled with Jenkins, we will review and fix (or provide justification for not fixing) problems related to this change
-* For issues raised against plugins that are not bundled with Jenkins, it will be up to the maintainers of those plugins to address any found issues
+* For issues raised against plugins that are not bundled with Jenkins, we will review and determine the level of impact caused by the regression.  If the issued is determined to create a significant regression we will commit to providing a fix or workaround.
+
+[NOTE]
+====
+TBD: The definition of a "serious regression"
+====
 
 == Security
 
