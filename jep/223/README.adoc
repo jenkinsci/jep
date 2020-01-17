@@ -79,6 +79,8 @@ This type of permission is a form of "Limited Administer" capability, a term use
 Any methods that check for `Jenkins.ADMINISTER`, `Jenkins.RUN_SCRIPTS`, `PluginManager.CONFIGURE_UPDATECENTER`, and `PluginManager.UPLOAD_PLUGINS` will be evaluated to determine if the use of the new `Jenkins.CONFIGURE` permission type is appropriate.
 The general rule of thumb is that configuration items which do not let you change the underlying security model (either directly, or through a malicious plugin or groovy script), or change fundamental configurations such as hostnames, proxy configuration, etc. are likely candidates to use the `Jenkins.CONFIGURE`.
 Plugins that using the deprecated `Plugin#configure` mechanism will not be exposed to users with the `Jenkins.CONFIGURE' permission.
+Prior to this change, plugins could assume that, in the abscence of performing an explicit permission check themselves, access would be restricted by default because any top level management links require `Jenkins.ADMINISTER` permission in order to access them.
+To mitigate the risk of a plugin that does not perform an explicit permission check exposing a potentially "dangerous" configuration option, Jenkins will assume by default that the `Jenkins.ADMINISTER` permission is required to render any plugin options exposed via a management page.
 
 The changes to the existing permissions are detailed in the diagram below. 
 
