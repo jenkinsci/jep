@@ -78,6 +78,7 @@ This type of permission is a form of "Limited Administer" capability, a term use
 
 Any methods that check for `Jenkins.ADMINISTER`, `Jenkins.RUN_SCRIPTS`, `PluginManager.CONFIGURE_UPDATECENTER`, and `PluginManager.UPLOAD_PLUGINS` will be evaluated to determine if the use of the new `Jenkins.CONFIGURE` permission type is appropriate.
 The general rule of thumb is that configuration items which do not let you change the underlying security model (either directly, or through a malicious plugin or groovy script), or change fundamental configurations such as hostnames, proxy configuration, etc. are likely candidates to use the `Jenkins.CONFIGURE`.
+Plugins that using the deprecated `Plugin#configure` mechanism will not be exposed to users with the `Jenkins.CONFIGURE' permission.
 
 The changes to the existing permissions are detailed in the diagram below. 
 
