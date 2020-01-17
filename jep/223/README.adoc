@@ -222,9 +222,9 @@ Since the granting of the `Jenkins.CONFIGURE` is optional, administrators who fi
 While we do not anticipate that this change will introduce any regressions, we do acknowledge that some cases may be found after the initial release that may result in confusing or broken behavior for some plugins (ex. a configure link is shown for some plugin, but clicking it results in a permission failure when actually accessing its management link).  
 Because of this, we (the JEP-223 sponsors) are committed to the following support policy:
 
-* For issues raised against Jenkins Core, we will review and fix (or provide justification for not fixing) problems related to this change
-* For issues raised against plugins that are bundled with Jenkins, we will review and fix (or provide justification for not fixing) problems related to this change
-* For issues raised against plugins that are not bundled with Jenkins, we will review and determine the level of impact caused by the regression.  If the issued is determined to create a significant regression we will commit to providing a fix or workaround.
+* For issues raised against Jenkins Core, we will review and fix (or provide justification for not fixing) problems related to this change within 3 months of the LTS release
+* For issues raised against plugins that are installed by default through the setup wizard, we will review and fix (or provide justification for not fixing) problems related to this change within 3 months of the LTS release
+* For issues raised against plugins that are not installed by default through the setup wizard, we will review and determine the level of impact caused by the regression.  If the issued is determined to create a significant regression we will commit to providing a fix or workaround.
 
 [NOTE]
 ====
