@@ -1,0 +1,227 @@
+= JEP-0000: Readonly system configuration
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 0000
+
+| Title
+| Readonly system configuration
+
+| Sponsor
+| link:https://github.com/timja[timja]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2020-01-20
+
+| BDFL-Delegate
+| link:https://github.com/oleg-nenashev[oleg-nenashev]
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+| JIRA
+| https://issues.jenkins-ci.org/browse/JENKINS-12548[JENKINS-12548]
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+This JEP introduces a method to allow system 'configuration' to be viewed but not changed.
+
+== Specification
+
+Any methods that check for `Jenkins.ADMINISTER`, `Jenkins.RUN_SCRIPTS`, `PluginManager.CONFIGURE_UPDATECENTER`, and `PluginManager.UPLOAD_PLUGINS` will be evaluated to determine if the use of the new `Jenkins.SYSTEM_READ` permission type is appropriate. 
+
+The general rule of thumb is that all views should be readable by `Jenkins.SYSTEM_READ`, unless they give no benefit to the user.
+An example of a non beneficial view is the 'Script console' view, this is too dangerous for non administrators,
+and there is no useful information on here so the permissions on this view won't be changed.
+
+By default, all of the configuration sections in the `/manage` page require `Jenkins.ADMINISTER`, this will be changed to `Jenkins.SYSTEM_READ`. This is safe as plugins will have additional permission checks on `Jenkins.ADMINISTER` on form submission, to prevent existing CSRF attacks.
+
+If a plugin doesn't want `Jenkins.SYSTEM_READ` users to show up on /manage configuration section
+they simply need to override `ManagementLink.getRequiredPermission()` to return `Jenkins.ADMINISTER`.
+For example :
+
+```java
+public class CustomLink extends ManagementLink {
+
+    @Override
+    public Permission getRequiredPermission() {
+        return Jenkins.ADMINSTER;
+    }
+}
+```
+
+Most configuration links are fully available for users with `Jenkins.SYSTEM_READ` with the following exceptions:
+
+1. *Script Console* - this allows escalating to full system access and gives no benefit to a read only user.
+
+2. *Reload Configuration from Disk* - this is only useful if you can change the configuration.
+
+Many views have been modified to hide information that is not relevent to read only users.
+
+At a minimum, submit / apply buttons have been hidden on every view that has been found to be now 
+visible to `Jenkins.SYSTEM_READ` users.
+
+Other examples:
+
+1. Allowing users to view `Log Recorders` that have been pre-configured by an Admin or something like 'JCasc' 
+
+2. Removing the 'Downgrade to <version>' plugin button.
+
+3. Removing some 'Validate connection' buttons.
+
+The code required for hiding parts of the UI is:
+```xml
+<j:jelly xmlns:l="/lib/layout">
+    <l:hasPermission permission="${app.ADMINISTER}">
+    ...
+    </l:hasPermission>
+</j:jelly>
+```
+
+```groovy
+def l=namespace(lib.LayoutTagLib)
+
+l.hasPermission(permission: app.ADMINISTER) {
+    
+}
+```
+
+
+== Motivation
+
+Jenkins requires full administrator access to view any of it's configuration, logs and monitoring information.
+
+There is a number of reasons to allow non administrative read access:
+
+1. Given the rise of the link:https://github.com/jenkinsci/configuration-as-code-plugin[configuration-as-code plugin]
+a lot of Jenkins instances are fully managed as code, no changes are allowed through the UI.
+The problem with this is you don't know when new plugin versions are available and
+in order to see what other configuration options are available to a plugin you currently need
+`Jenkins.ADMINISTER`.
+
+2. Allowing non administrator users to debug issues with their builds easier, i.e. given a 'Jenkins' error message in a build
+the user can check, 1. which plugins are installed, 2. the version of the plugin. This can allow the user to solve their issue
+themselves and makes it easier for the user to report an issue with a plugin directly to the maintainers.
+
+
+== Reasoning
+
+=== Using a permission rather than creating a method on Jenkins like `isConfigReadOnly`
+
+This JEP does not propose a feature that puts Jenkins into a 'read only mode'. It would be possible to do this
+by giving out the `Jenkins.SYSTEM_READ` permission, or how it is done today by not giving out `Jenkins.ADMINISTER` at all.
+
+Instead this JEP proposes a permission that could be given to all or a subset of users that gives them near global read of system configuration.
+
+=== Not converting UI controls into read only controls
+
+Converting UI controls based on a permission is not something that can be easily done,
+
+Options considered for implementing this:
+
+1. JavaScript that detects the permission and when enabled will change controls into alternative ones
+
+This is likely to be error prone
+
+2. Modifying the UI to be permission aware.
+
+This has been done on certain views, where it enhances the functionality, but it can be verbose and adds overhead when testing.
+
+3. Enhancing the controls
+
+Hasn't been investigated but the suspicion is there wouldn't be a clean way of doing this.
+
+Taking the above options into account, 2. is being done on a case-by-case basis, but this is expected to be an iterative approach
+and not delivered in a single PR, or Jenkins release.
+
+=== Feature disabled by default
+
+This feature will be disabled by default for a few reasons:
+
+1. there will likely need to be changes across plugins, it will give a better user experience if those plugins are released 
+before this is enabled by default.
+
+2. there is a risk that some plugins don't do the correct permissions checks and modification to data is possible when pages can be viewed,
+if an administrator chooses to enable this feature they can weigh up the risks, and evaluate based on installed plugins.
+
+3. to give more time to enhance the user experience and allow delivering this JEP across multiple pull requests  / Jenkins releases.
+
+The feature will be enabled by either:
+
+1. installing the link:https://github.com/jenkinsci/extended-read-permission-plugin[extended-read-permission plugin].
+
+2. setting a system property.
+
+== Backwards Compatibility
+
+The link:https://github.com/jenkinsci/extended-read-permission-plugin/pull/7[extended-read-permission plugin]
+has been extended to allow plugins to use the new permission without having to bump the core version significantly.
+
+== Security
+
+A conservative approach has been taken when granting access to views.
+
+An example being administrative monitors, lots of them have side affects when loaded, and 
+have added their on views, including some in plugins.
+Currently the check for administrative monitors 'Administer' permission is done centrally in core.
+If this were to be relaxed then all views would also become accessible, this is not a change that can be done easily without co-ordinating changes across plugins.
+
+
+== Infrastructure Requirements
+
+None
+
+== Testing
+
+WebClient tests that check the user can view the page but not submit the page.
+
+== Prototype Implementation
+
+- link:https://github.com/jenkinsci/jenkins/pull/4149[Core PR #4149]
+- link:https://github.com/jenkinsci/extended-read-permission-plugin/pull/7[extended-read-permission-plugin PR #7]
+- link:https://github.com/jenkinsci/configuration-as-code-plugin/pull/987[JCasc sample plugin implementation]
+
+== References
+
+- link:https://github.com/jenkinsci/jenkins/pull/4149[Core PR #4149]
+- link:https://github.com/jenkinsci/configuration-as-code-plugin/issues/9[JCasC read only UI]
