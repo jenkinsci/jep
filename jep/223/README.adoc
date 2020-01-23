@@ -70,9 +70,9 @@ endif::[]
 When using matrix-based access control, the permission types `Jenkins.RUN_SCRIPTS`, `PluginManager.CONFIGURE_UPDATECENTER`, and `PluginManager.UPLOAD_PLUGINS` provide a false sense of security, as a user is able to escalate this limited privilege to `Jenkins.ADMINISTER`.  
 link:https://jenkins.io/security/advisory/2017-04-10/#matrix-authorization-strategy-plugin-allowed-configuring-dangerous-permissions[SECURITY-410] removed the ability to individually grant these permissions, as they are effectively equivalent to `Jenkins.ADMINISTER`.
 
-A new permission type, `Jenkins.MANAGE` (implied by `Jenkins.ADMINISTER`) has been created for actions that allow for the management of Jenkins configuration items that do not require `Jenkins.ADMINISTER`.
+A new permission type, `Jenkins.MANAGE` (implied by `Jenkins.ADMINISTER`, and belonging to the same "Overall" permission group) has been created for actions that allow for the management of Jenkins configuration items that do not require `Jenkins.ADMINISTER`.
 This new permission is used to create a clear separation between settings that impact the entirety of a Jenkins instance (particularly with regards to security) and those that can be used to manage other aspects of an installation. 
-This type of permission is a form of "Limited Administer" capability, a term used to describe permissions that can be used to delegate the ability to manage specific aspects of an instance without granting an overall administrative capability.
+This type of permission is a form of "Management" capability, a term used to describe permissions that can be used to delegate the ability to manage specific aspects of an instance without granting an overall administrative permission.
 
 == Specification
 
@@ -89,9 +89,7 @@ image::Targetted_permission_model.png[Design of the new permission model.]
 === Jenkins UX Changes
 Changing the permission model primarily impacts the Jenkins UX in two ways- the permissions shown when configuring matrix-based authentication and on the `Manage Jenkins` page. 
 
-Using the `Matrix Authorization` plugin, create two users, each with only one permission: `Jenkins.ADMINISTER` or `Jenkins.MANAGE`.
-
-image::UX_matrix_auth.png[Permissions configuration with matrix authorization plugin.]
+image::mange_permission_matrix_auth.png[Permissions configuration with matrix authorization plugin.]
 
 By default, all of the configuration sections in the `/manage` page require `Jenkins.ADMINISTER`.
 Each configuration section that is accessible by a user with `Jenkins.MANAGE` are explicitly allowed by overriding `ManagementLink.getRequiredPermission()` to return `Jenkins.MANAGE`. For example :
