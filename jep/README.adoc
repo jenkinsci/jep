@@ -183,13 +183,18 @@
 | TBD
 
 | Draft{nbsp}:speech_balloon:
-| link:222/README.adoc[JEP-222: WebSocket Services]
+| link:222/README.adoc[JEP-222: WebSocket Support for Jenkins Remoting and CLI]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | TBD
 
 | Draft{nbsp}:speech_balloon:
-| link:223/README.adoc[JEP-213: Sensible Permissions]
+| link:223/README.adoc[JEP-223: "Limited Administer" permission for managing non-security aspects of a Jenkins instance]
 | link:https://github.com/mikecirioli[Mike{nbsp}Cirioli], link:https://github.com/aHenryJard[Angélique{nbsp}Jard], link:https://github.com/EstherAF[Esther{nbsp}Álvarez{nbsp}Feijoo] 
+| TBD
+
+| Not Submitted{nbsp}:information_source:
+| link:224/README.adoc[JEP-224: Readonly system configuration]
+| link:https://github.com/timja[Tim{nbsp}Jacomb]
 | TBD
 
 | Accepted{nbsp}:ok_hand:
