@@ -103,13 +103,13 @@ Specifically, for an installation of Jenkins v2.207 with the default suggested p
 ** `Quiet Period`
 ** `SCM checkout retry count`
 ** `Restrict project naming`
-** `Pipeline Default Speed/Durability Level`
+** `Pipeline Default Speed/Durability Level` (Pipeline: API Plugin)
 ** `Enable Anonymous Usage Statistics`
-** `Enable BuildStep Action`
+** `Enable BuildStep Action` (Build Timeout Plugin)
 ** `Git plugin global config` (Git Plugin)
 ** `Subversion global config` (Subversion Plugin)
 ** `Extended E-mail Notification` (Email Extension Plugin)
-** 'Basic E-mail Notificaiton`
+** `Basic E-mail Notificaiton` (Jenkins Mailer Plugin)
 
 Jenkins configuration settings that will continue to require the "Overall/Administer" permission are:
 Most configuration links are fully available for users with either permission, with the following exceptions:
