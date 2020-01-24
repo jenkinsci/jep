@@ -107,7 +107,7 @@ Specifically, for an installation of Jenkins v2.207 with the default suggested p
 ** `Enable Anonymous Usage Statistics`
 ** `Enable BuildStep Action`
 ** `Git plugin global config` (Git Plugin)
-** `Subversion global config`
+** `Subversion global config` (Subversion Plugin)
 ** `Extended E-mail Notification`
 ** 'Basic E-mail Notificaiton`
 
