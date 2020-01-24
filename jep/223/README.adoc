@@ -89,7 +89,7 @@ image::Targetted_permission_model.png[Design of the new permission model.]
 Specifically, for an installation of Jenkins v2.207 with the default suggested plugins, the following configuration items would be available to a user with the `Overall/Manage` permission:
 
 * `<JENKINS_URL>/manage`
-** `Configure System`
+** `Configure System` (see next item for details)
 ** `Reload Configuration From Disk`
 ** `System Information`
 ** `Load Statistics`
@@ -279,4 +279,3 @@ The prototype code can be found at:
 ** Parallel effort to officially deprecate (in the code) permissions which effectively equate to `Jenkins.ADMINISTER`
 
 * link:https://issues.jenkins-ci.org/browse/JENKINS-12548[Read-only configuration summary page support]
-
