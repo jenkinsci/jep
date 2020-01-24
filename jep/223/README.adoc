@@ -98,7 +98,7 @@ Specifically, for an installation of Jenkins v2.207 with the default suggested p
 ** `Manage Old Data`
 ** `Prepare For Shutdown`
 * `<JENKINS_URL>/configure`
-** 'Home Directory' (_read only_)`
+** `Home Directory` (_read only_)
 ** `System Message`
 ** `Quiet Period`
 ** `SCM checkout retry count`
