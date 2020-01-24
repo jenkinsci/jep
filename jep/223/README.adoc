@@ -122,6 +122,7 @@ Most configuration links are fully available for users with either permission, w
 
 * *Manage Users* - Managing users includes the ability to delete any user, so this link will only be shown to users with the `Jenkins.ADMINISTER` permission.
 
+This is list not exhaustive, other items might be limited to users with `Jenkins.ADMINISTER` permission for similar reasons.
 === Jenkins UX Changes
 Changing the permission model primarily impacts the Jenkins UX in two ways- the permissions shown when configuring matrix-based authentication and what a user who has the "Overall/Manage" permssion can access via the `Manage Jenkins` page. 
 
