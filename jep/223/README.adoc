@@ -111,8 +111,19 @@ Specifically, for an installation of Jenkins v2.207 with the default suggested p
 ** `Extended E-mail Notification`
 ** 'Basic E-mail Notificaiton`
 
+Jenkins configuration settings that will continue to require the "Overall/Administer" permission are:
+Most configuration links are fully available for users with either permission, with the following exceptions:
+
+* *Administrative Monitors* - Administrative Monitor messages will only be shown if the user has the permission `Jenkins.ADMINISTER` because they may contain an action button that can lead to security modifications. 
+
+* *Configure Global Security* - A user who can make changes here is able to configure Jenkins to use a less secure realm, or grant themselves additional permissions; thus, this configuration link will only be shown to users with the `Jenkins.ADMINISTER` permission.
+
+* *Manage Plugins* - A user with the ability to manage plugins is able to remove or replace security related plugins, or even upload a malicious plugin; thus, this configuration link will only be shown to users with the `Jenkins.ADMINISTER` permission.
+
+* *Manage Users* - Managing users includes the ability to delete any user, so this link will only be shown to users with the `Jenkins.ADMINISTER` permission.
+
 === Jenkins UX Changes
-Changing the permission model primarily impacts the Jenkins UX in two ways- the permissions shown when configuring matrix-based authentication and on the `Manage Jenkins` page. 
+Changing the permission model primarily impacts the Jenkins UX in two ways- the permissions shown when configuring matrix-based authentication and what a user who has the "Overall/Manage" permssion can access via the `Manage Jenkins` page. 
 
 image::mange_permission_matrix_auth.png[Permissions configuration with matrix authorization plugin.]
 
@@ -131,35 +142,14 @@ public class CustomLink extends ManagementLink {
 
 Plugins may also need to change permissions on jelly files to allow `Jenkins.MANAGE` on management links.
 
+[NOTE]
+====
+provide an example of how to modify jelly
+====
+
 image::UX_manage_page.png[User interface for the new permission.]
-
-
-Most configuration links are fully available for users with either permission, with the following exceptions:
-
-
-1. *Administrative Monitors* - Administrative Monitor messages will only be shown if the user has the permission `Jenkins.ADMINISTER` because they may contain an action button that can lead to security modifications. 
-
-2. *Configure Global Security* - A user who can make changes here is able to configure Jenkins to use a less secure realm, or grant themselves additional permissions; thus, this configuration link will only be shown to users with the `Jenkins.ADMINISTER` permission.
-
-3. *Manage Plugins* - A user with the ability to manage plugins is able to remove or replace security related plugins, or even upload a malicious plugin; thus, this configuration link will only be shown to users with the `Jenkins.ADMINISTER` permission.
-
-4. *Manage Users* - Managing users includes the ability to delete any user, so this link will only be shown to users with the `Jenkins.ADMINISTER` permission.
-
-5. *Configure System* - As it is currently implemented, the Jenkins _Configure System_ page contains a mix of items, some of which should require `Jenkins.ADMINISTER` and some which are safe to delegate to a user with the `Jenkins.MANAGE` permission.  
-Splitting these into separate pages is outside the scope of this JEP, so the _Configure System_ link will be visible to users with either `Jenkins.ADMINISTER` or `Jenkins.MANAGE`.
-A detailed description of the permission changes for this page can be found below.
  
 image::UX_config_tools.png[Configure System details.]
-The following configuration settings found under `/configure` will only be shown to and allowed to be modified by users with `Jenkins.ADMINISTER` permission, because they can lead to permissions escalation:
-
-* `# of executors`: to avoid users to setting a non-zero value 
-* `Jenkins URL`: can be used to redirect users to another Jenkins instance, leading to a phishing attack
-* `Resource root`: can be used to point to a host with malicious code and cause a XSS attack on Jenkins users
-* `Global properties`: can be used to misconfigure the existent tools and execute malicius code in its place
-    * `Environment variables`
-    * `Tool Locations`
-* `Administrative monitors configuration`: this doesn't allow permissions escalation by itself, but a user can change monitors' settings to hide security warnings from an Administer.
-* `Shell executable path`: can be used to point to an executable with malicious code and escalate permissions
 
 [NOTE]
 ====
