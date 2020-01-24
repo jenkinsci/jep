@@ -106,7 +106,7 @@ Specifically, for an installation of Jenkins v2.207 with the default suggested p
 ** `Pipeline Default Speed/Durability Level`
 ** `Enable Anonymous Usage Statistics`
 ** `Enable BuildStep Action`
-** `Git plugin global config`
+** `Git plugin global config` (Git Plugin)
 ** `Subversion global config`
 ** `Extended E-mail Notification`
 ** 'Basic E-mail Notificaiton`
