@@ -112,7 +112,6 @@ Specifically, for an installation of Jenkins v2.207 with the default suggested p
 ** `Basic E-mail Notificaiton` (Jenkins Mailer Plugin)
 
 Jenkins configuration settings that will continue to require the "Overall/Administer" permission are:
-Most configuration links are fully available for users with either permission, with the following exceptions:
 
 * *Administrative Monitors* - Administrative Monitor messages will only be shown if the user has the permission `Jenkins.ADMINISTER` because they may contain an action button that can lead to security modifications. 
 
