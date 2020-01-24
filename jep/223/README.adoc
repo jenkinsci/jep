@@ -108,7 +108,7 @@ Specifically, for an installation of Jenkins v2.207 with the default suggested p
 ** `Enable BuildStep Action`
 ** `Git plugin global config` (Git Plugin)
 ** `Subversion global config` (Subversion Plugin)
-** `Extended E-mail Notification`
+** `Extended E-mail Notification` (Email Extension Plugin)
 ** 'Basic E-mail Notificaiton`
 
 Jenkins configuration settings that will continue to require the "Overall/Administer" permission are:
