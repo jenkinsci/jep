@@ -140,9 +140,9 @@ This list includes a link for each plugin that takes the user to the plugin mana
 This is list not exhaustive, other items might be limited to users with `Jenkins.ADMINISTER` permission for similar reasons.
 
 === Jenkins UX Changes
-Changing the permission model primarily impacts the Jenkins UX in two ways- the permissions shown when configuring matrix-based authentication and what a user who has the "Overall/Manage" permssion can access via the `Manage Jenkins` page. 
+Changing the permission model primarily impacts the Jenkins UX in two ways- the permissions shown when configuring matrix-based authentication and what a user with "Overall/Manage" permission can access via the `Manage Jenkins` page. 
 
-image::mange_permission_matrix_auth.png[Permissions configuration with matrix authorization plugin.]
+image::manage_permission_matrix_auth.png[Permissions configuration with matrix authorization plugin.]
 
 By default, all of the configuration sections in the `/manage` page require `Jenkins.ADMINISTER`.
 Each configuration section that is accessible by a user with `Jenkins.MANAGE` are explicitly allowed by overriding `ManagementLink.getRequiredPermission()` to return `Jenkins.MANAGE`. For example :
