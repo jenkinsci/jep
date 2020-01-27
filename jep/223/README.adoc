@@ -159,11 +159,13 @@ public class CustomLink extends ManagementLink {
 
 Plugins may also need to change permissions on jelly files to allow `Jenkins.MANAGE` on management links.
 
-[NOTE]
-====
-provide an example of how to modify jelly
-====
-
+```java
+<j:if test="${h.hasPermission(app.ADMINISTER)}">
+    //jelly code that should only be shown to a user with Jenkins.ADMINISTER permission
+    ....
+    ....
+</j:if>
+```
 image::UX_manage_page.png[User interface for the new permission.]
  
 image::UX_config_tools.png[Configure System details.]
