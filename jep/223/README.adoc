@@ -263,7 +263,8 @@ Because of this, we (the JEP-223 sponsors) are committed to the following suppor
 
 [NOTE]
 ====
-TBD: The definition of a "serious regression"
+link:https://github.com/jenkinsci/jep/tree/master/jep/224[JEP-224] proposes adding a new permission `Jenkins.SYSTEM_READ` which could cause a confusing user experience when combined with the `Jenkins.MANAGE` permission unless care is taken to implement things in a sensible way.
+If JEP-223 is accepted first, we intend to work with the authors of JEP-224 to ensure that administrators will leverage both proposed features in a way that creates a positive experience for users.
 ====
 
 == Security
@@ -298,3 +299,4 @@ The prototype code can be found at:
 ** Parallel effort to officially deprecate (in the code) permissions which effectively equate to `Jenkins.ADMINISTER`
 
 * link:https://issues.jenkins-ci.org/browse/JENKINS-12548[Read-only configuration summary page support]
+* link:https://github.com/jenkinsci/jep/tree/master/jep/224[JEP-224 - Jenkins.SYSTEM_READ proposal] 
