@@ -95,7 +95,6 @@ Specifically, for an installation of Jenkins v2.207 with the default suggested p
 ** `Load Statistics`
 ** `Jenkins CLI`
 ** `About Jenkins`
-** `Manage Old Data`
 ** `Prepare For Shutdown`
 * `<JENKINS_URL>/configure`
 ** `Home Directory` (_read only_)
@@ -116,6 +115,8 @@ Jenkins configuration settings that will continue to require the "Overall/Admini
 * *Administrative Monitors* - Administrative Monitor messages will only be shown if the user has the permission `Jenkins.ADMINISTER` because they may contain an action button that can lead to security modifications. 
 
 * *Configure Global Security* - A user who can make changes here is able to configure Jenkins to use a less secure realm, or grant themselves additional permissions; thus, this configuration link will only be shown to users with the `Jenkins.ADMINISTER` permission.
+
+* *`Manage Old Data`* - Because `Jenkins.MANAGE` does not imply overall `Job/Read`, allowing a user without `Jenkins.ADMINISTER` to access this link could expose details about job/builds as well as parts of their configuration.
 
 * *Manage Plugins* - A user with the ability to manage plugins is able to remove or replace security related plugins, or even upload a malicious plugin; thus, this configuration link will only be shown to users with the `Jenkins.ADMINISTER` permission.
 
