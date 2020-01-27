@@ -221,8 +221,7 @@ However, it is highly likely that some plugins are logging sensitive values in l
 
 Because of this, `Jenkins.MANAGE` will not be allowed to access to the System Log or managing Log Recorders.
 
-As part of a future enhancement, a more sophisticated solution might be considered, so someone with `Jenkins.MANAGE` can see the log levels considered safe.
-
+As part of a future enhancement, a more sophisticated solution might be considered, so someone with `Jenkins.MANAGE` can see log levels which are considered safe (`Log.INFO`, `Log.DEBUG`, etc).
 
 === `Jenkins.MANAGE` does not allow installation of plugins available in Update Center
 There has been some discussion on the jenkinsci-dev mailing list about whether `Jenkins.MANAGE` should allow the installation of plugins available in Update Center (see <<References>>).  
