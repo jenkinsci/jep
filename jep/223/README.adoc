@@ -121,7 +121,11 @@ Jenkins configuration settings that will continue to require the "Overall/Admini
 
 * *Manage Users* - Managing users includes the ability to delete any user, so this link will only be shown to users with the `Jenkins.ADMINISTER` permission.
 
+* *About Jenkins - Installed Plugin Depenencies* - Although the `About Jenkins` link is accessible to users with the `Jenkins.MANAGE` permission, we have made the decision to not display the list of installed plugins and their dependencies if the user lacks `Jenkins.ADMINISTER` permissions.  
+This list includes a link for each plugin that takes the user to the plugin management url, and there is no simple way to ensure that all plugins can expose links such as `http://<jenkins_url>/pluginManager/plugin/<plugin>>/thirdPartyLicenses` to a user with only `Jenkins.MANAGE`.
+
 This is list not exhaustive, other items might be limited to users with `Jenkins.ADMINISTER` permission for similar reasons.
+
 === Jenkins UX Changes
 Changing the permission model primarily impacts the Jenkins UX in two ways- the permissions shown when configuring matrix-based authentication and what a user who has the "Overall/Manage" permssion can access via the `Manage Jenkins` page. 
 
