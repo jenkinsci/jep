@@ -111,7 +111,16 @@ Specifically, for an installation of Jenkins v2.207 with the default suggested p
 ** `Basic E-mail Notificaiton` (Jenkins Mailer Plugin)
 
 Plugins and configuration settings not listed above are considered to be out of scope for this JEP.
-Once the new permission is avaible in a core Jenkins release, we plan to review additional plugins and work with their maintainers to introduce the new permission when possible.
+Once the new permission is avaible in a core Jenkins release, we plan to review additional plugins and work with their maintainers to introduce the new permission when possible, for example (but not limited to):
+
+* Default locaiton of local maven repoisory and configuration
+* Many (not all) plugins global configuration
+** Global compiler warnings (Warnings NG Plugin)  
+** Bitbucket endpoints (Bitbucket Branch Source Plugin)
+** Trigger restrictions (Job Restrictions Plugin)
+** Timestamp format (Timestamper Plugin)
+** Slack (Global Slack Notifier Plugin)
+* Jira integration (JIRA Plugin)
 
 Jenkins configuration settings that will continue to require the "Overall/Administer" permission are:
 
