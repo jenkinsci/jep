@@ -1,0 +1,200 @@
+= JEP-401: Folder-based access control for any credentials provider
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.**JEP Template**
+
+[TIP]
+====
+*BDFL-Delegate* is uncommented by default.
+As part of the in initial conversation or the JEP submission the sponsor should
+look for a BDFL Delegate.
+While not required, it is better for the community if Delegates perform most reviews.
+If no suitable BDFL-Delegate can be found, that row may be commented out.
+====
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 401
+
+| Title
+| Folder-based access control for any credentials provider
+
+| Sponsor
+| link:https://github.com/chriskilding[chriskilding]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| :bulb: Standards, Informational, or Process :bulb:
+
+| Created
+| 2020-01-30
+
+| BDFL-Delegate
+| TBD
+
+
+
+| JIRA
+| https://issues.jenkins-ci.org/browse/JENKINS-60897[JENKINS-60897]
+
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+This proposal extends the link:https://github.com/jenkinsci/cloudbees-folder-plugin[folders plugin] to provide its folder-based access control layer (ACL) over *any* credentials provider - not just its own.
+
+== Specification
+
+[TIP]
+====
+Provide a detailed specification of what is being proposed.
+Be as technical and detailed as needed to allow new or existing Jenkins developers
+to reasonably understand the scope/impact of an implementation.
+
+* Use present tense - describe what the proposal "does" (as if it were already done), not what it will do.
+* Do not discuss alternative designs that were rejected - those belong in the Reasoning section.
+* Avoid in-depth discussion or justification of design choices - that belongs in the Reasoning section.
+====
+
+== Motivation
+
+In the past the folders plugin provided an access control layer over its own local credentials provider. This worked, but it meant that if a user wanted to restrict access to a particular credential by folder, they could not store it in their preferred provider: instead they had to copy it into the FolderCredentialsProvider, which largely reimplemented the default local disk credentials provider.
+
+This was a reasonable solution in the days of single-server or on-premise Jenkins installations. But it did not hold up once Jenkins installations moved to cloud platforms with remote secrets management services. Today, Jenkins users need the ability to use the folder-based ACL over any credential, from any provider. This JEP does exactly that.
+
+Benefits of the change:
+
+- *Only write the access control logic once.* Before this change, authors of other providers would have to copy-paste the intricate ACL logic from the folders plugin, and then keep that up to date with any changes. Provider authors either omitted this feature entirely, or ran a high risk of mistakes in trying to do it.
+- *ACL works the same way everywhere.* Folders-based ACL does not have provider-specific behaviour, or a provider-specific storage schema.
+- *ACL can be supplied declaratively in JCasC.* Each folder entry just needs to have a list of allowed credential IDs.
+- *Observes the Single Responsibility Principle.* Providers do one thing: store and retrieve credentials. Folders plugin does one thing (for credentials): run the ACL over the providers.
+
+== Reasoning
+
+[TIP]
+====
+Explain why particular design decisions were made.
+Describe alternate designs that were considered and related work. For example, how the feature is supported in other systems.
+Provide evidence of consensus within the community and discuss important objections or concerns raised during discussion.
+
+* Use sub-headings to organize this section for ease of readability.
+* Do not talk about history or why this needs to be done - that is part of Motivation section.
+====
+
+== Backwards Compatibility
+
+[TIP]
+====
+Describe any incompatibilities and their severity.
+Describe how the JEP proposes to deal with these incompatibilities.
+
+If there are no backwards compatibility concerns, this section may simply say:
+There are no backwards compatibility concerns related to this proposal.
+====
+
+== Security
+
+[TIP]
+====
+Describe the security impact of this proposal.
+Outline what was done to identify and evaluate security issues,
+discuss potential security issues and how they are mitigated or prevented,
+and detail how the JEP interacts with existing elements in Jenkins, such as permissions, authentication, authorization, etc.
+
+If this proposal will have no impact on security, this section may simply say:
+There are no security risks related to this proposal.
+====
+
+== Infrastructure Requirements
+
+[TIP]
+====
+Describe any impact on the Jenkins project infrastructure.
+
+Include any additions or changes, interactions with existing components,
+potential instabilities, service-level agreements,
+and responsibilities for continuing maintenance.
+Explain the scope of infrastructure changes with sufficient detail
+to allow initial and on-going cost (in both time and money) to be estimated.
+
+If this proposal will have no impact on infrastructure, this section may simply say:
+There are no new infrastructure requirements related to this proposal.
+====
+
+== Testing
+
+[TIP]
+====
+If the JEP involves any kind of behavioral change to code
+(whether in a Jenkins product or backend infrastructure),
+give a summary of how its correctness (and, if applicable, compatibility, security, etc.) can be tested.
+
+In the preferred case that automated tests can be developed to cover all significant changes, simply give a short summary of the nature of these tests.
+
+If some or all of the changes will require human interaction to verify them, explain why automated tests are considered impractical.
+Then, summarize what kinds of test cases might be required: user scenarios with action steps and expected outcomes.
+Detail whether behavior might be different based on the platform (operating system, servlet container, web browser, etc.)?
+Are there foreseeable interactions between different permissible versions of components (Jenkins core, plugins, etc.)?
+Does this change require that any special tools, proprietary software, or online service accounts to exercise a related code path (e.g., Active Directory server, GitHub login, etc.)?
+When will you complete testing relative to merging code changes, and might retesting be required if other changes are made to this area in the future?
+
+If this proposal requires no testing, this section may simply say:
+There are no testing issues related to this proposal.
+====
+
+== Prototype Implementation
+
+[TIP]
+====
+Link to any open source reference implementation of code changes for this proposal.
+The implementation need not be completed before the JEP is
+link:https://github.com/jenkinsci/jep/tree/master/jep/1#accepted[accepted],
+but must be completed before any JEP is given
+"link:https://github.com/jenkinsci/jep/tree/master/jep/1#final[Final]" status.
+
+JEPs which will not include code changes may omit this section.
+====
+
+== References
+
+[TIP]
+====
+Provide links to any related documents.
+This will include links to discussions on the mailing list, pull requests, and meeting notes.
+====
+
+
+
