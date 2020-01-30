@@ -78,28 +78,33 @@ This proposal extends the link:https://github.com/jenkinsci/cloudbees-folder-plu
 
 == Specification
 
-[TIP]
-====
-Provide a detailed specification of what is being proposed.
-Be as technical and detailed as needed to allow new or existing Jenkins developers
-to reasonably understand the scope/impact of an implementation.
+* Support standard folders in ACL rules.
+* Support folder-like constructs in ACL rules (e.g. GitHub Organization Folders).
+* Allow ACL to be specified in Configuration As Code.
+* Provide a Web UI for editing the ACL.
+* Refactor CredentialsProvider API to remove function arguments that are only used for access control purposes.
 
-* Use present tense - describe what the proposal "does" (as if it were already done), not what it will do.
-* Do not discuss alternative designs that were rejected - those belong in the Reasoning section.
-* Avoid in-depth discussion or justification of design choices - that belongs in the Reasoning section.
-====
+TBC:
+
+* Remove FolderCredentialsProvider, or remove its storage mechanism to make it a single-purpose proxy for other providers.
+* Provide migration path to move credentials stored in FolderCredentialsProvider to the standard on-disk credentials provider.
 
 == Motivation
 
-In the past the folders plugin provided an access control layer over its own local credentials provider. This worked, but it meant that if a user wanted to restrict access to a particular credential by folder, they could not store it in their preferred provider: instead they had to copy it into the FolderCredentialsProvider, which largely reimplemented the default local disk credentials provider.
+In the past the folders plugin reimplemented the local disk credentials provider, and put an access control layer over it. This worked, but it meant that if a user wanted to restrict access to a particular credential by folder, they had to store it in the FolderCredentialsProvider.
 
-This was a reasonable solution in the days of single-server or on-premise Jenkins installations. But it did not hold up once Jenkins installations moved to cloud platforms with remote secrets management services. Today, Jenkins users need the ability to use the folder-based ACL over any credential, from any provider. This JEP does exactly that.
+This was a reasonable solution in the days of single-server or on-premise Jenkins installations. But it did not hold up once Jenkins installations moved to cloud platforms with remote secrets management services. Today, Jenkins users need the ability to use the folder-based ACL over any credential, from any provider.
+
+Use cases:
+
+* *Dev/Production environment isolation.* Users want to isolate environment-specific credentials, so that only dev jobs can access dev credentials, and only production jobs can access production credentials.
+* *Multi-tenant Jenkins.* Users want multiple teams in their organization to share a central Jenkins. They use folders (or folder-like constructs) to separate the teams' jobs. They want to isolate team-specific credentials, so only a given team's jobs can access those credentials.
 
 Benefits of the change:
 
 - *Only write the access control logic once.* Before this change, authors of other providers would have to copy-paste the intricate ACL logic from the folders plugin, and then keep that up to date with any changes. Provider authors either omitted this feature entirely, or ran a high risk of mistakes in trying to do it.
 - *ACL works the same way everywhere.* Folders-based ACL does not have provider-specific behaviour, or a provider-specific storage schema.
-- *ACL can be supplied declaratively in JCasC.* Each folder entry just needs to have a list of allowed credential IDs.
+- *ACL can be written declaratively in JCasC.* Each folder entry has a list of allowed credential IDs.
 - *Observes the Single Responsibility Principle.* Providers do one thing: store and retrieve credentials. Folders plugin does one thing (for credentials): run the ACL over the providers.
 
 == Reasoning
@@ -116,14 +121,13 @@ Provide evidence of consensus within the community and discuss important objecti
 
 == Backwards Compatibility
 
-[TIP]
-====
-Describe any incompatibilities and their severity.
-Describe how the JEP proposes to deal with these incompatibilities.
+The general pattern is "going from 'anybody can do anything' to 'somebody can only do something if the ACL allows it'". (Another example of this pattern was the introduction of the app sandbox system in macOS.) There is no totally backwards-compatible way of doing it.
 
-If there are no backwards compatibility concerns, this section may simply say:
-There are no backwards compatibility concerns related to this proposal.
-====
+* The FolderCredentialProvider will have breaking changes.
+* The CredentialsProvider API will have breaking changes (to remove access control concerns).
+* Any credentials providers that had their own access control features in the past may consider removing them.
+* The presence of folders plugin in a Jenkins installation may affect whether existing credentials are still available to existing jobs. Users must check this.
+
 
 == Security
 
