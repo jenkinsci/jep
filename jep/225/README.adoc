@@ -1,4 +1,4 @@
-= JEP-401: Folder-based access control for any credentials provider
+= JEP-225: Folder-based access control for any credentials provider
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -24,7 +24,7 @@ If no suitable BDFL-Delegate can be found, that row may be commented out.
 [cols="1h,1"]
 |===
 | JEP
-| 401
+| 225
 
 | Title
 | Folder-based access control for any credentials provider
