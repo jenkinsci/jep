@@ -161,7 +161,7 @@ Plugins may also need to change permissions on jelly files to allow `Jenkins.MAN
     //jelly code that should only be shown to a user with Jenkins.ADMINISTER permission
     ....
     ....
-</j:if>
+</l:hasPermission>
 ```
 image::UX_manage_page.png[User interface for the new permission.]
  
