@@ -83,6 +83,7 @@ This proposal extends the link:https://github.com/jenkinsci/cloudbees-folder-plu
 
 TBC:
 
+* Integrate with link:https://docs.cloudbees.com/docs/admin-resources/latest/plugins/rbac[Cloudbees Role-Based Access Control plugin]
 * Remove FolderCredentialsProvider, or remove its storage mechanism to make it a single-purpose proxy for other providers.
 * Provide migration path to move credentials stored in FolderCredentialsProvider to the standard on-disk credentials provider.
 
@@ -132,9 +133,7 @@ jenkins:
   TBC: ???
 ----
 
-Alternative Designs...
-
-TBC
+NOTE We may be blocked by link:https://issues.jenkins-ci.org/browse/JENKINS-58951[JENKINS-58951] which adds a YAML configurator to the folders plugin.
 
 === Default access policy
 
@@ -155,10 +154,23 @@ The general pattern is "going from 'anybody can do anything' to 'somebody can on
 
 == Security
 
-* ACL misconfiguration:
-  * Users might expose credentials to jobs they did not want to access them. (But this is no worse than the status quo, where any job can use any credential.)
-  * Users might forget to give a job access to a credential that it should have. The job would fail when it tries to use that credential.
-* TBC How does the credentials ACL relate to the existing Jenkins permissions layer?
+=== ACL misconfiguration
+
+The JEP introduces an ACL. A user could misconfigure it.
+
+* Users might expose credentials to jobs they did not want to access them. (But this is no worse than the status quo, where any job can use any credential.)
+* Users might forget to give a job access to a credential that it should have. The job would fail when it tries to use that credential.
+
+=== Interaction with other components
+
+* TBC Interaction with Jenkins permissions layer?
+* TBC Interaction with credentials providers?
+* TBC Interaction with credentials consumers?
+* TBC Interaction with Cloudbees RBAC plugin?
+* TBC Interaction with JEP-224 (read-only controls)?
+
+=== Default access policy
+
 * TBC If we make the policy for unnamed credentials configurable (i.e. let the user select "Default Allow" vs "Default Deny") then they might choose the wrong one. There would be no obvious indication that the wrong choice was made, until a job accessed a credential that it should not be able to see. Jenkins admins who look after multiple installations could easily get confused about which policy should be in play.
 
 [TIP]
