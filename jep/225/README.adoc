@@ -106,7 +106,9 @@ Role Strategy plugin: This plugin adds a new role-based mechanism to manage user
 
 Folder Auth plugin: This is a niche version of the Role Strategy Plugin, for installations where the performance overhead of regexes is unacceptable.
 
+==== link:https://plugins.jenkins.io/matrix-auth[Matrix Authorization Strategy plugin]
 
+Summary: This authorization scheme allows for granular control over which users and groups are able to perform which actions in the Jenkins environment
 
 == Motivation
 
