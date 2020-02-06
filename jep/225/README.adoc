@@ -70,11 +70,19 @@ If no suitable BDFL-Delegate can be found, that row may be commented out.
 
 == Abstract
 
-This proposal extends the link:https://github.com/jenkinsci/cloudbees-folder-plugin[folders plugin] to provide its folder-based access control layer (ACL) over *any* credentials provider.
+This proposal describes an Access Control Layer (ACL) which is aware of credentials and folders. This allows us to formulate access control rules for any credential, from **any** provider.
+
+Examples:
+
+- "Only jobs in folders 'foo' and 'bar' can access credential 'baz'".
+- "All jobs can access [global] credential 'qux'".
+
+This proposal genericises and supersedes the folder-based credentials ACL in the link:https://plugins.jenkins.io/cloudbees-folder[Cloudbees Folders plugin].
 
 == Specification
 
 * Provide a transparent ACL proxy layer over (or in) the standard CredentialsProvider API.
+* Support credentials in ACL rules.
 * Support standard folders in ACL rules.
 * Support folder-like constructs in ACL rules (e.g. GitHub Organization Folders).
 * Allow ACL to be specified in Configuration As Code.
@@ -83,9 +91,22 @@ This proposal extends the link:https://github.com/jenkinsci/cloudbees-folder-plu
 
 TBC:
 
-* Integrate with link:https://docs.cloudbees.com/docs/admin-resources/latest/plugins/rbac[Cloudbees Role-Based Access Control plugin]
 * Remove FolderCredentialsProvider, or remove its storage mechanism to make it a single-purpose proxy for other providers.
 * Provide migration path to move credentials stored in FolderCredentialsProvider to the standard on-disk credentials provider.
+
+=== Related Components
+
+==== link:https://docs.cloudbees.com/docs/admin-resources/latest/plugins/rbac[Cloudbees RBAC plugin]
+
+Summary: This plugin lets us define various roles. The Jenkins administrator can assign those roles to groups of users. The assignment of roles can take place either at the global level, or limited to specific objects within the system. This plugin combines with the Folders plugin to let us manage a multi-tenant Jenkins. The Jenkins admin can create folders for each of the teams and then create groups in those folders for each of the roles that team members can have.
+
+==== link:https://github.com/jenkinsci/role-strategy-plugin[Role Strategy plugin] and link:https://github.com/jenkinsci/folder-auth-plugin[Folder Auth plugin]
+
+Role Strategy plugin: This plugin adds a new role-based mechanism to manage users' permissions. Supported features: 'Global Roles', 'Project Roles', 'Agent Roles'. These are assigned to users and groups.
+
+Folder Auth plugin: This is a niche version of the Role Strategy Plugin, for installations where the performance overhead of regexes is unacceptable.
+
+
 
 == Motivation
 
@@ -132,7 +153,7 @@ jenkins:
   TBC: ???
 ----
 
-NOTE We may be blocked by link:https://issues.jenkins-ci.org/browse/JENKINS-58951[JENKINS-58951] which adds a YAML configurator to the folders plugin.
+NOTE: This may depend on link:https://issues.jenkins-ci.org/browse/JENKINS-58951[JENKINS-58951] (add YAML configurator to the folders plugin) being implemented first.
 
 === Default access policy
 
@@ -164,7 +185,7 @@ The JEP introduces an ACL. A user could misconfigure it.
 * TBC Interaction with Jenkins permissions layer?
 * TBC Interaction with credentials providers?
 * TBC Interaction with credentials consumers?
-* TBC Interaction with Cloudbees RBAC plugin?
+* TBC Interaction with RBAC plugins?
 
 === Default access policy
 
@@ -185,7 +206,7 @@ There are no new infrastructure requirements related to this proposal.
 
 === Automated Tests
 
-* Add unit and integration tests for this feature to the folders plugin.
+* Add unit and integration tests for this feature to the relevant plugins.
 * If a plugin gets credentials from the folder plugin in its scenario tests, it should account for the ACL feature in its tests (and add any necessary ACL rules to its Jenkins config).
 
 === Manual Tests
@@ -197,7 +218,7 @@ There are no new infrastructure requirements related to this proposal.
 [TIP]
 ====
 
-Then, summarize what kinds of test cases might be required: user scenarios with action steps and expected outcomes.
+Summarize what kinds of test cases might be required: user scenarios with action steps and expected outcomes.
 When will you complete testing relative to merging code changes, and might retesting be required if other changes are made to this area in the future?
 ====
 
