@@ -251,7 +251,7 @@ Additional tests will be written that validate the new permission type cannot be
 [NOTE]
 The prototype code can be found at:
 
-* link:https://github.com/jenkinsci/jenkins/pull/4374[PR with proposed changes and tests]
+* link:https://github.com/jenkinsci/jenkins/pull/4483[PR with proposed changes and tests]
 
 == References
 === Mailing List Discussions
