@@ -98,6 +98,37 @@ Most configuration links are fully available for users with `Jenkins.SYSTEM_READ
 
 Many views have been modified to hide information that is not relevent to read only users.
 
+Jelly tags in the Jenkins core have been modified to display a read only state, i.e. text instead of inputs,
+icons for checkboxes. Any plain html tags need to be updated separately and each page that wants to use
+`Jenkins.SYSTEM_READ` needs to add a little bit of code to activate it:
+
+.Jelly
+[%collapsible]
+====
+[source,xml]
+----
+<j:choose>
+    <j:when test="${app.hasPermission(app.ADMINISTER)}">
+        <j:set var="displayOnlyMode" value="false" />
+    </j:when>
+    <j:otherwise>
+        <j:set var="displayOnlyMode" value="true" />
+    </j:otherwise>
+</j:choose>
+----
+====
+
+.Groovy
+[%collapsible]
+====
+[source,groovy]
+----
+if (!h.hasPermission(app.ADMINISTER)) {
+    set("displayOnlyMode", "true")
+}
+----
+====
+
 At a minimum, submit / apply buttons have been hidden on every view that has been found to be now 
 visible to `Jenkins.SYSTEM_READ` users.
 
@@ -110,21 +141,32 @@ Other examples:
 3. Removing some 'Validate connection' buttons.
 
 The code required for hiding parts of the UI is:
-```xml
+
+.Jelly
+[%collapsible]
+====
+[source,xml]
+----
 <j:jelly xmlns:l="/lib/layout">
     <l:hasPermission permission="${app.ADMINISTER}">
     ...
     </l:hasPermission>
 </j:jelly>
-```
+----
+====
 
-```groovy
+.Groovy
+[%collapsible]
+====
+[source,groovy]
+----
 def l=namespace(lib.LayoutTagLib)
 
 l.hasPermission(permission: app.ADMINISTER) {
     
 }
-```
+----
+====
 
 
 == Motivation
@@ -152,27 +194,6 @@ This JEP does not propose a feature that puts Jenkins into a 'read only mode'. I
 by giving out the `Jenkins.SYSTEM_READ` permission, or how it is done today by not giving out `Jenkins.ADMINISTER` at all.
 
 Instead this JEP proposes a permission that could be given to all or a subset of users that gives them near global read of system configuration.
-
-=== Not converting UI controls into read only controls
-
-Converting UI controls based on a permission is not something that can be easily done,
-
-Options considered for implementing this:
-
-1. JavaScript that detects the permission and when enabled will change controls into alternative ones
-
-This is likely to be error prone
-
-2. Modifying the UI to be permission aware.
-
-This has been done on certain views, where it enhances the functionality, but it can be verbose and adds overhead when testing.
-
-3. Enhancing the controls
-
-Hasn't been investigated but the suspicion is there wouldn't be a clean way of doing this.
-
-Taking the above options into account, 2. is being done on a case-by-case basis, but this is expected to be an iterative approach
-and not delivered in a single PR, or Jenkins release.
 
 === Feature disabled by default
 
