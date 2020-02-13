@@ -271,28 +271,26 @@ The greatest risk is that some configuration may be _more restrictive_ than nece
 
 === Specific focus on ManagementLink.getRequiredPermission()
 
-As we are opening the "/manage" page to one other permission than `Jenkins.ADMINISTER` we need to keep all class that extends ManagementLink secured. To do it we need to change the default value of getRequiredPermission() from:
+Previously, the “/manage” page was only accessible to a user with the `Jenkins.ADMINISTER` permission, and the `ManagementLink` links on this page were protected by virtue of the StaplerProxy performing a permission check for `Jenkins.ADMINISTER`.  Now that the “/manage” page can be accessible by other permission types it is important that all classes that extend `ManagementLink` return a sensible default access permission.
 
-```java
+To do it we need to change the default value of getRequiredPermission() from:
+
+```
 public @CheckForNull Permission getRequiredPermission() {
     return null;
 }
 ```
 
 to default `Jenkins.ADMINISTER`:
-
-```java
+```
 public @CheckForNull Permission getRequiredPermission() {
     return Jenkins.ADMINISTER;
 }
 ```
+This change  only removes the links that are displayed in the "/manage" page for users that don't have the related permission.  Users with the `Jenkins.ADMINISTER` permission will not see any changes in the “/manage” page, and users with the `Jenkins.MANAGE` permission will only see links that have explicitly override the default implementation of `getRequiredPermission`.
+As this could break plugin compatibility, we did an analysis on the plugin usage of `getRequiredPermission` or `requiredPermission` in jelly/groovy.
 
-This change is only removing the link that is displayed in the "/manage" page for users that don't have the related permission. Before this change the "/manage" page was only visible with a `Jenkins.ADMINISTER` permission, and after this change this permission still has the same content in the "/manage" page.
-
-As it could break plugin compatibility we did an analysis on the plugin usage of `getRequiredPermission` or `requiredPermission` in jelly/groovy.
-
-
-.Table Plugin usage analyses on ManagementLink.getRequiredPermission()
+.Table Plugin usage analysis of ManagementLink.getRequiredPermission()
 |===
 |Plugin |Analyse |Reason
 
@@ -337,27 +335,27 @@ As it could break plugin compatibility we did an analysis on the plugin usage of
 |Does not override getRequiredPermission() in the ManagementLink and use it in jelly. The management page will be restricted to `ADMINISTER`.
 
 |build-with-parameters-plugin
-|Not related
+|No related
 |The requiredPermission is used from an Action class, not a ManagementLink class.
 
 |metadata-plugin
-|Not related
+|No related
 |The requiredPermission is used from an Action class, not a ManagementLink class.
 
 |flaky-test-handler-plugin
-|Not related
+|No related
 |The requiredPermission is used from an Action class, not a ManagementLink class.
 
 |ssh-slaves-plugin
-|Not related
+|No related
 |The requiredPermission is used from an Action class, not a ManagementLink class.
 
 |docker-traceability-plugin
-|Not related
+|No related
 |The requiredPermission is used from an Action class, not a ManagementLink class.
 
 |rebuild-plugin
-|Not related
+|No related
 |The requiredPermission is used from an Action class, not a ManagementLink class.
 
 |global-build-stats-plugin
@@ -372,7 +370,6 @@ As it could break plugin compatibility we did an analysis on the plugin usage of
 |No change
 |getRequiredPermission() is overrided with a custom permission in the ManagementLink
 |===
-
 
 == Infrastructure Requirements
 
