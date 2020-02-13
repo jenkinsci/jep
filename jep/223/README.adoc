@@ -86,10 +86,60 @@ The changes to the existing permissions are detailed in the diagram below.
 
 image::Targetted_permission_model.png[Design of the new permission model.]
 
-=== Jenkins UX Changes
-Changing the permission model primarily impacts the Jenkins UX in two ways- the permissions shown when configuring matrix-based authentication and on the `Manage Jenkins` page. 
+Specifically, for an installation of Jenkins v2.207 with the default suggested plugins, the following configuration items would be available to a user with the `Overall/Manage` permission:
 
-image::mange_permission_matrix_auth.png[Permissions configuration with matrix authorization plugin.]
+* `<JENKINS_URL>/manage`
+** `Configure System` (see next item for details)
+** `Reload Configuration From Disk`
+** `System Information`
+** `Load Statistics`
+** `Jenkins CLI`
+** `About Jenkins`
+** `Prepare For Shutdown`
+* `<JENKINS_URL>/configure`
+** `Home Directory` (_read only_)
+** `System Message`
+** `Quiet Period`
+** `SCM checkout retry count`
+** `Restrict project naming`
+** `Pipeline Default Speed/Durability Level` (Pipeline: API Plugin)
+** `Enable Anonymous Usage Statistics`
+** `Enable BuildStep Action` (Build Timeout Plugin)
+** `Git plugin global config` (Git Plugin)
+** `Subversion global config` (Subversion Plugin)
+** `Extended E-mail Notification` (Email Extension Plugin)
+** `Basic E-mail Notificaiton` (Jenkins Mailer Plugin)
+
+Plugins and configuration settings not listed above are considered to be out of scope for this JEP.
+Once the new permission is avaible in a core Jenkins release, we plan to review additional plugins and work with their maintainers to introduce the new permission when possible, for example (but not limited to):
+
+* Default locaiton of local maven repoisory and configuration
+* Many (not all) plugins global configuration
+** Global compiler warnings (Warnings NG Plugin)  
+** Bitbucket endpoints (Bitbucket Branch Source Plugin)
+** Trigger restrictions (Job Restrictions Plugin)
+** Timestamp format (Timestamper Plugin)
+** Slack (Global Slack Notifier Plugin)
+* Jira integration (JIRA Plugin)
+
+Jenkins configuration settings that will continue to require the "Overall/Administer" permission are:
+
+* *Administrative Monitors* - Administrative Monitor messages will only be shown if the user has the permission `Jenkins.ADMINISTER` because they may contain an action button that can lead to security modifications. 
+
+* *Configure Global Security* - A user who can make changes here is able to configure Jenkins to use a less secure realm, or grant themselves additional permissions; thus, this configuration link will only be shown to users with the `Jenkins.ADMINISTER` permission.
+
+* *`Manage Old Data`* - Because `Jenkins.MANAGE` does not imply overall `Job/Read`, allowing a user without `Jenkins.ADMINISTER` to access this link could expose details about job/builds as well as parts of their configuration.
+
+* *Manage Plugins* - A user with the ability to manage plugins is able to remove or replace security related plugins, or even upload a malicious plugin; thus, this configuration link will only be shown to users with the `Jenkins.ADMINISTER` permission.
+
+* *Manage Users* - Managing users includes the ability to delete any user, so this link will only be shown to users with the `Jenkins.ADMINISTER` permission.
+
+This is list not exhaustive, other items might be limited to users with `Jenkins.ADMINISTER` permission for similar reasons.
+
+=== Jenkins UX Changes
+Changing the permission model primarily impacts the Jenkins UX in two ways- the permissions shown when configuring matrix-based authentication and what a user with "Overall/Manage" permission can access via the `Manage Jenkins` page. 
+
+image::manage_permission_matrix_auth.png[Permissions configuration with matrix authorization plugin.]
 
 By default, all of the configuration sections in the `/manage` page require `Jenkins.ADMINISTER`.
 Each configuration section that is accessible by a user with `Jenkins.MANAGE` are explicitly allowed by overriding `ManagementLink.getRequiredPermission()` to return `Jenkins.MANAGE`. For example :
@@ -106,35 +156,16 @@ public class CustomLink extends ManagementLink {
 
 Plugins may also need to change permissions on jelly files to allow `Jenkins.MANAGE` on management links.
 
+```xml
+<l:hasPermission permission="${app.ADMINISTER}">
+    //jelly code that should only be shown to a user with Jenkins.ADMINISTER permission
+    ....
+    ....
+</l:hasPermission>
+```
 image::UX_manage_page.png[User interface for the new permission.]
-
-
-Most configuration links are fully available for users with either permission, with the following exceptions:
-
-
-1. *Administrative Monitors* - Administrative Monitor messages will only be shown if the user has the permission `Jenkins.ADMINISTER` because they may contain an action button that can lead to security modifications. 
-
-2. *Configure Global Security* - A user who can make changes here is able to configure Jenkins to use a less secure realm, or grant themselves additional permissions; thus, this configuration link will only be shown to users with the `Jenkins.ADMINISTER` permission.
-
-3. *Manage Plugins* - A user with the ability to manage plugins is able to remove or replace security related plugins, or even upload a malicious plugin; thus, this configuration link will only be shown to users with the `Jenkins.ADMINISTER` permission.
-
-4. *Manage Users* - Managing users includes the ability to delete any user, so this link will only be shown to users with the `Jenkins.ADMINISTER` permission.
-
-5. *Configure System* - As it is currently implemented, the Jenkins _Configure System_ page contains a mix of items, some of which should require `Jenkins.ADMINISTER` and some which are safe to delegate to a user with the `Jenkins.MANAGE` permission.  
-Splitting these into separate pages is outside the scope of this JEP, so the _Configure System_ link will be visible to users with either `Jenkins.ADMINISTER` or `Jenkins.MANAGE`.
-A detailed description of the permission changes for this page can be found below.
  
 image::UX_config_tools.png[Configure System details.]
-The following configuration settings found under `/configure` will only be shown to and allowed to be modified by users with `Jenkins.ADMINISTER` permission, because they can lead to permissions escalation:
-
-* `# of executors`: to avoid users to setting a non-zero value 
-* `Jenkins URL`: can be used to redirect users to another Jenkins instance, leading to a phishing attack
-* `Resource root`: can be used to point to a host with malicious code and cause a XSS attack on Jenkins users
-* `Global properties`: can be used to misconfigure the existent tools and execute malicius code in its place
-    * `Environment variables`
-    * `Tool Locations`
-* `Administrative monitors configuration`: this doesn't allow permissions escalation by itself, but a user can change monitors' settings to hide security warnings from an Administer.
-* `Shell executable path`: can be used to point to an executable with malicious code and escalate permissions
 
 [NOTE]
 ====
@@ -187,8 +218,7 @@ However, it is highly likely that some plugins are logging sensitive values in l
 
 Because of this, `Jenkins.MANAGE` will not be allowed to access to the System Log or managing Log Recorders.
 
-As part of a future enhancement, a more sophisticated solution might be considered, so someone with `Jenkins.MANAGE` can see the log levels considered safe.
-
+As part of a future enhancement, a more sophisticated solution might be considered, so someone with `Jenkins.MANAGE` can see log levels which are considered safe (`Log.INFO`, `Log.DEBUG`, etc).
 
 === `Jenkins.MANAGE` does not allow installation of plugins available in Update Center
 There has been some discussion on the jenkinsci-dev mailing list about whether `Jenkins.MANAGE` should allow the installation of plugins available in Update Center (see <<References>>).  
@@ -229,7 +259,8 @@ Because of this, we (the JEP-223 sponsors) are committed to the following suppor
 
 [NOTE]
 ====
-TBD: The definition of a "serious regression"
+link:https://github.com/jenkinsci/jep/tree/master/jep/224[JEP-224] proposes adding a new permission `Jenkins.SYSTEM_READ` which could cause a confusing user experience when combined with the `Jenkins.MANAGE` permission unless care is taken to implement things in a sensible way.
+If JEP-223 is accepted first, we intend to work with the authors of JEP-224 to ensure that administrators will leverage both proposed features in a way that creates a positive experience for users.
 ====
 
 == Security
@@ -264,4 +295,4 @@ The prototype code can be found at:
 ** Parallel effort to officially deprecate (in the code) permissions which effectively equate to `Jenkins.ADMINISTER`
 
 * link:https://issues.jenkins-ci.org/browse/JENKINS-12548[Read-only configuration summary page support]
-
+* link:https://github.com/jenkinsci/jep/tree/master/jep/224[JEP-224 - Jenkins.SYSTEM_READ proposal] 
