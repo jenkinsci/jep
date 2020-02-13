@@ -337,27 +337,27 @@ As it could break plugin compatibility we did an analysis on the plugin usage of
 |Does not override getRequiredPermission() in the ManagementLink and use it in jelly. The management page will be restricted to `ADMINISTER`.
 
 |build-with-parameters-plugin
-|No related
+|Not related
 |The requiredPermission is used from an Action class, not a ManagementLink class.
 
 |metadata-plugin
-|No related
+|Not related
 |The requiredPermission is used from an Action class, not a ManagementLink class.
 
 |flaky-test-handler-plugin
-|No related
+|Not related
 |The requiredPermission is used from an Action class, not a ManagementLink class.
 
 |ssh-slaves-plugin
-|No related
+|Not related
 |The requiredPermission is used from an Action class, not a ManagementLink class.
 
 |docker-traceability-plugin
-|No related
+|Not related
 |The requiredPermission is used from an Action class, not a ManagementLink class.
 
 |rebuild-plugin
-|No related
+|Not related
 |The requiredPermission is used from an Action class, not a ManagementLink class.
 
 |global-build-stats-plugin
