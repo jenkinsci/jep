@@ -77,7 +77,7 @@ Examples:
 - "Only jobs in folders 'foo' and 'bar' can access credential 'baz'".
 - "All jobs can access [global] credential 'qux'".
 
-This proposal genericises and supersedes the folder-based credentials ACL in the link:https://plugins.jenkins.io/cloudbees-folder[Cloudbees Folders plugin].
+This proposal generalizes and supersedes the folder-based credentials ACL in the link:https://plugins.jenkins.io/cloudbees-folder[Cloudbees Folders plugin].
 
 == Specification
 
@@ -244,6 +244,5 @@ JEPs which will not include code changes may omit this section.
 Provide links to any related documents.
 This will include links to discussions on the mailing list, pull requests, and meeting notes.
 ====
-
 
 
