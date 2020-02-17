@@ -113,7 +113,7 @@ Specifically, for an installation of Jenkins v2.207 with the default suggested p
 Plugins and configuration settings not listed above are considered to be out of scope for this JEP.
 Once the new permission is avaible in a core Jenkins release, we plan to review additional plugins and work with their maintainers to introduce the new permission when possible, for example (but not limited to):
 
-* Default locaiton of local maven repoisory and configuration
+* Default location of local maven repository and configuration
 * Many (not all) plugins global configuration
 ** Global compiler warnings (Warnings NG Plugin)  
 ** Bitbucket endpoints (Bitbucket Branch Source Plugin)
@@ -268,6 +268,124 @@ If JEP-223 is accepted first, we intend to work with the authors of JEP-224 to e
 The intent of this proposal is to improve overall security for Jenkins instances that are using some form of matrix authorization.
 All configuration items that require `Jenkins.ADMINISTER`, `Jenkins.RUN_SCRIPTS`, `PluginManager.CONFIGURE_UPDATECENTER`, and `PluginManager.UPLOAD_PLUGINS`  are being reviewed to determine if they can be changed to require the new `Jenkins.MANAGE` permission type.
 The greatest risk is that some configuration may be _more restrictive_ than necessary, either because it was overlooked or due to differences in opinion during the review process.
+
+=== Specific focus on ManagementLink.getRequiredPermission()
+
+Previously, the “/manage” page was only accessible to a user with the `Jenkins.ADMINISTER` permission, and the `ManagementLink` links on this page were protected by virtue of the StaplerProxy performing a permission check for `Jenkins.ADMINISTER`.  Now that the “/manage” page can be accessible by other permission types it is important that all classes that extend `ManagementLink` return a sensible default access permission.
+
+To do it we need to change the default value of getRequiredPermission() from:
+
+```
+public @CheckForNull Permission getRequiredPermission() {
+    return null;
+}
+```
+
+to default `Jenkins.ADMINISTER`:
+```
+public @CheckForNull Permission getRequiredPermission() {
+    return Jenkins.ADMINISTER;
+}
+```
+This change  only removes the links that are displayed in the "/manage" page for users that don't have the related permission.  Users with the `Jenkins.ADMINISTER` permission will not see any changes in the “/manage” page, and users with the `Jenkins.MANAGE` permission will only see links that have explicitly override the default implementation of `getRequiredPermission`.
+As this could break plugin compatibility, we did an analysis on the plugin usage of `getRequiredPermission` or `requiredPermission` in jelly/groovy.
+
+.Table Plugin usage analysis of ManagementLink.getRequiredPermission()
+|===
+|Plugin |Analyse |Reason
+
+|multi-slave-config-plugin
+|No change
+|getRequiredPermission() is overrided with `ADMINISTER` in the ManagementLink
+
+|scriptler-plugin
+|No change
+|Manages its own permission in the ManagementLink
+
+|p4-plugin
+|No change
+|The requiredPermission is used from an Action and UnprotectedRootAction class, not a ManagementLink class.
+
+|periodic-jobs-balancer-plugin
+|No change
+|getRequiredPermission() is overrided with `ADMINISTER` in the ManagementLink
+
+|gerrit-trigger-plugin
+|No change
+|getRequiredPermission() is overrided with `ADMINISTER` in the ManagementLink. Also used in RootAction but not related to the change in ManagementLink.
+
+|lenient-shutdown-plugin
+|No change
+|getRequiredPermission() is overrided with `ADMINISTER` in the ManagementLink
+
+|script-security-plugin
+|No change
+|getRequiredPermission() is overrided with `RUN_SCRIPT` in the ManagementLink
+
+|active-choices-plugin
+|No change
+|Based on scriptler-plugin
+
+|docker-plugin
+|No change
+|Does not override getRequiredPermission() in the ManagementLink and use it in jelly. Due to DockerManagement#getTarget, requiring `ADMINISTER` is the expected behavior.
+
+|libvirt-slave-plugin
+|No change
+|Does not override getRequiredPermission() in the ManagementLink and use it in jelly. Due to VirtualMachineManagement#getTarget, it's expected to be restricted to `ADMINISTER`.
+
+|build-with-parameters-plugin
+|No related
+|The requiredPermission is used from an Action class, not a ManagementLink class.
+
+|metadata-plugin
+|No related
+|The requiredPermission is used from an RootAction class, not a ManagementLink class.
+
+|flaky-test-handler-plugin
+|No related
+|The requiredPermission is used from an Action class, not a ManagementLink class.
+
+|ssh-slaves-plugin
+|No related
+|The requiredPermission is used from an Action class, not a ManagementLink class.
+
+|docker-traceability-plugin
+|No related
+|The requiredPermission is used from an RootAction class, not a ManagementLink class.
+
+|rebuild-plugin
+|No related
+|The requiredPermission is used from an Action class, not a ManagementLink class.
+
+|global-build-stats-plugin
+|No change
+|getRequiredPermission() is overrided with `ADMINISTER` in the ManagementLink
+
+|global-build-stats-plugin
+|No change
+|getRequiredPermission() is overrided with `ADMINISTER` in the ManagementLink
+
+|selenium-plugin
+|No change
+|The requiredPermission is used from an *Action class and PluginImpl class, not a ManagementLink.
+
+|build-metrics
+|No change
+|requiredPermission used from ManagementLink in views but the "it" is not the correct one and thus no impact.
+
+|dynamicparameter
+|No change
+|The requiredPermission is asked on ScriptlerChoiceParameterDefinition.DescriptorImpl and ScriptlerStringParameterDefinition.DescriptorImpl but the classes and respective hierarchies are missing the desired method/field. Seems to be a bug in that plugin.
+
+|support-core
+|No change
+|Lots of getRequiredPermissions, due to the Component approach, nothing impacting.
+
+|workflow-cps
+|No change
+|Lots of getRequiredPermissions, due to the Component approach, nothing impacting.
+|===
 
 == Infrastructure Requirements
 
