@@ -304,7 +304,7 @@ As this could break plugin compatibility, we did an analysis on the plugin usage
 
 |p4-plugin
 |No change
-|Based on scriptler-plugin
+|The requiredPermission is used from an Action and UnprotectedRootAction class, not a ManagementLink class.
 
 |periodic-jobs-balancer-plugin
 |No change
@@ -312,7 +312,7 @@ As this could break plugin compatibility, we did an analysis on the plugin usage
 
 |gerrit-trigger-plugin
 |No change
-|getRequiredPermission() is overrided with `ADMINISTER` in the ManagementLink
+|getRequiredPermission() is overrided with `ADMINISTER` in the ManagementLink. Also used in RootAction but not related to the change in ManagementLink.
 
 |lenient-shutdown-plugin
 |No change
@@ -327,12 +327,12 @@ As this could break plugin compatibility, we did an analysis on the plugin usage
 |Based on scriptler-plugin
 
 |docker-plugin
-|Change
-|Does not override getRequiredPermission() in the ManagementLink and use it in jelly. The management page will be restricted to `ADMINISTER`.
+|No change
+|Does not override getRequiredPermission() in the ManagementLink and use it in jelly. Due to DockerManagement#getTarget, requiring `ADMINISTER` is the expected behavior.
 
 |libvirt-slave-plugin
-|Change
-|Does not override getRequiredPermission() in the ManagementLink and use it in jelly. The management page will be restricted to `ADMINISTER`.
+|No change
+|Does not override getRequiredPermission() in the ManagementLink and use it in jelly. Due to VirtualMachineManagement#getTarget, it's expected to be restricted to `ADMINISTER`.
 
 |build-with-parameters-plugin
 |No related
@@ -340,7 +340,7 @@ As this could break plugin compatibility, we did an analysis on the plugin usage
 
 |metadata-plugin
 |No related
-|The requiredPermission is used from an Action class, not a ManagementLink class.
+|The requiredPermission is used from an RootAction class, not a ManagementLink class.
 
 |flaky-test-handler-plugin
 |No related
@@ -352,7 +352,7 @@ As this could break plugin compatibility, we did an analysis on the plugin usage
 
 |docker-traceability-plugin
 |No related
-|The requiredPermission is used from an Action class, not a ManagementLink class.
+|The requiredPermission is used from an RootAction class, not a ManagementLink class.
 
 |rebuild-plugin
 |No related
@@ -368,7 +368,23 @@ As this could break plugin compatibility, we did an analysis on the plugin usage
 
 |selenium-plugin
 |No change
-|getRequiredPermission() is overrided with a custom permission in the ManagementLink
+|The requiredPermission is used from an *Action class and PluginImpl class, not a ManagementLink.
+
+|build-metrics
+|No change
+|requiredPermission used from ManagementLink in views but the "it" is not the correct one and thus no impact.
+
+|dynamicparameter
+|No change
+|The requiredPermission is asked on ScriptlerChoiceParameterDefinition.DescriptorImpl and ScriptlerStringParameterDefinition.DescriptorImpl but the classes and respective hierarchies are missing the desired method/field. Seems to be a bug in that plugin.
+
+|support-core
+|No change
+|Lots of getRequiredPermissions, due to the Component approach, nothing impacting.
+
+|workflow-cps
+|No change
+|Lots of getRequiredPermissions, due to the Component approach, nothing impacting.
 |===
 
 == Infrastructure Requirements
