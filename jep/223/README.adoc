@@ -398,6 +398,7 @@ To enable the `Overall/Manage` permission do one of the following:
 * Set the system property `jenkins.security.ManagePermission=true` when starting Jenkins.
 * Execute the following via the Script Console:  `System.setProperty('jenkins.security.ManagePermission', 'true')` 
 
+To use Jenkins.MANAGE permission in a plugin, the plugin must be build with the `-DuseBeta=true` option enable. For example `mvn clean install -DuseBeta=true`.
 Existing tests that validate permissions, or make assumptions about the permissions being used, will be updated to conform to the new permission model.
 Additional tests will be written that validate the new permission type cannot be used when the more restrictive `Jenkins.ADMINISTER` is needed.
 
@@ -406,7 +407,7 @@ Additional tests will be written that validate the new permission type cannot be
 The prototype code can be found at:
 
 * link:https://github.com/jenkinsci/jenkins/pull/4501[Minimal PR which implements the new permission (merged, targeted for 2.222 weekly)]
-* link:https://github.com/jenkinsci/jenkins/pull/4483[PR with proposed changes and tests]
+* link:https://github.com/jenkinsci/jenkins/pull/4483[DRAFT PR with proposed changes and tests (including the minimal PR changes)]
 
 == References
 === Mailing List Discussions
