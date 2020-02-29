@@ -80,15 +80,15 @@ The details of the exact behavior and implementation of most areas will be addre
 
 === Target Audience
 
-We have identified two personas as target Audience :
+We have identified two personas as target audience :
 
-*Ben* is system administrator in the company, managing services across all teams: LDAP, Mail, but also developers ressources like
+*Ben* is system administrator in the company, managing services across all teams: LDAP, Mail, but also developers resources like
 repositories and CI servers. Ben’s favorite IDE is vi, his preferred language is bash (or maybe ruby|python) and only knows Java for the
 amount of memory it requires and the delay to start a JVM. So he’s not a big fan of writing groovy scripts. He mostly knows Jenkins by the
 UI and used to backup for whole `JENKINS_HOME` folder.
 
 *Seb* is working in a startup as DevOps engineer. He’s full time working with product team as a developer and managing development process
-and resources (which makes 2 full times for one guy. This is a startup I said). Seb has deployed kubernetes as general purpose
+and resources (which makes 2 full times for one guy. This is a startup I said). Seb has deployed Kubernetes as general purpose
 infrastructure on the Cloud and deployed a git repo and few other services for his team. A Jenkins master is running there as well. He's used
 to upgrade Jenkins by running latest official docker image and re-using previous `JENKINS_HOME` volume.
 
@@ -221,8 +221,8 @@ Configuration-as-Code doesn't define the exact model for the configuration expre
 The YAML schema will depend on a specific versions of `jenkins-core` and plugins being used at runtime.
 This limits the ability of the Configuration-as-Code plugin to ensure schema compatibility between
 different versions of Jenkins Core and plugins.
-Still, schema will be validated before applying it to a Jenking instance,
-and tooling will be created to further limit user pain as much as possilbe.
+Still, schema will be validated before applying it to a Jenkins instance,
+and tooling will be created to further limit user pain as much as possible.
 
 The details of the exact behavior and implementation of this area will be addressed in a separate JEP.
 
