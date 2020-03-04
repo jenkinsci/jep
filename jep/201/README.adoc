@@ -80,7 +80,7 @@ The details of the exact behavior and implementation of most areas will be addre
 
 === Target Audience
 
-We have identified two personas as target audience :
+We have identified two personas as target audience:
 
 *Ben* is system administrator in the company, managing services across all teams: LDAP, Mail, but also developers resources like
 repositories and CI servers. Ben’s favorite IDE is vi, his preferred language is bash (or maybe ruby|python) and only knows Java for the
