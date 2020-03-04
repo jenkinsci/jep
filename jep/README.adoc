@@ -188,7 +188,7 @@
 | TBD
 
 | Draft{nbsp}:speech_balloon:
-| link:223/README.adoc[JEP-223: "Limited Administer" permission for managing non-security aspects of a Jenkins instance]
+| link:223/README.adoc[JEP-223: "Manage" permission for managing non-security aspects of a Jenkins instance]
 | link:https://github.com/mikecirioli[Mike{nbsp}Cirioli], link:https://github.com/aHenryJard[Angélique{nbsp}Jard], link:https://github.com/EstherAF[Esther{nbsp}Álvarez{nbsp}Feijoo] 
 | TBD
 
