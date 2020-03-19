@@ -42,25 +42,24 @@ endif::[]
 
 Over time, Jenkins plugin maintainers need to change as the original maintainer may need
 to move on to other work.
-link:https://wiki.jenkins.io/display/JENKINS/Adopt+a+Plugin[Adopt a Plugin] outlines the process for adopting
-a plugin.  This page mentions that the Jenkins developer mailing list should be e-mailed to start
-the process.
+link:https://jenkins.io/doc/developer/plugin-governance/adopt-a-plugin/[Adopt a Plugin] outlines the process for adopting a plugin.
+This page mentions that the Jenkins developer mailing list should be e-mailed to start the process.
 This JEP proposes some process improvements to adopting a plugin which
 
 == Specification
 
 === Existing plugin adoption process
-The existing plugin adoption process is
-outlined here on link:https://wiki.jenkins.io/display/JENKINS/Adopt+a+Plugin[this wiki page].
+
+The existing plugin adoption process is outlined here on link:https://jenkins.io/doc/developer/plugin-governance/adopt-a-plugin/[this page].
 
 The above web page can be summarized as follows.
 
 For a user who is interested in adopting a plugin:
 
-1. The user should visit link:https://wiki.jenkins.io/display/JENKINS/Adopt+a+Plugin#AdoptaPlugin-Listofplugins
+1. The user should visit link:https://plugins.jenkins.io/ui/search/?labels=adopt-this-plugin[the plugin site]
    for a list of plugins eligible for adoption.
 2. The user should review the documentation on plugin maintainership in the Jenkins project, especially
-   documentation with respect to link:https://jenkins.io/project/governance/#compatibility-mattera[plugin compatibility]
+   documentation with respect to link:https://jenkins.io/project/governance/#compatibility-matters[plugin compatibility]
    and link:https://wiki.jenkins.io/display/JENKINS/Marking+a+new+plugin+version+as+incompatible+with+older+versions[marking a plugin as incompatible
    with older Jenkins releases].
 3. The user should mail the link:mailto:jenkinsci-dev@googlegroups.com[Jenkins Developers mailing list] and request to be made a maintainer
@@ -76,10 +75,8 @@ For a user who is interested in adopting a plugin:
    link:https://github.com/jenkins-infra/repository-permissions-updater to request permission to deploy snapshots and releases of the plugin.
 
 For a maintainer who is interested in giving up maintainership of a plugin:
-1. The maintainer should edit the plugin's wiki page and add the *adopt-this-plugin* label.
-2. Alternatively, the maintainer can use the following JIRA macro on the plugin's wiki page:
 
- {jenkins-plugin-info:myplugin|adopt-message=The maintainer is looking for a co-maintainer.}
+1. The maintainer should edit the plugin's GitHub repo page and add the *adopt-this-plugin* label.
 
 
 === Proposed modification to plugin adoption process: using JIRA
@@ -138,7 +135,7 @@ solutions to this problem.
 == Infrastructure Requirements
 
 * JIRA must be updated to support the new *adopt-plugin* tag.
-* link:https://wiki.jenkins.io/display/JENKINS/Adopt+a+Plugin must be updated to reflect the
+* link:https://jenkins.io/doc/developer/plugin-governance/adopt-a-plugin/ must be updated to reflect the
   new process for adopting a plugin.
 
 [WARNING]
@@ -154,4 +151,4 @@ There are no testing issues related to this proposal.
 == References
 
 * link:https://groups.google.com/d/msg/jenkinsci-dev/BkSipSaSYl8/71Ek0PVQEgAJ[Discussion on jenkinsci-dev mailing list]
-* link:https://wiki.jenkins.io/display/JENKINS/Adopt+a+Plugin[Adopt a Plugin wiki page]
+* link:https://jenkins.io/doc/developer/plugin-governance/adopt-a-plugin/[Plugin Governance: Adopt a Plugin]
