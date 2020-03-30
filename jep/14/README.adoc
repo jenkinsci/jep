@@ -58,8 +58,8 @@ endif::[]
 
 == Abstract
 
-This JEP documents a process and implementation for a public Jenkins roadmap
-which would be published on the Jenkins website and considered as an official plan by the project.
+This JEP documents a process and implementation for publishing and maintaining a public Jenkins "roadmap"
+on the Jenkins website. This roadmap highlights major initiatives and is to be considered an official plan by the project.
 See the motivation below.
 
 == Specification
@@ -81,15 +81,17 @@ See the motivation below.
 
 === Terms and definitions
 
-Horizons:
+====  Horizons
 
-* _Current_ - things being worked on presently with a specific scope, typically a JEP, though no specific delivery dates
-* _Near Term_ - a wider area of focus with more flexibility of
+Instead of providing delivery dates for various initiatives on the roadmap, we use three "horizons":
+
+* **Current** - things being worked on presently with a known scope and design, typically specified a JEP.
+* **Near Term** - a wider area of focus with more flexibility of
 scope and design options (no specific timeframe but will be reconsidered
 in the future)#
-* _Future_ - higher level things to be considered with a broad scope
+* **Future** - higher level things to be considered with a broad scope
  (timescales varied - later items will be reprioritized once _Current_ and _Near Term_ items progress significantly)
-* _Completed_ - Initiative which is largely completed and, in the case of user-facing changes, released/deployed.
+* **Completed** - Initiative which is largely completed and, in the case of user-facing changes, released/deployed.
 It is also properly documented and announced.
 There might be some minor follow-ups remaining.
 
