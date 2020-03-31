@@ -87,7 +87,7 @@ Instead of providing delivery dates for various initiatives on the roadmap, we u
 * **Current** - things being worked on presently with a known scope and design, typically specified a JEP.
 * **Near Term** - a wider area of focus with more flexibility of
 scope and design options (no specific timeframe but will be reconsidered
-in the future)#
+in the future)
 * **Future** - higher level things to be considered with a broad scope
  (timescales varied - later items will be reprioritized once _Current_ and _Near Term_ items progress significantly)
 * **Completed** - Initiative which is largely completed and, in the case of user-facing changes, released/deployed.
@@ -114,7 +114,7 @@ For example, link:https://www.jsdelivr.com/[jsDelivr] allows using CDN for GitHu
 ** _Category_ (or categories) - classifier of the initiative. Examples
 *** Features: Configuration-as-Code, UI/UX, Security, Packaging and Distributions, etc.
 *** Non-feature: “Infrastructure”, “Outreach programs”, “Governance”, etc.
-** _Status_ - Status of the initiative#
+** _Status_ - Status of the initiative
 ** _URL_ - Link to a page which provides details about the project.
 
 *** Project page on jenkins.io (e.g. a
