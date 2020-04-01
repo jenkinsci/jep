@@ -72,6 +72,11 @@
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/bitwiseman[Liam{nbsp}Newman]
 
+| Draft{nbsp}:speech_balloon:
+| link:14/README.adoc[JEP-14: Public roadmap for major initiatives in the Jenkins project]
+| link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
+| TBD
+
 | Final{nbsp}:lock:
 | link:200/README.adoc[JEP-200: Switch Remoting/XStream blacklist to a whitelist]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
