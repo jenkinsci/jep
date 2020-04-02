@@ -282,7 +282,8 @@ Testing will be performed as a part of the experimental phase until the roadmap 
 
 == Prototype Implementation
 
-* https://github.com/jenkins-infra/jenkins.io/pull/2957[https://github.com/jenkins-infra/jenkins.io/pull/2957]
+* link:https://jenkins.io/project/roadmap/[Roadmap page on jenkins.io]
+* link:https://github.com/jenkins-infra/jenkins.io/blob/master/content/_data/roadmap/roadmap.yml[Roadmap data]
 
 == References
 
