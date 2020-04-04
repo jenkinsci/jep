@@ -15,7 +15,7 @@ endif::[]
 In this document, all text in a "Tip" block (or inline text with with a ":bulb:" on either side)
 MUST be removed and/or replaced with text appropriate to this JEP before submission.
 
-Sections may include aditional help and advice in comments.
+Sections may include additional help and advice in comments.
 ":bulb:" entries in comments only need to be filled in if that text is uncommented.
 
 See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for full and accurate description of the JEP process and what is required in each section.
