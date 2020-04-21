@@ -22,7 +22,7 @@ endif::[]
 | link:https://github.com/tracymiranda[Tracy Miranda]
 
 | Status
-| Draft :speech_balloon:
+| Active :smile:
 
 | Type
 | Process
