@@ -187,7 +187,7 @@
 | link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
 | TBD
 
-| Draft{nbsp}:speech_balloon:
+| Final{nbsp}:lock:
 | link:222/README.adoc[JEP-222: WebSocket Support for Jenkins Remoting and CLI]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | TBD
