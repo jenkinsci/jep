@@ -92,12 +92,12 @@
 | link:https://github.com/carlossg[Carlos{nbsp}Sanchez]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 
-| Draft{nbsp}:speech_balloon:
+| Deferred{nbsp}:hourglass:
 | link:203/README.adoc[JEP-203: BlueOcean Extensibility]
 | link:http://github.com/imeredith[Ivan{nbsp}Meredith]
 | _not{nbsp}delegated_
 
-| Draft{nbsp}:speech_balloon:
+| Deferred{nbsp}:hourglass:
 | link:204/README.adoc[JEP-204: BlueOcean Extensibility API]
 | link:http://github.com/imeredith[Ivan{nbsp}Meredith]
 | _not{nbsp}delegated_

@@ -23,7 +23,7 @@ endif::[]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
-| Draft :speech_balloon:
+| Deferred :hourglass:
 
 | Type
 | Standards
