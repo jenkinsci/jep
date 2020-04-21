@@ -75,7 +75,7 @@
 | Draft{nbsp}:speech_balloon:
 | link:14/README.adoc[JEP-14: Public roadmap for major initiatives in the Jenkins project]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
-| TBD
+| link:https://github.com/slide[Alex{nbsp}Earl]
 
 | Final{nbsp}:lock:
 | link:200/README.adoc[JEP-200: Switch Remoting/XStream blacklist to a whitelist]
@@ -170,7 +170,7 @@
 | Draft{nbsp}:speech_balloon:
 | link:218/README.adoc[JEP-218: Stapler Request Dispatcher Filtering]
 | link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
-| TBD
+| link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
 
 | Draft{nbsp}:speech_balloon:
 | link:219/README.adoc[JEP-219: Jenkins Kubernetes Operator]
@@ -180,7 +180,7 @@
 | Draft{nbsp}:speech_balloon:
 | link:220/README.adoc[JEP-220: Dispatchable Views and View Fragments in Stapler]
 | https://github.com/jvz[Matt{nbsp}Sicker]
-| TBD
+| link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
 
 | Draft{nbsp}:speech_balloon:
 | link:221/README.adoc[JEP-221: Continuous Delivery of Jenkins Plugins]
@@ -200,7 +200,7 @@
 | Draft{nbsp}:speech_balloon:
 | link:224/README.adoc[JEP-224: Readonly system configuration]
 | link:https://github.com/timja[Tim{nbsp}Jacomb]
-| TBD
+| link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 
 | Accepted{nbsp}:ok_hand:
 | link:300/README.adoc[JEP-300: Jenkins Evergreen]

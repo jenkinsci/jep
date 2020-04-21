@@ -32,7 +32,7 @@ endif::[]
 | 2020-03-27
 
 | BDFL-Delegate
-| TBD
+| link:https://github.com/slide[Alex Earl]
 
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
