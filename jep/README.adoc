@@ -87,7 +87,7 @@
 | link:https://github.com/ewelinawilkosz[Ewelina{nbsp}Wilkosz] from{nbsp}link:https://github.com/praqma[Praqma]
 | _not{nbsp}delegated_
 
-| Accepted{nbsp}:ok_hand:
+| Final{nbsp}:lock:
 | link:202/README.adoc[JEP-202: External Artifact Storage]
 | link:https://github.com/carlossg[Carlos{nbsp}Sanchez]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
