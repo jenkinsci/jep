@@ -32,7 +32,7 @@ endif::[]
 | 2018-08-21
 
 | BDFL-Delegate
-| TBD
+| link:https://github.com/daniel-beck[Daniel Beck]
 
 //
 //
