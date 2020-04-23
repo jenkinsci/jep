@@ -244,5 +244,6 @@ WebClient tests that check the user can view the page but not submit the page.
 
 == References
 
+- link:https://github.com/orgs/jenkinsci/projects/4[GitHub Project with pull requests and issue tracjong for this JEP]
 - link:https://github.com/jenkinsci/jenkins/pull/4149[Core PR #4149]
 - link:https://github.com/jenkinsci/configuration-as-code-plugin/issues/9[JCasC read only UI]
