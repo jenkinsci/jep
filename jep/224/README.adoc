@@ -245,5 +245,6 @@ WebClient tests that check the user can view the page but not submit the page.
 == References
 
 - link:https://github.com/orgs/jenkinsci/projects/4[GitHub Project with pull requests and issue tracking for this JEP]
+- link:https://issues.jenkins-ci.org/browse/JENKINS-12548[JENKINS-12548] - EPIC in Jenkins Jira
 - link:https://github.com/jenkinsci/jenkins/pull/4149[Core PR #4149]
 - link:https://github.com/jenkinsci/configuration-as-code-plugin/issues/9[JCasC read only UI]
