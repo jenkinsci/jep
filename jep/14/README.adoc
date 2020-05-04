@@ -60,6 +60,7 @@ endif::[]
 
 This JEP documents a process and implementation for publishing and maintaining a public Jenkins "roadmap"
 on the Jenkins website. This roadmap highlights major initiatives and is to be considered an official plan by the project.
+Current version of the roadmap can be found here: link:https://www.jenkins.io/project/roadmap/[jenkins.io/project/roadmap/].
 
 == Specification
 
