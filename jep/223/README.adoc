@@ -41,7 +41,7 @@ endif::[]
 //
 // Uncomment if there is an associated placeholder JIRA issue.
 | JIRA
-| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-60266[JENKINS-60266] :bulb:
+| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-61454[JENKINS-61454] :bulb:
 //
 //
 // Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
