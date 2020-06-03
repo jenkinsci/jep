@@ -1,0 +1,162 @@
+= JEP-15: Jenkins funding on Community Bridge
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.**JEP Template**
+[TIP]
+====
+In this document, all text in a "Tip" block (or inline text with with a ":bulb:" on either side)
+MUST be removed and/or replaced with text appropriate to this JEP before submission.
+
+Sections may include additional help and advice in comments.
+":bulb:" entries in comments only need to be filled in if that text is uncommented.
+
+See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for full and accurate description of the JEP process and what is required in each section.
+====
+
+[TIP]
+====
+*BDFL-Delegate* is uncommented by default.
+As part of the in initial conversation or the JEP submission the sponsor should
+look for a BDFL Delegate.
+While not required, it is better for the community if Delegates perform most reviews.
+If no suitable BDFL-Delegate can be found, that row may be commented out.
+====
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 0000
+
+| Title
+| :bulb: Title :bulb:
+
+| Sponsor
+| :bulb: Link to github user page (if multiple, comma separated on one line). Example: link:https://github.com/username[User Name], link:https://github.com/username2[User Name 2] :bulb:
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| :bulb: Standards, Informational, or Process :bulb:
+
+| Created
+| :bulb: Date (YYYY-MM-DD) :bulb:
+
+| BDFL-Delegate
+| TBD
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+This JEP documents the policy for donations received through the Community Bridge Funding portal.
+Jenkins profile is link:https://funding.communitybridge.org/projects/jenkins[here].
+
+== Specification
+
+=== Profile setup
+
+* All funding destinations are enabled
+
+=== Donation destinations
+
+** Bug Bounty - link:https://www.jenkins.io/security/gift/[Gifts for Security Vulnerability reports]
+** Development - for sponsoring development outreach programs,
+                 development infrastructure,
+                 and targeted projects within the Jenkins Roadmap (e.g. online hackfests)
+** Documentation - for sponsoring documentation outreach programs
+                 and targeted projects within the Jenkins Roadmap(e.g. online hackfests)
+** Marketing - for sponsoring marketing outreach programs
+** Mentorship - for sponsoring mentorship-focused programs like Outreachy or CommunityBridge Mentorship
+** Meetups - sponsoring swag for Jenkins Online Meetups and local meetups
+** Travel - travel grants for Jenkins contributors
+
+Donations will NOT be used for paying personnel.
+
+=== Donations process
+
+Donations will happen through the Community Bridge Funding system.
+The process is documented link:https://docs.linuxfoundation.org/docs/communitybridge/communitybridge-funding/donate-sponsor[here].
+
+=== Expenses process
+
+Similar to the former SPI process, 
+Jenkins governance board is responsible for approving all expenses submitted through Community Bridge.
+
+* Expenses and Budgets should be approved through the Jenkins developer mailing list and
+  the link:https://www.jenkins.io/project/governance-meeting/[Governance meeting] **BEFORE** the expense happens
+* Expenses should be submitted through the Community Bridge Expensify portal.
+* Expense reports should be approved by a Governance Board member
+
+== Motivation
+
+
+
+== Reasoning
+
+
+
+== Backwards Compatibility
+
+N/A
+
+== Security
+
+* All Expensify account administrators (Jenkins board members) will be required to configure a two-factor authentication
+
+== Infrastructure Requirements
+
+* Infrastructure is provided by the Linux Foundation
+** link:https://funding.communitybridge.org/[Community Bridge Funding Portal]
+
+== Testing
+
+N/A
+
+== Prototype Implementation
+
+A Community Bridge Funding proof-of-concept was set up as a part of the Community Bridge Mentorship evaluation in 2019.
+You can find the Jenkins project's profile page link:https://funding.communitybridge.org/projects/jenkins[here].
+
+== References
+
+* link:https://funding.communitybridge.org/projects/jenkins[Jenkins Profile on Community Bridge]
+* link:https://docs.linuxfoundation.org/docs/communitybridge/communitybridge-funding[Community Bridge Funding Documentation]
+* link:https://communitybridge.org/faq/#funding[Community Bridge Funding FAQ]
+* link:https://wiki.jenkins.io/display/JENKINS/Reimbursement+of+Expenses+via+SPI[Reimbursement of Expenses via SPI]
