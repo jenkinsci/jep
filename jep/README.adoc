@@ -77,6 +77,11 @@
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/slide[Alex{nbsp}Earl]
 
+| Draft{nbsp}:speech_balloon:
+| link:15/README.adoc[JEP-15: Jenkins funding on Community Bridge]
+| link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
+| TBD
+
 | Final{nbsp}:lock:
 | link:200/README.adoc[JEP-200: Switch Remoting/XStream blacklist to a whitelist]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
