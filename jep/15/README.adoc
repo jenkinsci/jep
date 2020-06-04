@@ -74,11 +74,11 @@ see link:https://issues.jenkins-ci.org/browse/WEBSITE-703[WEBSITE-703].
 Jenkins project operates thanks to contributions and sponsorship (infra, meetups, swag, etc.).
 Historically we did not have high cash flows in the project.
 We mostly spend money on infra and outreach programs (swag, travel grants, Outreachy and Community Bridge in 2019).
-Sponsorships cover the most of our "big" expenses (e.g. Azure, meetup.com, contributor summits, etc.),
-and there is a tendency to formalize such donations through Continuous Delivery Foundation (CDF).
+Sponsorships cover most of our "big" expenses (e.g. Azure, meetup.com, contributor summits, etc.),
+and there is a plan to formalize such donations through Continuous Delivery Foundation (CDF).
 Sponsorship through CDF is a lengthy process not suitable for small donations.
 
-It would be great to have a simple process so that we can raise money to facilitate the initiatives in the project and to cover infrastructure costs which ave no sponsorship.
+It would be great to have a simple process so that we can raise money to facilitate the initiatives in the project and to cover infrastructure costs which have no sponsorship.
 This proposal suggests using the link:https://funding.communitybridge.org/[CommunityBridge] service which is operated by the Linux Foundation and used by many projects within the foundation and sub-foundations like CDF. 
 
 == Specification
@@ -121,10 +121,10 @@ Although the majority of the Jenkins infrastructure costs are covered by sponsor
 we still spend some money.
 
 Many link:https://www.jenkins.io/projects/infrastructure/#services[Jenkins infrastructure services] are used to serve documentation to users (jenkins.io, plugins.jenkins.io, etc.) or to support the Jenkins development flows (ci.jenkins.io, repo.jenkins.io, bugtracker, etc.)
-We may dedicate _Development_ and _Documentation_ donations to cover infrastructure costs, e.g.
+We may dedicate _Development_ and _Documentation_ donations to cover infrastructure costs, e.g.:
 
-* Covering network transit costs (not including that incurred by mirrors)
-* SSL certificates on services which have not been migrated to LetsEncrypt or similar services yet
+* Covering network transit costs (not including those incurred by mirrors)
+* SSL certificates on services which have not been migrated to LetsEncrypt or similar services
 * Domain costs
 * Cost of services used to support the infrastructure (e.g. CDN)
 * Equipment/replacement hardware
@@ -149,7 +149,7 @@ If approved, such donations will be reserved for a specific project and not used
 Targeted donations must not be considered as a contract work.
 Donations will **NOT** be used for paying personnel.
 They will be used to facilitate a particular initiative through the Jenkins community (events, mentorship programs, etc.).
-In no case Jenkins project will commit to deliver a feature or on a timeline.
+In no case Jenkins project will commit to deliver a feature or on a timeline based on a donation.
 
 === Process guidelines
 
@@ -157,7 +157,7 @@ In no case Jenkins project will commit to deliver a feature or on a timeline.
 
 * _Supporter_ - An individual or an organization donating money to the Jenkins project.
 * _Expense Requester_ - An individual or a company contributor requesting reimbursement.
-* _CommunityBridge administrator_ - a Jenkins board member with administrative access to the CommunityBridge profile
+* _CommunityBridge Administrator_ - a Jenkins board member with administrative access to the CommunityBridge profile
 ** Similar to the former SPI reimbursement process,
 Jenkins governance board is responsible for approving all expenses submitted through CommunityBridge.
 
