@@ -175,7 +175,7 @@ unless there is an exception documented in another JEP
 Budget requests should be submitted to the developer mailing list and discussed there,
 the Governance meeting will be doing a formal approval/rejection based on the community feedback.
 
-==== Donations process
+==== Donations Process
 
 Donations should be submitted through the CommunityBridge Funding system which supports donations by individuals and by organizations.
 It is possible to do a donation for "all project needs" or a targeted donation to any destination listed above.
@@ -186,32 +186,32 @@ For the Jenkins project all payment options are enabled:
 * One-time or monthly donations through via credit or debit card
 * One-time donations through invoices - for organizations making one-time donations
 
-==== Reimbursement process
+==== Reimbursement Process
 
 * Expenses should be pre-approved through the Jenkins developer mailing list and
 the link:https://www.jenkins.io/project/governance-meeting/[Governance meeting] **BEFORE** the expense happens.
-* The requester is registered on the CommunityBridge portal as a beneficiary
+* The requester is registered on the CommunityBridge portal as a beneficiary.
 * After the expense happens, the requester should submit an expense report through the CommunityBridge Expensify portal.
-* Expense reports should be approved by a CommunityBridge administrator
+* Expense reports should be approved by a CommunityBridge Administrator.
 
 === Implementation
 
-==== CommunityBridge portal
+==== CommunityBridge Portal
 
 * CommunityBridge configuration should be updated according to this JEP
-* At least 3 Jenkins Governance Board members should be added as CommunityBridge administrators
+* At least 3 Jenkins Governance Board members should be added as CommunityBridge Administrators
 
 ==== jenkins.io
 
 * link:https://www.jenkins.io/donate/[jenkins.io/donate] should be updated
 ** _Why donate?_ should be updated to reflect motivation of this JEP and to reference non-infrastructure donations.
 ** The page should reference this Jenkins Enhancement proposal.
-** Donations through SPI and ffis.de should be removed prom the page ads obsolete.
+** Donations through SPI and ffis.de should be removed from the page as obsolete.
 
 ==== GitHub Sponsor buttons
 
 One of the ways to facilitate the donations is to make donation buttons explicit on GitHub.
-There is a way to link:https://help.github.com/en/github/administering-a-repository/displaying-a-sponsor-button-in-your-repository[displayi a sponsor button in a repository]
+There is a way to link:https://help.github.com/en/github/administering-a-repository/displaying-a-sponsor-button-in-your-repository[display a sponsor button in a repository]
 which allows adding multiple links via a `FUNDING.yml` metadata file.
 
 * link:https://github.com/jenkinsci/[jenkinsci] GitHub organization -
