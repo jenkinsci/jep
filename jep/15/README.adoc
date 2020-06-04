@@ -9,62 +9,36 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-.**JEP Template**
-[TIP]
-====
-In this document, all text in a "Tip" block (or inline text with with a ":bulb:" on either side)
-MUST be removed and/or replaced with text appropriate to this JEP before submission.
-
-Sections may include additional help and advice in comments.
-":bulb:" entries in comments only need to be filled in if that text is uncommented.
-
-See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for full and accurate description of the JEP process and what is required in each section.
-====
-
-[TIP]
-====
-*BDFL-Delegate* is uncommented by default.
-As part of the in initial conversation or the JEP submission the sponsor should
-look for a BDFL Delegate.
-While not required, it is better for the community if Delegates perform most reviews.
-If no suitable BDFL-Delegate can be found, that row may be commented out.
-====
-
 .Metadata
 [cols="1h,1"]
 |===
 | JEP
-| 0000
+| 15
 
 | Title
-| :bulb: Title :bulb:
+| Jenkins funding on Community Bridge
 
 | Sponsor
-| :bulb: Link to github user page (if multiple, comma separated on one line). Example: link:https://github.com/username[User Name], link:https://github.com/username2[User Name 2] :bulb:
+| link:https://github.com/oleg-nenashev[Oleg Nenashev]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
 | Not Submitted :information_source:
 
 | Type
-| :bulb: Standards, Informational, or Process :bulb:
+| Process
 
 | Created
-| :bulb: Date (YYYY-MM-DD) :bulb:
+| Date (2020-06-04)
 
 | BDFL-Delegate
 | TBD
 
-//
-//
-// Uncomment if there is an associated placeholder JIRA issue.
-//| JIRA
-//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
-//
-//
-// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
-//| Discussions-To
-//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+| JIRA
+| https://issues.jenkins-ci.org/browse/INFRA-2396[INFRA-2396]
+
+| Discussions-To
+| link:https://groups.google.com/forum/#!msg/jenkinsci-dev/iLutO2X0bdg/4nfrEetjDwAJ[Jenkins developer mailing list]
 //
 //
 // Uncomment if this JEP depends on one or more other JEPs.
@@ -86,51 +60,211 @@ If no suitable BDFL-Delegate can be found, that row may be commented out.
 == Abstract
 
 This JEP documents the policy for donations received through the Community Bridge Funding portal.
-Jenkins profile is link:https://funding.communitybridge.org/projects/jenkins[here].
+This JEP replaces original funding through SPI and ffis.de documented on link:https://www.jenkins.io/donate/p[jenkins.io/donate].
+Jenkins profile on CommunityBridge is available link:https://funding.communitybridge.org/projects/jenkins[here].
+
+== Motivation
+
+At the moment of this JEP submission the Jenkins project had no fully operational way for donating money to the project.
+Donations through link:http://www.spi-inc.org/[Software in the Public Interest (SPI)] were deprecated due to the ongoing transition of the project
+to link:https://cd.foundation/[Continuous Delivery Foundation (CDF)] as of May 2019.
+Status of donations through ffis.de was unknown,
+see link:https://issues.jenkins-ci.org/browse/WEBSITE-703[WEBSITE-703].
+
+Jenkins project operates thanks to contributions and sponsorship (infra, meetups, swag, etc.).
+Historically we did not have high cash flows in the project.
+We mostly spend money on infra and outreach programs (swag, travel grants, Outreachy and Community Bridge in 2019).
+Sponsorships cover the most of our "big" expenses (e.g. Azure, meetup.com, contributor summits, etc.),
+and there is a tendency to formalize such donations through Continuous Delivery Foundation (CDF).
+Sponsorship through CDF is a lengthy process not suitable for small donations.
+
+It would be great to have a simple process so that we can raise money to facilitate the initiatives in the project and to cover infrastructure costs which ave no sponsorship.
+This proposal suggests using the link:https://funding.communitybridge.org/[CommunityBridge] service which is operated by the Linux Foundation and used by many projects within the foundation and sub-foundations like CDF. 
 
 == Specification
 
 === Profile setup
 
-* All funding destinations are enabled
+Jenkins project will have a single profile link:https://funding.communitybridge.org/projects/jenkins[here].
+Sub-projects and plugin teams may introduce their own profiles on CommunityBridge or elsewhere,
+but it is not within scope of this JEP.
+The profile page will have a project description and a reference to this process JEP.
+
+image::funding_top.png[Community Bridge Profile]
 
 === Donation destinations
 
-** Bug Bounty - link:https://www.jenkins.io/security/gift/[Gifts for Security Vulnerability reports]
-** Development - for sponsoring development outreach programs,
-                 development infrastructure,
-                 and targeted projects within the Jenkins Roadmap (e.g. online hackfests)
-** Documentation - for sponsoring documentation outreach programs
-                 and targeted projects within the Jenkins Roadmap(e.g. online hackfests)
-** Marketing - for sponsoring marketing outreach programs
-** Mentorship - for sponsoring mentorship-focused programs like Outreachy or CommunityBridge Mentorship
-** Meetups - sponsoring swag for Jenkins Online Meetups and local meetups
-** Travel - travel grants for Jenkins contributors
+==== Enabled donation destinations
 
-Donations will NOT be used for paying personnel.
+The following donation destinations will be enabled on the CommunityBridge profile:
 
-=== Donations process
+* _Bug Bounty_ - link:https://www.jenkins.io/security/gift/[Gifts for Security Vulnerability reports]
+* _Development_
+** Facilitating development initiatives within the link:https://www.jenkins.io/project/roadmap/[Jenkins Roadmap] (e.g. online hackfests, mentorship projects).
+** Covering development-related infrastructure costs.
+* _Documentation_
+** Facilitating documentation initiatives within the link:https://www.jenkins.io/project/roadmap/[Jenkins Roadmap] (e.g. online hackfests, mentorship projects)
+** Covering documentation-related infrastructure costs.
+* _Marketing_ -  sponsoring marketing outreach programs (e.g. swag to contributors)
+* _Mentorship_ - sponsoring link:https://www.jenkins.io/sigs/advocacy-and-outreach/outreach-programs/[outreach programs] like Outreachy or CommunityBridge Mentorship
+* _Meetups_ - sponsoring link:https://www.jenkins.io/events/online-meetup/[Jenkins Online Meetups] 
+               and link:https://www.jenkins.io/projects/jam/[local meetups] (swag, promotion materials)
+* _Travel_ - funding the Jenkins Travel Grant Program (see link:../12/README.adoc[JEP-12])
 
-Donations will happen through the Community Bridge Funding system.
-The process is documented link:https://docs.linuxfoundation.org/docs/communitybridge/communitybridge-funding/donate-sponsor[here].
+Donations will **NOT** be used for paying personnel.
 
-=== Expenses process
+==== Donations to infrastructure
 
-Similar to the former SPI process, 
-Jenkins governance board is responsible for approving all expenses submitted through Community Bridge.
+At the moment CommunityBridge does not support _Infrastructure_ as a donation destination.
+There is a request for enhancement submitted for it, but there is no confirmed delivery date for that.
+Although the majority of the Jenkins infrastructure costs are covered by sponsorships,
+we still spend some money.
 
-* Expenses and Budgets should be approved through the Jenkins developer mailing list and
-  the link:https://www.jenkins.io/project/governance-meeting/[Governance meeting] **BEFORE** the expense happens
-* Expenses should be submitted through the Community Bridge Expensify portal.
-* Expense reports should be approved by a Governance Board member
+Many link:https://www.jenkins.io/projects/infrastructure/#services[Jenkins infrastructure services] are used to serve documentation to users (jenkins.io, plugins.jenkins.io, etc.) or to support the Jenkins development flows (ci.jenkins.io, repo.jenkins.io, bugtracker, etc.)
+We may dedicate _Development_ and _Documentation_ donations to cover infrastructure costs, e.g.
 
-== Motivation
+* Covering network transit costs (not including that incurred by mirrors)
+* SSL certificates on services which have not been migrated to LetsEncrypt or similar services yet
+* Domain costs
+* Cost of services used to support the infrastructure (e.g. CDN)
+* Equipment/replacement hardware
 
+==== Donation goals
 
+This JEP does not define specific donation goals.
+The reference implementation sets an example annual goal and the distribution.
+The screenshot below defines the sample goals from the prototype implementation.
+
+Actual donation goals are to be defined by the link:https://www.jenkins.io/project/governance-meeting/[Jenkins Governance Meeting] at the beginning of each year.
+
+image::funding_goals.png[Sample Funding goals]
+
+==== Targeted donations
+
+Supporters may donate money for specific projects or roadmap initiatives.
+Example: sponsoring a particular outreach program (e.g. Outreachy) or a specific feature (e.g. JCasC Plugin for Visual Studio Code).
+Such donations should be discussed with the Jenkins Board and finally approved by the Governance meeting before the donation happens.
+If approved, such donations will be reserved for a specific project and not used for alternate expenses.
+
+Targeted donations must not be considered as a contract work.
+Donations will **NOT** be used for paying personnel.
+They will be used to facilitate a particular initiative through the Jenkins community (events, mentorship programs, etc.).
+In no case Jenkins project will commit to deliver a feature or on a timeline.
+
+=== Process guidelines
+
+==== Roles and terms
+
+* _Supporter_ - An individual or an organization donating money to the Jenkins project.
+* _Expense Requester_ - An individual or a company contributor requesting reimbursement.
+* _CommunityBridge administrator_ - a Jenkins board member with administrative access to the CommunityBridge profile
+** Similar to the former SPI reimbursement process,
+Jenkins governance board is responsible for approving all expenses submitted through CommunityBridge.
+
+==== Use of donations
+
+As stated in the link:https://docs.linuxfoundation.org/docs/communitybridge/communitybridge-funding/[CommunityBridge documentation],
+_the project maintainers can adjust fund allocations and may not use the funds per requested allocation_.
+In the Jenkins project we intend to respect the targeted allocations,
+and to follow the requested allocation when possible.
+We may diverge from that in the case of emergency project needs.
+
+Decisions about allocating money are made at the link:https://www.jenkins.io/project/governance-meeting/[Jenkins Governance Meeting],
+unless there is an exception documented in another JEP
+(e.g. link:./8/README.adoc[JEP-8: Google Summer of Code Budgeting and Expenses]).
+Budget requests should be submitted to the developer mailing list and discussed there,
+the Governance meeting will be doing a formal approval/rejection based on the community feedback.
+
+==== Donations process
+
+Donations should be submitted through the CommunityBridge Funding system which supports donations by individuals and by organizations.
+It is possible to do a donation for "all project needs" or a targeted donation to any destination listed above.
+The process is documented link:https://docs.linuxfoundation.org/docs/communitybridge/communitybridge-funding/[here].
+
+For the Jenkins project all payment options are enabled:
+
+* One-time or monthly donations through via credit or debit card
+* One-time donations through invoices - for organizations making one-time donations
+
+==== Reimbursement process
+
+* Expenses should be pre-approved through the Jenkins developer mailing list and
+the link:https://www.jenkins.io/project/governance-meeting/[Governance meeting] **BEFORE** the expense happens.
+* The requester is registered on the CommunityBridge portal as a beneficiary
+* After the expense happens, the requester should submit an expense report through the CommunityBridge Expensify portal.
+* Expense reports should be approved by a CommunityBridge administrator
+
+=== Implementation
+
+==== CommunityBridge portal
+
+* CommunityBridge configuration should be updated according to this JEP
+* At least 3 Jenkins Governance Board members should be added as CommunityBridge administrators
+
+==== jenkins.io
+
+* link:https://www.jenkins.io/donate/[jenkins.io/donate] should be updated
+** _Why donate?_ should be updated to reflect motivation of this JEP and to reference non-infrastructure donations.
+** The page should reference this Jenkins Enhancement proposal.
+** Donations through SPI and ffis.de should be removed prom the page ads obsolete.
+
+==== GitHub Sponsor buttons
+
+One of the ways to facilitate the donations is to make donation buttons explicit on GitHub.
+There is a way to link:https://help.github.com/en/github/administering-a-repository/displaying-a-sponsor-button-in-your-repository[displayi a sponsor button in a repository]
+which allows adding multiple links via a `FUNDING.yml` metadata file.
+
+* link:https://github.com/jenkinsci/[jenkinsci] GitHub organization -
+  Sponsor button is added to the Jenkins core and other core components.
+** Maintainers of plugins, tools, and subprojects can add the Sponsor buttons if they wish.
+   They can use the Jenkins project funding or to setup their own funding.
+* link:https://github.com/jenkins-infra/[jenkins-infra] -
+  Funding is enabled globally inside the organization via `FUNDING.yml` in link:https://github.com/jenkins-infra/.github[jenkins-infra/.github]
+
+Sample `FUNDING.yml`:
+
+```yml
+community_bridge: jenkins
+custom: ["https://www.jenkins.io/donate/#why-donate"]
+```
+
+Resulting UI:
+
+image::github_sponsor.png[Sample GitHub Sponsors]
+
+==== Promotion
+
+Once the CommunityBridge funding is finalized and the JEP is accepted,
+we will promote the new funding portal through the Jenkins blog and social media.
+CDF and CommunityBridge resources will be also used to promote the funding portal.
+
+There will be no wide promotion campaign of funding through the Jenkins resources and distributions.
+It might be considered if the Jenkins project needs to raise money to cover the day-to-day operations needs,
+but it is out of the scope of this JEP.
 
 == Reasoning
 
+=== Why Community Bridge and not another service?
 
+There are indeed multiple funding and donations services available for open-source projects.
+Notable ones are Open Collective, GitHub Sponsors, Patreon and so on.
+These services provide comparable functionality and services.
+CommunityBridge is a new service link:https://www.linuxfoundation.org/press-release/2019/03/the-linux-foundation-launches-new-communitybridge-platform-to-help-sustain-open-source-communities/[launched in Mar 2019],
+and it might be less popular than other services.
+
+CommunityBridge is chosen based on a fact that it is provided by the Linux Foundation.
+Jenkins project is migrating to Continuous Delivery Foundation which is a part of the Linux Foundation. 
+So the suggested decision is to use a service provided by the project's foundation.
+
+There are some advantages which justify this choice:
+
+* Supports for donations by individuals and by organizations.
+* Support for anonymous donations.
+* Support for showing a history of donations and a list of supporters.
+* Support provided by the Linux Foundation which is not a 3rd party for the project.
+* Expensify as a backend for expense reports management.
+  It simplifies managing expenses by contributors, with the Linux Foundation providing support for payment logistics.
+* Integration with the link:https://people.communitybridge.org/[Community Bridge Mentorship service] which allows running mentorship programs and funding them through community Bridge.
 
 == Backwards Compatibility
 
@@ -138,7 +272,11 @@ N/A
 
 == Security
 
-* All Expensify account administrators (Jenkins board members) will be required to configure a two-factor authentication
+* Only Jenkins board members will have access to the Expensify administrative backend.
+  This might be changed in future versions of this JEP (e.g. when a new treasurer role is introduced).
+* All Expensify account administrators will be required to configure a two-factor authentication
+* CommunityBridge account administrators are expected to periodically review the list of beneficiaries and clean up obsolete entries
+  so that a limited number of users can submit the expense reports.
 
 == Infrastructure Requirements
 
@@ -152,7 +290,9 @@ N/A
 == Prototype Implementation
 
 A Community Bridge Funding proof-of-concept was set up as a part of the Community Bridge Mentorship evaluation in 2019.
-You can find the Jenkins project's profile page link:https://funding.communitybridge.org/projects/jenkins[here].
+
+* link:https://funding.communitybridge.org/projects/jenkins[Jenkins project's profile] on CommunityBridge.
+* link:https://github.com/oleg-nenashev/demo-jenkins-config-as-code[Sample repository] with `FUNDING.yml` setup.
 
 == References
 
