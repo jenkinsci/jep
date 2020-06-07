@@ -65,7 +65,7 @@ Jenkins profile on CommunityBridge is available link:https://funding.communitybr
 
 == Motivation
 
-At the moment of this JEP submission the Jenkins project had no fully operational way for donating money to the project.
+At the moment of this JEP submission the Jenkins project had no fully operational way for individuals or organizations to donate money to the project.
 Donations through link:http://www.spi-inc.org/[Software in the Public Interest (SPI)] were deprecated due to the ongoing transition of the project
 to link:https://cd.foundation/[Continuous Delivery Foundation (CDF)] as of May 2019.
 Status of donations through ffis.de was unknown,
