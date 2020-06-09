@@ -1,0 +1,172 @@
+= JEP-0000: Continuous Delivery of Jenkins Components
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 0000
+
+| Title
+| Continuous Delivery of Jenkins Components
+
+| Sponsor
+| link:https://github.com/jglick[Jesse Glick]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| :bulb: Date (YYYY-MM-DD) :bulb:
+
+| BDFL-Delegate
+| TBD
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+Maintainers of Jenkins component repositories on GitHub, especially plugins, can opt into continuous delivery (CD).
+In this mode, every successful build of the `master` branch by ci.jenkins.io results in a new release of the component.
+GitHub Actions are used to rebuild the component and deploy it to Artifactory,
+without the need for maintainers to use personal credentials or local builds.
+An extension of [JEP-305](https://jenkins.io/jep/305) is used to pick deterministic version numbers;
+`maven-release-plugin` (MRP) is not used.
+
+== Specification
+
+TODO current system in `incrementals-tools` + `log-cli` plus
+
+* Change the trigger from `master` push to use the [`status` event](https://help.github.com/en/actions/reference/events-that-trigger-workflows#status-event-status) verifying that `continuous-integration/jenkins/branch` has a `state` of `success`. Then the `mvn deploy` command can just pass `-DskipTests` because ci.jenkins.io has already run our tests in whatever environments are configured.
+* Use the Action for Release Drafter to create a release (typically including exactly one entry, from a recently merged PR).
+* Patch https://github.com/jenkins-infra/repository-permissions-updater/blob/6ff61dc11b830f1984dde4ba9e82870218d702f7/Jenkinsfile#L54-L56 to recognize some flag in a repo’s YAML entry (e.g., `bot: true`) and create an Artifactory bot account with permissions to only the listed paths, then generate an access token for that account and upload it to the GitHub secret `ARTIFACTORY_TOKEN` in the corresponding repository. (Maybe also create an `ARTIFACTORY_USER` pseudo-secret to match.)
+* Create a new Action wrapping the `release.sh` + `settings.xml` so we do not have this stuff duplicated.
+* Add `block-MRP` profile to `plugin-pom`.
+
+== Motivation
+
+Traditionally, all Jenkins components have been released using the [Maven Release plugin](https://maven.apache.org/maven-release/maven-release-plugin/) (MRP).
+This is typically invoked by a developer on a local clone of the repository in the `master` branch:
+
+[source,bash]
+----
+mvn -B release:prepare release:perform
+----
+
+MRP presumes that the `<version>` in the POM is something like `1.23-SNAPSHOT`.
+It will create a commit `[maven-release-plugin] prepare release mycomponent-1.23` with a tag and a release version.
+It will then create a commit `[maven-release-plugin] prepare for next development iteration` going to `1.24-SNAPSHOT`,
+push both commits to the `master` branch,
+build the component from the release tag,
+and deploy that binary to Artifactory.
+
+MRP has numerous intrinsic flaws that render it poorly suited to a project like Jenkins
+with a huge number of interrelated components (mainly, though not exclusively, plugins) and many maintainers:
+
+* Every maintainer must obtain (and keep secure) personal credentials to Artifactory in order to perform releases.
+  Each maintainer also needs to be listed in `repository-permissions-updater`,
+  even if they have full rights to the GitHub repository.
+* A release involves running tests locally (e.g., on a laptop).
+  CPU-intensive test runs can interfere with other work;
+  flaky tests might behave differently than in on ci.jenkins.io.
+* It is impossible to verify that released binaries actually correspond to the purported tagged sources.
+* Developers need to pick version numbers whether or not the numbers have any meaning to humans.
+* Every release must have two machine-generated Git commits,
+  since the version number is encoded in the version-controlled `pom.xml`.
+* It is tricky to `git bisect` a problem reproduced only by a _dependency_ on a component
+  since even local builds (`mvn install`) get various version numbers.
+* The `perform` phase cannot be simulated in advance,
+  and involves procedures never used in other circumstances,
+  so often things go wrong and leave a “botched release” which must be cleaned up and retried.
+  Novice and even experienced Jenkins developers often have to ask for help with release problems.
+* Pull requests are sometimes approved and merged but left unreleased for months on end,
+  merely because the PR’s value did not seem justified by the overhead of performing a release.
+
+The concept of continuous delivery (CD) is that “releases” should be cheap and frequent.
+Rather than forcing a maintainer to run a slow and perilous command every time anything of value is merged,
+harness automation to publish the newest source changes right away and without intervention.
+
+== Reasoning
+
+This JEP is inspired by [JEP-221](https://jenkins.io/jep/221),
+but diverges from that proposal in various technical aspects.
+
+TODO JEP-305-based version numbers vs. manually managed tags
+TODO GitHub Actions vs. webhooks & dedicated trusted CI server
+TODO vs. ci.jenkins.io + incrementals-publisher
+
+== Backwards Compatibility
+
+TODO updatec-center2 generation, PCT, plugin manager
+
+== Security
+
+The GitHub runner is solely responsible for rebuilding binary artifacts (such as plugin `*.hpi`) from sources.
+This defends against certain supply-chain attacks:
+if ci.jenkins.io were compromised, at worst this could result in components with test failures being deployed.
+The deployed binaries would still have been built from the source files stored on GitHub.
+
+Currently we presume that component maintainers are not maliciously inserting backdoors into manually deployed binaries.
+So long as maintainers are granted direct access to Artifactory as well as the option to use CD, trusting them is unavoidable,
+and it is desirable to offer this option to maintainers in order for example to produce backport releases
+(since the current system only handles `master` pushes).
+If a maintainer were _not_ given Artifactory credentials (or simply not listed in RPU),
+they would not be able to deploy unauthorized binaries except by stealing the bot access token,
+which should only be possible by actually running a GitHub action that would at least leave an audit trail.
+
+== Infrastructure Requirements
+
+TODO RPU patch
+
+== Testing
+
+Due to the number of moving parts and authentication, it is likely that testing will need to be manual.
+We can use this system for a while on a few canary plugins to flush out any problems with Dependabot, `plugin-compat-tester`, etc.
+
+== Prototype Implementation
+
+The [`log-cli` plugin](https://github.com/jenkinsci/log-cli-plugin) implements basic aspects of this proposal.
+
+== References
+
+* [Incrementals: superseding Maven releases](https://github.com/jenkinsci/incrementals-tools#superseding-maven-releases)
+* [`log-cli` plugin](https://github.com/jenkinsci/log-cli-plugin)
+* [Repository Permissions Updater](https://github.com/jenkins-infra/repository-permissions-updater#about) (RPU)
