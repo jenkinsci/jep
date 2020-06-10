@@ -225,12 +225,12 @@ Sample `FUNDING.yml`:
 
 ```yml
 community_bridge: jenkins
-custom: ["https://www.jenkins.io/donate/#why-donate"]
+custom: ["https://jenkins.io/donate/#why-donate"]
 ```
 
 Resulting UI:
 
-image::github_sponsor.png[Sample GitHub Sponsors]
+image::github_sponsor.PNG[Sample GitHub Sponsors]
 
 ==== Promotion
 
