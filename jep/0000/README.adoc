@@ -213,6 +213,12 @@ This is the default `FingerprintStorage` provided, when no external pluggable s
 As mentioned in this link:https://issues.jenkins-ci.org/browse/JENKINS-62543[JIRA issue], the current API of `SaveableListener` requires an `XMLFile` as an argument, which is not entirely practical for external storages.
 To resolve this, we use virtual files for the time being, till this issue is resolved.
 
+==== Extending the API
+
+We will extend the API, as needed in the future.
+One way may be to look at plugins and introduce methods which can improve them.
+E.g. Bulk Loading the fingerprints for web UI.
+
 == Motivation
 
 File fingerprinting is a way to track which version of a file is being used by a job/build, making dependency tracking easy.
