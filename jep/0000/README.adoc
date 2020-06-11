@@ -291,4 +291,6 @@ link:https://docs.google.com/document/d/10f3IXTA6UMLUOFMTH_atQ3XlyWB3S7KGNCtTZmO
 
 link:https://www.jenkins.io/projects/gsoc/2020/projects/external-fingerprint-storage/[Project Page]
 
+link:https://docs.google.com/document/d/1_0lH_s5NpV860NjLmZT8cKd26Z4GrtXpgkBydDt103M/edit#[Meeting Agenda]
+
 link:https://docs.google.com/document/d/13IJWd91uwZ3bGGSHfTx5ulue0rTD9XV8owvncIELkF0/edit#[Daily Progress Document]
