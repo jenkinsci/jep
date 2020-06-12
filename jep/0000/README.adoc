@@ -1,0 +1,293 @@
+= JEP-0000: External Fingerprint Storage
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 0000
+
+| Title
+| External Fingerprint Storage
+
+| Sponsor
+| link:https://github.com/stellargo[Sumit Sarin]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2020-06-10
+
+| BDFL-Delegate
+| -
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+| JIRA
+| https://issues.jenkins-ci.org/browse/JENKINS-62345[JENKINS-62345]
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+| Discussions-To
+| link:https://gitter.im/jenkinsci/external-fingerprint-storage[Gitter channel]
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+This proposal extends Jenkins core to support storing of fingerprints in an external storage, and allow them to be tracked across Jenkins instances through the entire CI/CD flow.
+These external storages will be configurable by storage specific plugins.
+This JEP builds such a reference implementation for Redis.
+
+== Specification
+
+=== Top-level requirements
+
+* Fingerprint Storage has a pluggable architecture
+* Reference implementations:
+
+** Local XML-based file system storage (current implementation) - default implementation in Jenkins core
+** Redis backed Fingerprint Storage Plugin
+
+=== Design decisions
+
+This section contains a top-level description of concerns we need to address in the design.
+
+==== Fingerprint Storage destinations
+
+The solution should be generic enough in order to support common storage types. The following storage types are supported:
+
+* Local XML-based file system storage (current implementation)
+* Redis backed Fingerprint Storage Plugin
+
+The API does not force a particular ORM mapping for the storages.
+The storage plugins are passed on the `Fingerprint` objects, leaving it up to them to decide how to save the fingerprints.
+
+==== Fingerprints across instances
+
+[NOTE]
+====
+In this proposal, fingerprint's unique ID (or ID) is used to refer (as of now) to the MD5 checksum of the fingerprinted file.
+====
+
+We propose a design where it is the responsibility of the plugin to provide instance specific fingerprints to Jenkins core when required for traditional read/write/update.
+This means that fingerprints stored in the storage with the same ID by two different Jenkins instances will not be merged.
+
+The idea behind this is that the external storage will work as a common store for all the fingerprints, but the intended design of current offering isn’t affected.
+
+However, the API includes functionality to retrieve fingerprints from other instances in the case when they are required for tracing purposes.
+This allows for tracing fingerprints across Jenkins instances.
+Implementation wise, this is achieved by plugins ensuring that Fingerprints have an associated Jenkins Instance ID.
+
+==== Local to External Migration
+
+When a plugin is configured and enabled, the fingerprints are transferred from the local storage to the external storage.
+
+This by followed by clearing the local database of fingerprints from Jenkins HOME ONLY if the writes are successful.
+
+==== Cleaning up Fingerprints
+
+The current implementation of `FingerprintCleanupThread` works by periodically iterating over the fingerprints and deleting the ones whose builds and jobs are no longer present in the system.
+
+For an external storage implementation, this creates a problem because the external storage cannot query a Jenkins instance.
+
+This proposal offers the following solution:
+
+* When a build/job is deleted from Jenkins, a subsequent update is performed to the fingerprint to reflect this change
+* An async periodic work is run to check if any fingerprint has no jobs/builds associated with it and delete it. (But, it would ensure that if there is a deletion blocking `FingerprintFacet`, then the fingerprint would not be deleted.)
+
+The above solution is provided to the user as an option, and can be toggled because it may be the case that storing data (i.e. fingerprints) might be cheaper than to do consistent updates in the database.
+
+We do not propose to revamp the `FingerprintCleanupThread` to use the above logic at the moment.
+
+==== External to Local Migration (out of scope for MVP)
+
+In case of external to local migration, a bulk read is issued, and the fingerprints are written to the local XML-based storage.
+The following words of caution are included for the user:
+
+* This operation may lead to high traffic
+* This operation may take up a significant space of the disk (the user has to ensure such space is available), and
+* This operation will not retrieve fingerprints or fingerprint metadata which is associated (created) by other Jenkins instances.
+
+In case the disk may get full due to external factors during the migration or if there is a network failure, the transfer is aborted, all the downloaded fingerprints are deleted, and the user is notified.
+
+==== External to External Migration (out of scope for MVP)
+
+Such a migration can be either intra plugin (same storage system, but different instance), or inter plugin (different plugin).
+
+The proposal offers the following solution:
+
+* A bulk read of the fingerprints is performed. This operation could be memory intensive, which the Jenkins instance may not have. Hence, if this fails, as a fallback we read the fingerprints one at a time.
+* Fingerprints are saved to the new external storage (destination).
+* Lastly, deletion of the fingerprints from the source is performed.
+
+Note that the above solution only migrates the fingerprints of the Jenkins instance performing the migration and not the other instances.
+For a complete migration, the above procedure has to be performed on all the instances.
+
+=== Design
+
+The following new API entities are introduced:
+
+* `FingerprintStorage` - Abstract Class (Extension Point)
+
+Implementations:
+
+* `FileFingerprintStorage` - Class implementing `FingerprintStorage`
+
+The introduced entities are described below.
+
+==== NEW: `FingerprintStorage` Abstract Class (Extension Point)
+
+It represents the storage being used for fingerprints.
+It defines an API for storing fingerprints to a storage and retrieving them.
+
+Methods offered:
+
+* `void save(Fingerprint fp)`
+
+** Saves the given fingerprint.
+
+* `Fingerprint load(String id)`
+
+** Returns the fingerprint associated with the given ID (and the Jenkins instance ID), from the storage.
+
+* `void delete(String id)`
+
+** Deletes the fingerprint with the associated fingerprint ID (and jenkins instance ID).
+
+* `List<Fingerprint> load(String[] ids)`
+
+** Returns fingerprints associated with given ids (and the jenkins instance id).
+
+* `List<Fingerprint> loadAcrossInstancesById(String id)`
+
+** Returns all the fingerprints associated with the given id, across all Jenkins instances connected to the external storage.
+
+===== Implementing `loadAcrossInstancesById`
+
+The key for each fingerprint is a concatenation of the unique ID of the fingerprint and the Jenkins instance ID.
+When we implement tracing methods, we’d  like to fetch all the fingerprints given the unique ID of fingerprint irrespective of their Jenkins instance ID.
+For doing this, we maintain a set whose keys are fingerprints' unique IDs and the values in the sets are all the instance IDs which saved fingerprints having this unique ID.
+
+This allows us to save a fingerprint in `O(1)`, load in `O(1)`.
+`loadAcrossInstancesById` is `O(s)` where s is the size of the set.
+It also decreases the network traffic because once we have all the keys needed from the set, we can do a GET in a single request.
+
+==== NEW: `FileFingerprintStorage` class
+
+The current XML based local file storage is moved over to `FileFingerprintStorage`, which implements `FingerprintStorage`.
+
+This is the default `FingerprintStorage` provided, when no external pluggable storage plugin has been configured.
+
+==== `SaveableListener`
+
+As mentioned in this link:https://issues.jenkins-ci.org/browse/JENKINS-62543[JIRA issue], the current API of `SaveableListener` requires an `XmlFile` as an argument, which is not entirely practical for external storages.
+To resolve this, we use virtual files for the time being, till this issue is resolved.
+
+==== Extending the API
+
+We will extend the API, as needed in the future.
+One way may be to look at plugins and introduce methods which can improve them.
+E.g. Bulk Loading the fingerprints for web UI.
+
+== Motivation
+
+File fingerprinting is a way to track which version of a file is being used by a job/build, making dependency tracking easy.
+The fingerprint engine of Jenkins can track usages of artifacts, credentials, files, etc. within the system.
+Currently, it does this by maintaining a local XML-based database which leads to dependence on the physical disk of the Jenkins master.
+
+Allowing fingerprint storage to be moved to external storages decreases the dependence of Jenkins instances on the physical disk space and also allows for tracking the flow of fingerprints across instances of Jenkins connected to the same external storage.
+
+Advantages of using external storage drivers:
+
+* Open up the option of using pay-as-you-use cloud storages (often cheaper)
+* Make backup management easier
+* Ensure good availability and reliability
+
+== Reasoning
+
+=== Choice of Reference Implementation
+
+We choose an In-Memory DB: Redis due to the following reasons:
+
+* Since fingerprints are lightweight, they might be useful for users who don’t have a massive number of fingerprints and would benefit from the performance bump from IMDBs
+* Fast integration testing.
+* Popularity of Redis
+
+=== Direct agent to external storage interaction
+
+We decide not not to allow Jenkins agents to read/write fingerprint related information directly from/to the external storage without increasing load on the master.
+This is because the fingerprint data is lightweight and submission of the fingerprint back to the master involves just a small RPC packet.
+Therefore the load reduction may not be huge, plus there would be added code complexity as discussed link:https://docs.google.com/document/d/10f3IXTA6UMLUOFMTH_atQ3XlyWB3S7KGNCtTZmOUGdM/edit?disco=AAAAJMwkCMc[here]
+
+
+
+== Backwards Compatibility
+
+Backwards compatibility is highly important for the existing XML-based database to keep running smoothly.
+The proposal is designed accordingly, and explained in the Design section.
+
+== Security
+
+Fingerprints generally do contain sensitive information like artifacts, jobs, builds, etc. that we may want to hide from some set of users.
+
+We propose to add a word of caution to Jenkins admins that the external storage stores sensitive information and it is their responsibility to ensure security.
+
+[WARNING]
+====
+*(jglick)*
+I do not think cross-instance fingerprint storage (`loadAcrossInstancesById` etc.) can be considered safe. Access to job information is defined only by `AuthorizationStrategy` which applies only within one instance. Recommend deleting all cross-instance functionality.
+====
+
+
+This proposal does not define strong security requirements for external fingerprint storage implementations.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+Testing for the pluggable storage in Jenkins core uses JUnit and Jenkins Test Harness.
+For the reference implementation inside the Redis Fingeprint Storage Plugin, we use testcontainers for integration testing.
+
+== Prototype Implementation
+
+* link:https://github.com/jenkinsci/jenkins/pull/4731[PR in Jenkins Core for Externalizing Fingerprint Storage]
+* link:https://github.com/jenkinsci/redis-fingerprint-storage-plugin[Reference Implementation]
+
+== References
+
+* link:https://docs.google.com/document/d/1_LhdsOdvxUDLgyo8vAB1PJ5-85csr7YVI3WkEyNv42w/edit#[Design Document]
+* link:https://www.jenkins.io/projects/gsoc/2020/projects/external-fingerprint-storage/[Project Page]
+* link:https://docs.google.com/document/d/1_0lH_s5NpV860NjLmZT8cKd26Z4GrtXpgkBydDt103M/edit#[Meeting Agenda]
+* link:https://docs.google.com/document/d/13IJWd91uwZ3bGGSHfTx5ulue0rTD9XV8owvncIELkF0/edit#[Daily Progress Document]
