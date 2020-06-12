@@ -284,6 +284,7 @@ For the reference implementation inside the Redis Fingeprint Storage Plugin, we 
 
 * link:https://github.com/jenkinsci/jenkins/pull/4731[PR in Jenkins Core for Externalizing Fingerprint Storage]
 * link:https://github.com/jenkinsci/redis-fingerprint-storage-plugin[Reference Implementation]
+* link:https://www.youtube.com/watch?v=yzd-y5ByXg8&feature=youtu.be[Prototype Demo]
 
 == References
 
