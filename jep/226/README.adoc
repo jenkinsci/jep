@@ -1,4 +1,4 @@
-= JEP-0000: External Fingerprint Storage
+= JEP-226: External Fingerprint Storage
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -13,7 +13,7 @@ endif::[]
 [cols="1h,1"]
 |===
 | JEP
-| 0000
+| 226
 
 | Title
 | External Fingerprint Storage
