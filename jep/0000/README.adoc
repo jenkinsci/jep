@@ -75,7 +75,7 @@ This JEP builds such a reference implementation for Redis.
 * Fingerprint Storage has a pluggable architecture
 * Reference implementations:
 
-** Local XML-based file system storage (current implementation)
+** Local XML-based file system storage (current implementation) - default implementation in Jenkins core
 ** Redis backed Fingerprint Storage Plugin
 
 === Design decisions
@@ -92,7 +92,7 @@ The solution should be generic enough in order to support common storage types. 
 The API does not force a particular ORM mapping for the storages.
 The storage plugins are passed on the `Fingerprint` objects, leaving it up to them to decide how to save the fingerprints.
 
-==== Instance Specificness of Fingerprints
+==== Fingerprints across instances
 
 [NOTE]
 ====
@@ -227,7 +227,7 @@ Currently, it does this by maintaining a local XML-based database which leads to
 
 Allowing fingerprint storage to be moved to external storages decreases the dependence of Jenkins instances on the physical disk space and also allows for tracking the flow of fingerprints across instances of Jenkins connected to the same external storage.
 
-External storages:
+Advantages of using external storage drivers:
 
 * Open up the option of using pay-as-you-use cloud storages (often cheaper)
 * Make backup management easier
@@ -277,7 +277,8 @@ There are no new infrastructure requirements related to this proposal.
 
 == Testing
 
-Testing is relatively straightforward using JUnit, JTH, testcontainers, etc.
+Testing for the pluggable storage in Jenkins core uses JUnit and Jenkins Test Harness.
+For the reference implementation inside the Redis Fingeprint Storage Plugin, we use testcontainers for integration testing.
 
 == Prototype Implementation
 
@@ -287,7 +288,7 @@ link:https://github.com/jenkinsci/redis-fingerprint-storage-plugin[Reference Imp
 
 == References
 
-link:https://docs.google.com/document/d/10f3IXTA6UMLUOFMTH_atQ3XlyWB3S7KGNCtTZmOUGdM/edit#[GSoC Proposal]
+link:https://docs.google.com/document/d/1_LhdsOdvxUDLgyo8vAB1PJ5-85csr7YVI3WkEyNv42w/edit#[Design Document]
 
 link:https://www.jenkins.io/projects/gsoc/2020/projects/external-fingerprint-storage/[Project Page]
 
