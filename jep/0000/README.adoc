@@ -129,7 +129,7 @@ The above solution is provided to the user as an option, and can be toggled beca
 
 We do not propose to revamp the `FingerprintCleanupThread` to use the above logic at the moment.
 
-==== External to Local Migration (Nice 2 Have)
+==== External to Local Migration (out of scope for MVP)
 
 In case of external to local migration, a bulk read is issued, and the fingerprints are written to the local XML-based storage.
 The following words of caution are included for the user:
@@ -140,7 +140,7 @@ The following words of caution are included for the user:
 
 In case the disk may get full due to external factors during the migration or if there is a network failure, the transfer is aborted, all the downloaded fingerprints are deleted, and the user is notified.
 
-==== External to External Migration (Nice 2 Have)
+==== External to External Migration (out of scope for MVP)
 
 Such a migration can be either intra plugin (same storage system, but different instance), or inter plugin (different plugin).
 
