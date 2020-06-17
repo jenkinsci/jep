@@ -124,7 +124,7 @@ This proposal offers the following solution:
 
 * An async periodic work is run to check if any fingerprint has no jobs/builds associated with it and delete it. (But, it would ensure that if there is a deletion blocking `FingerprintFacet`, then the fingerprint would not be deleted.)
 
-New methods to be introduced inside the `FingerprintStorage` class:
+New methods introduced inside the `FingerprintStorage` class:
 
 * `void setFingerprintCleanupThread(boolean toggle, @CheckForNull how_often_to_run_it)`
 
@@ -134,8 +134,8 @@ New methods to be introduced inside the `FingerprintStorage` class:
 
 ** Returns all the fingerprint ids currently stored by the particular Jenkins instance.
 
-We propose to revamp the `FingerprintCleanupThread` to use the new API.
-The new `FingerprintCleanupThread` will use `FingerprintStorage#getAllFingerprintIds()` to obtain the list of fingerprints to check. If all the associated builds to a fingerprint have been deleted, `FingerprintStorage#delete(String id)` will be called in order to delete the fingerprint.
+`FingerprintCleanupThread` is revamped to use the new API.
+The new `FingerprintCleanupThread` uses `FingerprintStorage#getAllFingerprintIds()` to obtain the list of fingerprints to check. If all the associated builds to a fingerprint have been deleted, `FingerprintStorage#delete(String id)` is called in order to delete the fingerprint.
 
 The above solution is provided to the user as an option, and can be toggled because it may be the case that storing data (i.e. fingerprints) might be cheaper than to do consistent updates in the database.
 
