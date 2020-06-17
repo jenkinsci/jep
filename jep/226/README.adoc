@@ -112,7 +112,15 @@ Implementation wise, this is achieved by plugins ensuring that Fingerprints have
 
 When a plugin is configured and enabled, the fingerprints are transferred from the local storage to the external storage.
 
-This by followed by clearing the local database of fingerprints from Jenkins HOME ONLY if the writes are successful.
+This is followed by clearing the local database of fingerprints from Jenkins HOME ONLY if the writes are successful.
+
+Following new methods are introduced in the `FingerprintStorage` class:
+
+* `void localToExternalMigration(boolean cleanOnSuccess)`
+
+** This method transfers the fingerprints from the local file system storage to the configured external fingerprint storage. `cleanOnSuccess` cleans the transferred fingerprints from local storage on success. The method has package level scope, not publicly available.
+
+The above method can be called via the configuration page, and is available for use only when an external fingerprint storage plugin has been configured.
 
 ==== Cleaning up Fingerprints
 
@@ -140,18 +148,19 @@ The following words of caution are included for the user:
 
 In case the disk may get full due to external factors during the migration or if there is a network failure, the transfer is aborted, all the downloaded fingerprints are deleted, and the user is notified.
 
+The following new method is introduced in `FingerprintStorage` class:
+
+* `void externalToLocalMigration(boolean cleanOnSuccess)`
+
+** This method transfers the fingerprints from the external storage to the local file system based fingerprint storage. `cleanOnSuccess` cleans the transferred fingerprints from local storage on success. The method has package level scope, not publicly available.
+
+The above method can be called via the configuration page, and is available for use only when an external fingerprint storage plugin has been configured.
+
 ==== External to External Migration (out of scope for MVP)
 
 Such a migration can be either intra plugin (same storage system, but different instance), or inter plugin (different plugin).
 
-The proposal offers the following solution:
-
-* A bulk read of the fingerprints is performed. This operation could be memory intensive, which the Jenkins instance may not have. Hence, if this fails, as a fallback we read the fingerprints one at a time.
-* Fingerprints are saved to the new external storage (destination).
-* Lastly, deletion of the fingerprints from the source is performed.
-
-Note that the above solution only migrates the fingerprints of the Jenkins instance performing the migration and not the other instances.
-For a complete migration, the above procedure has to be performed on all the instances.
+This can be done by an external to local migration from the old plugin, followed by a local to external migration with the new plugin.
 
 === Design
 
