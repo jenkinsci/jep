@@ -126,9 +126,9 @@ This proposal offers the following solution:
 
 New methods introduced inside the `FingerprintStorage` class:
 
-* `void setFingerprintCleanupThread(boolean toggle, @CheckForNull how_often_to_run_it)`
+* `void setFingerprintCleanupThread(boolean toggle, @CheckForNull int recurrence_period)`
 
-** FingerprintCleanupThread can be enabled or disabled (true is ON, false is OFF). External storages can use this method. We can set the trigger interval also here.
+** FingerprintCleanupThread can be enabled or disabled (true is ON, false is OFF). External storages can use this method. `recurrence_period` is time in milliseconds.
 
 * `List<String> getAllFingerprintIds()`
 
