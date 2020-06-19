@@ -128,7 +128,7 @@ New methods introduced inside the `FingerprintStorage` class:
 
 * `void setFingerprintCleanupThread(boolean toggle, @CheckForNull how_often_to_run_it)`
 
-** FingerprintCleanupThread can be enabled or disabled. External storages can use this method. We can set the trigger interval also here.
+** FingerprintCleanupThread can be enabled or disabled (true is ON, false is OFF). External storages can use this method. We can set the trigger interval also here.
 
 * `List<String> getAllFingerprintIds()`
 
