@@ -134,8 +134,11 @@ New methods introduced inside the `FingerprintStorage` class:
 
 ** Returns all the fingerprint ids currently stored by the particular Jenkins instance.
 
-`FingerprintCleanupThread` is revamped to use the new API.
-The new `FingerprintCleanupThread` uses `FingerprintStorage#getAllFingerprintIds()` to obtain the list of fingerprints to check. If all the associated builds to a fingerprint have been deleted, `FingerprintStorage#delete(String id)` is called in order to delete the fingerprint.
+How the new fingerprint cleanup process now runs:
+
+* There will be a default implementation of fingerprint cleanup (albeit inefficient) which fetches all the fingerprint ids using `FingerprintStorage#getAllFingerprintIds()` and deletes them if they are qualified to be discarded.
+
+* Plugins can overwrite the above implementation to provide more efficient implementations which may use database specific features (e.g. pointers) to offer the cleanup facility.
 
 The above solution is provided to the user as an option, and can be toggled because it may be the case that storing data (i.e. fingerprints) might be cheaper than to do consistent updates in the database.
 
