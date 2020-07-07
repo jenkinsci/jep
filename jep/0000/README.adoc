@@ -117,7 +117,7 @@ with a huge number of interrelated components (mainly, though not exclusively, p
   and involves procedures never used in other circumstances,
   so often things go wrong and leave a “botched release” which must be cleaned up and retried.
   Novice and even experienced Jenkins developers often have to ask for help with release problems.
-* Pull requests are sometimes approved and merged but left unreleased for months on end,
+* Pull requests are sometimes approved and merged but https://github.com/jenkinsci/junit-attachments-plugin/pull/24#issuecomment-654900899[left unreleased for months on end],
   merely because the PR’s value did not seem justified by the overhead of performing a release.
 
 The concept of continuous delivery (CD) is that “releases” should be cheap and frequent.
