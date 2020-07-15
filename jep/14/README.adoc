@@ -83,70 +83,101 @@ Current version of the roadmap can be found here: link:https://www.jenkins.io/pr
 
 ====  Horizons
 
-Instead of providing delivery dates for various initiatives on the roadmap, we use three "horizons":
+Instead of providing delivery dates for various initiatives on the roadmap, we use the following "horizons":
 
-* **Current** - things being worked on presently with a known scope and design, typically specified a JEP.
-* **Near Term** - a wider area of focus with more flexibility of
-scope and design options (no specific timeframe but will be reconsidered
-in the future)
-* **Future** - higher level things to be considered with a broad scope
- (timescales varied - later items will be reprioritized once _Current_ and _Near Term_ items progress significantly)
-* **Completed** - Initiative which is largely completed and, in the case of user-facing changes, released/deployed.
+* **Future** - There is a consensus in the community that we would like this initiative to happen.
+  We intend to work on that in the future, but there is no ongoing development.
+* **Near Term** - We intend to start working on this initiative in the short term.
+  There are contributors who declared their plans to work on this initiative soon, but there is no ongoing development.
+* *Preview* - This initiative is available to Jenkins users and contributors for preview.
+  It may mean a release in the experimental update center, generally-available release with proper preview notice,
+  opt-in feature flag or configuration option, Beta API, or other documented way to deliver experimental changes in Jenkins.
+* **Current** - Things being worked on presently with a known scope and design, typically specified a JEP.
+* **Released** - Initiative which is largely completed and, in the case of user-facing changes, released/deployed.
 It is also properly documented and announced.
 There might be some minor follow-ups remaining.
 
-
-=== Technical implementation
-
-* Roadmap data files are stored in a GitHub repository.
-Location is to be defined.
-
-** Option 1: Storing the data file inside https://github.com/jenkins-infra/jenkins.io[https://github.com/jenkins-infra/jenkins.io]
-** Option 2: New https://github.com/jenkinsci/roadmap[https://github.com/jenkinsci/roadmap] repository
-Current prototype implementation allows downloading it from a remote location like CDN on the client side.
-For example, link:https://www.jsdelivr.com/[jsDelivr] allows using CDN for GitHub files, we use it on the plugin site.
-
-* Roadmap data files use a machine readable JSON or YAML format.
-  They include an array of entries.
-  Each of them represents a major initiative in the project.
-* Each entry includes the following information:
-** _Summary_ - short summary displayed on the Roadmap dashboard
-** _Description_ - detailed description which may be visualized in a popup window
-** _Category_ (or categories) - classifier of the initiative. Examples
-*** Features: Configuration-as-Code, UI/UX, Security, Packaging and Distributions, etc.
-*** Non-feature: “Infrastructure”, “Outreach programs”, “Governance”, etc.
-** _Status_ - Status of the initiative
-** _URL_ - Link to a page which provides details about the project.
-
-*** Project page on jenkins.io (e.g. a
-https://jenkins.io/projects/gsoc/2019/gitlab-support-for-multibranch-pipeline/[GSoC Project_])
-*** Section on a jenkins.io page (e.g.
-https://jenkins.io/sigs/docs#ongoing-projects[project description on a SIG page])
-*** Link to a Jira issue or EPIC (e.g.
-https://issues.jenkins-ci.org/browse/WEBSITE-637[WEBSITE-637])
+=== Implementation
 
 * Roadmap is visualized on the Jenkins website, as
 https://jenkins.io/project/roadmap[https://jenkins.io/project/roadmap].
-** Blueocean Roadmap frontend codebase is reworked to support the Jenkins roadmap.
-  Hard fork of the CSS/JS files will be used to be able to edit the roadmap quickly.
-* Governance documents are updated to reference the Roadmap page and to reference this JEP and the communication channels.
+* Roadmap uses a machine readable data file stored in the jenkins.io GitHub repository.
 
-==== Roadmap file sample
+=== Roadmap file structure
 
-See https://github.com/jenkins-infra/jenkins.io/pull/2957[jenkins.io/pull/2957].
+Roadmap data files use a machine readable YAML format.
+There are two data files:
+
+* `roadmap.yml` with the actual roadmap items being shown on the roadmap page
+* `archive.yml` with historical data.
+   It includesold completed and withdrawn initiatives which are not displayed on the roadmap page.
+
+Roadmap data file includes:
+
+* List of initiative statuses with descriptions
+* List of initiative labels with descriptions and, if applicable, URLs
+* List of initiative categories (based on use-case for Jenkins users or contributors).
+  Each category includes a list of major initiatives to be displayed on the roadmap.
+  Examples:
+** User-focused: Configuration-as-Code, UI/UX, Security, Packaging and Distributions, etc.
+** Contributor-focused: “Internal Infrastructure”, “Outreach programs”, “Governance”, etc.
+
+Each initiative entry includes the following information:
+* _Name_ - short summary displayed on the Roadmap dashboard
+* _Description_ - detailed description which may be visualized in a popup window
+* _Status_ - Status of the initiative
+* _Labels_ - List of labels associated with the roadmap
+* _URL_ - Link to a page providing details about the project.
+The page should provide details about the initiative and, ideally, describe ways to contribute and contact the community.
+Examples:
+** Project page on jenkins.io (e.g. a
+https://jenkins.io/projects/gsoc/2019/gitlab-support-for-multibranch-pipeline/[GSoC Project_])
+*** Section on a jenkins.io page (e.g.
+https://jenkins.io/sigs/docs#plugin-site-integration-with-github[project description on a SIG page])
+*** Link to a Jira issue or EPIC (e.g.
+https://issues.jenkins-ci.org/browse/WEBSITE-637[WEBSITE-637])
+
+==== Roadmap YAML samples
+
+The samples below show items which ar likely to be updated by Jenkins contributors.
+See the link:https://github.com/jenkins-infra/jenkins.io/blob/master/content/_data/roadmap/roadmap.yml[roadmap.yml] for more examples.
+
+Initiative sample:
+
+```yml
+  - name: "UI/UX: Look and Feel updates"
+      status: current
+      description: "Modernize the Jenkins Web interface styling and appearance"
+      link: https://jenkins.io/sigs/ux/#project-ui-look-and-feel
+      labels:
+      - feature
+```
+
+Label definition sample:
+
+```yml
+- name: outreach-program
+  displayName: Outreach Programs
+  description: Initiatives which facilitate contributions to specific areas
+  link: /sigs/advocacy-and-outreach/outreach-programs/
+```
 
 ==== Rendering sample
 
-WARNING: MOCK DATA!
+The screenshot below visualizes a preview version of the roadmap,
+and it might be out of date.
+See link:https://www.jenkins.io/project/roadmap/[project roadmap] for the actual state.
 
 image:roadmap_sample.png[image]
 
-Topics to address:
+=== Governance Documentation updates
 
-* Vertical layout consumes too much space when it comes to the target number of items (around 40?).
-  We could rework it to show Items in columns instead, it will allow to make it shorter.
+Governance documents need to be updated to reference the Roadmap page:
 
-=== Process
+* link:https://www.jenkins.io/project/governance[Project Governance Document]
+* link:https://www.jenkins.io/project/#project-governance[Project structure and Governance]
+
+=== Roadmap Management Process
 
 ==== Ownership
 
@@ -157,19 +188,19 @@ There is also a quarterly public roadmap review meeting organized by the maintai
 
 Controversial cases can be escalated to the developer mailing list.
 If consensus is not reached on the developer mailing list,
-then controversial cases will be resolved at the https://jenkins.io/project/governance-meeting/[Jenkins Governance Meeting].
+controversial cases will be resolved at the https://jenkins.io/project/governance-meeting/[Jenkins Governance Meeting].
 
 ==== Eligibility
 
-In order to be displayed on the roadmap, an initiative should match the following conditions:
+To be displayed on the roadmap, an initiative should match the following conditions:
 
-* Major value to the Jenkins users or to the community
-* Confirmed interest in the project by contributors.
-  A number of contributors should declare their intent to work on the project.
+* Major value to the Jenkins users or to the Jenkins community
+* Confirmed interest in the initiative,
+  based on the proposal review and consensus reached there.
 * Significant scope of work and project duration.
   We expect major initiatives to take weeks/months to complete.
-* Clear description available on the initiative page
-* Clear communication channels available on the initiative page.
+* Clear initiative description available on the initiative page.
+* Nice to have: communication channels documented on the initiative page.
   Mailing list, Gitter, meeting links (if applicable).
 * Nice to have: Contributing guidelines if there is any specifics in the project (required permissions, etc.)
 
@@ -178,12 +209,12 @@ In order to be displayed on the roadmap, an initiative should match the followin
 Any Jenkins contributor can submit a pull request with a suggestion for a Jenkins roadmap.
 Suggestions will be reviewed by “Roadmap maintainers”, and they will get the SIGs, sub-projects and subject matter experts involved if needed.
 
-* Each Jenkins project entity (e.g. SIG/sub-project/team) is eligible to add their roadmap entries.
-  In such cases these entries should be discussed in the entity channels and signed off by entity leaders.
+* Each Jenkins community entity (e.g. SIG/sub-project/team) is eligible to add their roadmap entries.
+  In such case initiatives should be discussed in the entity channels and signed off by the entity leader(s).
   _Roadmap maintainers_ still review the formal side of the request.
 * Maintainers of other plugins and components are eligible to submit their roadmap proposals.
   Such pull requests will be reviewed by Roadmap Maintainers, see the _Eligibility_ section below.
-* Any other Jenkins community member can submit a proposal.
+* Any Jenkins community member can submit a proposal.
   If there is no SIG/sub-project behind the proposal, it will likely require a discussion in Jenkins channels to verify eligibility and improve visibility of the proposal.
 
 ==== Maintaining roadmap entries
@@ -191,7 +222,7 @@ Suggestions will be reviewed by “Roadmap maintainers”, and they will get the
 We expect the initiative submitters to track progress of the roadmap initiatives and to update the initiative statuses accordingly.
 The “Roadmap maintainers” team will be doing periodic scrubs of the roadmap to discover and modify outdated entries,
 but there is no guarantee of full consistency for the roadmap (“eventual consistency”).
-Whomever discovers an issue, pull requests are welcome.
+A contributor who discovers an issue is welcome to submit a pull requests or to report an issue link:https://github.com/jenkins-infra/jenkins.io/issues[here].
 
 ==== Roadmap review meeting
 
@@ -204,9 +235,14 @@ This meeting will be used to discuss the completed initiatives, verify the state
 _Roadmap maintainers_ are responsible to keep the number of items in the roadmap within a comprehensible range.
 Recommendation is to have a limited number of projects per category:
 
-* “Current” - up to 3
-* “Near Term” - up to 3
+* "Released" - keep items for up to 6 months after the release
+* “Current” - up to 5
+* “Near Term” - up to 5
 * “Future” - up to 5
+
+
+To simplify search, initiatives should be labeled.
+Other grouping mechanisms can be introduced later to make the initiatives more discoverable.
 
 == Rollout plan
 
@@ -284,9 +320,14 @@ Testing will be performed as a part of the experimental phase until the roadmap 
 == Prototype Implementation
 
 * link:https://jenkins.io/project/roadmap/[Roadmap page on jenkins.io]
-* link:https://github.com/jenkins-infra/jenkins.io/blob/master/content/_data/roadmap/roadmap.yml[Roadmap data]
+* link:https://github.com/jenkins-infra/jenkins.io/blob/master/content/_data/roadmap/roadmap.yml[Roadmap data YAML]
 
 == References
 
+* link:https://www.jenkins.io/project/roadmap/[Public Jenkins Roadmap page]
+* link:https://github.com/jenkins-infra/jenkins.io/blob/master/content/_data/roadmap/roadmap.yml[Roadmap YAML file]
 * https://docs.google.com/document/d/1-OGpDPWkOdKw-e8C0v9hUGgQshCLmToodo0biwlejdk/edit%23heading%3Dh.xmew3vtz09zz[Meeting notes - Jenkins contributor Summit on Jan 31, 2020]
-* https://jenkins.io/zh/projects/blueocean/roadmap/[Blue Ocean roadmap] on cn.jenkins.io
+* "Public Jenkins Roadmap preview" online meetup on Jul 10, 2020:
+link:https://www.youtube.com/watch?v=ldWBY5BdQ5I[video recording] 
+link:https://docs.google.com/presentation/d/1_T2nZhP1WS2Fw0OLVAJV14Ke6nEsqBjLcdAHiygCmNs/edit?usp=sharing[slides],
+link:https://www.meetup.com/Jenkins-online-meetup/events/271768902/[Meetup page]
