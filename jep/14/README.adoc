@@ -86,13 +86,13 @@ Current version of the roadmap can be found here: link:https://www.jenkins.io/pr
 Instead of providing delivery dates for various initiatives on the roadmap, we use the following "horizons":
 
 * **Future** - There is a consensus in the community that we would like this initiative to happen.
-  We intend to work on that in the future, but there is no ongoing development.
+  We intend to work on that in the future, but there is no active development.
 * **Near Term** - We intend to start working on this initiative in the short term.
-  There are contributors who declared their plans to work on this initiative soon, but there is no ongoing development.
+  There are contributors who declared their plans to work on this initiative soon, but there is no active development.
 * *Preview* - This initiative is available to Jenkins users and contributors for preview.
   It may mean a release in the experimental update center, generally-available release with proper preview notice,
   opt-in feature flag or configuration option, Beta API, or other documented way to deliver experimental changes in Jenkins.
-* **Current** - Things being worked on presently with a known scope and design, typically specified a JEP.
+* **Current** - Things being worked on presently with a known scope and design, typically specified in a JEP.
 * **Released** - Initiative which is largely completed and, in the case of user-facing changes, released/deployed.
 It is also properly documented and announced.
 There might be some minor follow-ups remaining.
@@ -210,7 +210,7 @@ Any Jenkins contributor can submit a pull request with a suggestion for a Jenkin
 Suggestions will be reviewed by “Roadmap maintainers”, and they will get the SIGs, sub-projects and subject matter experts involved if needed.
 
 * Each Jenkins community entity (e.g. SIG/sub-project/team) is eligible to add their roadmap entries.
-  In such case initiatives should be discussed in the entity channels and signed off by the entity leader(s).
+  In such case, initiatives should be discussed in the entity channels and signed off by the entity leader(s).
   _Roadmap maintainers_ still review the formal side of the request.
 * Maintainers of other plugins and components are eligible to submit their roadmap proposals.
   Such pull requests will be reviewed by Roadmap Maintainers, see the _Eligibility_ section below.
