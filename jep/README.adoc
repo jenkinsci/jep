@@ -72,7 +72,7 @@
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/bitwiseman[Liam{nbsp}Newman]
 
-| Draft{nbsp}:speech_balloon:
+| Active{nbsp}:smile:
 | link:14/README.adoc[JEP-14: Public roadmap for major initiatives in the Jenkins project]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/slide[Alex{nbsp}Earl]
