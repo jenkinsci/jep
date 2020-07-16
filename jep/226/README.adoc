@@ -111,20 +111,21 @@ Implementation wise, this is achieved by plugins ensuring that Fingerprints have
 ==== Migrations
 
 We propose to not implement explicit migrations in one go.
-The newly configured external storage will gradually take over the fingerprints from disk storage.
+Once an external fingerprint storage is configured, the new fingerprints are stored directly in the new storage engine.
+However, the old fingerprints present on the disk storage are migrated as and when they are used.
 
 Basic idea is this:
 
 * save new fingerprints to the external storage
-* when using a fingerprint from disk storage, delete it and save it in the external storage.
+* when using a fingerprint from disk storage, delete it after loading and save it in the external storage.
 
-Implementation wise, this will involve changes in the methods in the following manner:
+Implementation wise, this is implemented in the following manner (insinde `FingerprintStorage` class):
 
 * `save`
 ** remains unaltered
 
 * `load`
-** If fingerprint is found in external storage, fetch it and return; just like earlier
+** If fingerprint is found in external storage, fetch it and return.
 ** If not found, and `getReady` for file system storage is `true`, try loading the fingerprint from file system storage.
 *** If found, load it, save it in external storage, and delete from file system storage.
 
@@ -132,6 +133,11 @@ Implementation wise, this will involve changes in the methods in the following m
 ** Try deleting fingerprint in external storage.
 ** If `getReady` for file system storage is `true`, then try deleting it in file system storage.
 
+This allows the fingerprints to be migrated gradually from the local storage to the external storage and prevent
+huge migrations in one go.
+
+One caveat is that in case the fingerprint cleanup is turned on, the fingerprints will get transferred whenever
+cleanup is triggered.
 
 ==== Cleaning up Fingerprints
 
