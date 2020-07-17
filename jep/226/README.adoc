@@ -108,11 +108,36 @@ However, the API includes functionality to retrieve fingerprints from other inst
 This allows for tracing fingerprints across Jenkins instances.
 Implementation wise, this is achieved by plugins ensuring that Fingerprints have an associated Jenkins Instance ID.
 
-==== Local to External Migration
+==== Migrations
 
-When a plugin is configured and enabled, the fingerprints are transferred from the local storage to the external storage.
+We propose to not implement explicit migrations in one go.
+Once an external fingerprint storage is configured, the new fingerprints are stored directly in the new storage engine.
+However, the old fingerprints present on the disk storage are migrated as and when they are used.
 
-This by followed by clearing the local database of fingerprints from Jenkins HOME ONLY if the writes are successful.
+Basic idea is this:
+
+* save new fingerprints to the external storage
+* when using a fingerprint from disk storage, delete it after loading and save it in the external storage.
+
+Implementation wise, this is implemented in the following manner (insinde `FingerprintStorage` class):
+
+* `save`
+** remains unaltered
+
+* `load`
+** If fingerprint is found in external storage, fetch it and return.
+** If not found, and `getReady` for file system storage is `true`, try loading the fingerprint from file system storage.
+*** If found, load it, save it in external storage, and delete from file system storage.
+
+* `delete`
+** Try deleting fingerprint in external storage.
+** If `getReady` for file system storage is `true`, then try deleting it in file system storage.
+
+This allows the fingerprints to be migrated gradually from the local storage to the external storage and prevent
+huge migrations in one go.
+
+One caveat is that in case the fingerprint cleanup is turned on, the fingerprints will get transferred whenever
+cleanup is triggered.
 
 ==== Cleaning up Fingerprints
 
@@ -128,30 +153,6 @@ This proposal offers the following solution:
 The above solution is provided to the user as an option, and can be toggled because it may be the case that storing data (i.e. fingerprints) might be cheaper than to do consistent updates in the database.
 
 We do not propose to revamp the `FingerprintCleanupThread` to use the above logic at the moment.
-
-==== External to Local Migration (out of scope for MVP)
-
-In case of external to local migration, a bulk read is issued, and the fingerprints are written to the local XML-based storage.
-The following words of caution are included for the user:
-
-* This operation may lead to high traffic
-* This operation may take up a significant space of the disk (the user has to ensure such space is available), and
-* This operation will not retrieve fingerprints or fingerprint metadata which is associated (created) by other Jenkins instances.
-
-In case the disk may get full due to external factors during the migration or if there is a network failure, the transfer is aborted, all the downloaded fingerprints are deleted, and the user is notified.
-
-==== External to External Migration (out of scope for MVP)
-
-Such a migration can be either intra plugin (same storage system, but different instance), or inter plugin (different plugin).
-
-The proposal offers the following solution:
-
-* A bulk read of the fingerprints is performed. This operation could be memory intensive, which the Jenkins instance may not have. Hence, if this fails, as a fallback we read the fingerprints one at a time.
-* Fingerprints are saved to the new external storage (destination).
-* Lastly, deletion of the fingerprints from the source is performed.
-
-Note that the above solution only migrates the fingerprints of the Jenkins instance performing the migration and not the other instances.
-For a complete migration, the above procedure has to be performed on all the instances.
 
 === Design
 
