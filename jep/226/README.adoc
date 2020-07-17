@@ -141,18 +141,26 @@ cleanup is triggered.
 
 ==== Cleaning up Fingerprints
 
-The current implementation of `FingerprintCleanupThread` works by periodically iterating over the fingerprints and deleting the ones whose builds and jobs are no longer present in the system.
+The current implementation of `FingerprintCleanupThread` works by periodically iterating over the fingerprints and
+editing the job and build information of the ones based on whether they are still present in the system. It also
+deletes the fingerprints which do not have any build or job associated with them.
 
-For an external storage implementation, this creates a problem because the external storage cannot query a Jenkins instance.
+We extend this fingerprint cleanup functionality to be supported by external storages. `FingerprintStorage` API is
+extended with the following methods:
 
-This proposal offers the following solution:
+* `iterateAndCleanupFingerprints(TaskListener taskListener)`
 
-* When a build/job is deleted from Jenkins, a subsequent update is performed to the fingerprint to reflect this change
-* An async periodic work is run to check if any fingerprint has no jobs/builds associated with it and delete it. (But, it would ensure that if there is a deletion blocking `FingerprintFacet`, then the fingerprint would not be deleted.)
+** Plugins can implement this method (which is called by Jenkins core periodically) to iterate and cleanup the
+fingerprints. The reason to design it this way, and not to iterate all the fingerprints via core, is because
+external storages may be able to implement more efficient traversal strategies on their own.
 
-The above solution is provided to the user as an option, and can be toggled because it may be the case that storing data (i.e. fingerprints) might be cheaper than to do consistent updates in the database.
+* `boolean cleanFingerprint(Fingerprint fingerprint, TaskListener taskListener)`
 
-We do not propose to revamp the `FingerprintCleanupThread` to use the above logic at the moment.
+** This provides a reference implementation of cleanup, which external storages can use to cleanup a fingerprint.
+They may use this, or extend it to provide custom implementations.
+
+Finally, we introduce the option to turn off fingerprint cleanup. This is done because it may be the case that storing
+extra data may be cheaper than performing cleanups, especially with external storages.
 
 === Design
 
