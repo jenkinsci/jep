@@ -116,31 +116,26 @@ This by followed by clearing the local database of fingerprints from Jenkins HOM
 
 ==== Cleaning up Fingerprints
 
-The current implementation of `FingerprintCleanupThread` works by periodically iterating over the fingerprints and deleting the ones whose builds and jobs are no longer present in the system.
+The current implementation of `FingerprintCleanupThread` works by periodically iterating over the fingerprints and
+editing the job and build information of the ones based on whether they are still present in the system. It also
+deletes the fingerprints which do not have any build or job associated with them.
 
-For an external storage implementation, this creates a problem because the external storage cannot query a Jenkins instance.
+We extend this fingerprint cleanup functionality to be supported by external storages. `FingerprintStorage` API is
+extended with the following methods:
 
-This proposal offers the following solution:
+* `iterateAndCleanupFingerprints(TaskListener taskListener)`
 
-* An async periodic work is run to check if any fingerprint has no jobs/builds associated with it and delete it. (But, it would ensure that if there is a deletion blocking `FingerprintFacet`, then the fingerprint would not be deleted.)
+** Plugins can implement this method (which is called by Jenkins core periodically) to iterate and cleanup the
+fingerprints. The reason to design it this way, and not to iterate all the fingerprints via core, is because
+external storages may be able to implement more efficient traversal strategies on their own.
 
-New methods introduced inside the `FingerprintStorage` class:
+* `boolean cleanFingerprint(Fingerprint fingerprint, TaskListener taskListener)`
 
-* `void setFingerprintCleanupThread(boolean toggle, @CheckForNull int recurrence_period)`
+** This provides a reference implementation of cleanup, which external storages can use to cleanup a fingerprint.
+They may use this, or extend it to provide custom implementations.
 
-** FingerprintCleanupThread can be enabled or disabled (true is ON, false is OFF). External storages can use this method. `recurrence_period` is time in milliseconds.
-
-* `List<String> getAllFingerprintIds()`
-
-** Returns all the fingerprint ids currently stored by the particular Jenkins instance.
-
-How the new fingerprint cleanup process now runs:
-
-* There will be a default implementation of fingerprint cleanup (albeit inefficient) which fetches all the fingerprint ids using `FingerprintStorage#getAllFingerprintIds()` and deletes them if they are qualified to be discarded.
-
-* Plugins can overwrite the above implementation to provide more efficient implementations which may use database specific features (e.g. pointers) to offer the cleanup facility.
-
-The above solution is provided to the user as an option, and can be toggled because it may be the case that storing data (i.e. fingerprints) might be cheaper than to do consistent updates in the database.
+Finally, we introduce the option to turn off fingerprint cleanup. This is done because it may be the case that storing
+extra data may be cheaper than performing cleanups, especially with external storages.
 
 ==== External to Local Migration (out of scope for MVP)
 
