@@ -116,6 +116,22 @@ there have been numerous changes which would break some clients:
 * methods renamed, parameters deleted, and parameter and return types changed
   (e.g., `PasswordEncoder.encodePassword(String, Object)` → `String encode(CharSequence)`)
 
+=== Bytecode patching
+
+A related notion is to include Spring Security verbatim in Jenkins core,
+and encourage plugins to compile against it directly,
+but offer binary (not source) compatibility for existing plugin releases
+by dynamically changing constant pool references in Java bytecode as it is loaded.
+Jenkins already uses a `bytecode-compatibility-transformer` library to process `@AdaptField` annotations for binary compatibility;
+this would be a more extensive transformation.
+
+Besides the usual severe drawbacks of such tricks—opacity,
+lack of interoperation with debuggers and other IDE tooling,
+lack of source compatility—this approach suffers from the same problems as repackaging:
+it would only even work for the relatively simple package/class renames.
+(Trying to patch bytecode to accommodate deeper changes such as to method signatures
+would require a large, complex tool that does not yet exist.)
+
 === Delegating to Spring Security
 
 A possibility considered early during development was to have Jenkins core security implementation classes and plugins continue to refer to Acegi Security types,
@@ -236,6 +252,7 @@ It is unclear how extensive test coverage in Jenkins core really is when it come
 ** link:https://issues.jenkins-ci.org/browse/JENKINS-41827[JENKINS-41827] _JenkinsRule mode to use realistic class loading_
 * Miscellany
 ** link:https://github.com/jenkinsci/ldap-plugin/pull/17/files#r113542499[discussion in ldap-plugin #17] about supported configuration vs. Groovy bean bindings
+** link:https://github.com/jenkinsci/bytecode-compatibility-transformer[bytecode-compatibility-transformer]
 * Tips on migrating between Spring Security versions
 ** https://dzone.com/articles/pathway-acegi-spring-security-[Acegi → 2] (unofficial)
 ** http://www.integratingstuff.com/2011/04/30/migrating-from-spring-security-2-to-spring-security-3/[2 → 3] (unofficial)
