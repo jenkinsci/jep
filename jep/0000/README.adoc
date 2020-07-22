@@ -56,16 +56,31 @@ Give a short (200 word) description of the technical issue addressed.
 
 == Specification
 
-[TIP]
-====
-Provide a detailed specification of what is being proposed.
-Be as technical and detailed as needed to allow new or existing Jenkins developers
-to reasonably understand the scope/impact of an implementation.
+This work consists of several phases, both in Jenkins core and plugins.
 
-* Use present tense - describe what the proposal "does" (as if it were already done), not what it will do.
-* Do not discuss alternative designs that were rejected - those belong in the Reasoning section.
-* Avoid in-depth discussion or justification of design choices - that belongs in the Reasoning section.
-====
+* Classpath changes in Jenkins core:
+** The actual Acegi Security JAR is removed from the classpath, replaced with Spring Security.
+** All of Spring is updated to the current release (5.x).
+** LDAP-specific classes are not readded.
+* All of Jenkins core is switched to use Spring Security as its primary model.
+* `org.acegisecurity.*` types are reintroduced only in cases where it seems there are a lot of plugins using them, using clean reimplementations.
+** `Sid` and subtypes are for now simply reimplemented, rather than delegating to the `spring-security-acl` module.
+** `toSpring` and `fromSpring` method are provided to interconvert Acegi Security and Spring Security types.
+** Subtyping relationships are not used for most interfaces, but _are_ used for selected exception types.
+** `org.springframework.dao.DataAccessException` is deprecated.
+** Existing Jenkins API methods referring to `org.acegisecurity.*` types are retained where feasible but deprecated and bridged to new Spring Security equivalents.
+* (TBD) A new simplified API is created to hide the details of Spring Security and cover the operations most commonly required by plugins:
+** obtain current identity, whether a real person ~ `User` or `SYSTEM` or `ANONYMOUS` or an unidentified but authenticated person
+** check password
+** temporarily switch identity
+** check permissions
+* Some important plugins are made to compile and run against the resulting core version using some combination of:
+** Replacing idioms which are already unnecessary (e.g., switch to `ACL.as`).
+** Using the new simplified API.
+** Expanding compatibility bridges in core.
+* Ensuring compatibility for plugins implementing `SecurityRealm`, which are harder to deal with. These may simply require new releases built against Spring Security. Fortunately there are not that many of them: a few in regular use or previously bundled (`ldap`, `active-directory`, `reverse-proxy-auth-plugin`, `pam`, `github-oauth`, etc.) and some lesser-used ones (`crowd2`, `saml`, etc.).
+* Making sure core plus all plugins mentioned in the setup wizard (even if not `suggested`) work together.
+* Track status of other “long-tail” plugins and offer assistance to maintainers.
 
 == Motivation
 
@@ -76,6 +91,14 @@ This section may also contain any historical context such as how things were don
 
 * Do not discuss design choices or alternative designs that were rejected - those belong in the Reasoning section.
 ====
+
+=== Technical debt
+
+A lot of this code was written 13 years ago by Kohsule, has barely been touched since,
+and involves heavy modifications to Acegi Security functionality,
+in some cases apparently to work around limitations that may well have been addressed years ago in Spring Security.
+Working with long-obsolete APIs is tricky due to lack of knowledge—the Spring Security maintainer may barely remember how things were.
+The Jenkins CERT team has to examine code for vulnerabilities rather than relying on community knowledge in CVEs.
 
 == Reasoning
 
