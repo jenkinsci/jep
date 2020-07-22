@@ -159,7 +159,8 @@ The key problem is `hudson.security.AccessDeniedException2`, thrown from failed 
 A link:https://github.com/search?q=user%3Ajenkinsci+%22catch+%28AccessDeniedException%22&type=Code[number of places] not just in core but plugins
 catch its supertype `org.acegisecurity.AccessDeniedException`
 in order to recover gracefully from lack of permissions.
-Therefore, for compatibility, `AccessDeniedException2` was initially made to implement both the Acegi Security and Spring Security versions of `AccessDeniedException`.
+Therefore, for compatibility, `AccessDeniedException2` was initially made to implement both the Acegi Security and Spring Security versions of `AccessDeniedException`,
+and similarly for other exception types defined in Acegi Security.
 Unfortunately even this caused errors:
 
 [source]
