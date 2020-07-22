@@ -1,0 +1,179 @@
+= JEP-0000: Replace Acegi Security with Spring Security & upgrade Spring Framework
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 0000
+
+| Title
+| Replace Acegi Security with Spring Security & upgrade Spring Framework
+
+| Sponsor
+| link:https://github.com/jglick[Jesse Glick]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| :bulb: Date (YYYY-MM-DD) :bulb:
+
+| BDFL-Delegate
+| TBD
+
+| JIRA
+| https://issues.jenkins-ci.org/browse/JENKINS-5303[JENKINS-5303]
+
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+[TIP]
+====
+Give a short (200 word) description of the technical issue addressed.
+
+* Use present tense - describe what the proposal "does" (as if it were already done), not what it will do.
+* Do not go into technical details and instead put those in the Specification section.
+* Do not talk about history or why this needs to be done. Instead, add the history to the Motivation section.
+====
+
+== Specification
+
+[TIP]
+====
+Provide a detailed specification of what is being proposed.
+Be as technical and detailed as needed to allow new or existing Jenkins developers
+to reasonably understand the scope/impact of an implementation.
+
+* Use present tense - describe what the proposal "does" (as if it were already done), not what it will do.
+* Do not discuss alternative designs that were rejected - those belong in the Reasoning section.
+* Avoid in-depth discussion or justification of design choices - that belongs in the Reasoning section.
+====
+
+== Motivation
+
+[TIP]
+====
+Explain why the existing code base or process is inadequate to address the problem that the JEP solves.
+This section may also contain any historical context such as how things were done before this proposal.
+
+* Do not discuss design choices or alternative designs that were rejected - those belong in the Reasoning section.
+====
+
+== Reasoning
+
+[TIP]
+====
+Explain why particular design decisions were made.
+Describe alternate designs that were considered and related work. For example, how the feature is supported in other systems.
+Provide evidence of consensus within the community and discuss important objections or concerns raised during discussion.
+
+* Use sub-headings to organize this section for ease of readability.
+* Do not talk about history or why this needs to be done - that is part of Motivation section.
+====
+
+== Backwards Compatibility
+
+[TIP]
+====
+Describe any incompatibilities and their severity.
+Describe how the JEP proposes to deal with these incompatibilities.
+
+If there are no backwards compatibility concerns, this section may simply say:
+There are no backwards compatibility concerns related to this proposal.
+====
+
+== Security
+
+[TIP]
+====
+Describe the security impact of this proposal.
+Outline what was done to identify and evaluate security issues,
+discuss potential security issues and how they are mitigated or prevented,
+and detail how the JEP interacts with existing elements in Jenkins, such as permissions, authentication, authorization, etc.
+
+If this proposal will have no impact on security, this section may simply say:
+There are no security risks related to this proposal.
+====
+
+== Infrastructure Requirements
+
+[TIP]
+====
+Describe any impact on the Jenkins project infrastructure.
+
+Include any additions or changes, interactions with existing components,
+potential instabilities, service-level agreements,
+and responsibilities for continuing maintenance.
+Explain the scope of infrastructure changes with sufficient detail
+to allow initial and on-going cost (in both time and money) to be estimated.
+
+If this proposal will have no impact on infrastructure, this section may simply say:
+There are no new infrastructure requirements related to this proposal.
+====
+
+== Testing
+
+[TIP]
+====
+If the JEP involves any kind of behavioral change to code
+(whether in a Jenkins product or backend infrastructure),
+give a summary of how its correctness (and, if applicable, compatibility, security, etc.) can be tested.
+
+In the preferred case that automated tests can be developed to cover all significant changes, simply give a short summary of the nature of these tests.
+
+If some or all of the changes will require human interaction to verify them, explain why automated tests are considered impractical.
+Then, summarize what kinds of test cases might be required: user scenarios with action steps and expected outcomes.
+Detail whether behavior might be different based on the platform (operating system, servlet container, web browser, etc.)?
+Are there foreseeable interactions between different permissible versions of components (Jenkins core, plugins, etc.)?
+Does this change require that any special tools, proprietary software, or online service accounts to exercise a related code path (e.g., Active Directory server, GitHub login, etc.)?
+When will you complete testing relative to merging code changes, and might retesting be required if other changes are made to this area in the future?
+
+If this proposal requires no testing, this section may simply say:
+There are no testing issues related to this proposal.
+====
+
+== Prototype Implementation
+
+* link:https://github.com/jenkinsci/jenkins/pull/4848[jenkins #4848]
+
+== References
+
+* Searching for usages of Acegi Security in plugins
+** link:https://github.com/jenkins-infra/usage-in-plugins/pull/15[usage-in-plugins #15] (PoC by Wadeck)
+** link:https://github.com/jenkins-infra/usage-in-plugins/pull/16[usage-in-plugins #16] (general improvement by jglick)
+* Preparatory patches
+** link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/38[reverse-proxy-auth-plugin #38] (cleanup by Wadeck)
+** link:https://github.com/jenkinsci/authorize-project-plugin/pull/46[authorize-project-plugin #46] (cleanup by Wadeck)
+* Exploratory work
+** link:https://github.com/Wadeck/poc-acegi-security-facade-lib[poc-acegi-security-facade-lib] (PoC by Wadeck)
+** link:https://github.com/jenkinsci/jenkins/pull/4844[jenkins #4844] (PoC by Wadeck)
+* Reference implementation
+** link:https://github.com/jenkinsci/jenkins/pull/4848[jenkins #4848] (upgrade to Spring Security 5 by jglick)
+* Issues
+** link:https://issues.jenkins-ci.org/browse/JENKINS-5303[JENKINS-5303] _Upgrade Acegi Security to the latest Spring Security release_
+** link:https://issues.jenkins-ci.org/browse/JENKINS-49555[JENKINS-49555] _Split most of Spring Framework out of core_
+* Miscellany
+** link:https://github.com/jenkinsci/ldap-plugin/pull/17/files#r113542499[discussion in ldap-plugin #17] about supported configuration vs. Groovy bean bindings
+* Tips on migrating between Spring Security versions
+** https://dzone.com/articles/pathway-acegi-spring-security-[Acegi → 2] (unofficial)
+** http://www.integratingstuff.com/2011/04/30/migrating-from-spring-security-2-to-spring-security-3/[2 → 3] (unofficial)
+** link:https://docs.spring.io/spring-security/site/migrate/current/3-to-4/html5/migrate-3-to-4-xml.html[3 → 4] (official)
+** link:https://github.com/spring-projects/spring-security/issues/4874[4 → 5] (requested)
