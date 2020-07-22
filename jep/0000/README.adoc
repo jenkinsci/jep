@@ -45,14 +45,11 @@ endif::[]
 
 == Abstract
 
-[TIP]
-====
-Give a short (200 word) description of the technical issue addressed.
-
-* Use present tense - describe what the proposal "does" (as if it were already done), not what it will do.
-* Do not go into technical details and instead put those in the Specification section.
-* Do not talk about history or why this needs to be done. Instead, add the history to the Motivation section.
-====
+The Acegi Security library, used as the basis for the Jenkins security system, is replaced with a current version of its successor, Spring Security.
+Additionally, the Spring Framework libraries required by Spring Security (and to a small extent independently by Jenkins) are updated to the current version.
+Some Acegi Security types remain in the Jenkins API, but reimplemented as façades to delegate to Spring Security,
+to offer a modicum of backward compatibility for the many plugins referring to these types.
+Key plugins interacting with the security system are made to work with the update, by patching the plugins where required.
 
 == Specification
 
