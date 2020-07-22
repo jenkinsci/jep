@@ -69,28 +69,23 @@ This work consists of several phases, both in Jenkins core and plugins.
 ** Subtyping relationships are not used for most interfaces, but _are_ used for selected exception types.
 ** `org.springframework.dao.DataAccessException` is deprecated.
 ** Existing Jenkins API methods referring to `org.acegisecurity.*` types are retained where feasible but deprecated and bridged to new Spring Security equivalents.
-* (TBD) A new simplified API is created to hide the details of Spring Security and cover the operations most commonly required by plugins:
-** obtain current identity, whether a real person ~ `User` or `SYSTEM` or `ANONYMOUS` or an unidentified but authenticated person
-** check password
-** temporarily switch identity
-** check permissions
 * Some important plugins are made to compile and run against the resulting core version using some combination of:
 ** Replacing idioms which are already unnecessary (e.g., switch to `ACL.as`).
-** Using the new simplified API.
+** Using some new simplified API.
 ** Expanding compatibility bridges in core.
-* Ensuring compatibility for plugins implementing `SecurityRealm`, which are harder to deal with. These may simply require new releases built against Spring Security. Fortunately there are not that many of them: a few in regular use or previously bundled (`ldap`, `active-directory`, `reverse-proxy-auth-plugin`, `pam`, `github-oauth`, etc.) and some lesser-used ones (`crowd2`, `saml`, etc.).
+* Ensuring compatibility for plugins implementing `SecurityRealm`, which are harder to deal with.
 * Making sure core plus all plugins mentioned in the setup wizard (even if not `suggested`) work together.
 * Track status of other “long-tail” plugins and offer assistance to maintainers.
 
 == Motivation
 
-[TIP]
-====
-Explain why the existing code base or process is inadequate to address the problem that the JEP solves.
-This section may also contain any historical context such as how things were done before this proposal.
+=== False positives from scanners
 
-* Do not discuss design choices or alternative designs that were rejected - those belong in the Reasoning section.
-====
+Many security-conscious organizations using, or planning to use, Jenkins will run off-the-shelf security scanners to look for known vulnerabilities.
+These will commonly flag the extremely old Acegi Security and Spring Core libraries as susceptible and recommend upgrading.
+While the Jenkins CERT team does not believe that any of these issues are actually exploitable in Jenkins,
+it is time-consuming for the CERT team to respond to purported security reports,
+and for users to justify exemptions from policy to use Jenkins anyway.
 
 === Technical debt
 
@@ -102,76 +97,123 @@ The Jenkins CERT team has to examine code for vulnerabilities rather than relyin
 
 == Reasoning
 
-[TIP]
-====
-Explain why particular design decisions were made.
-Describe alternate designs that were considered and related work. For example, how the feature is supported in other systems.
-Provide evidence of consensus within the community and discuss important objections or concerns raised during discussion.
+=== Status quo
 
-* Use sub-headings to organize this section for ease of readability.
-* Do not talk about history or why this needs to be done - that is part of Motivation section.
-====
+Continuing to use Acegi Security indefinitely does not seem sustainable.
+
+=== Repackaging Spring Security
+
+It might seem to suffice to use something like the Maven Shade plugin
+to take a recent Spring Security release and move types to `org.acegisecurity.*` packages.
+That would ensure that Jenkins is using up-to-date implementation code,
+without requiring plugins to switch packages.
+
+However this idea presumes that the changes from Acegi Security to Spring Security 2
+consisted solely of package (and occasionally type) renames,
+and that Spring Security 3, 4, and 5 included only backward-compatible changes.
+These assumptions do not hold:
+while _many_ pieces of client code would indeed compile and run after merely updating type names,
+there have been numerous changes which would break some clients:
+* deleted types (e.g. `AcegiSecurityException` has no replacement)
+* class refactorings (e.g., `HttpSessionContextIntegrationFilter` split into `SecurityContextPersistenceFilter` plus `SecurityContextRepository` and more)
+* methods renamed, parameters deleted, and parameter and return types changed
+  (e.g., `PasswordEncoder.encodePassword(String, Object)` → `String encode(CharSequence)`)
+
+=== Delegating to Spring Security
+
+A possibility considered early during development was to have Jenkins core security implementation classes and plugins continue to refer to Acegi Security types,
+but with the bodies of those types reimplemented to delegate to Spring Security equivalents.
+This seemed very confusing as we would continue to have two related APIs in the classpath and in active use indefinitely.
+It was also unclear how to make Jenkins implementation classes such as security filters work with such façades:
+these classes dive heavily into details of the Acegi/Spring Security APIs, so would need numerous Acegi Security types to delegate, even if no plugin ever cared.
+
+=== Making Acegi Security types extend Spring Security types
+
+Early attempt to bridge Acegi Security types to Spring Security types involved using subtype relationships.
+For example, `org.acegisecurity.Authentication` would extend `org.springframework.security.core.Authentication`,
+so you could just use an implementation of the older interface wherever the newer interface was expected.
+
+This quickly became difficult.
+Some methods could not be declared as overrides;
+in this example, the return type of `getAuthorities` changed from `GrantedAuthority[]` to `Collection<? extends GrantedAuthority>`.
+A more subtle problem involved covariance and contravariance in interface signatures referring to other interfaces in the API.
+Keeping the types distinct and offering methods to interconvert turned out to be easier to reason about.
+
+A special case has to be made for exception types.
+Since an exception can be thrown up through a call stack and caught by code anywhere,
+it is not possible to use interconversion methods in all cases.
+The key problem is `hudson.security.AccessDeniedException2`, thrown from failed ACL permission checks.
+A number of places not just in core but plugins catch this type or `org.acegisecurity.AccessDeniedException` (or `AcegiSecurityException`?)
+in order to recover gracefully from lack of permissions.
+Therefore, for compatibility, `AccessDeniedException2` continues to implement both the Acegi Security and Spring Security versions of `AccessDeniedException`.
+
+=== Providing binary compatibility for all plugins implementing `SecurityRealm`
+
+Plugins like `ldap` which implement `SecurityRealm` pose a special problem.
+These may simply require new releases built against a new Jenkins baseline and thus Spring Security.
+However it is unclear how users would get the new version of Jenkins and the new version of the plugin _atomically_
+(even assuming they read release notes in advance):
+the update center lets you download a plugin update to be installed after next start,
+which could be timed to coincide with a core update,
+but you could not download a plugin update declared to require a newer core version than you currently run.
+Worse, you cannot just upgrade Jenkins and immediately select the plugin update and restart again,
+since you would not be able to log in after the first restart if the security realm did not work!
+
+Even assuming the timing issue is resolved, publishing new releases of all these plugins would be a significant effort.
+Fortunately there are not that many of them:
+a few in regular use or previously bundled (`ldap`, `active-directory`, `reverse-proxy-auth-plugin`, `pam-auth`, `github-oauth`, etc.)
+and some lesser-used ones (`crowd2`, `saml`, etc.).
+
+Perhaps it would be possible to bundle Spring Security in the plugin and implement _both_ old and new interfaces so as to work in both historical and new core versions?
+
+Simple implementations of `AbstractPasswordBasedSecurityRealm`, such as in the `pam-auth` plugin,
+can perhaps work with full binary compatibility.
+
+=== Simplified interface to security
+
+Many plugins do nothing complicated with Acegi Security types but are obliged to refer to this API to work with other parts of Jenkins.
+We may be able to introduce a new simplified API in `jenkins.security.*` to hide the details of Spring Security and cover the operations most commonly required by plugins:
+* obtain current identity, whether a real person ~ `User` or `SYSTEM` or `ANONYMOUS` or an unidentified but authenticated person
+* check password
+* temporarily switch identity
+* check permissions
+This would arguably increase ease of use of the API, and insulate most plugins from possible future incompatibilities in Spring Security.
+On the other hand, it would not suffice for plugins implementing `SecurityRealm`.
+
+=== Hiding Spring Security from plugin classpath
+
+Probably feasible for typical plugins, but unclear how this would work for plugins implementing `SecurityRealm` in general.
+For example, `ldap` makes use of the Acegi/Spring Security type `LdapUserDetails`, a subtype of `UserDetails`.
+Currently this is returned directly from API implementation methods.
+If Jenkins core required use of its own types, this would need to converted from Acegi/Spring Security.
+And that conversion could not be _defined_ in Jenkins core for common use.
+
+=== Hiding Spring Core from plugin classpath
+
+JENKINS-49555 proposes this, to make it easier for plugins to bundle third-party libraries which use Spring Core.
+It is unclear if that would be possible if Spring Security, which depends on Spring Core,
+ _is_ reëxported from Jenkins core (i.e., not “hidden”)—do Spring Security types mention Spring Core types?
 
 == Backwards Compatibility
 
-[TIP]
-====
-Describe any incompatibilities and their severity.
-Describe how the JEP proposes to deal with these incompatibilities.
-
-If there are no backwards compatibility concerns, this section may simply say:
-There are no backwards compatibility concerns related to this proposal.
-====
+This JEP consists almost entirely of backwards compatibility concerns. :-( TODO details
 
 == Security
 
-[TIP]
-====
-Describe the security impact of this proposal.
-Outline what was done to identify and evaluate security issues,
-discuss potential security issues and how they are mitigated or prevented,
-and detail how the JEP interacts with existing elements in Jenkins, such as permissions, authentication, authorization, etc.
-
-If this proposal will have no impact on security, this section may simply say:
-There are no security risks related to this proposal.
-====
+This JEP changes Jenkins code fundamental to security and so introduces inherent security risks.
+There is no _specific, expected_ risk.
 
 == Infrastructure Requirements
 
-[TIP]
-====
-Describe any impact on the Jenkins project infrastructure.
-
-Include any additions or changes, interactions with existing components,
-potential instabilities, service-level agreements,
-and responsibilities for continuing maintenance.
-Explain the scope of infrastructure changes with sufficient detail
-to allow initial and on-going cost (in both time and money) to be estimated.
-
-If this proposal will have no impact on infrastructure, this section may simply say:
-There are no new infrastructure requirements related to this proposal.
-====
+If binary compatibility cannot be offered for critical plugins,
+there may be a need to make changes to the Jenkins update center (JENKINS-49651).
 
 == Testing
 
-[TIP]
-====
-If the JEP involves any kind of behavioral change to code
-(whether in a Jenkins product or backend infrastructure),
-give a summary of how its correctness (and, if applicable, compatibility, security, etc.) can be tested.
-
-In the preferred case that automated tests can be developed to cover all significant changes, simply give a short summary of the nature of these tests.
-
-If some or all of the changes will require human interaction to verify them, explain why automated tests are considered impractical.
-Then, summarize what kinds of test cases might be required: user scenarios with action steps and expected outcomes.
-Detail whether behavior might be different based on the platform (operating system, servlet container, web browser, etc.)?
-Are there foreseeable interactions between different permissible versions of components (Jenkins core, plugins, etc.)?
-Does this change require that any special tools, proprietary software, or online service accounts to exercise a related code path (e.g., Active Directory server, GitHub login, etc.)?
-When will you complete testing relative to merging code changes, and might retesting be required if other changes are made to this area in the future?
-
-If this proposal requires no testing, this section may simply say:
-There are no testing issues related to this proposal.
-====
+There is an extensive need for testing associated with this change, due to the high risk of regression.
+It is unclear how extensive test coverage in Jenkins core really is when it comes to subtle aspects of the security system dating from 2007.
+`plugin-compat-tester` will be of some use to detect plugin incompatibilities, unless there are special class loading considerations (JENKINS-41827).
+`acceptance-test-harness` is needed, especially with Dockerized fixtures, to run smoke tests of security-related workflows such as LDAP authentication.
 
 == Prototype Implementation
 
@@ -190,9 +232,11 @@ There are no testing issues related to this proposal.
 ** link:https://github.com/jenkinsci/jenkins/pull/4844[jenkins #4844] (PoC by Wadeck)
 * Reference implementation
 ** link:https://github.com/jenkinsci/jenkins/pull/4848[jenkins #4848] (upgrade to Spring Security 5 by jglick)
-* Issues
+* Issues of interest
 ** link:https://issues.jenkins-ci.org/browse/JENKINS-5303[JENKINS-5303] _Upgrade Acegi Security to the latest Spring Security release_
 ** link:https://issues.jenkins-ci.org/browse/JENKINS-49555[JENKINS-49555] _Split most of Spring Framework out of core_
+** link:https://issues.jenkins-ci.org/browse/JENKINS-49651[JENKINS-49651] _Extend plugin/update center metadata with known incompatibilities_
+** link:https://issues.jenkins-ci.org/browse/JENKINS-41827[JENKINS-41827] _JenkinsRule mode to use realistic class loading_
 * Miscellany
 ** link:https://github.com/jenkinsci/ldap-plugin/pull/17/files#r113542499[discussion in ldap-plugin #17] about supported configuration vs. Groovy bean bindings
 * Tips on migrating between Spring Security versions
