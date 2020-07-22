@@ -86,7 +86,7 @@ and for users to justify exemptions from policy to use Jenkins anyway.
 
 === Technical debt
 
-A lot of this code was written 13 years ago by Kohsule, has barely been touched since,
+A lot of this code was written 13 years ago by Kohsuke, has barely been touched since,
 and involves heavy modifications to Acegi Security functionality,
 in some cases apparently to work around limitations that may well have been addressed years ago in Spring Security.
 Working with long-obsolete APIs is tricky due to lack of knowledge—the Spring Security maintainer may barely remember how things were.
@@ -152,13 +152,25 @@ in this example, the return type of `getAuthorities` changed from `GrantedAuthor
 A more subtle problem involved covariance and contravariance in interface signatures referring to other interfaces in the API.
 Keeping the types distinct and offering methods to interconvert turned out to be easier to reason about.
 
-A special case has to be made for exception types.
+Initially a special case was made for exception types.
 Since an exception can be thrown up through a call stack and caught by code anywhere,
 it is not possible to use interconversion methods in all cases.
 The key problem is `hudson.security.AccessDeniedException2`, thrown from failed ACL permission checks.
-A number of places not just in core but plugins catch this type or `org.acegisecurity.AccessDeniedException` (or `AcegiSecurityException`?)
+A link:https://github.com/search?q=user%3Ajenkinsci+%22catch+%28AccessDeniedException%22&type=Code[number of places] not just in core but plugins
+catch its supertype `org.acegisecurity.AccessDeniedException`
 in order to recover gracefully from lack of permissions.
-Therefore, for compatibility, `AccessDeniedException2` continues to implement both the Acegi Security and Spring Security versions of `AccessDeniedException`.
+Therefore, for compatibility, `AccessDeniedException2` was initially made to implement both the Acegi Security and Spring Security versions of `AccessDeniedException`.
+Unfortunately even this caused errors:
+
+[source]
+----
+java.lang.VerifyError: Stack map does not match the one at exception handler 173
+Exception Details:
+  Location:
+    org/jenkinsci/plugins/matrixauth/AuthorizationContainerDescriptor.doCheckName_(Ljava/lang/String;Lhudson/security/AccessControlled;Lhudson/security/Permission;)Lhudson/util/FormValidation; @173: astore
+  Reason:
+    Type 'org/acegisecurity/userdetails/UsernameNotFoundException' (current frame, stack[0]) is not assignable to 'org/springframework/core/NestedRuntimeException' (stack map, stack[0])
+----
 
 === Providing binary compatibility for all plugins implementing `SecurityRealm`
 
