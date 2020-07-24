@@ -63,7 +63,7 @@ This work consists of several phases, both in Jenkins core and plugins.
 * `org.acegisecurity.*` types are reintroduced only in cases where it seems there are a lot of plugins using them, using clean reimplementations.
 ** `Sid` and subtypes are for now simply reimplemented, rather than delegating to the `spring-security-acl` module.
 ** `toSpring` and `fromSpring` method are provided to interconvert Acegi Security and Spring Security types.
-** Subtyping relationships are not used for most interfaces, but _are_ used for selected exception types.
+** Subtyping is not used: the Acegi Security and Spring Security types are incomparable.
 ** `org.springframework.dao.DataAccessException` is deprecated.
 ** Existing Jenkins API methods referring to `org.acegisecurity.*` types are retained where feasible but deprecated and bridged to new Spring Security equivalents.
 * Some important plugins are made to compile and run against the resulting core version using some combination of:
@@ -191,6 +191,8 @@ a few in regular use or previously bundled (`ldap`, `active-directory`, `reverse
 and some lesser-used ones (`crowd2`, `saml`, etc.).
 
 Perhaps it would be possible to bundle Spring Security in the plugin and implement _both_ old and new interfaces so as to work in both historical and new core versions?
+Alternately, the plugin could bundle Acegi Security, which would be ignored in old versions of Jenkins,
+so long as the only interaction with Jenkins exported APIs involved methods with compatibility bridges.
 
 Simple implementations of `AbstractPasswordBasedSecurityRealm`, such as in the `pam-auth` plugin,
 can perhaps work with full binary compatibility.
