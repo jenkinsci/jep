@@ -175,8 +175,9 @@ Exception Details:
 
 === Providing binary compatibility for all plugins implementing `SecurityRealm`
 
-Plugins like `ldap` which implement `SecurityRealm` pose a special problem.
-These may simply require new releases built against a new Jenkins baseline and thus Spring Security.
+Some plugins like `ldap` which implement `SecurityRealm` pose a special problem.
+When using complex features of Acegi Security,
+these may simply require new releases built against a new Jenkins baseline and thus Spring Security.
 However it is unclear how users would get the new version of Jenkins and the new version of the plugin _atomically_
 (even assuming they read release notes in advance):
 the update center lets you download a plugin update to be installed after next start,
@@ -187,7 +188,7 @@ since you would not be able to log in after the first restart if the security re
 
 Even assuming the timing issue is resolved, publishing new releases of all these plugins would be a significant effort.
 Fortunately there are not that many of them:
-a few in regular use or previously bundled (`ldap`, `active-directory`, `reverse-proxy-auth-plugin`, `pam-auth`, `github-oauth`, etc.)
+a few in regular use or previously bundled (`ldap`, `active-directory`, `reverse-proxy-auth-plugin`, `github-oauth`, etc.)
 and some lesser-used ones (`crowd2`, `saml`, etc.).
 
 Perhaps it would be possible to bundle Spring Security in the plugin and implement _both_ old and new interfaces so as to work in both historical and new core versions?
@@ -195,7 +196,7 @@ Alternately, the plugin could bundle Acegi Security, which would be ignored in o
 so long as the only interaction with Jenkins exported APIs involved methods with compatibility bridges.
 
 Simple implementations of `AbstractPasswordBasedSecurityRealm`, such as in the `pam-auth` plugin,
-can perhaps work with full binary compatibility.
+work without modifications.
 
 === Simplified interface to security
 
