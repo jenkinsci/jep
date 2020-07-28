@@ -262,6 +262,7 @@ to run smoke tests of security-related workflows such as LDAP authentication.
 ** link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/38[reverse-proxy-auth-plugin #38] (cleanup by Wadeck)
 ** link:https://github.com/jenkinsci/authorize-project-plugin/pull/46[authorize-project-plugin #46] (cleanup by Wadeck)
 ** link:https://github.com/jenkinsci/github-oauth-plugin/pull/119[github-oauth-plugin #119] (cleanup by jglick)
+** link:https://github.com/jenkinsci/throttle-concurrent-builds-plugin/pull/85[throttle-concurrent-builds-plugin #85] (cleanup by jglick)
 * Exploratory work
 ** link:https://github.com/Wadeck/poc-acegi-security-facade-lib[poc-acegi-security-facade-lib] (PoC by Wadeck)
 ** link:https://github.com/jenkinsci/jenkins/pull/4844[jenkins #4844] (PoC by Wadeck)
