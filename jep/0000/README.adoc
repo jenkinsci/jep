@@ -66,10 +66,6 @@ This work consists of several phases, both in Jenkins core and plugins.
 ** Subtyping is not used: the Acegi Security and Spring Security types are incomparable.
 ** `org.springframework.dao.DataAccessException` is deprecated.
 ** Existing Jenkins API methods referring to `org.acegisecurity.*` types are retained where feasible but deprecated and bridged to new Spring Security equivalents.
-* Some important plugins are made to compile and run against the resulting core version using some combination of:
-** Replacing idioms which are already unnecessary (e.g., switch to `ACL.as`).
-** Using some new simplified API.
-** Expanding compatibility bridges in core.
 * Ensuring compatibility for plugins implementing `SecurityRealm`, which are harder to deal with.
 * Making sure core plus all plugins mentioned in the setup wizard (even if not `suggested`) work together.
 * Track status of other “long-tail” plugins and offer assistance to maintainers.
@@ -197,6 +193,7 @@ so long as the only interaction with Jenkins exported APIs involved methods with
 
 Simple implementations of `AbstractPasswordBasedSecurityRealm`, such as in the `pam-auth` plugin,
 work without modifications.
+Some SSO plugins, such as `github-oauth`, also work without modifications.
 
 === Simplified interface to security
 
@@ -227,6 +224,8 @@ It is unclear if that would be possible if Spring Security, which depends on Spr
 
 This JEP consists almost entirely of backwards compatibility concerns. :-( TODO details
 
+TODO investigate use of detached plugins, especially for `ldap`
+
 == Security
 
 This JEP changes Jenkins code fundamental to security and so introduces inherent security risks.
@@ -235,14 +234,20 @@ There is no _specific, expected_ risk.
 == Infrastructure Requirements
 
 If binary compatibility cannot be offered for critical plugins,
+and the issue cannot be handled by code running inside Jenkins core itself,
 there may be a need to make changes to the Jenkins update center (JENKINS-49651).
 
 == Testing
 
 There is an extensive need for testing associated with this change, due to the high risk of regression.
 It is unclear how extensive test coverage in Jenkins core really is when it comes to subtle aspects of the security system dating from 2007.
-`plugin-compat-tester` will be of some use to detect plugin incompatibilities, unless there are special class loading considerations (JENKINS-41827).
-`acceptance-test-harness` is needed, especially with Dockerized fixtures, to run smoke tests of security-related workflows such as LDAP authentication.
+
+`plugin-compat-tester` will be of some use to detect plugin incompatibilities,
+unless there are special class loading considerations (JENKINS-41827),
+such as if the `ldap` plugin is made to bundle its own copy of `acegi-security.jar`.
+
+`acceptance-test-harness` is needed, especially with Dockerized fixtures,
+to run smoke tests of security-related workflows such as LDAP authentication.
 
 == Prototype Implementation
 
