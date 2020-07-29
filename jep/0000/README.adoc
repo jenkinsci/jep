@@ -187,9 +187,13 @@ Fortunately there are not that many of them:
 a few in regular use or previously bundled (`ldap`, `active-directory`, `reverse-proxy-auth-plugin`, `github-oauth`, etc.)
 and some lesser-used ones (`crowd2`, `saml`, etc.).
 
-Perhaps it would be possible to bundle Spring Security in the plugin and implement _both_ old and new interfaces so as to work in both historical and new core versions?
-Alternately, the plugin could bundle Acegi Security, which would be ignored in old versions of Jenkins,
-so long as the only interaction with Jenkins exported APIs involved methods with compatibility bridges.
+At least in the case of the `ldap` plugin,
+it suffices to bundle `acegi-security-1.0.7.jar` and `spring-dao-1.2.9.jar`,
+which are ignored in old versions of Jenkins,
+but actually used in new Jenkins as an overlay
+(using the core-defined stubs plus other types not overridden in core):
+the only interaction with Jenkins exported APIs involves methods with compatibility bridges.
+It _is_ necessary to remove usages of `BeanBuilder` and switch to configuration in Java code.
 
 Simple implementations of `AbstractPasswordBasedSecurityRealm`, such as in the `pam-auth` plugin,
 work without modifications.
@@ -222,9 +226,12 @@ It is unclear if that would be possible if Spring Security, which depends on Spr
 
 == Backwards Compatibility
 
-This JEP consists almost entirely of backwards compatibility concerns. :-( TODO details
+This JEP consists almost primarily of backwards compatibility concerns.
 
-TODO investigate use of detached plugins, especially for `ldap`
+It may be possible to use the detached plugin mechanism to offer upgrades of difficult plugins automatically.
+However the only detached plugins which implement security realms, `ldap` and `pam-auth`,
+can already run in either old or new Jenkins cores.
+At least the required update to the `ldap` plugin can be done via this mechanism.
 
 The ability to override basic security component configuration in Jenkins via Groovy files,
 either in core via `SecurityFilters.groovy` or in a security realm plugin such as `ldap` via `LDAPBindSecurityRealm.groovy`,
