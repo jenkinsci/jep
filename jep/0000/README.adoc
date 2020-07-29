@@ -274,6 +274,7 @@ to run smoke tests of security-related workflows such as LDAP authentication.
 ** link:https://github.com/jenkinsci/jenkins/pull/4844[jenkins #4844] (PoC by Wadeck)
 * Reference implementation
 ** link:https://github.com/jenkinsci/jenkins/pull/4848[jenkins #4848] (upgrade to Spring Security 5 by jglick)
+** link:https://github.com/jenkinsci/ldap-plugin/pull/48[ldap-plugin #48] (compatibility by jglick)
 * Issues of interest
 ** link:https://issues.jenkins-ci.org/browse/JENKINS-5303[JENKINS-5303] _Upgrade Acegi Security to the latest Spring Security release_
 ** link:https://issues.jenkins-ci.org/browse/JENKINS-49555[JENKINS-49555] _Split most of Spring Framework out of core_
