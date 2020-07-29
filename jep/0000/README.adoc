@@ -226,6 +226,11 @@ This JEP consists almost entirely of backwards compatibility concerns. :-( TODO 
 
 TODO investigate use of detached plugins, especially for `ldap`
 
+The ability to override basic security component configuration in Jenkins via Groovy files,
+either in core via `SecurityFilters.groovy` or in a security realm plugin such as `ldap` via `LDAPBindSecurityRealm.groovy`,
+has been removed.
+Customizations to security-related settings now need to go through regular supported configuration (GUI or JCasC).
+
 == Security
 
 This JEP changes Jenkins code fundamental to security and so introduces inherent security risks.
@@ -263,6 +268,7 @@ to run smoke tests of security-related workflows such as LDAP authentication.
 ** link:https://github.com/jenkinsci/authorize-project-plugin/pull/46[authorize-project-plugin #46] (cleanup by Wadeck)
 ** link:https://github.com/jenkinsci/github-oauth-plugin/pull/119[github-oauth-plugin #119] (cleanup by jglick)
 ** link:https://github.com/jenkinsci/throttle-concurrent-builds-plugin/pull/85[throttle-concurrent-builds-plugin #85] (cleanup by jglick)
+** link:https://github.com/jenkinsci/ldap-plugin/pull/46[ldap-plugin #46] (cleanup by jglick)
 * Exploratory work
 ** link:https://github.com/Wadeck/poc-acegi-security-facade-lib[poc-acegi-security-facade-lib] (PoC by Wadeck)
 ** link:https://github.com/jenkinsci/jenkins/pull/4844[jenkins #4844] (PoC by Wadeck)
