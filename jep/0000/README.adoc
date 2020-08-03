@@ -239,6 +239,7 @@ has been removed.
 Customizations to security-related settings now need to go through regular supported configuration (GUI or JCasC).
 
 There are some code idioms (in both main and test sources) which cannot or will not be made compatible and which just need to be adjusted:
+
 * link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+%22catch+(AccessDeniedException%22[`catch (AccessDeniedException …)`]
 * link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+%22catch+(AccessDeniedException2%22[`catch (AccessDeniedException2 …)`]
 * link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+%22expected+%3D+AccessDeniedException%22[`expected = AccessDeniedException`]
