@@ -244,8 +244,8 @@ There are some code idioms (in both main and test sources) which cannot or will 
 * link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+%22catch+(AccessDeniedException2%22[`catch (AccessDeniedException2 …)`]
 * link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+%22expected+%3D+AccessDeniedException%22[`expected = AccessDeniedException`]
 * link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+%22expected+%3D+AccessDeniedException2%22[`expected = AccessDeniedException2`]
-* link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+%22instanceof+AccessDeniedException%22[`instanceof+AccessDeniedException`]
-* link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+%22instanceof+AccessDeniedException2%22[`instanceof+AccessDeniedException2`]
+* link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+%22instanceof+AccessDeniedException%22[`instanceof AccessDeniedException`]
+* link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+%22instanceof+AccessDeniedException2%22[`instanceof AccessDeniedException2`]
 * link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+PrincipalAcegiUserToken[`PrincipalAcegiUserToken`]
 * link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+TestingAuthenticationToken[`TestingAuthenticationToken`]
 
