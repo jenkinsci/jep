@@ -238,6 +238,16 @@ either in core via `SecurityFilters.groovy` or in a security realm plugin such a
 has been removed.
 Customizations to security-related settings now need to go through regular supported configuration (GUI or JCasC).
 
+There are some code idioms (in both main and test sources) which cannot or will not be made compatible and which just need to be adjusted:
+* link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+%22catch+(AccessDeniedException%22[`catch (AccessDeniedException …)`]
+* link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+%22catch+(AccessDeniedException2%22[`catch (AccessDeniedException2 …)`]
+* link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+%22expected+%3D+AccessDeniedException%22[`expected = AccessDeniedException`]
+* link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+%22expected+%3D+AccessDeniedException2%22[`expected = AccessDeniedException2`]
+* link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+%22instanceof+AccessDeniedException%22[`instanceof+AccessDeniedException`]
+* link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+%22instanceof+AccessDeniedException2%22[`instanceof+AccessDeniedException2`]
+* link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+PrincipalAcegiUserToken[`PrincipalAcegiUserToken`]
+* link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+TestingAuthenticationToken[`TestingAuthenticationToken`]
+
 == Security
 
 This JEP changes Jenkins code fundamental to security and so introduces inherent security risks.
