@@ -193,23 +193,17 @@ Methods offered:
 
 ** Deletes the fingerprint with the associated fingerprint ID (and jenkins instance ID).
 
-* `List<Fingerprint> load(String[] ids)`
+* `boolean isReady();`
 
-** Returns fingerprints associated with given ids (and the jenkins instance id).
+** Returns true if there's some data in the fingerprint storage.
 
-* `List<Fingerprint> loadAcrossInstancesById(String id)`
+* `iterateAndCleanupFingerprints(TaskListener taskListener)`
 
-** Returns all the fingerprints associated with the given id, across all Jenkins instances connected to the external storage.
+** As mentioned in previous section.
 
-===== Implementing `loadAcrossInstancesById`
+* `boolean cleanFingerprint(Fingerprint fingerprint, TaskListener taskListener)`
 
-The key for each fingerprint is a concatenation of the unique ID of the fingerprint and the Jenkins instance ID.
-When we implement tracing methods, we’d  like to fetch all the fingerprints given the unique ID of fingerprint irrespective of their Jenkins instance ID.
-For doing this, we maintain a set whose keys are fingerprints' unique IDs and the values in the sets are all the instance IDs which saved fingerprints having this unique ID.
-
-This allows us to save a fingerprint in `O(1)`, load in `O(1)`.
-`loadAcrossInstancesById` is `O(s)` where s is the size of the set.
-It also decreases the network traffic because once we have all the keys needed from the set, we can do a GET in a single request.
+** As mentioned in previous section.
 
 ==== NEW: `FileFingerprintStorage` class
 
@@ -220,7 +214,7 @@ This is the default `FingerprintStorage` provided, when no external pluggable s
 ==== `SaveableListener`
 
 As mentioned in this link:https://issues.jenkins-ci.org/browse/JENKINS-62543[JIRA issue], the current API of `SaveableListener` requires an `XmlFile` as an argument, which is not entirely practical for external storages.
-To resolve this, we use virtual files for the time being, till this issue is resolved.
+Refactoring and improving `SaveableListener` is out of scope for this JEP.
 
 ==== Extending the API
 
@@ -271,13 +265,6 @@ Fingerprints generally do contain sensitive information like artifacts, jobs, bu
 
 We propose to add a word of caution to Jenkins admins that the external storage stores sensitive information and it is their responsibility to ensure security.
 
-[WARNING]
-====
-*(jglick)*
-I do not think cross-instance fingerprint storage (`loadAcrossInstancesById` etc.) can be considered safe. Access to job information is defined only by `AuthorizationStrategy` which applies only within one instance. Recommend deleting all cross-instance functionality.
-====
-
-
 This proposal does not define strong security requirements for external fingerprint storage implementations.
 
 == Infrastructure Requirements
@@ -292,7 +279,8 @@ For the reference implementation inside the Redis Fingeprint Storage Plugin, we 
 == Prototype Implementation
 
 * link:https://github.com/jenkinsci/jenkins/pull/4731[PR in Jenkins Core for Externalizing Fingerprint Storage]
-* link:https://github.com/jenkinsci/redis-fingerprint-storage-plugin[Reference Implementation]
+* link:https://github.com/jenkinsci/redis-fingerprint-storage-plugin[Reference Implementation for Redis]
+* link:https://github.com/jenkinsci/postgresql-fingerprint-storage-plugin[Reference Implementation for PostgreSQL]
 * link:https://www.youtube.com/watch?v=yzd-y5ByXg8&feature=youtu.be[Prototype Demo]
 
 == References
