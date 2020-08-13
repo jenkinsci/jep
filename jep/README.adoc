@@ -202,7 +202,7 @@
 | link:https://github.com/mikecirioli[Mike{nbsp}Cirioli], link:https://github.com/aHenryJard[Angélique{nbsp}Jard], link:https://github.com/EstherAF[Esther{nbsp}Álvarez{nbsp}Feijoo] 
 | TBD
 
-| Draft{nbsp}:speech_balloon:
+| Final{nbsp}:lock:
 | link:224/README.adoc[JEP-224: Readonly system configuration]
 | link:https://github.com/timja[Tim{nbsp}Jacomb]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
