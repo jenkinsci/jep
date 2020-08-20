@@ -53,22 +53,56 @@ Key plugins interacting with the security system are made to work with the updat
 
 == Specification
 
-This work consists of several phases, both in Jenkins core and plugins.
+This work consists of several aspects, both in Jenkins core and plugins.
 
-* Classpath changes in Jenkins core:
-** The actual Acegi Security JAR is removed from the classpath, replaced with Spring Security.
-** All of Spring is updated to the current release (5.x).
+* The Acegi Security library is removed from the classpath of Jenkins core, replaced with the current release of Spring Security.
+** All of Spring is also updated to the current release (5.x).
 ** LDAP-specific classes are not readded.
 * All of Jenkins core is switched to use Spring Security as its primary model.
-* `org.acegisecurity.*` types are reintroduced only in cases where it seems there are a lot of plugins using them, using clean reimplementations.
-** `Sid` and subtypes are for now simply reimplemented, rather than delegating to the `spring-security-acl` module.
-** `toSpring` and `fromSpring` method are provided to interconvert Acegi Security and Spring Security types.
+* Plugin-facing APIs referring to Acegi Security are kept binary compatible wherever feasible.
+** Many `org.acegisecurity.*` types are reintroduced, but using clean reimplementations.
+** Most existing Jenkins API methods referring to `org.acegisecurity.*` types are retained,
+   but deprecated and bridged to new Spring Security equivalents.
+** `toSpring` and `fromSpring` method are provided to interconvert Acegi Security and Spring Security types where applicable.
 ** Subtyping is not used: the Acegi Security and Spring Security types are incomparable.
-** `org.springframework.dao.DataAccessException` is deprecated.
-** Existing Jenkins API methods referring to `org.acegisecurity.*` types are retained where feasible but deprecated and bridged to new Spring Security equivalents.
-* Ensuring compatibility for plugins implementing `SecurityRealm`, which are harder to deal with.
-* Making sure core plus all plugins mentioned in the setup wizard (even if not `suggested`) work together.
-* Track status of other “long-tail” plugins and offer assistance to maintainers.
+** `org.springframework.dao.DataAccessException` and similar types are deprecated without replacement.
+** A few APIs which were already deprecated, such as `CliAuthenticator`, are simply removed.
+** `Sid` and subtypes are for now simply reimplemented, rather than delegating to the `spring-security-acl` module.
+* Inessential uses of Acegi Security in plugins for which compatibility in Jenkins core would be awkward are removed.
+  (For example, exotic types in functional tests are replaced with simpler and more common APIs.)
+* Certain plugins with sophisticated implementations of `SecurityRealm` are patched.
+** All plugins using `BeanBuilder` to configure a security realm from a Groovy resource are switched to using type-safe Java.
+** The `ldap` plugin has two patched versions:
+   one which bundles Acegi Security (including LDAP types) and does not use `BeanBuilder`, so that it can be run against either old or new cores;
+   and a second derived from the first but which builds against new cores and Spring Security.
+
+=== Rollout plan
+
+In mostly chronological order, though of course many tasks can be parallelized:
+
+* Prepare the patch to core, verifying that it passes all tests and that basic scenarios without plugins work.
+* Evaluate the japicmp report for Jenkins core to make sure that all incompatible as well as compatible API changes are expected.
+* Run the tool to search for API usages in Jenkins plugins,
+  checking all plugins in the update center for any usages of either Spring or Acegi Security types.
+  Classify all matches in a document associated with this JEP.
+* Perform textual searches for certain deleted/missing APIs or problematic code idioms in the `@jenkinsci` organization, classifying all matches.
+* Prepare cleanup patches to plugins that would be acceptable even without this migration, and get them merged and released.
+** `ldap` needs extensive work. `active-directory` may as well.
+* Prepare patches to plugins defining security realms, or any others which may require significant changes to be compatible.
+* Run acceptance tests (ATH) and plugin compatibility tests (PCT) against core plus a representative subset of plugins.
+* Interactively verify that core plus all plugins mentioned in the setup wizard (even if not `suggested`) seem to work.
+* Create a compatibility chart associated with this JEP listing all known plugins that might be affected by this change, with their current status.
+* Define a Jira label for regressions suspected to be related to this migration,
+  for ease of tracking from the compatibility chart and the JEP.
+* Solicit code reviews on all open associated pull requests to core and plugins.
+* Warn users of the upcoming changes, for example on the users’ mailing list, via blog post, social media, etc.
+* Release the version of `ldap` bundling Acegi Security.
+* Release versions of other security realm plugins without `BeanBuilder`, such as `active-directory`.
+* Release core, including a warning in the release notes about the risk.
+* Release the version of `ldap` based on the new core release and using Spring Security.
+* For a reasonable period of time (months?), monitor Jira for reported regressions
+  as well as the overall score given to Jenkins weekly releases.
+* Track the status of other “long-tail” plugins, offering advice and assistance to maintainers.
 
 == Motivation
 
@@ -259,6 +293,7 @@ There is no _specific, expected_ risk.
 If binary compatibility cannot be offered for critical plugins,
 and the issue cannot be handled by code running inside Jenkins core itself,
 there may be a need to make changes to the Jenkins update center (JENKINS-49651).
+No such cases are currently expected.
 
 == Testing
 
@@ -271,6 +306,9 @@ such as if the `ldap` plugin is made to bundle its own copy of `acegi-security.j
 
 `acceptance-test-harness` is needed, especially with Dockerized fixtures,
 to run smoke tests of security-related workflows such as LDAP authentication.
+
+CloudBees will be performing runs of ATH & PCT against patched Jenkins core and many popular plugins
+(link:https://docs.cloudbees.com/search?&type=ci-plugins&ci-plugins-tier=verified[“Tier 1”] and link:https://docs.cloudbees.com/search?&type=ci-plugins&ci-plugins-tier=compatible[“Tier 2”]).
 
 == Prototype Implementation
 
@@ -305,6 +343,7 @@ to run smoke tests of security-related workflows such as LDAP authentication.
 * Miscellany
 ** link:https://github.com/jenkinsci/ldap-plugin/pull/17/files#r113542499[discussion in ldap-plugin #17] about supported configuration vs. Groovy bean bindings
 ** link:https://github.com/jenkinsci/bytecode-compatibility-transformer[bytecode-compatibility-transformer]
+** link:https://github.com/siom79/japicmp/pull/266[japicmp #266] (fix for classpath handling by jglick)
 * Tips on migrating between Spring Security versions
 ** https://dzone.com/articles/pathway-acegi-spring-security-[Acegi → 2] (unofficial)
 ** http://www.integratingstuff.com/2011/04/30/migrating-from-spring-security-2-to-spring-security-3/[2 → 3] (unofficial)
