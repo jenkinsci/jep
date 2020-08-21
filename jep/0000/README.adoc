@@ -242,6 +242,7 @@ Some SSO plugins, such as `github-oauth`, also work without modifications.
 
 Many plugins do nothing complicated with Acegi Security types but are obliged to refer to this API to work with other parts of Jenkins.
 We may be able to introduce a new simplified API in `jenkins.security.*` to hide the details of Spring Security and cover the operations most commonly required by plugins:
+
 * obtain current identity, whether a real person ~ `User` or `SYSTEM` or `ANONYMOUS` or an unidentified but authenticated person
 * check password
 * temporarily switch identity
