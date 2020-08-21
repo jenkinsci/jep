@@ -145,6 +145,7 @@ and that Spring Security 3, 4, and 5 included only backward-compatible changes.
 These assumptions do not hold:
 while _many_ pieces of client code would indeed compile and run after merely updating type names,
 there have been numerous changes which would break some clients:
+
 * deleted types (e.g. `AcegiSecurityException` has no replacement)
 * class refactorings (e.g., `HttpSessionContextIntegrationFilter` split into `SecurityContextPersistenceFilter` plus `SecurityContextRepository` and more)
 * methods renamed, parameters deleted, and parameter and return types changed
