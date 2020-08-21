@@ -91,7 +91,7 @@ In mostly chronological order, though of course many tasks can be parallelized:
 * Perform textual searches for certain deleted/missing APIs or problematic code idioms in the `@jenkinsci` organization, classifying all matches.
 * Prepare cleanup patches to plugins that would be acceptable even without this migration, and get them merged and released.
 * Prepare patches to plugins defining security realms, or any others which may require significant changes to be compatible.
-** `ldap` needs extensive work. `active-directory` may as well.
+** `ldap` needs extensive work.
 * Run acceptance tests (ATH) and plugin compatibility tests (PCT) against core plus a representative subset of plugins.
 * Interactively verify that core plus all plugins mentioned in the setup wizard (even if not `suggested`) seem to work.
 * Solicit code reviews on all open associated pull requests to core and plugins.
@@ -330,6 +330,7 @@ CloudBees will be performing runs of ATH & PCT against patched Jenkins core and 
 ** link:https://github.com/jenkinsci/github-oauth-plugin/pull/119[github-oauth-plugin #119] (cleanup by jglick)
 ** link:https://github.com/jenkinsci/throttle-concurrent-builds-plugin/pull/85[throttle-concurrent-builds-plugin #85] (cleanup by jglick)
 ** link:https://github.com/jenkinsci/ldap-plugin/pull/46[ldap-plugin #46] (cleanup by jglick)
+** link:https://github.com/jenkinsci/active-directory-plugin/pull/102[active-directory-plugin #102] (cleanup by jglick)
 ** link:https://github.com/jenkinsci/credentials-plugin/pull/164[credentials-plugin #164] (cleanup by jglick)
 ** link:https://github.com/jenkinsci/suppress-stack-trace-plugin/pull/5[suppress-stack-trace-plugin #5] (deprecation by jglick)
 ** link:https://github.com/jenkinsci/blueocean-plugin/pull/2084[blueocean-plugin #2084] (cleanup by jglick)
