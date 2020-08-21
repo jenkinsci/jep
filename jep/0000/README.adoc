@@ -329,7 +329,7 @@ CloudBees will be performing runs of ATH & PCT against patched Jenkins core and 
 ** link:https://github.com/jenkinsci/github-oauth-plugin/pull/119[github-oauth-plugin #119] (cleanup by jglick)
 ** link:https://github.com/jenkinsci/throttle-concurrent-builds-plugin/pull/85[throttle-concurrent-builds-plugin #85] (cleanup by jglick)
 ** link:https://github.com/jenkinsci/ldap-plugin/pull/46[ldap-plugin #46] (cleanup by jglick)
-** link:https://github.com/jenkinsci/credentials-plugin/pull/164[credentials-plugin #164) (cleanup by jglick)
+** link:https://github.com/jenkinsci/credentials-plugin/pull/164[credentials-plugin #164] (cleanup by jglick)
 ** link:https://github.com/jenkinsci/suppress-stack-trace-plugin/pull/5[suppress-stack-trace-plugin #5] (deprecation by jglick)
 ** link:https://github.com/jenkinsci/blueocean-plugin/pull/2084[blueocean-plugin #2084] (cleanup by jglick)
 ** link:https://github.com/jenkinsci/saml-plugin/pull/90[saml-plugin #90] (Spring update by kuisathaverat)
