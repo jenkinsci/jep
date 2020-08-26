@@ -388,6 +388,7 @@ CloudBees will be performing runs of ATH & PCT against patched Jenkins core and 
 ** link:https://github.com/jenkinsci/blueocean-plugin/pull/2084[blueocean-plugin #2084] (cleanup by jglick)
 ** link:https://github.com/jenkinsci/saml-plugin/pull/90[saml-plugin #90] (Spring update by kuisathaverat)
 ** link:https://github.com/jenkinsci/branch-api-plugin/pull/209[branch-api-plugin #209] (cleanup by jglick)
+** link:https://github.com/jenkinsci/splunk-devops-plugin/pull/13[splunk-devops-plugin #13] (cleanup by jglick)
 * Exploratory work
 ** link:https://github.com/Wadeck/poc-acegi-security-facade-lib[poc-acegi-security-facade-lib] (PoC by Wadeck)
 ** link:https://github.com/jenkinsci/jenkins/pull/4844[jenkins #4844] (PoC by Wadeck)
