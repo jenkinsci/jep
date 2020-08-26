@@ -289,6 +289,57 @@ There are some code idioms (in both main and test sources) which cannot or will 
 * link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+PrincipalAcegiUserToken[`PrincipalAcegiUserToken`]
 * link:https://github.com/search?ref=simplesearch&type=Code&q=user%3Ajenkinsci+TestingAuthenticationToken[`TestingAuthenticationToken`]
 
+=== Searching for API usages in binaries
+
+Create `/tmp/additionalClasses` with the following initial content taken from review of the core PR:
+
+[source]
+----
+hudson/security/AccessDeniedException2
+hudson/security/AccessDeniedHandlerImpl
+hudson/security/AuthenticationManagerProxy
+hudson/security/AuthenticationProcessingFilter2
+hudson/security/CliAuthenticator
+hudson/security/ContainerAuthentication
+hudson/security/DeferredCreationLdapAuthoritiesPopulator
+hudson/security/HttpSessionContextIntegrationFilter2
+hudson/security/HudsonAuthenticationEntryPoint
+hudson/security/HudsonPrivateSecurityRealm$Details
+hudson/security/InvalidatableUserDetails
+hudson/security/NotSerilizableSecurityContext
+hudson/security/RememberMeServicesProxy
+hudson/security/TokenBasedRememberMeServices2
+hudson/security/UserDetailsServiceProxy
+hudson/security/UserMayOrMayNotExistException
+hudson/util/spring/BeanBuilder
+hudson/util/spring/BeanConfiguration
+hudson/util/spring/ClosureScript
+hudson/util/spring/DefaultBeanConfiguration
+hudson/util/spring/DefaultRuntimeSpringConfiguration
+hudson/util/spring/RuntimeSpringConfiguration
+jenkins/security/ExceptionTranslationFilter
+jenkins/security/NonSerializableSecurityContext
+jenkins/security/UserDetailsCache
+----
+
+Add all Acegi Security and Spring types:
+
+[source,bash]
+----
+mvn -f jenkinsci/jenkins -pl core dependency:tree | \
+  perl -n -e 'if (/([^ ]+):((spring|acegi).+):jar:(.+):compile/) {my $g = $1; $g =~ tr!.!/!; print("$ENV{HOME}/.m2/repository/$g/$2/$4/$2-$4.jar\n")}' | \
+  xargs -n1 jar tf | fgrep .class | sed -e 's/.class$//' | sort | uniq >> /tmp/additionalClasses
+----
+
+Then use `jenkins-infra/usage-in-plugins` to look for usages in plugins, including those in CloudBees CI:
+
+[source,bash]
+----
+mvn process-classes exec:exec -Dexec.executable=java -Dexec.args='-classpath %classpath org.jenkinsci.deprecatedusage.Main --additionalClasses /space/tmp/additionalClasses --onlyIncludeSpecified --updateCenter https://jenkins-updates.cloudbees.com/update-center/envelope-core-oc/update-center.json?version=2.235.5.1,https://jenkins-updates.cloudbees.com/update-center/envelope-core-mm/update-center.json?version=2.235.5.1'
+----
+
+producing a link:usage-by-api.html[report].
+
 == Security
 
 This JEP changes Jenkins code fundamental to security and so introduces inherent security risks.
