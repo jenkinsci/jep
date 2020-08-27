@@ -338,11 +338,50 @@ Then use `jenkins-infra/usage-in-plugins` to look for usages in plugins, includi
 mvn process-classes exec:exec -Dexec.executable=java -Dexec.args='-classpath %classpath org.jenkinsci.deprecatedusage.Main --additionalClasses /space/tmp/additionalClasses --onlyIncludeSpecified --updateCenter https://jenkins-updates.cloudbees.com/update-center/envelope-core-oc/update-center.json?version=2.235.5.1,https://jenkins-updates.cloudbees.com/update-center/envelope-core-mm/update-center.json?version=2.235.5.1'
 ----
 
-producing a link:usage-by-api.html[report].
+producing a long report.
 
 (This pair of UCs is very nearly a superset of the default Jenkins UC.
 As tracked in link:https://github.com/jenkins-infra/usage-in-plugins/pull/17[usage-in-plugins #17],
 the tool does not currently work on the default UC.)
+
+Alternately, the search can be focused on types which do _not_ have a supposedly compatible replacement, by deleting these:
+
+[source]
+----
+hudson/security/AccessDeniedException2
+hudson/security/UserMayOrMayNotExistException
+org/acegisecurity/AccessDeniedException
+org/acegisecurity/AcegiSecurityException
+org/acegisecurity/acls/sid/GrantedAuthoritySid
+org/acegisecurity/acls/sid/PrincipalSid
+org/acegisecurity/acls/sid/Sid
+org/acegisecurity/Authentication
+org/acegisecurity/AuthenticationException
+org/acegisecurity/AuthenticationManager
+org/acegisecurity/AuthenticationServiceException
+org/acegisecurity/BadCredentialsException
+org/acegisecurity/context/SecurityContext
+org/acegisecurity/context/SecurityContextHolder
+org/acegisecurity/context/SecurityContextImpl
+org/acegisecurity/GrantedAuthority
+org/acegisecurity/GrantedAuthorityImpl
+org/acegisecurity/providers/AbstractAuthenticationToken
+org/acegisecurity/providers/anonymous/AnonymousAuthenticationToken
+org/acegisecurity/providers/AuthenticationProvider
+org/acegisecurity/providers/dao/AbstractUserDetailsAuthenticationProvider
+org/acegisecurity/providers/UsernamePasswordAuthenticationToken
+org/acegisecurity/ui/rememberme/RememberMeServices
+org/acegisecurity/ui/WebAuthenticationDetails
+org/acegisecurity/userdetails/User
+org/acegisecurity/userdetails/UserDetails
+org/acegisecurity/userdetails/UserDetailsService
+org/acegisecurity/userdetails/UsernameNotFoundException
+org/springframework/dao/DataAccessException
+org/springframework/dao/DataAccessResourceFailureException
+org/springframework/dao/DataRetrievalFailureException
+----
+
+producing a much shorter link:usage-by-api.html[report].
 
 == Security
 
