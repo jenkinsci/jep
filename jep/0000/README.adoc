@@ -381,7 +381,7 @@ org/springframework/dao/DataAccessResourceFailureException
 org/springframework/dao/DataRetrievalFailureException
 ----
 
-producing a much shorter link:usage-by-api.html[report].
+producing a much shorter link:usage-by-plugin.html[report].
 
 == Security
 
