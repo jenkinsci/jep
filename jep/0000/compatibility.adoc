@@ -1,0 +1,122 @@
+Use this space to track the status of plugins that may or may not be compatible with JEP-0000.
+Refer to general information about link:README.adoc#backwards-compatibility[backwards compatibility]
+for tips on searching for potentially problematic API usages.
+
+Please use pull requests as needed to help maintain the following table.
+Plugins should be sorted by code identifier
+(usually, but not always, the portion in the GitHub repository name preceding `-plugin`).
+
+[cols="1,2,5", options="header"]
+.Plugin compatibility with JEP-0000
+|===
+|Plugin |Status |Notes
+
+|link:https://plugins.jenkins.io/active-directory/[active-directory]
+|Incompatible, fixes prepared
+|link:https://github.com/jenkinsci/active-directory-plugin/pull/102[active-directory-plugin #102]
+is required to make the plugin work in both old and new cores.
+
+|link:https://plugins.jenkins.io/artifactory/[artifactory]
+|Incompatible, fixes prepared
+|link:https://github.com/jfrog/jenkins-artifactory-plugin/pull/327[artifactory-plugin #327]
+is necessary.
+
+|link:https://plugins.jenkins.io/authorize-project/[authorize-project]
+|Probably compatible, untested
+|link:https://github.com/jenkinsci/authorize-project-plugin/pull/46[authorize-project-plugin #46]
+was filed as cleanup to make testing against recent cores easier.
+
+|https://plugins.jenkins.io/blueocean/[blueocean]
+|Probably compatible
+|link:https://github.com/jenkinsci/blueocean-plugin/pull/2084[blueocean-plugin #2084]
+cleans up some related APIs and enables testing.
+
+|https://plugins.jenkins.io/branch-api/[branch-api]
+|Compatible
+|link:https://github.com/jenkinsci/branch-api-plugin/pull/209[branch-api-plugin #209]
+cleans up some API usages for testing.
+
+|https://plugins.jenkins.io/cas-plugin/[cas-plugin]
+|Incompatible
+|Uses `BeanBuilder` and several removed Acegi Security types.
+
+|https://plugins.jenkins.io/coding-webhook/[coding-webhook]
+|Incompatible
+|Uses `CliAuthenticator`.
+
+|https://plugins.jenkins.io/credentials/[credentials]
+|Compatible
+|link:https://github.com/jenkinsci/credentials-plugin/pull/164[credentials-plugin #164]
+cleans up some related APIs.
+
+|https://plugins.jenkins.io/crowd/[crowd]
+|Incompatible
+|Uses `BeanBuilder` and possibly other problematic types.
+
+|https://plugins.jenkins.io/crowd2/[crowd2]
+|Incompatible
+|Uses some unsupported types from Acegi Security.
+
+|link:https://plugins.jenkins.io/github-oauth/[github-oauth]
+|Incompatible, fixes prepared
+|link:https://github.com/jenkinsci/github-oauth-plugin/pull/119[github-oauth-plugin #119]
+is necessary.
+Given that, it seems to work.
+
+|https://plugins.jenkins.io/jenkins-cloudfoundry-uaa/[jenkins-cloudfoundry-uaa]
+|Incompatible
+|Uses `BeanBuilder` and possibly other problematic types.
+
+|link:https://plugins.jenkins.io/ldap/[ldap]
+|Incompatible, fixes prepared
+|link:https://github.com/jenkinsci/ldap-plugin/pull/46[ldap-plugin #46] &
+link:https://github.com/jenkinsci/ldap-plugin/pull/48[ldap-plugin #48]
+are required to make the plugin work in both old and new cores.
+link:https://github.com/jenkinsci/ldap-plugin/pull/49[ldap-plugin #49] (a work in progress)
+would make it natively use Spring Security.
+
+|https://plugins.jenkins.io/restricted-register/[restricted-register]
+|Probably compatible
+|Refers to `HudsonPrivateSecurityRealm` but is probably safe.
+
+|link:https://plugins.jenkins.io/reverse-proxy-auth-plugin/[reverse-proxy-auth-plugin]
+|Incompatible
+|link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/38[reverse-proxy-auth-plugin #38]
+is merely cleanup to make it easier to even test against new cores.
+
+The code base not only makes use of `BeanBuilder` and Acegi Security APIs for which no compatibility is offered,
+but like the `ldap` plugin it makes use of the LDAP parts of Acegi Security which are heavily refactored in Spring Security.
+Compatibility with this JEP is expected to be significant effort.
+
+The plugin has not been released in 2½ years;
+even then it was only released by Jenkins CERT members
+to allow critical fixes for link:../200/README.adoc[JEP-200]
+(link:https://groups.google.com/g/jenkinsci-dev/c/9mX-S7kLnHk/m/J6tlhM6vAQAJ[background]).
+It appears to now be abandoned and in need of adoption.
+
+|link:https://plugins.jenkins.io/saml/[saml]
+|Probably compatible, untested
+|link:https://github.com/jenkinsci/saml-plugin/pull/90[saml-plugin #90]
+would take advantage of the Spring update.
+
+|https://plugins.jenkins.io/sfee/[sfee]
+|Incompatible
+|Uses `CliAuthenticator` and some unsupported Acegi Security types.
+
+|link:https://plugins.jenkins.io/splunk-devops/[splunk-devops]
+|Incompatible, fixes prepared
+|link:https://github.com/jenkinsci/splunk-devops-plugin/pull/13[splunk-devops-plugin #13]
+is necessary.
+
+|link:https://plugins.jenkins.io/suppress-stack-trace/[suppress-stack-trace]
+|Obsolete
+|After link:https://github.com/jenkinsci/suppress-stack-trace-plugin/pull/5[suppress-stack-trace-plugin #5]
+this plugin is deprecated and should not be used.
+Older versions may be incompatible.
+
+|link:https://plugins.jenkins.io/throttle-concurrents/[throttle-concurrents]
+|Incompatible, fixes prepared
+|link:https://github.com/jenkinsci/throttle-concurrent-builds-plugin/pull/85[throttle-concurrent-builds-plugin #85]
+is necessary.
+
+|===

@@ -267,6 +267,7 @@ It is unclear if that would be possible if Spring Security, which depends on Spr
 == Backwards Compatibility
 
 This JEP consists almost primarily of backwards compatibility concerns.
+See the link:compatibility.adoc[compatibility table] for current status.
 
 It may be possible to use the detached plugin mechanism to offer upgrades of difficult plugins automatically.
 However the only detached plugins which implement security realms, `ldap` and `pam-auth`,
@@ -408,7 +409,7 @@ It is unclear how extensive test coverage in Jenkins core really is when it come
 
 `plugin-compat-tester` will be of some use to detect plugin incompatibilities,
 unless there are special class loading considerations (JENKINS-41827),
-such as if the `ldap` plugin is made to bundle its own copy of `acegi-security.jar`.
+such as the `ldap` plugin being made to bundle its own copy of `acegi-security.jar`.
 
 `acceptance-test-harness` is needed, especially with Dockerized fixtures,
 to run smoke tests of security-related workflows such as LDAP authentication.
@@ -422,30 +423,14 @@ CloudBees will be performing runs of ATH & PCT against patched Jenkins core and 
 
 == References
 
+* Reference implementation
+** link:https://github.com/jenkinsci/jenkins/pull/4848[jenkins #4848] (upgrade to Spring Security 5 by jglick)
 * Searching for usages of Acegi Security in plugins
 ** link:https://github.com/jenkins-infra/usage-in-plugins/pull/15[usage-in-plugins #15] (PoC by Wadeck)
 ** link:https://github.com/jenkins-infra/usage-in-plugins/pull/16[usage-in-plugins #16] (general improvement by jglick)
-* Preparatory patches
-** link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/38[reverse-proxy-auth-plugin #38] (cleanup by Wadeck)
-** link:https://github.com/jenkinsci/authorize-project-plugin/pull/46[authorize-project-plugin #46] (cleanup by Wadeck)
-** link:https://github.com/jenkinsci/github-oauth-plugin/pull/119[github-oauth-plugin #119] (cleanup by jglick)
-** link:https://github.com/jenkinsci/throttle-concurrent-builds-plugin/pull/85[throttle-concurrent-builds-plugin #85] (cleanup by jglick)
-** link:https://github.com/jenkinsci/ldap-plugin/pull/46[ldap-plugin #46] (cleanup by jglick)
-** link:https://github.com/jenkinsci/active-directory-plugin/pull/102[active-directory-plugin #102] (cleanup by jglick)
-** link:https://github.com/jenkinsci/credentials-plugin/pull/164[credentials-plugin #164] (cleanup by jglick)
-** link:https://github.com/jenkinsci/suppress-stack-trace-plugin/pull/5[suppress-stack-trace-plugin #5] (deprecation by jglick)
-** link:https://github.com/jenkinsci/blueocean-plugin/pull/2084[blueocean-plugin #2084] (cleanup by jglick)
-** link:https://github.com/jenkinsci/saml-plugin/pull/90[saml-plugin #90] (Spring update by kuisathaverat)
-** link:https://github.com/jenkinsci/branch-api-plugin/pull/209[branch-api-plugin #209] (cleanup by jglick)
-** link:https://github.com/jenkinsci/splunk-devops-plugin/pull/13[splunk-devops-plugin #13] (cleanup by jglick)
-** link:https://github.com/jfrog/jenkins-artifactory-plugin/pull/327[artifactory-plugin #327] (cleanup by jglick)
 * Exploratory work
 ** link:https://github.com/Wadeck/poc-acegi-security-facade-lib[poc-acegi-security-facade-lib] (PoC by Wadeck)
 ** link:https://github.com/jenkinsci/jenkins/pull/4844[jenkins #4844] (PoC by Wadeck)
-* Reference implementation
-** link:https://github.com/jenkinsci/jenkins/pull/4848[jenkins #4848] (upgrade to Spring Security 5 by jglick)
-** link:https://github.com/jenkinsci/ldap-plugin/pull/48[ldap-plugin #48] (compatibility by jglick)
-** link:https://github.com/jenkinsci/ldap-plugin/pull/49[ldap-plugin #49] (update to Spring Security by jglick)
 * Issues of interest
 ** link:https://issues.jenkins-ci.org/browse/JENKINS-5303[JENKINS-5303] _Upgrade Acegi Security to the latest Spring Security release_
 ** link:https://issues.jenkins-ci.org/browse/JENKINS-49555[JENKINS-49555] _Split most of Spring Framework out of core_
