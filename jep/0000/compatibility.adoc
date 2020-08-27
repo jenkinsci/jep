@@ -7,7 +7,6 @@ Plugins should be sorted by code identifier
 (usually, but not always, the portion in the GitHub repository name preceding `-plugin`).
 
 [cols="1,2,5", options="header"]
-.Plugin compatibility with JEP-0000
 |===
 |Plugin |Status |Notes
 
@@ -81,12 +80,12 @@ would make it natively use Spring Security.
 
 |link:https://plugins.jenkins.io/reverse-proxy-auth-plugin/[reverse-proxy-auth-plugin]
 |Incompatible
-|link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/38[reverse-proxy-auth-plugin #38]
-is merely cleanup to make it easier to even test against new cores.
-
-The code base not only makes use of `BeanBuilder` and Acegi Security APIs for which no compatibility is offered,
+|The code base not only makes use of `BeanBuilder` and Acegi Security APIs for which no compatibility is offered,
 but like the `ldap` plugin it makes use of the LDAP parts of Acegi Security which are heavily refactored in Spring Security.
 Compatibility with this JEP is expected to be significant effort.
+
+link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/38[reverse-proxy-auth-plugin #38]
+is merely cleanup to make it easier to even test against new cores.
 
 The plugin has not been released in 2½ years;
 even then it was only released by Jenkins CERT members
@@ -111,7 +110,7 @@ is necessary.
 |link:https://plugins.jenkins.io/suppress-stack-trace/[suppress-stack-trace]
 |Obsolete
 |After link:https://github.com/jenkinsci/suppress-stack-trace-plugin/pull/5[suppress-stack-trace-plugin #5]
-this plugin is deprecated and should not be used.
+in 1.6 this plugin is deprecated and should not be used.
 Older versions may be incompatible.
 
 |link:https://plugins.jenkins.io/throttle-concurrents/[throttle-concurrents]
