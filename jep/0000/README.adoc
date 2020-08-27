@@ -340,6 +340,10 @@ mvn process-classes exec:exec -Dexec.executable=java -Dexec.args='-classpath %cl
 
 producing a link:usage-by-api.html[report].
 
+(This pair of UCs is very nearly a superset of the default Jenkins UC.
+As tracked in link:https://github.com/jenkins-infra/usage-in-plugins/pull/17[usage-in-plugins #17],
+the tool does not currently work on the default UC.)
+
 == Security
 
 This JEP changes Jenkins code fundamental to security and so introduces inherent security risks.
