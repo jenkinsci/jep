@@ -6,7 +6,7 @@ Please use pull requests as needed to help maintain the following table.
 Plugins should be sorted by code identifier
 (usually, but not always, the portion in the GitHub repository name preceding `-plugin`).
 
-[cols="1,2,5", options="header"]
+[cols=".<1,2,5", options="header"]
 |===
 |Plugin |Status |Notes
 
