@@ -62,6 +62,10 @@ cleans up some related APIs.
 is necessary.
 Given that, it seems to work.
 
+|link:https://plugins.jenkins.io/google-login/[google-login]
+|Probably compatible
+|Untested.
+
 |https://plugins.jenkins.io/jenkins-cloudfoundry-uaa/[jenkins-cloudfoundry-uaa]
 |Incompatible
 |Uses `BeanBuilder` and possibly other problematic types.
@@ -73,6 +77,18 @@ link:https://github.com/jenkinsci/ldap-plugin/pull/48[ldap-plugin #48]
 are required to make the plugin work in both old and new cores.
 link:https://github.com/jenkinsci/ldap-plugin/pull/49[ldap-plugin #49] (a work in progress)
 would make it natively use Spring Security.
+
+|link:https://plugins.jenkins.io/mock-security-realm/[mock-security-realm]
+|Compatible
+|Sanity tested.
+
+|link:https://plugins.jenkins.io/openid/[openid]
+|Probably compatible
+|Untested.
+
+|link:https://plugins.jenkins.io/pam-auth/[pam-auth]
+|Compatible
+|Sanity tested.
 
 |https://plugins.jenkins.io/restricted-register/[restricted-register]
 |Probably compatible
