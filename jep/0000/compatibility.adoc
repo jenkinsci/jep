@@ -117,7 +117,7 @@ would make it natively use Spring Security.
 
 |link:https://plugins.jenkins.io/matrix-auth/[matrix-auth]
 |Compatible
-|PCT passes.
+|link:https://github.com/jenkinsci/matrix-auth-plugin/pull/85[matrix-auth-plugin #85] fixes PCT failures.
 Some form validation uses Acegi Security exception types but the usages are believed compatible.
 
 |link:https://plugins.jenkins.io/mock-security-realm/[mock-security-realm]
