@@ -136,6 +136,10 @@ Some form validation uses Acegi Security exception types but the usages are beli
 |Compatible
 |Sanity tested.
 
+|link:https://plugins.jenkins.io/pipeline-maven/[pipeline-maven]
+|Mostly compatible
+|Pending link:https://github.com/jenkinsci/pipeline-maven-plugin/pull/252[pipeline-maven-plugin #252] for full compatibility.
+
 |link:https://plugins.jenkins.io/pwauth/[pwauth]
 |Unknown
 |Review and testing required.
