@@ -31,9 +31,11 @@ is necessary.
 
 |link:https://plugins.jenkins.io/authorize-project/[authorize-project]
 |Probably compatible
-|Untested.
+|Tests pass.
 link:https://github.com/jenkinsci/authorize-project-plugin/pull/46[authorize-project-plugin #46]
 was filed as cleanup to make testing against recent cores easier.
+link:https://github.com/jenkinsci/authorize-project-plugin/pull/49[authorize-project-plugin #49]
+cleans up some related code.
 
 |link:https://plugins.jenkins.io/azure-ad/[azure-ad]
 |Unknown
@@ -85,6 +87,11 @@ cleans up some related APIs.
 |Incompatible
 |Uses some unsupported types from Acegi Security.
 
+|link:https://plugins.jenkins.io/dry-run/[dry-run]
+|Mostly compatible
+|link:https://github.com/jenkinsci/dry-run-plugin/blob/63733e771406943766a1ac6f9308701aca291309/src/main/java/org/jenkinsci/plugins/dryrun/DryRunProjectAction.java#L29-L34[this code]
+could be switched to `hasPermission` for full compatibility.
+
 |link:https://plugins.jenkins.io/github-oauth/[github-oauth]
 |Incompatible, fixes prepared
 |link:https://github.com/jenkinsci/github-oauth-plugin/pull/119[github-oauth-plugin #119]
@@ -115,6 +122,11 @@ are required to make the plugin work in both old and new cores.
 link:https://github.com/jenkinsci/ldap-plugin/pull/49[ldap-plugin #49] (a work in progress)
 would make it natively use Spring Security.
 
+|link:https://plugins.jenkins.io/mac/[mac]
+|Mostly compatible
+|link:https://github.com/jenkinsci/mac-plugin/blob/f1ed5db8e761a26b8883358aaddd2dac9e8c05a5/src/main/java/fr/edf/jenkins/plugins/mac/util/FormUtils.groovy#L63-L75[This code]
+should be switched to `hasPermission` for full compatibility.
+
 |link:https://plugins.jenkins.io/matrix-auth/[matrix-auth]
 |Compatible
 |link:https://github.com/jenkinsci/matrix-auth-plugin/pull/85[matrix-auth-plugin #85] fixes PCT failures.
@@ -143,6 +155,16 @@ Some form validation uses Acegi Security exception types but the usages are beli
 |link:https://plugins.jenkins.io/pipeline-restful-api/[pipeline-restful-api]
 |Mostly compatible
 |Pending link:https://github.com/jenkinsci/pipeline-restful-api-plugin/pull/13[pipeline-restful-api-plugin #13] for full compatibility.
+
+|link:https://plugins.jenkins.io/plugin-util-api/[plugin-util-api]
+|Mostly compatible
+|Pending link:https://github.com/jenkinsci/plugin-util-api-plugin/pull/50[plugin-util-api-plugin #50] for full compatibility.
+
+|link:https://plugins.jenkins.io/purge-job-history/[purge-job-history]
+|Mostly compatible
+|link:https://github.com/jenkinsci/purge-job-history-plugin/blob/e694f76d73b7b6402741d5ba88df2f702dab993e/src/main/java/jenkins/plugins/purgejobhistory/PurgeJobHistory.java#L124-L130[This code] and
+link:https://github.com/jenkinsci/purge-job-history-plugin/blob/e694f76d73b7b6402741d5ba88df2f702dab993e/src/main/java/jenkins/plugins/purgejobhistory/PurgeJobHistory.java#L193-L199[this code]
+should be switched to `hasPermission` for full compatibility.
 
 |link:https://plugins.jenkins.io/pwauth/[pwauth]
 |Unknown
