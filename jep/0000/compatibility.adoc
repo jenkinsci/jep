@@ -5,7 +5,7 @@ for tips on searching for potentially problematic API usages.
 Plugins which do not do anything special with Acegi Security or Spring types need not be listed.
 In particular, some very routine usages such as `ACL.as(ACL.SYSTEM)` are not cause for concern
 since core retains binary compatibility for these.
-All plugins defining a `SecurityRealm` should be listed.
+All link:https://www.jenkins.io/doc/developer/extensions/jenkins-core/#securityrealm[plugins defining a `SecurityRealm`] should be listed.
 
 Please use pull requests as needed to help maintain the following table.
 Plugins should be sorted by code identifier
@@ -25,11 +25,27 @@ is required to make the plugin work in both old and new cores.
 |link:https://github.com/jfrog/jenkins-artifactory-plugin/pull/327[artifactory-plugin #327]
 is necessary.
 
+|link:https://plugins.jenkins.io/assembla-auth/[assembla-auth]
+|Unknown
+|Review and testing required.
+
 |link:https://plugins.jenkins.io/authorize-project/[authorize-project]
 |Probably compatible
 |Untested.
 link:https://github.com/jenkinsci/authorize-project-plugin/pull/46[authorize-project-plugin #46]
 was filed as cleanup to make testing against recent cores easier.
+
+|link:https://plugins.jenkins.io/azure-ad/[azure-ad]
+|Unknown
+|Review and testing required.
+
+|link:https://plugins.jenkins.io/backlog/[backlog]
+|Unknown
+|Review and testing required.
+
+|link:https://plugins.jenkins.io/bitbucket-oauth/[bitbucket-oauth]
+|Unknown
+|Review and testing required.
 
 |link:https://plugins.jenkins.io/blueocean/[blueocean]
 |Probably compatible
@@ -75,6 +91,10 @@ cleans up some related APIs.
 is necessary.
 Given that, it seems to work.
 
+|link:https://plugins.jenkins.io/gitlab-oauth/[gitlab-oauth]
+|Unknown
+|Review and testing required.
+
 |link:https://plugins.jenkins.io/google-login/[google-login]
 |Probably compatible
 |Untested.
@@ -82,6 +102,10 @@ Given that, it seems to work.
 |link:https://plugins.jenkins.io/jenkins-cloudfoundry-uaa/[jenkins-cloudfoundry-uaa]
 |Incompatible
 |Uses `BeanBuilder` and possibly other problematic types.
+
+|link:https://plugins.jenkins.io/keycloak/[keycloak]
+|Unknown
+|Review and testing required.
 
 |link:https://plugins.jenkins.io/ldap/[ldap]
 |Incompatible, fixes prepared
@@ -100,6 +124,10 @@ Some form validation uses Acegi Security exception types but the usages are beli
 |Compatible
 |Sanity tested.
 
+|link:https://plugins.jenkins.io/oic-auth/[oic-auth]
+|Unknown
+|Review and testing required.
+
 |link:https://plugins.jenkins.io/openid/[openid]
 |Probably compatible
 |Untested.
@@ -107,6 +135,14 @@ Some form validation uses Acegi Security exception types but the usages are beli
 |link:https://plugins.jenkins.io/pam-auth/[pam-auth]
 |Compatible
 |Sanity tested.
+
+|link:https://plugins.jenkins.io/pwauth/[pwauth]
+|Unknown
+|Review and testing required.
+
+|link:https://plugins.jenkins.io/redmine/[redmine]
+|Unknown
+|Review and testing required.
 
 |https://plugins.jenkins.io/restricted-register/[restricted-register]
 |Probably compatible
@@ -133,6 +169,10 @@ It appears to now be abandoned and in need of adoption.
 link:https://github.com/jenkinsci/saml-plugin/pull/90[saml-plugin #90]
 would take advantage of the Spring update.
 
+|link:https://plugins.jenkins.io/script-realm/[script-realm]
+|Unknown
+|Review and testing required.
+
 |link:https://plugins.jenkins.io/script-security/[script-security]
 |Compatible
 |PCT passes.
@@ -156,5 +196,17 @@ Older versions may be incompatible.
 |Incompatible, fixes prepared
 |link:https://github.com/jenkinsci/throttle-concurrent-builds-plugin/pull/85[throttle-concurrent-builds-plugin #85]
 is necessary.
+
+|link:https://plugins.jenkins.io/url-auth/[url-auth]
+|Unknown
+|Review and testing required.
+
+|link:https://plugins.jenkins.io/wso2id-oauth/[wso2id-oauth]
+|Unknown
+|Review and testing required.
+
+|link:https://plugins.jenkins.io/wwpass-plugin/[wwpass-plugin]
+|Unknown
+|Review and testing required.
 
 |===
