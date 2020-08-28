@@ -2,6 +2,11 @@ Use this space to track the status of plugins that may or may not be compatible 
 Refer to general information about link:README.adoc#backwards-compatibility[backwards compatibility]
 for tips on searching for potentially problematic API usages.
 
+Plugins which do not do anything special with Acegi Security or Spring types need not be listed.
+In particular, some very routine usages such as `ACL.as(ACL.SYSTEM)` are not cause for concern
+since core retains binary compatibility for these.
+All plugins defining a `SecurityRealm` should be listed.
+
 Please use pull requests as needed to help maintain the following table.
 Plugins should be sorted by code identifier
 (usually, but not always, the portion in the GitHub repository name preceding `-plugin`).
@@ -21,38 +26,46 @@ is required to make the plugin work in both old and new cores.
 is necessary.
 
 |link:https://plugins.jenkins.io/authorize-project/[authorize-project]
-|Probably compatible, untested
-|link:https://github.com/jenkinsci/authorize-project-plugin/pull/46[authorize-project-plugin #46]
+|Probably compatible
+|Untested.
+link:https://github.com/jenkinsci/authorize-project-plugin/pull/46[authorize-project-plugin #46]
 was filed as cleanup to make testing against recent cores easier.
 
-|https://plugins.jenkins.io/blueocean/[blueocean]
+|link:https://plugins.jenkins.io/blueocean/[blueocean]
 |Probably compatible
-|link:https://github.com/jenkinsci/blueocean-plugin/pull/2084[blueocean-plugin #2084]
+|Actually a suite of plugins released atomically.
+link:https://github.com/jenkinsci/blueocean-plugin/pull/2084[blueocean-plugin #2084]
 cleans up some related APIs and enables testing.
 
-|https://plugins.jenkins.io/branch-api/[branch-api]
+|link:https://plugins.jenkins.io/branch-api/[branch-api]
 |Compatible
 |link:https://github.com/jenkinsci/branch-api-plugin/pull/209[branch-api-plugin #209]
 cleans up some API usages for testing.
 
-|https://plugins.jenkins.io/cas-plugin/[cas-plugin]
+|link:https://plugins.jenkins.io/cas-plugin/[cas-plugin]
 |Incompatible
 |Uses `BeanBuilder` and several removed Acegi Security types.
 
-|https://plugins.jenkins.io/coding-webhook/[coding-webhook]
+|link:https://plugins.jenkins.io/coding-webhook/[coding-webhook]
 |Incompatible
 |Uses `CliAuthenticator`.
 
-|https://plugins.jenkins.io/credentials/[credentials]
+|link:https://plugins.jenkins.io/copyartifact/[copyartifact]
 |Compatible
-|link:https://github.com/jenkinsci/credentials-plugin/pull/164[credentials-plugin #164]
+|PCT passes.
+Has an unusual `AUTHENTICATED_ANONYMOUS` but believed safe.
+
+|link:https://plugins.jenkins.io/credentials/[credentials]
+|Compatible
+|PCT passes.
+link:https://github.com/jenkinsci/credentials-plugin/pull/164[credentials-plugin #164]
 cleans up some related APIs.
 
-|https://plugins.jenkins.io/crowd/[crowd]
+|link:https://plugins.jenkins.io/crowd/[crowd]
 |Incompatible
 |Uses `BeanBuilder` and possibly other problematic types.
 
-|https://plugins.jenkins.io/crowd2/[crowd2]
+|link:https://plugins.jenkins.io/crowd2/[crowd2]
 |Incompatible
 |Uses some unsupported types from Acegi Security.
 
@@ -66,7 +79,7 @@ Given that, it seems to work.
 |Probably compatible
 |Untested.
 
-|https://plugins.jenkins.io/jenkins-cloudfoundry-uaa/[jenkins-cloudfoundry-uaa]
+|link:https://plugins.jenkins.io/jenkins-cloudfoundry-uaa/[jenkins-cloudfoundry-uaa]
 |Incompatible
 |Uses `BeanBuilder` and possibly other problematic types.
 
@@ -77,6 +90,11 @@ link:https://github.com/jenkinsci/ldap-plugin/pull/48[ldap-plugin #48]
 are required to make the plugin work in both old and new cores.
 link:https://github.com/jenkinsci/ldap-plugin/pull/49[ldap-plugin #49] (a work in progress)
 would make it natively use Spring Security.
+
+|link:https://plugins.jenkins.io/matrix-auth/
+|Compatible
+|PCT passes.
+Some form validation uses Acegi Security exception types but the usages are believed compatible.
 
 |link:https://plugins.jenkins.io/mock-security-realm/[mock-security-realm]
 |Compatible
@@ -110,9 +128,14 @@ to allow critical fixes for link:../200/README.adoc[JEP-200]
 It appears to now be abandoned and in need of adoption.
 
 |link:https://plugins.jenkins.io/saml/[saml]
-|Probably compatible, untested
-|link:https://github.com/jenkinsci/saml-plugin/pull/90[saml-plugin #90]
+|Probably compatible
+|PCT passes, but not sanity tested.
+link:https://github.com/jenkinsci/saml-plugin/pull/90[saml-plugin #90]
 would take advantage of the Spring update.
+
+|link:https://plugins.jenkins.io/script-security/[script-security]
+|Compatible
+|PCT passes.
 
 |https://plugins.jenkins.io/sfee/[sfee]
 |Incompatible
