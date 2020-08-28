@@ -11,7 +11,7 @@ Please use pull requests as needed to help maintain the following table.
 Plugins should be sorted by code identifier
 (usually, but not always, the portion in the GitHub repository name preceding `-plugin`).
 
-[cols=".<1,2,5", options="header"]
+[cols=".<1,.<2,5", options="header"]
 |===
 |Plugin |Status |Notes
 
@@ -115,7 +115,7 @@ are required to make the plugin work in both old and new cores.
 link:https://github.com/jenkinsci/ldap-plugin/pull/49[ldap-plugin #49] (a work in progress)
 would make it natively use Spring Security.
 
-|link:https://plugins.jenkins.io/matrix-auth/
+|link:https://plugins.jenkins.io/matrix-auth/[matrix-auth]
 |Compatible
 |PCT passes.
 Some form validation uses Acegi Security exception types but the usages are believed compatible.
