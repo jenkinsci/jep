@@ -157,8 +157,8 @@ Some form validation uses Acegi Security exception types but the usages are beli
 |Pending link:https://github.com/jenkinsci/pipeline-restful-api-plugin/pull/13[pipeline-restful-api-plugin #13] for full compatibility.
 
 |link:https://plugins.jenkins.io/plugin-util-api/[plugin-util-api]
-|Mostly compatible
-|Pending link:https://github.com/jenkinsci/plugin-util-api-plugin/pull/50[plugin-util-api-plugin #50] for full compatibility.
+|Compatible
+|As of link:https://github.com/jenkinsci/plugin-util-api-plugin/releases/tag/plugin-util-api-1.2.5[1.2.5].
 
 |link:https://plugins.jenkins.io/purge-job-history/[purge-job-history]
 |Mostly compatible
