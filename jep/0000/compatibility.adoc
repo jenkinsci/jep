@@ -162,6 +162,11 @@ Some form validation uses Acegi Security exception types but the usages are beli
 |link:https://github.com/jenkinsci/openstack-cloud-plugin/blob/e91c3a915388ff75b2cbe3a63f55e2192eb36efc/plugin/src/test/java/jenkins/plugins/openstack/compute/JCloudsCloudTest.java#L347-L350[This code]
 may need adjustment.
 
+|link:https://plugins.jenkins.io/ownership/[ownership]
+|Mostly compatible
+|link:https://github.com/jenkinsci/ownership-plugin/blob/2b619c3a7dfaa4b706b19560dc465040b1de2dc4/src/main/java/com/synopsys/arc/jenkins/plugins/ownership/OwnershipDescription.java#L425[This code]
+should be adjusted.
+
 |link:https://plugins.jenkins.io/pam-auth/[pam-auth]
 |Compatible
 |Sanity tested.
@@ -216,6 +221,11 @@ It appears to now be abandoned and in need of adoption.
 |PCT passes, but not sanity tested.
 link:https://github.com/jenkinsci/saml-plugin/pull/90[saml-plugin #90]
 would take advantage of the Spring update.
+
+|link:https://plugins.jenkins.io/scm-sync-configuration/[scm-sync-configuration]
+|Mostly compatible
+|link:https://github.com/jenkinsci/scm-sync-configuration-plugin/pull/72[scm-sync-configuration-plugin #72]
+is required for full compatibility.
 
 |link:https://plugins.jenkins.io/script-realm/[script-realm]
 |Unknown
