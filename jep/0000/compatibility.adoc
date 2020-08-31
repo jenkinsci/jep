@@ -62,8 +62,7 @@ cleans up some API usages for testing.
 
 |link:https://plugins.jenkins.io/build-token-root/[build-token-root]
 |Compatible
-|link:https://github.com/jenkinsci/build-token-root-plugin/pull/46[build-token-root-plugin #46]
-cleans up some related API calls.
+|Tests pass as of link:https://github.com/jenkinsci/build-token-root-plugin/releases/tag/build-token-root-1.7[1.7] if not earlier.
 
 |link:https://plugins.jenkins.io/cas-plugin/[cas-plugin]
 |Incompatible
