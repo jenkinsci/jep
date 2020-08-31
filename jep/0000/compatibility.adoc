@@ -96,6 +96,10 @@ cleans up some related APIs.
 |link:https://github.com/jenkinsci/dry-run-plugin/blob/63733e771406943766a1ac6f9308701aca291309/src/main/java/org/jenkinsci/plugins/dryrun/DryRunProjectAction.java#L29-L34[this code]
 could be switched to `hasPermission` for full compatibility.
 
+|link:https://plugins.jenkins.io/extensible-choice-parameter/[extensible-choice-parameter]
+|Probably compatible
+|Unclear what the purpose of link:https://github.com/jenkinsci/extensible-choice-parameter-plugin/blob/3fda75de34d4099d078a038fc3eeb3c38679c1f8/src/test/java/jp/ikedam/jenkins/plugins/extensible_choice_parameter/SystemGroovyChoiceListProviderJenkinsTest.java#L217-L219[this test code] is.
+
 |link:https://plugins.jenkins.io/github-oauth/[github-oauth]
 |Incompatible, fixes prepared
 |link:https://github.com/jenkinsci/github-oauth-plugin/pull/119[github-oauth-plugin #119]
@@ -113,6 +117,11 @@ Given that, it seems to work.
 |link:https://plugins.jenkins.io/jenkins-cloudfoundry-uaa/[jenkins-cloudfoundry-uaa]
 |Incompatible
 |Uses `BeanBuilder` and possibly other problematic types.
+
+|link:https://plugins.jenkins.io/junit/[junit]
+|Mostly compatible
+|link:https://github.com/jenkinsci/junit-plugin/pull/151[junit-plugin #151]
+required for full compatibility.
 
 |link:https://plugins.jenkins.io/keycloak/[keycloak]
 |Unknown
@@ -147,6 +156,11 @@ Some form validation uses Acegi Security exception types but the usages are beli
 |link:https://plugins.jenkins.io/openid/[openid]
 |Probably compatible
 |Untested.
+
+|link:https://plugins.jenkins.io/openstack-cloud/[openstack-cloud]
+|Probably compatible
+|link:https://github.com/jenkinsci/openstack-cloud-plugin/blob/e91c3a915388ff75b2cbe3a63f55e2192eb36efc/plugin/src/test/java/jenkins/plugins/openstack/compute/JCloudsCloudTest.java#L347-L350[This code]
+may need adjustment.
 
 |link:https://plugins.jenkins.io/pam-auth/[pam-auth]
 |Compatible
