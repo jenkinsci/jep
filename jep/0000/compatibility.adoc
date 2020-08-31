@@ -150,7 +150,7 @@ Some form validation uses Acegi Security exception types but the usages are beli
 
 |link:https://plugins.jenkins.io/pipeline-maven/[pipeline-maven]
 |Mostly compatible
-|Pending link:https://github.com/jenkinsci/pipeline-maven-plugin/pull/252[pipeline-maven-plugin #252] for full compatibility.
+|3.9.0-beta-1 and newer should be fully compatible.
 
 |link:https://plugins.jenkins.io/pipeline-restful-api/[pipeline-restful-api]
 |Mostly compatible
