@@ -60,6 +60,11 @@ cleans up some related APIs and enables testing.
 |link:https://github.com/jenkinsci/branch-api-plugin/pull/209[branch-api-plugin #209]
 cleans up some API usages for testing.
 
+|link:https://plugins.jenkins.io/build-token-root/[build-token-root]
+|Compatible
+|link:https://github.com/jenkinsci/build-token-root-plugin/pull/46[build-token-root-plugin #46]
+cleans up some related API calls.
+
 |link:https://plugins.jenkins.io/cas-plugin/[cas-plugin]
 |Incompatible
 |Uses `BeanBuilder` and several removed Acegi Security types.
