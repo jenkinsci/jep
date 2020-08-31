@@ -223,9 +223,8 @@ in 1.6 this plugin is deprecated and should not be used.
 Older versions may be incompatible.
 
 |link:https://plugins.jenkins.io/throttle-concurrents/[throttle-concurrents]
-|Incompatible, fixes prepared
-|link:https://github.com/jenkinsci/throttle-concurrent-builds-plugin/pull/85[throttle-concurrent-builds-plugin #85]
-is necessary.
+|Compatible
+|As of link:https://github.com/jenkinsci/throttle-concurrent-builds-plugin/releases/tag/throttle-concurrents-2.0.3[2.0.3].
 
 |link:https://plugins.jenkins.io/url-auth/[url-auth]
 |Unknown
