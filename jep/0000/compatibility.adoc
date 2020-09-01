@@ -79,8 +79,7 @@ Has an unusual `AUTHENTICATED_ANONYMOUS` but believed safe.
 |link:https://plugins.jenkins.io/credentials/[credentials]
 |Compatible
 |PCT passes.
-link:https://github.com/jenkinsci/credentials-plugin/pull/164[credentials-plugin #164]
-cleans up some related APIs.
+Cleanups integrated as of link:https://github.com/jenkinsci/credentials-plugin/releases/tag/credentials-2.3.13[2.3.13].
 
 |link:https://plugins.jenkins.io/crowd/[crowd]
 |Incompatible
