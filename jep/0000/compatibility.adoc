@@ -72,6 +72,11 @@ cleans up some related APIs and enables testing.
 |Incompatible
 |Uses `BeanBuilder` and several removed Acegi Security types.
 
+|link:https://plugins.jenkins.io/cloudbees-bitbucket-branch-source/[cloudbees-bitbucket-branch-source]
+|Probably compatible
+|link:https://github.com/jenkinsci/bitbucket-branch-source-plugin/pull/362[bitbucket-branch-source-plugin #362]
+is required for tests to pass.
+
 |link:https://plugins.jenkins.io/coding-webhook/[coding-webhook]
 |Incompatible
 |Uses `CliAuthenticator`.
