@@ -77,6 +77,14 @@ cleans up some related APIs and enables testing.
 |link:https://github.com/jenkinsci/bitbucket-branch-source-plugin/pull/362[bitbucket-branch-source-plugin #362]
 is required for tests to pass.
 
+|link:https://plugins.jenkins.io/cloudbees-folder/[cloudbees-folder]
+|Compatible
+|While link:https://github.com/jenkinsci/cloudbees-folder-plugin/blob/24c66b5db8fcf9e6e67da4f07b6054d2ae1acf3f/src/test/java/com/cloudbees/hudson/plugins/folder/FolderTest.java#L331-L336[this test code]
+looks like it should fail, in fact
+link:https://github.com/jenkinsci/cloudbees-folder-plugin/blob/24c66b5db8fcf9e6e67da4f07b6054d2ae1acf3f/src/main/java/com/cloudbees/hudson/plugins/folder/AbstractFolder.java#L1048[this code]
+is throwing the Acegi Security version of the exception.
+At runtime, either should be accepted, due to `AcegiSecurityExceptionFilter` in core.
+
 |link:https://plugins.jenkins.io/coding-webhook/[coding-webhook]
 |Incompatible
 |Uses `CliAuthenticator`.
@@ -195,6 +203,11 @@ should be adjusted.
 |link:https://plugins.jenkins.io/pam-auth/[pam-auth]
 |Compatible
 |Sanity tested.
+
+|link:https://plugins.jenkins.io/parameterized-trigger/[parameterized-trigger]
+|Mostly compatible
+|link:https://github.com/jenkinsci/parameterized-trigger-plugin/pull/145[parameterized-trigger-plugin #145]
+required for full compatibility.
 
 |link:https://plugins.jenkins.io/pipeline-maven/[pipeline-maven]
 |Mostly compatible
