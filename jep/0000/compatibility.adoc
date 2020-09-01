@@ -57,8 +57,7 @@ cleans up some related APIs and enables testing.
 
 |link:https://plugins.jenkins.io/branch-api/[branch-api]
 |Compatible
-|link:https://github.com/jenkinsci/branch-api-plugin/pull/209[branch-api-plugin #209]
-cleans up some API usages for testing.
+|As of link:https://github.com/jenkinsci/branch-api-plugin/releases/tag/branch-api-2.6.0[2.6.0].
 
 |link:https://plugins.jenkins.io/build-token-root/[build-token-root]
 |Compatible
