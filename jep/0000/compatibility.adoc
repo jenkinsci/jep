@@ -20,6 +20,11 @@ Plugins should be sorted by code identifier
 |link:https://github.com/jenkinsci/active-directory-plugin/pull/102[active-directory-plugin #102]
 is required to make the plugin work in both old and new cores.
 
+|link:https://plugins.jenkins.io/atlassian-bitbucket-server-integration/[atlassian-bitbucket-server-integration]
+|Probably compatible
+|link:https://github.com/jenkinsci/atlassian-bitbucket-server-integration-plugin/blob/f9d48b7d6639a207d73a26452dc2cc5d5c00fc8d/src/test/java/com/atlassian/bitbucket/jenkins/internal/scm/BitbucketScmFormValidationDelegateTest.java#L170[This code]
+and similar would likely need to be updated to make tests pass.
+
 |link:https://plugins.jenkins.io/artifactory/[artifactory]
 |Incompatible, fixes prepared
 |link:https://github.com/jfrog/jenkins-artifactory-plugin/pull/327[artifactory-plugin #327]
@@ -108,6 +113,11 @@ Given that, it seems to work.
 |Unknown
 |Review and testing required.
 
+|link:https://plugins.jenkins.io/google-cloud-health-check/[google-cloud-health-check]
+|Probably compatible
+|link:https://github.com/jenkinsci/google-cloud-health-check-plugin/blob/a6b68119ebd64c1bad026ad5ed7a04c964bcb382/src/test/java/com/google/jenkins/plugins/health/HealthCheckActionTest.java#L63[This code]
+would need to be adjusted to make tests pass.
+
 |link:https://plugins.jenkins.io/google-login/[google-login]
 |Probably compatible
 |Untested.
@@ -115,6 +125,18 @@ Given that, it seems to work.
 |link:https://plugins.jenkins.io/jenkins-cloudfoundry-uaa/[jenkins-cloudfoundry-uaa]
 |Incompatible
 |Uses `BeanBuilder` and possibly other problematic types.
+
+|link:https://plugins.jenkins.io/jobConfigHistory/[jobConfigHistory]
+|Probably compatible
+|link:https://github.com/jenkinsci/jobConfigHistory-plugin/blob/d7cef005f875b00a04e6bd7a81eee69510b65c59/src/test/java/hudson/plugins/jobConfigHistory/JobConfigHistoryProjectActionTest.java#L317[This code]
+would need to be adjusted to make tests pass.
+
+|link:https://plugins.jenkins.io/job-dsl/[job-dsl]
+|Probably compatible
+|link:https://github.com/jenkinsci/job-dsl-plugin/blob/c35fc778fc16f6fb21937e680bd63dd01242cbd4/job-dsl-plugin/src/main/groovy/javaposse/jobdsl/plugin/ExecuteDslScripts.java#L370[This idiom]
+is often problematic, but in this case it seems to be catching
+link:https://github.com/jenkinsci/job-dsl-plugin/blob/0ba7b8d04dba75a7e04981d9dd2c3ed926e66a6d/job-dsl-plugin/src/main/groovy/javaposse/jobdsl/plugin/SandboxDslScriptLoader.groovy#L50[this exception]
+without going through Jenkins core, so it is likely compatible.
 
 |link:https://plugins.jenkins.io/junit/[junit]
 |Mostly compatible
