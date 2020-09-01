@@ -107,6 +107,11 @@ Cleanups integrated as of link:https://github.com/jenkinsci/credentials-plugin/r
 |Incompatible
 |Uses some unsupported types from Acegi Security.
 
+|link:https://plugins.jenkins.io/declarative-pipeline-migration-assistant/[declarative-pipeline-migration-assistant]
+|Compatible
+|link:https://github.com/jenkinsci/declarative-pipeline-migration-assistant-plugin/pull/37[declarative-pipeline-migration-assistant-plugin #37]
+required for tests to pass.
+
 |link:https://plugins.jenkins.io/dry-run/[dry-run]
 |Mostly compatible
 |link:https://github.com/jenkinsci/dry-run-plugin/blob/63733e771406943766a1ac6f9308701aca291309/src/main/java/org/jenkinsci/plugins/dryrun/DryRunProjectAction.java#L29-L34[this code]
