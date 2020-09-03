@@ -114,8 +114,7 @@ Cleanups integrated as of link:https://github.com/jenkinsci/credentials-plugin/r
 
 |link:https://plugins.jenkins.io/declarative-pipeline-migration-assistant/[declarative-pipeline-migration-assistant]
 |Compatible
-|link:https://github.com/jenkinsci/declarative-pipeline-migration-assistant-plugin/pull/37[declarative-pipeline-migration-assistant-plugin #37]
-required for tests to pass.
+|As of link:https://github.com/jenkinsci/declarative-pipeline-migration-assistant-plugin/releases/tag/declarative-pipeline-migration-assistant-1.1.2[1.1.2].
 
 |link:https://plugins.jenkins.io/dry-run/[dry-run]
 |Mostly compatible
