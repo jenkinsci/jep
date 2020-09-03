@@ -166,9 +166,8 @@ link:https://github.com/jenkinsci/job-dsl-plugin/blob/0ba7b8d04dba75a7e04981d9dd
 without going through Jenkins core, so it is likely compatible.
 
 |link:https://plugins.jenkins.io/junit/[junit]
-|Mostly compatible
-|link:https://github.com/jenkinsci/junit-plugin/pull/151[junit-plugin #151]
-required for full compatibility.
+|Compatible
+|As of link:https://github.com/jenkinsci/junit-plugin/releases/tag/junit-1.34[1.34].
 
 |link:https://plugins.jenkins.io/keycloak/[keycloak]
 |Unknown
