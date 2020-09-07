@@ -1,0 +1,320 @@
+Use this space to track the status of plugins that may or may not be compatible with JEP-0000.
+Refer to general information about link:README.adoc#backwards-compatibility[backwards compatibility]
+for tips on searching for potentially problematic API usages.
+
+Plugins which do not do anything special with Acegi Security or Spring types need not be listed.
+In particular, some very routine usages such as `ACL.as(ACL.SYSTEM)` are not cause for concern
+since core retains binary compatibility for these.
+All link:https://www.jenkins.io/doc/developer/extensions/jenkins-core/#securityrealm[plugins defining a `SecurityRealm`] should be listed.
+
+Please use pull requests as needed to help maintain the following table.
+Plugins should be sorted by code identifier
+(usually, but not always, the portion in the GitHub repository name preceding `-plugin`).
+
+[cols=".<1,.<2,5", options="header"]
+|===
+|Plugin |Status |Notes
+
+|link:https://plugins.jenkins.io/active-directory/[active-directory]
+|Incompatible, fixes prepared
+|link:https://github.com/jenkinsci/active-directory-plugin/pull/102[active-directory-plugin #102]
+is required to make the plugin work in both old and new cores.
+
+|link:https://plugins.jenkins.io/atlassian-bitbucket-server-integration/[atlassian-bitbucket-server-integration]
+|Probably compatible
+|link:https://github.com/jenkinsci/atlassian-bitbucket-server-integration-plugin/blob/f9d48b7d6639a207d73a26452dc2cc5d5c00fc8d/src/test/java/com/atlassian/bitbucket/jenkins/internal/scm/BitbucketScmFormValidationDelegateTest.java#L170[This code]
+and similar would likely need to be updated to make tests pass.
+
+|link:https://plugins.jenkins.io/artifactory/[artifactory]
+|Incompatible, fixes prepared
+|link:https://github.com/jfrog/jenkins-artifactory-plugin/pull/327[artifactory-plugin #327]
+is necessary.
+
+|link:https://plugins.jenkins.io/assembla-auth/[assembla-auth]
+|Unknown
+|Review and testing required.
+
+|link:https://plugins.jenkins.io/authorize-project/[authorize-project]
+|Probably compatible
+|Tests pass.
+link:https://github.com/jenkinsci/authorize-project-plugin/pull/46[authorize-project-plugin #46]
+was filed as cleanup to make testing against recent cores easier.
+link:https://github.com/jenkinsci/authorize-project-plugin/pull/49[authorize-project-plugin #49]
+cleans up some related code.
+
+|link:https://plugins.jenkins.io/aws-codecommit-trigger/[aws-codecommit-trigger]
+|Mostly compatible
+|link:https://github.com/jenkinsci/aws-codecommit-trigger-plugin/blob/9f0f2a28670a322fde7b12a7ec6747498b4ef485/src/main/java/com/ribose/jenkins/plugin/awscodecommittrigger/SQSTrigger.java#L428-L430[This code]
+should be simplified to check `hasPermission`.
+
+|link:https://plugins.jenkins.io/azure-ad/[azure-ad]
+|Unknown
+|Review and testing required.
+
+|link:https://plugins.jenkins.io/backlog/[backlog]
+|Unknown
+|Review and testing required.
+
+|link:https://plugins.jenkins.io/bitbucket-oauth/[bitbucket-oauth]
+|Unknown
+|Review and testing required.
+
+|link:https://plugins.jenkins.io/blueocean/[blueocean]
+|Probably compatible
+|Actually a suite of plugins released atomically.
+link:https://github.com/jenkinsci/blueocean-plugin/pull/2084[blueocean-plugin #2084]
+cleans up some related APIs and enables testing.
+
+|link:https://plugins.jenkins.io/branch-api/[branch-api]
+|Compatible
+|As of link:https://github.com/jenkinsci/branch-api-plugin/releases/tag/branch-api-2.6.0[2.6.0].
+
+|link:https://plugins.jenkins.io/build-token-root/[build-token-root]
+|Compatible
+|Tests pass as of link:https://github.com/jenkinsci/build-token-root-plugin/releases/tag/build-token-root-1.7[1.7] if not earlier.
+
+|link:https://plugins.jenkins.io/cas-plugin/[cas-plugin]
+|Incompatible
+|Uses `BeanBuilder` and several removed Acegi Security types.
+
+|link:https://plugins.jenkins.io/cloudbees-bitbucket-branch-source/[cloudbees-bitbucket-branch-source]
+|Probably compatible
+|link:https://github.com/jenkinsci/bitbucket-branch-source-plugin/pull/362[bitbucket-branch-source-plugin #362]
+is required for tests to pass.
+
+|link:https://plugins.jenkins.io/cloudbees-folder/[cloudbees-folder]
+|Compatible
+|While link:https://github.com/jenkinsci/cloudbees-folder-plugin/blob/24c66b5db8fcf9e6e67da4f07b6054d2ae1acf3f/src/test/java/com/cloudbees/hudson/plugins/folder/FolderTest.java#L331-L336[this test code]
+looks like it should fail, in fact
+link:https://github.com/jenkinsci/cloudbees-folder-plugin/blob/24c66b5db8fcf9e6e67da4f07b6054d2ae1acf3f/src/main/java/com/cloudbees/hudson/plugins/folder/AbstractFolder.java#L1048[this code]
+is throwing the Acegi Security version of the exception.
+At runtime, either should be accepted, due to `AcegiSecurityExceptionFilter` in core.
+
+|link:https://plugins.jenkins.io/coding-webhook/[coding-webhook]
+|Incompatible
+|Uses `CliAuthenticator`.
+
+|link:https://plugins.jenkins.io/copyartifact/[copyartifact]
+|Compatible
+|PCT passes.
+Has an unusual `AUTHENTICATED_ANONYMOUS` but believed safe.
+
+|link:https://plugins.jenkins.io/credentials/[credentials]
+|Compatible
+|PCT passes.
+Cleanups integrated as of link:https://github.com/jenkinsci/credentials-plugin/releases/tag/credentials-2.3.13[2.3.13].
+
+|link:https://plugins.jenkins.io/crowd/[crowd]
+|Incompatible
+|Uses `BeanBuilder` and possibly other problematic types.
+
+|link:https://plugins.jenkins.io/crowd2/[crowd2]
+|Incompatible
+|Uses some unsupported types from Acegi Security.
+
+|link:https://plugins.jenkins.io/declarative-pipeline-migration-assistant/[declarative-pipeline-migration-assistant]
+|Compatible
+|As of link:https://github.com/jenkinsci/declarative-pipeline-migration-assistant-plugin/releases/tag/declarative-pipeline-migration-assistant-1.1.2[1.1.2].
+
+|link:https://plugins.jenkins.io/dry-run/[dry-run]
+|Mostly compatible
+|link:https://github.com/jenkinsci/dry-run-plugin/blob/63733e771406943766a1ac6f9308701aca291309/src/main/java/org/jenkinsci/plugins/dryrun/DryRunProjectAction.java#L29-L34[this code]
+could be switched to `hasPermission` for full compatibility.
+
+|link:https://plugins.jenkins.io/extensible-choice-parameter/[extensible-choice-parameter]
+|Probably compatible
+|Unclear what the purpose of link:https://github.com/jenkinsci/extensible-choice-parameter-plugin/blob/3fda75de34d4099d078a038fc3eeb3c38679c1f8/src/test/java/jp/ikedam/jenkins/plugins/extensible_choice_parameter/SystemGroovyChoiceListProviderJenkinsTest.java#L217-L219[this test code] is.
+
+|link:https://plugins.jenkins.io/github-oauth/[github-oauth]
+|Incompatible, fixes prepared
+|link:https://github.com/jenkinsci/github-oauth-plugin/pull/119[github-oauth-plugin #119]
+is necessary.
+Given that, it seems to work.
+
+|link:https://plugins.jenkins.io/gitlab-oauth/[gitlab-oauth]
+|Unknown
+|Review and testing required.
+
+|link:https://plugins.jenkins.io/google-cloud-health-check/[google-cloud-health-check]
+|Probably compatible
+|link:https://github.com/jenkinsci/google-cloud-health-check-plugin/blob/a6b68119ebd64c1bad026ad5ed7a04c964bcb382/src/test/java/com/google/jenkins/plugins/health/HealthCheckActionTest.java#L63[This code]
+would need to be adjusted to make tests pass.
+
+|link:https://plugins.jenkins.io/google-login/[google-login]
+|Probably compatible
+|Untested.
+
+|link:https://plugins.jenkins.io/jenkins-cloudfoundry-uaa/[jenkins-cloudfoundry-uaa]
+|Incompatible
+|Uses `BeanBuilder` and possibly other problematic types.
+
+|link:https://plugins.jenkins.io/jobConfigHistory/[jobConfigHistory]
+|Probably compatible
+|link:https://github.com/jenkinsci/jobConfigHistory-plugin/blob/d7cef005f875b00a04e6bd7a81eee69510b65c59/src/test/java/hudson/plugins/jobConfigHistory/JobConfigHistoryProjectActionTest.java#L317[This code]
+would need to be adjusted to make tests pass.
+
+|link:https://plugins.jenkins.io/jobtemplates/[jobtemplates]
+|Mostly compatible
+|link:https://github.com/jenkinsci/jobtemplates-plugin/blob/22befbfe273ba191dddd9427b533a269db74beed/src/main/java/com/unitedinternet/jenkins/plugins/jobtemplates/JobTemplates.java#L98-L99[This code]
+would need to be simplified to check `hasPermission`.
+
+|link:https://plugins.jenkins.io/job-dsl/[job-dsl]
+|Probably compatible
+|link:https://github.com/jenkinsci/job-dsl-plugin/blob/c35fc778fc16f6fb21937e680bd63dd01242cbd4/job-dsl-plugin/src/main/groovy/javaposse/jobdsl/plugin/ExecuteDslScripts.java#L370[This idiom]
+is often problematic, but in this case it seems to be catching
+link:https://github.com/jenkinsci/job-dsl-plugin/blob/0ba7b8d04dba75a7e04981d9dd2c3ed926e66a6d/job-dsl-plugin/src/main/groovy/javaposse/jobdsl/plugin/SandboxDslScriptLoader.groovy#L50[this exception]
+without going through Jenkins core, so it is likely compatible.
+
+|link:https://plugins.jenkins.io/junit/[junit]
+|Compatible
+|As of link:https://github.com/jenkinsci/junit-plugin/releases/tag/junit-1.34[1.34].
+
+|link:https://plugins.jenkins.io/keycloak/[keycloak]
+|Unknown
+|Review and testing required.
+
+|link:https://plugins.jenkins.io/ldap/[ldap]
+|Incompatible, fixes prepared
+|link:https://github.com/jenkinsci/ldap-plugin/pull/46[ldap-plugin #46] &
+link:https://github.com/jenkinsci/ldap-plugin/pull/48[ldap-plugin #48]
+are required to make the plugin work in both old and new cores.
+link:https://github.com/jenkinsci/ldap-plugin/pull/49[ldap-plugin #49] (a work in progress)
+would make it natively use Spring Security.
+
+|link:https://plugins.jenkins.io/mac/[mac]
+|Mostly compatible
+|link:https://github.com/jenkinsci/mac-plugin/blob/f1ed5db8e761a26b8883358aaddd2dac9e8c05a5/src/main/java/fr/edf/jenkins/plugins/mac/util/FormUtils.groovy#L63-L75[This code]
+should be switched to `hasPermission` for full compatibility.
+
+|link:https://plugins.jenkins.io/matrix-auth/[matrix-auth]
+|Compatible
+|link:https://github.com/jenkinsci/matrix-auth-plugin/pull/85[matrix-auth-plugin #85] fixes PCT failures.
+Some form validation uses Acegi Security exception types but the usages are believed compatible.
+
+|link:https://plugins.jenkins.io/mock-security-realm/[mock-security-realm]
+|Compatible
+|Sanity tested.
+
+|link:https://plugins.jenkins.io/oic-auth/[oic-auth]
+|Unknown
+|Review and testing required.
+
+|link:https://plugins.jenkins.io/openid/[openid]
+|Probably compatible
+|Untested.
+
+|link:https://plugins.jenkins.io/openstack-cloud/[openstack-cloud]
+|Probably compatible
+|link:https://github.com/jenkinsci/openstack-cloud-plugin/blob/e91c3a915388ff75b2cbe3a63f55e2192eb36efc/plugin/src/test/java/jenkins/plugins/openstack/compute/JCloudsCloudTest.java#L347-L350[This code]
+may need adjustment.
+
+|link:https://plugins.jenkins.io/ownership/[ownership]
+|Mostly compatible
+|link:https://github.com/jenkinsci/ownership-plugin/blob/2b619c3a7dfaa4b706b19560dc465040b1de2dc4/src/main/java/com/synopsys/arc/jenkins/plugins/ownership/OwnershipDescription.java#L425[This code]
+should be adjusted.
+
+|link:https://plugins.jenkins.io/pam-auth/[pam-auth]
+|Compatible
+|Sanity tested.
+
+|link:https://plugins.jenkins.io/parameterized-trigger/[parameterized-trigger]
+|Mostly compatible
+|link:https://github.com/jenkinsci/parameterized-trigger-plugin/pull/145[parameterized-trigger-plugin #145]
+required for full compatibility.
+
+|link:https://plugins.jenkins.io/pipeline-maven/[pipeline-maven]
+|Mostly compatible
+|3.9.0-beta-1 and newer should be fully compatible.
+
+|link:https://plugins.jenkins.io/pipeline-restful-api/[pipeline-restful-api]
+|Mostly compatible
+|Pending link:https://github.com/jenkinsci/pipeline-restful-api-plugin/pull/13[pipeline-restful-api-plugin #13] for full compatibility.
+
+|link:https://plugins.jenkins.io/plugin-util-api/[plugin-util-api]
+|Compatible
+|As of link:https://github.com/jenkinsci/plugin-util-api-plugin/releases/tag/plugin-util-api-1.2.5[1.2.5].
+
+|link:https://plugins.jenkins.io/purge-job-history/[purge-job-history]
+|Mostly compatible
+|link:https://github.com/jenkinsci/purge-job-history-plugin/blob/e694f76d73b7b6402741d5ba88df2f702dab993e/src/main/java/jenkins/plugins/purgejobhistory/PurgeJobHistory.java#L124-L130[This code] and
+link:https://github.com/jenkinsci/purge-job-history-plugin/blob/e694f76d73b7b6402741d5ba88df2f702dab993e/src/main/java/jenkins/plugins/purgejobhistory/PurgeJobHistory.java#L193-L199[this code]
+should be switched to `hasPermission` for full compatibility.
+
+|link:https://plugins.jenkins.io/pwauth/[pwauth]
+|Unknown
+|Review and testing required.
+
+|link:https://plugins.jenkins.io/redmine/[redmine]
+|Unknown
+|Review and testing required.
+
+|https://plugins.jenkins.io/restricted-register/[restricted-register]
+|Probably compatible
+|Refers to `HudsonPrivateSecurityRealm` but is probably safe.
+
+|link:https://plugins.jenkins.io/reverse-proxy-auth-plugin/[reverse-proxy-auth-plugin]
+|Incompatible
+|The code base not only makes use of `BeanBuilder` and Acegi Security APIs for which no compatibility is offered,
+but like the `ldap` plugin it makes use of the LDAP parts of Acegi Security which are heavily refactored in Spring Security.
+Compatibility with this JEP is expected to be significant effort.
+
+link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/38[reverse-proxy-auth-plugin #38]
+is merely cleanup to make it easier to even test against new cores.
+
+The plugin has not been released in 2½ years;
+even then it was only released by Jenkins CERT members
+to allow critical fixes for link:../200/README.adoc[JEP-200]
+(link:https://groups.google.com/g/jenkinsci-dev/c/9mX-S7kLnHk/m/J6tlhM6vAQAJ[background]).
+It appears to now be abandoned and in need of adoption.
+
+|link:https://plugins.jenkins.io/saml/[saml]
+|Probably compatible
+|PCT passes, but not sanity tested.
+link:https://github.com/jenkinsci/saml-plugin/pull/90[saml-plugin #90]
+would take advantage of the Spring update.
+
+|link:https://plugins.jenkins.io/scm-sync-configuration/[scm-sync-configuration]
+|Mostly compatible
+|link:https://github.com/jenkinsci/scm-sync-configuration-plugin/pull/72[scm-sync-configuration-plugin #72]
+is required for full compatibility.
+
+|link:https://plugins.jenkins.io/script-realm/[script-realm]
+|Unknown
+|Review and testing required.
+
+|link:https://plugins.jenkins.io/script-security/[script-security]
+|Compatible
+|PCT passes.
+
+|https://plugins.jenkins.io/sfee/[sfee]
+|Incompatible
+|Uses `CliAuthenticator` and some unsupported Acegi Security types.
+
+|link:https://plugins.jenkins.io/splunk-devops/[splunk-devops]
+|Incompatible, fixes prepared
+|link:https://github.com/jenkinsci/splunk-devops-plugin/pull/13[splunk-devops-plugin #13]
+is necessary.
+
+|link:https://plugins.jenkins.io/suppress-stack-trace/[suppress-stack-trace]
+|Obsolete
+|After link:https://github.com/jenkinsci/suppress-stack-trace-plugin/pull/5[suppress-stack-trace-plugin #5]
+in 1.6 this plugin is deprecated and should not be used.
+Older versions may be incompatible.
+
+|link:https://plugins.jenkins.io/throttle-concurrents/[throttle-concurrents]
+|Compatible
+|As of link:https://github.com/jenkinsci/throttle-concurrent-builds-plugin/releases/tag/throttle-concurrents-2.0.3[2.0.3].
+
+|link:https://plugins.jenkins.io/url-auth/[url-auth]
+|Unknown
+|Review and testing required.
+
+|link:https://plugins.jenkins.io/wso2id-oauth/[wso2id-oauth]
+|Unknown
+|Review and testing required.
+
+|link:https://plugins.jenkins.io/wwpass-plugin/[wwpass-plugin]
+|Unknown
+|Review and testing required.
+
+|===
