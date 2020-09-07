@@ -212,6 +212,11 @@
 | link:https://github.com/stellargo[Sumit{nbsp}Sarin]
 | -
 
+| Draft{nbsp}:speech_balloon:
+| link:227/README.adoc[JEP-227: Replace Acegi Security with Spring Security & upgrade Spring Framework]
+| link:https://github.com/jglick[Jesse{nbsp}Glick]
+| TBD
+
 | Accepted{nbsp}:ok_hand:
 | link:300/README.adoc[JEP-300: Jenkins Evergreen]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]

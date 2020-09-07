@@ -1,4 +1,4 @@
-= JEP-0000: Replace Acegi Security with Spring Security & upgrade Spring Framework
+= JEP-227: Replace Acegi Security with Spring Security & upgrade Spring Framework
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -13,7 +13,7 @@ endif::[]
 [cols="1h,1"]
 |===
 | JEP
-| 0000
+| 227
 
 | Title
 | Replace Acegi Security with Spring Security & upgrade Spring Framework
@@ -23,13 +23,13 @@ endif::[]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
-| Not Submitted :information_source:
+| Draft :speech_balloon:
 
 | Type
 | Standards
 
 | Created
-| :bulb: Date (YYYY-MM-DD) :bulb:
+| 2020-07-22
 
 | BDFL-Delegate
 | TBD
