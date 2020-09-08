@@ -218,9 +218,8 @@ should be adjusted.
 |Sanity tested.
 
 |link:https://plugins.jenkins.io/parameterized-trigger/[parameterized-trigger]
-|Mostly compatible
-|link:https://github.com/jenkinsci/parameterized-trigger-plugin/pull/145[parameterized-trigger-plugin #145]
-required for full compatibility.
+|Compatible
+|As of link:https://github.com/jenkinsci/parameterized-trigger-plugin/releases/tag/parameterized-trigger-2.38[2.38].
 
 |link:https://plugins.jenkins.io/pipeline-maven/[pipeline-maven]
 |Mostly compatible
