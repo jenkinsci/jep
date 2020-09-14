@@ -175,9 +175,8 @@ without going through Jenkins core, so it is likely compatible.
 
 |link:https://plugins.jenkins.io/ldap/[ldap]
 |Incompatible, fixes prepared
-|link:https://github.com/jenkinsci/ldap-plugin/pull/46[ldap-plugin #46] &
 link:https://github.com/jenkinsci/ldap-plugin/pull/48[ldap-plugin #48]
-are required to make the plugin work in both old and new cores.
+is required to make the plugin work in both old and new cores.
 link:https://github.com/jenkinsci/ldap-plugin/pull/49[ldap-plugin #49] (a work in progress)
 would make it natively use Spring Security.
 
@@ -194,6 +193,10 @@ Some form validation uses Acegi Security exception types but the usages are beli
 |link:https://plugins.jenkins.io/mock-security-realm/[mock-security-realm]
 |Compatible
 |Sanity tested.
+
+|link:https://plugins.jenkins.io/nodejs/[nodejs]
+|Compatible
+|Tests fixed as of link:https://github.com/jenkinsci/nodejs-plugin/releases/tag/nodejs-1.3.8[1.3.8].
 
 |link:https://plugins.jenkins.io/oic-auth/[oic-auth]
 |Unknown
