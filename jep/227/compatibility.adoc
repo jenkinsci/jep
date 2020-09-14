@@ -195,6 +195,10 @@ Some form validation uses Acegi Security exception types but the usages are beli
 |Compatible
 |Sanity tested.
 
+|link:https://plugins.jenkins.io/nodejs/[nodejs]
+|Compatible
+|Tests fixed as of link:https://github.com/jenkinsci/nodejs-plugin/releases/tag/nodejs-1.3.8[1.3.8].
+
 |link:https://plugins.jenkins.io/oic-auth/[oic-auth]
 |Unknown
 |Review and testing required.
