@@ -93,7 +93,7 @@ In mostly chronological order, though of course many tasks can be parallelized:
 ** `ldap` needs extensive work.
 * Run acceptance tests (ATH) and plugin compatibility tests (PCT) against core plus a representative subset of plugins.
 * Interactively verify that core plus all plugins mentioned in the setup wizard (even if not `suggested`) seem to work.
-* Evaluate the japicmp report for Jenkins core to make sure that all incompatible as well as compatible API changes are expected.
+* Evaluate the link:https://ci.jenkins.io/job/Core/job/jenkins/job/PR-4848/API_20compatibility/japicmp.html[japicmp report for Jenkins core] to make sure that all incompatible as well as compatible API changes are expected.
 * Solicit code reviews on all open associated pull requests to core and plugins.
 * Create a compatibility chart associated with this JEP listing all known plugins that might be affected by this change, with their current status.
 * Define a Jira label for regressions suspected to be related to this migration,
@@ -384,11 +384,11 @@ org/springframework/dao/DataAccessResourceFailureException
 org/springframework/dao/DataRetrievalFailureException
 ----
 
-producing a much shorter link:usage-by-plugin.html[report].
+producing a much shorter link:http://htmlpreview.github.io/?https://github.com/jenkinsci/jep/blob/master/jep/227/usage-by-plugin.html[report].
 Some matches are from plugins which already have preparatory patches.
 A number of the remaining matches are Spring types that are _probably_ compatible from 2.x to 5.x.
 
-// or: http://htmlpreview.github.io/?https://github.com/jglick/jep/blob/spring-5303/jep/0000/usage-by-plugin.html
+You can also check the link:https://ci.jenkins.io/job/Core/job/jenkins/job/PR-4848/API_20compatibility/japicmp.html[japicmp report for Jenkins core].
 
 == Security
 
@@ -407,14 +407,12 @@ No such cases are currently expected.
 There is an extensive need for testing associated with this change, due to the high risk of regression.
 It is unclear how extensive test coverage in Jenkins core really is when it comes to subtle aspects of the security system dating from 2007.
 
-`plugin-compat-tester` will be of some use to detect plugin incompatibilities,
-unless there are special class loading considerations (JENKINS-41827),
-such as the `ldap` plugin being made to bundle its own copy of `acegi-security.jar`.
+`plugin-compat-tester` is of use to detect plugin incompatibilities.
 
 `acceptance-test-harness` is needed, especially with Dockerized fixtures,
 to run smoke tests of security-related workflows such as LDAP authentication.
 
-CloudBees will be performing runs of ATH & PCT against patched Jenkins core and many popular plugins
+CloudBees is running the ATH & PCT against patched Jenkins core and many popular plugins
 (link:https://docs.cloudbees.com/search?&type=ci-plugins&ci-plugins-tier=verified[“Tier 1”] and link:https://docs.cloudbees.com/search?&type=ci-plugins&ci-plugins-tier=compatible[“Tier 2”]).
 
 == Prototype Implementation
@@ -425,6 +423,11 @@ CloudBees will be performing runs of ATH & PCT against patched Jenkins core and 
 
 * Reference implementation
 ** link:https://github.com/jenkinsci/jenkins/pull/4848[jenkins #4848] (upgrade to Spring Security 5 by jglick)
+* Tracking
+** link:compatibility.adoc[Compatibility table]
+* Generated reports
+** link:https://ci.jenkins.io/job/Core/job/jenkins/job/PR-4848/API_20compatibility/japicmp.html[japicmp report for Jenkins core]
+** link:http://htmlpreview.github.io/?https://github.com/jenkinsci/jep/blob/master/jep/227/usage-by-plugin.html[Deprecated usages by plugin]
 * Searching for usages of Acegi Security in plugins
 ** link:https://github.com/jenkins-infra/usage-in-plugins/pull/15[usage-in-plugins #15] (PoC by Wadeck)
 ** link:https://github.com/jenkins-infra/usage-in-plugins/pull/16[usage-in-plugins #16] (general improvement by jglick)
