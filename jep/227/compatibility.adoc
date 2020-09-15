@@ -175,7 +175,7 @@ without going through Jenkins core, so it is likely compatible.
 
 |link:https://plugins.jenkins.io/ldap/[ldap]
 |Incompatible, fixes prepared
-link:https://github.com/jenkinsci/ldap-plugin/pull/48[ldap-plugin #48]
+|link:https://github.com/jenkinsci/ldap-plugin/pull/48[ldap-plugin #48]
 is required to make the plugin work in both old and new cores.
 link:https://github.com/jenkinsci/ldap-plugin/pull/49[ldap-plugin #49] (a work in progress)
 would make it natively use Spring Security.
