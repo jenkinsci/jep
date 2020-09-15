@@ -187,7 +187,7 @@ should be switched to `hasPermission` for full compatibility.
 
 |link:https://plugins.jenkins.io/matrix-auth/[matrix-auth]
 |Compatible
-|link:https://github.com/jenkinsci/matrix-auth-plugin/pull/85[matrix-auth-plugin #85] fixes PCT failures.
+|As of link:https://github.com/jenkinsci/matrix-auth-plugin/releases/tag/matrix-auth-2.6.3[2.6.3].
 Some form validation uses Acegi Security exception types but the usages are believed compatible.
 
 |link:https://plugins.jenkins.io/mock-security-realm/[mock-security-realm]
