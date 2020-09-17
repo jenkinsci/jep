@@ -16,9 +16,8 @@ Plugins should be sorted by code identifier
 |Plugin |Status |Notes
 
 |link:https://plugins.jenkins.io/active-directory/[active-directory]
-|Incompatible, fixes prepared
-|link:https://github.com/jenkinsci/active-directory-plugin/pull/102[active-directory-plugin #102]
-is required to make the plugin work in both old and new cores.
+|Compatible
+|As of link:https://github.com/jenkinsci/active-directory-plugin/releases/tag/active-directory-2.17[2.17].
 
 |link:https://plugins.jenkins.io/atlassian-bitbucket-server-integration/[atlassian-bitbucket-server-integration]
 |Probably compatible
