@@ -306,7 +306,7 @@ Older versions may be incompatible.
 |Compatible
 |As of link:https://github.com/jenkinsci/throttle-concurrent-builds-plugin/releases/tag/throttle-concurrents-2.0.3[2.0.3].
 
-|link:https://plugins.jenkins.io/url-auth/[url-auth]
+|link:https://plugins.jenkins.io/url-auth-sso/[url-auth-sso]
 |Unknown
 |Review and testing required.
 
