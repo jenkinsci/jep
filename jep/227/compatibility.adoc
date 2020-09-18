@@ -108,8 +108,8 @@ Cleanups integrated as of link:https://github.com/jenkinsci/credentials-plugin/r
 |Uses `BeanBuilder` and possibly other problematic types.
 
 |link:https://plugins.jenkins.io/crowd2/[crowd2]
-|Incompatible
-|Uses some unsupported types from Acegi Security.
+|Probably compatible
+|Uses some unusual types from Acegi Security. Needs testing.
 
 |link:https://plugins.jenkins.io/declarative-pipeline-migration-assistant/[declarative-pipeline-migration-assistant]
 |Compatible
