@@ -16,9 +16,8 @@ Plugins should be sorted by code identifier
 |Plugin |Status |Notes
 
 |link:https://plugins.jenkins.io/active-directory/[active-directory]
-|Incompatible, fixes prepared
-|link:https://github.com/jenkinsci/active-directory-plugin/pull/102[active-directory-plugin #102]
-is required to make the plugin work in both old and new cores.
+|Compatible
+|As of link:https://github.com/jenkinsci/active-directory-plugin/releases/tag/active-directory-2.17[2.17].
 
 |link:https://plugins.jenkins.io/atlassian-bitbucket-server-integration/[atlassian-bitbucket-server-integration]
 |Probably compatible
@@ -109,8 +108,8 @@ Cleanups integrated as of link:https://github.com/jenkinsci/credentials-plugin/r
 |Uses `BeanBuilder` and possibly other problematic types.
 
 |link:https://plugins.jenkins.io/crowd2/[crowd2]
-|Incompatible
-|Uses some unsupported types from Acegi Security.
+|Probably compatible
+|Uses some unusual types from Acegi Security. Needs testing.
 
 |link:https://plugins.jenkins.io/declarative-pipeline-migration-assistant/[declarative-pipeline-migration-assistant]
 |Compatible
@@ -307,7 +306,7 @@ Older versions may be incompatible.
 |Compatible
 |As of link:https://github.com/jenkinsci/throttle-concurrent-builds-plugin/releases/tag/throttle-concurrents-2.0.3[2.0.3].
 
-|link:https://plugins.jenkins.io/url-auth/[url-auth]
+|link:https://plugins.jenkins.io/url-auth-sso/[url-auth-sso]
 |Unknown
 |Review and testing required.
 
