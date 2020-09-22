@@ -77,9 +77,8 @@ cleans up some related APIs and enables testing.
 |Uses `BeanBuilder` and several removed Acegi Security types.
 
 |link:https://plugins.jenkins.io/cloudbees-bitbucket-branch-source/[cloudbees-bitbucket-branch-source]
-|Probably compatible
-|link:https://github.com/jenkinsci/bitbucket-branch-source-plugin/pull/362[bitbucket-branch-source-plugin #362]
-is required for tests to pass.
+|Compatible
+|As of link:https://github.com/jenkinsci/bitbucket-branch-source-plugin/releases/tag/cloudbees-bitbucket-branch-source-2.9.3[2.9.3].
 
 |link:https://plugins.jenkins.io/cloudbees-folder/[cloudbees-folder]
 |Compatible
