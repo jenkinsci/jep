@@ -23,7 +23,7 @@ endif::[]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
-| Draft :speech_balloon:
+| Final :lock:
 
 | Type
 | Standards
@@ -107,14 +107,7 @@ icons for checkboxes. Any plain html tags need to be updated separately and each
 ====
 [source,xml]
 ----
-<j:choose>
-    <j:when test="${app.hasPermission(app.ADMINISTER)}">
-        <j:set var="displayOnlyMode" value="false" />
-    </j:when>
-    <j:otherwise>
-        <j:set var="displayOnlyMode" value="true" />
-    </j:otherwise>
-</j:choose>
+<j:set var="displayOnlyMode" value="${!app.hasPermission(app.ADMINISTER)}" />
 ----
 ====
 
@@ -244,6 +237,7 @@ WebClient tests that check the user can view the page but not submit the page.
 
 == References
 
+- link:https://www.jenkins.io/doc/developer/views/read-only/[Documentation on jenkins.io]
 - link:https://github.com/orgs/jenkinsci/projects/4[GitHub Project with pull requests and issue tracking for this JEP]
 - link:https://issues.jenkins-ci.org/browse/JENKINS-12548[JENKINS-12548] - EPIC in Jenkins Jira
 - link:https://github.com/jenkinsci/jenkins/pull/4149[Core PR #4149]
