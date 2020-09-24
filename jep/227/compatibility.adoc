@@ -150,7 +150,7 @@ would need to be adjusted to make tests pass.
 |link:https://plugins.jenkins.io/jobConfigHistory/[jobConfigHistory]
 |Probably compatible
 |link:https://github.com/jenkinsci/jobConfigHistory-plugin/blob/d7cef005f875b00a04e6bd7a81eee69510b65c59/src/test/java/hudson/plugins/jobConfigHistory/JobConfigHistoryProjectActionTest.java#L317[This code]
-would need to be adjusted to make tests pass.
+would need to be adjusted to make tests pass. Pending link:https://github.com/jenkinsci/jobConfigHistory-plugin/pull/127[jobConfigHistory-plugin #127] for test passing and ensuring full compatibility when users are lacking permissions.
 
 |link:https://plugins.jenkins.io/jobtemplates/[jobtemplates]
 |Mostly compatible
