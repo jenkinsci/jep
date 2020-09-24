@@ -236,7 +236,7 @@ should be adjusted.
 |As of link:https://github.com/jenkinsci/plugin-util-api-plugin/releases/tag/plugin-util-api-1.2.5[1.2.5].
 
 |link:https://plugins.jenkins.io/purge-job-history/[purge-job-history]
-|Mostly compatible
+|Compatible
 |link:https://github.com/jenkinsci/purge-job-history-plugin/blob/e694f76d73b7b6402741d5ba88df2f702dab993e/src/main/java/jenkins/plugins/purgejobhistory/PurgeJobHistory.java#L124-L130[This code] and
 link:https://github.com/jenkinsci/purge-job-history-plugin/blob/e694f76d73b7b6402741d5ba88df2f702dab993e/src/main/java/jenkins/plugins/purgejobhistory/PurgeJobHistory.java#L193-L199[this code]
 should be switched to `hasPermission`. Pending link:https://github.com/jenkinsci/purge-job-history-plugin/pull/10[purge-job-history-plugin #10] for full compatibility + bug correction. No functional change.
