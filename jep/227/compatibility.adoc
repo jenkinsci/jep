@@ -121,8 +121,8 @@ Cleanups integrated as of link:https://github.com/jenkinsci/credentials-plugin/r
 could be switched to `hasPermission` for full compatibility.
 
 |link:https://plugins.jenkins.io/extensible-choice-parameter/[extensible-choice-parameter]
-|Probably compatible
-|Unclear what the purpose of link:https://github.com/jenkinsci/extensible-choice-parameter-plugin/blob/3fda75de34d4099d078a038fc3eeb3c38679c1f8/src/test/java/jp/ikedam/jenkins/plugins/extensible_choice_parameter/SystemGroovyChoiceListProviderJenkinsTest.java#L217-L219[this test code] is.
+|Compatible
+|Only tests require adjustment, e.g. link:https://github.com/jenkinsci/extensible-choice-parameter-plugin/blob/3fda75de34d4099d078a038fc3eeb3c38679c1f8/src/test/java/jp/ikedam/jenkins/plugins/extensible_choice_parameter/SystemGroovyChoiceListProviderJenkinsTest.java#L217-L219[this test], pending link:https://github.com/jenkinsci/extensible-choice-parameter-plugin/pull/42[extensible-choice-parameter-plugin #4] for tests without Acegi.
 
 |link:https://plugins.jenkins.io/github-oauth/[github-oauth]
 |Incompatible, fixes prepared
