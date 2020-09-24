@@ -121,8 +121,8 @@ Cleanups integrated as of link:https://github.com/jenkinsci/credentials-plugin/r
 could be switched to `hasPermission` for full compatibility.
 
 |link:https://plugins.jenkins.io/extensible-choice-parameter/[extensible-choice-parameter]
-|Probably compatible
-|Unclear what the purpose of link:https://github.com/jenkinsci/extensible-choice-parameter-plugin/blob/3fda75de34d4099d078a038fc3eeb3c38679c1f8/src/test/java/jp/ikedam/jenkins/plugins/extensible_choice_parameter/SystemGroovyChoiceListProviderJenkinsTest.java#L217-L219[this test code] is.
+|Compatible
+|Test cleanup pending link:https://github.com/jenkinsci/extensible-choice-parameter-plugin/pull/42[extensible-choice-parameter-plugin #4].
 
 |link:https://plugins.jenkins.io/github-oauth/[github-oauth]
 |Incompatible, fixes prepared
@@ -149,8 +149,7 @@ would need to be adjusted to make tests pass.
 
 |link:https://plugins.jenkins.io/jobConfigHistory/[jobConfigHistory]
 |Probably compatible
-|link:https://github.com/jenkinsci/jobConfigHistory-plugin/blob/d7cef005f875b00a04e6bd7a81eee69510b65c59/src/test/java/hudson/plugins/jobConfigHistory/JobConfigHistoryProjectActionTest.java#L317[This code]
-would need to be adjusted to make tests pass.
+|Pending link:https://github.com/jenkinsci/jobConfigHistory-plugin/pull/127[jobConfigHistory-plugin #127] for test passing and ensuring full compatibility when users are lacking permissions.
 
 |link:https://plugins.jenkins.io/jobtemplates/[jobtemplates]
 |Mostly compatible
@@ -237,9 +236,7 @@ should be adjusted.
 
 |link:https://plugins.jenkins.io/purge-job-history/[purge-job-history]
 |Mostly compatible
-|link:https://github.com/jenkinsci/purge-job-history-plugin/blob/e694f76d73b7b6402741d5ba88df2f702dab993e/src/main/java/jenkins/plugins/purgejobhistory/PurgeJobHistory.java#L124-L130[This code] and
-link:https://github.com/jenkinsci/purge-job-history-plugin/blob/e694f76d73b7b6402741d5ba88df2f702dab993e/src/main/java/jenkins/plugins/purgejobhistory/PurgeJobHistory.java#L193-L199[this code]
-should be switched to `hasPermission` for full compatibility.
+|Pending link:https://github.com/jenkinsci/purge-job-history-plugin/pull/10[purge-job-history-plugin #10] for full compatibility + bug correction. No functional change.
 
 |link:https://plugins.jenkins.io/pwauth/[pwauth]
 |Unknown
