@@ -61,7 +61,7 @@ should be simplified to check `hasPermission`.
 |link:https://plugins.jenkins.io/blueocean/[blueocean]
 |Probably compatible
 |Actually a suite of plugins released atomically.
-link:https://github.com/jenkinsci/blueocean-plugin/pull/2084[blueocean-plugin #2084]
+link:https://github.com/jenkinsci/blueocean-plugin/pull/2106[blueocean-plugin #2106]
 cleans up some related APIs and enables testing.
 
 |link:https://plugins.jenkins.io/branch-api/[branch-api]
@@ -77,9 +77,8 @@ cleans up some related APIs and enables testing.
 |Uses `BeanBuilder` and several removed Acegi Security types.
 
 |link:https://plugins.jenkins.io/cloudbees-bitbucket-branch-source/[cloudbees-bitbucket-branch-source]
-|Probably compatible
-|link:https://github.com/jenkinsci/bitbucket-branch-source-plugin/pull/362[bitbucket-branch-source-plugin #362]
-is required for tests to pass.
+|Compatible
+|As of link:https://github.com/jenkinsci/bitbucket-branch-source-plugin/releases/tag/cloudbees-bitbucket-branch-source-2.9.3[2.9.3].
 
 |link:https://plugins.jenkins.io/cloudbees-folder/[cloudbees-folder]
 |Compatible
