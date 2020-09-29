@@ -126,12 +126,12 @@ could be switched to `hasPermission` for full compatibility.
 |link:https://plugins.jenkins.io/github-oauth/[github-oauth]
 |Incompatible, fixes prepared
 |link:https://github.com/jenkinsci/github-oauth-plugin/pull/119[github-oauth-plugin #119]
-is necessary. Also link:https://github.com/jenkinsci/github-oauth-plugin/pull/122[github-oauth-plugin #122] for a small bug.
+is necessary.
 Given that, it seems to work.
 
 |link:https://plugins.jenkins.io/gitlab-oauth/[gitlab-oauth]
 |Mostly compatible
-|SecurityRealm tested, Authorization strategy tested without "Use Gitlab repository permissions". link:https://github.com/jenkinsci/gitlab-oauth-plugin/pull/27[gitlab-oauth-plugin #27] for a small bug.
+|SecurityRealm tested, Authorization strategy tested without "Use Gitlab repository permissions".
 
 |link:https://plugins.jenkins.io/google-cloud-health-check/[google-cloud-health-check]
 |Probably compatible
