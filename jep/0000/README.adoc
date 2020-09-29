@@ -31,7 +31,7 @@ endif::[]
 | Standards
 
 | Created
-| :bulb: Date (YYYY-MM-DD) :bulb:
+| 2020-09-29
 
 | BDFL-Delegate
 | TBD
@@ -360,6 +360,6 @@ link:https://github.com/jenkinsci/jenkins/pull/4944[jenkins #4944] is the main c
 * link:https://github.com/jenkinsci/xstream-fork/commit/24bd43b79b4c02df42f50450d2dd238e480259d2[Aggregate patch] of the custom fork
 * link:https://x-stream.github.io/annotations-tutorial.html#AutoDetect[Autodetection of annotations]
 * link:https://x-stream.github.io/jira/744/[XSTR-744], rejected custom patch
-* link:https://issues.jenkins-ci.org/browse/JENKINS-13154[JENKINS-13154] _Heavy thread congestion with `FingerPrint.save`_
-* link:https://issues.jenkins-ci.org/browse/JENKINS-18775[JENKINS-18775] _`ConcurrentModificationException` from `DefaultConverterLookup`_
+* link:https://issues.jenkins-ci.org/browse/JENKINS-13154[JENKINS-13154] _Heavy thread congestion with FingerPrint.save_
+* link:https://issues.jenkins-ci.org/browse/JENKINS-18775[JENKINS-18775] _ConcurrentModificationException from DefaultConverterLookup_
 * link:https://issues.jenkins-ci.org/browse/JENKINS-19561[JENKINS-19561] _Unsafe & inefficient concurrency in XStream_
