@@ -356,6 +356,7 @@ link:https://github.com/jenkinsci/jenkins/pull/4944[jenkins #4944] is the main c
 * link:https://github.com/jenkinsci/jenkins-test-harness/pull/243[jenkins-test-harness #243]
 * link:https://github.com/jenkinsci/role-strategy-plugin/pull/141[role-strategy-plugin #141]
 * link:https://github.com/jenkinsci/ssh2easy-plugin/pull/13[ssh2easy-plugin #13]
+* link:https://github.com/jenkinsci/matrix-project-plugin/pull/67[matrix-project-plugin #67]
 * link:https://github.com/jenkinsci/xstream/commits/master[Commits] in the custom fork
 * link:https://github.com/jenkinsci/xstream-fork/commit/24bd43b79b4c02df42f50450d2dd238e480259d2[Aggregate patch] of the custom fork
 * link:https://x-stream.github.io/annotations-tutorial.html#AutoDetect[Autodetection of annotations]
