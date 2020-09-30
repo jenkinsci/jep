@@ -359,6 +359,7 @@ link:https://github.com/jenkinsci/jenkins/pull/4944[jenkins #4944] is the main c
 * link:https://github.com/jenkinsci/matrix-project-plugin/pull/67[matrix-project-plugin #67]
 * link:https://github.com/jenkinsci/email-ext-plugin/pull/220[email-ext-plugin #220]
 * link:https://github.com/jenkinsci/jira-plugin/pull/273[jira-plugin #273]
+* link:https://github.com/jenkinsci/workflow-cps-plugin/pull/380[workflow-cps-plugin #380]
 * link:https://github.com/jenkinsci/xstream/commits/master[Commits] in the custom fork
 * link:https://github.com/jenkinsci/xstream-fork/commit/24bd43b79b4c02df42f50450d2dd238e480259d2[Aggregate patch] of the custom fork
 * link:https://x-stream.github.io/annotations-tutorial.html#AutoDetect[Autodetection of annotations]
