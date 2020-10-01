@@ -130,8 +130,8 @@ is necessary.
 Given that, it seems to work.
 
 |link:https://plugins.jenkins.io/gitlab-oauth/[gitlab-oauth]
-|Unknown
-|Review and testing required.
+|Mostly compatible
+|SecurityRealm tested, Authorization strategy tested without "Use Gitlab repository permissions".
 
 |link:https://plugins.jenkins.io/google-cloud-health-check/[google-cloud-health-check]
 |Probably compatible
