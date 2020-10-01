@@ -130,8 +130,8 @@ is necessary.
 Given that, it seems to work.
 
 |link:https://plugins.jenkins.io/gitlab-oauth/[gitlab-oauth]
-|Unknown
-|Review and testing required.
+|Mostly compatible
+|SecurityRealm tested, Authorization strategy tested without "Use Gitlab repository permissions".
 
 |link:https://plugins.jenkins.io/google-cloud-health-check/[google-cloud-health-check]
 |Probably compatible
@@ -141,10 +141,6 @@ would need to be adjusted to make tests pass.
 |link:https://plugins.jenkins.io/google-login/[google-login]
 |Probably compatible
 |Untested.
-
-|link:https://plugins.jenkins.io/jenkins-cloudfoundry-uaa/[jenkins-cloudfoundry-uaa]
-|Incompatible
-|Uses `BeanBuilder` and possibly other problematic types.
 
 |link:https://plugins.jenkins.io/jobConfigHistory/[jobConfigHistory]
 |Probably compatible
