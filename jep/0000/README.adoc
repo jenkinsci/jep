@@ -365,6 +365,7 @@ link:https://github.com/jenkinsci/jenkins/pull/4944[jenkins #4944] is the main c
 * link:https://github.com/jenkinsci/blueocean-plugin/pull/2108[blueocean-plugin #2108]
 * link:https://github.com/jenkinsci/junit-plugin/pull/172[junit-plugin #172]
 * link:https://github.com/jenkinsci/promoted-builds-plugin/pull/150[promoted-builds-plugin #150]
+* link:https://github.com/jenkinsci/dashboard-view-plugin/pull/71[dashboard-view-plugin #71]
 * link:https://github.com/jenkinsci/xstream/commits/master[Commits] in the custom fork
 * link:https://github.com/jenkinsci/xstream-fork/commit/24bd43b79b4c02df42f50450d2dd238e480259d2[Aggregate patch] of the custom fork
 * link:https://x-stream.github.io/annotations-tutorial.html#AutoDetect[Autodetection of annotations]
