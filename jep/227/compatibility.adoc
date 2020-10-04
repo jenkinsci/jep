@@ -254,6 +254,10 @@ Compatibility with this JEP is expected to be significant effort.
 link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/38[reverse-proxy-auth-plugin #38]
 is merely cleanup to make it easier to even test against new cores.
 
+link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/37[reverse-proxy-auth-plugin #37]
+would permit the LDAP-specific portions to be split into its own extension point and perhaps even plugin,
+which could allow the core portion to be made compatible with Spring Security more easily.
+
 The plugin has not been released in 2½ years;
 even then it was only released by Jenkins CERT members
 to allow critical fixes for link:../200/README.adoc[JEP-200]
