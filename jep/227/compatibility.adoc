@@ -161,6 +161,10 @@ without going through Jenkins core, so it is likely compatible.
 |Compatible
 |As of link:https://github.com/jenkinsci/junit-plugin/releases/tag/junit-1.34[1.34].
 
+|link:https://plugins.jenkins.io/kerberos-sso/[kerberos-sso]
+|Probably compatible
+|Review and testing required.
+
 |link:https://plugins.jenkins.io/keycloak/[keycloak]
 |Unknown
 |Review and testing required.

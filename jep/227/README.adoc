@@ -68,7 +68,6 @@ This work consists of several aspects, both in Jenkins core and plugins.
 ** `toSpring` and `fromSpring` methods are provided to interconvert Acegi Security and Spring Security types where applicable.
 ** Subtyping is not used: the Acegi Security and Spring Security types are incomparable.
 ** `org.springframework.dao.DataAccessException` and similar types are deprecated without replacement.
-** A few APIs which were already deprecated, such as `CliAuthenticator`, are simply removed.
 ** `Sid` and subtypes are for now simply reimplemented, rather than delegating to the `spring-security-acl` module.
 * Inessential uses of Acegi Security in plugins for which compatibility in Jenkins core would be awkward are replaced.
   (For example, exotic types in functional tests are replaced with simpler and more common APIs.)
@@ -210,8 +209,9 @@ Exception Details:
 
 === Providing binary compatibility for all plugins implementing `SecurityRealm`
 
-Some plugins like `ldap` which implement `SecurityRealm` pose a special problem.
+Some plugins like `sfee` which implement `SecurityRealm` pose a special problem.
 When using complex features of Acegi Security,
+such as classes like `ProviderManager` which are difficult to provide compatible replacements for,
 these may simply require new releases built against a new Jenkins baseline and thus Spring Security.
 However it is unclear how users would get the new version of Jenkins and the new version of the plugin _atomically_
 (even assuming they read release notes in advance):
@@ -222,9 +222,7 @@ Worse, you cannot just upgrade Jenkins and immediately select the plugin update 
 since you would not be able to log in after the first restart if the security realm did not work!
 
 Even assuming the timing issue is resolved, publishing new releases of all these plugins would be a significant effort.
-Fortunately there are not that many of them:
-a few in regular use or previously bundled (`ldap`, `active-directory`, `reverse-proxy-auth-plugin`, `github-oauth`, etc.)
-and some lesser-used ones (`crowd2`, `saml`, etc.).
+Fortunately there are not that many of them.
 
 At least in the case of the `ldap` plugin,
 it suffices to bundle `acegi-security-1.0.7.jar` and `spring-dao-1.2.9.jar`,
@@ -294,7 +292,7 @@ There are some code idioms (in both main and test sources) which cannot or will 
 
 === Searching for API usages in binaries
 
-Create `/tmp/additionalClasses` with the following initial content taken from review of the core PR:
+Create `/tmp/additionalClasses` with initial content taken from review of the core PR, such as:
 
 [source]
 ----
@@ -302,7 +300,6 @@ hudson/security/AccessDeniedException2
 hudson/security/AccessDeniedHandlerImpl
 hudson/security/AuthenticationManagerProxy
 hudson/security/AuthenticationProcessingFilter2
-hudson/security/CliAuthenticator
 hudson/security/ContainerAuthentication
 hudson/security/DeferredCreationLdapAuthoritiesPopulator
 hudson/security/HttpSessionContextIntegrationFilter2
@@ -343,11 +340,9 @@ mvn process-classes exec:exec -Dexec.executable=java -Dexec.args='-classpath %cl
 
 producing a long report.
 
-(This pair of UCs is very nearly a superset of the default Jenkins UC.
-As tracked in link:https://github.com/jenkins-infra/usage-in-plugins/pull/17[usage-in-plugins #17],
-the tool does not currently work on the default UC.)
+(This pair of UCs is very nearly a superset of the default Jenkins UC.)
 
-Alternately, the search can be focused on types which do _not_ have a supposedly compatible replacement, by deleting these:
+Alternately, the search can be focused on types which do _not_ have a supposedly compatible replacement, by deleting these, such as:
 
 [source]
 ----
@@ -384,7 +379,7 @@ org/springframework/dao/DataAccessResourceFailureException
 org/springframework/dao/DataRetrievalFailureException
 ----
 
-producing a much shorter link:http://htmlpreview.github.io/?https://github.com/jenkinsci/jep/blob/master/jep/227/usage-by-plugin.html[report].
+producing a much shorter report.
 Some matches are from plugins which already have preparatory patches.
 A number of the remaining matches are Spring types that are _probably_ compatible from 2.x to 5.x.
 
@@ -427,10 +422,10 @@ CloudBees is running the ATH & PCT against patched Jenkins core and many popular
 ** link:compatibility.adoc[Compatibility table]
 * Generated reports
 ** link:https://ci.jenkins.io/job/Core/job/jenkins/job/PR-4848/API_20compatibility/japicmp.html[japicmp report for Jenkins core]
-** link:http://htmlpreview.github.io/?https://github.com/jenkinsci/jep/blob/master/jep/227/usage-by-plugin.html[Deprecated usages by plugin]
 * Searching for usages of Acegi Security in plugins
 ** link:https://github.com/jenkins-infra/usage-in-plugins/pull/15[usage-in-plugins #15] (PoC by Wadeck)
 ** link:https://github.com/jenkins-infra/usage-in-plugins/pull/16[usage-in-plugins #16] (general improvement by jglick)
+** link:https://github.com/jenkins-infra/usage-in-plugins/pull/17[usage-in-plugins #17] (public UC fix by jglick)
 * Exploratory work
 ** link:https://github.com/Wadeck/poc-acegi-security-facade-lib[poc-acegi-security-facade-lib] (PoC by Wadeck)
 ** link:https://github.com/jenkinsci/jenkins/pull/4844[jenkins #4844] (PoC by Wadeck)
