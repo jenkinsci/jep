@@ -60,8 +60,8 @@ should be simplified to check `hasPermission`.
 
 |link:https://plugins.jenkins.io/blueocean/[blueocean]
 |Compatible
-|Actually a suite of plugins released atomically.
 |As of link:https://github.com/jenkinsci/blueocean-plugin/releases/tag/blueocean-parent-1.24.1[1.24.1].
+(Actually a suite of plugins released atomically.)
 
 |link:https://plugins.jenkins.io/branch-api/[branch-api]
 |Compatible
