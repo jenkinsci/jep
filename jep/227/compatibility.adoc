@@ -249,10 +249,8 @@ should be adjusted.
 |Refers to `HudsonPrivateSecurityRealm` but is probably safe.
 
 |link:https://plugins.jenkins.io/reverse-proxy-auth-plugin/[reverse-proxy-auth-plugin]
-|Incompatible
-|The code base not only makes use of `BeanBuilder` and Acegi Security APIs for which no compatibility is offered,
-but like the `ldap` plugin it makes use of the LDAP parts of Acegi Security which are heavily refactored in Spring Security.
-Compatibility with this JEP is expected to be significant effort.
+|Incompatible, fixes prepared
+|link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/40[reverse-proxy-auth-plugin #40] may suffice; untested.
 
 link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/38[reverse-proxy-auth-plugin #38]
 is merely cleanup to make it easier to even test against new cores.
