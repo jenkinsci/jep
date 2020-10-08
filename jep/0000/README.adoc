@@ -310,7 +310,8 @@ It was used only in `ToolInstaller`.
 
 The custom annotation `XStreamSerializeAs` is no longer available.
 `XStreamAliasType` can be used instead.
-It was used only in the `persona` plugin.
+It was used only in the `persona` plugin,
+which has since been link:https://www.jenkins.io/security/advisory/2020-10-08/#SECURITY-2046[removed from the update center].
 
 === `HierarchicalStreamReader.peekNextChild`
 
