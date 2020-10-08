@@ -247,6 +247,12 @@ Some of these already call `processAnnotations` to explicitly register the class
 To be compatible, all of them should be made to either use `processAnnotations`,
 or directly call non-annotation-based APIs such as `alias`.
 
+Interestingly, calling `processAnnotations`
+link:https://github.com/jenkinsci/xstream-fork/blob/af17a1b2d8fc7c9dcfee635252a8a3c32f956d26/xstream/src/java/com/thoughtworks/xstream/mapper/AnnotationMapper.java#L158-L166[disables subsequent autodetection]
+of annotations for that `XStream` instance.
+This implies many plugins relying on autodetection of annotations were already broken under some conditions,
+depending on which other plugins were installed and the precise order of operations.
+
 === Serializability of `ToolInstallation`
 
 Previously, `ToolInstallation` implemented `Serializable` and was eligible for transfer over a Remoting channel to an agent.
