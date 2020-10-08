@@ -376,6 +376,7 @@ link:https://github.com/jenkinsci/jenkins/pull/4944[jenkins #4944] is the main c
 * link:https://github.com/jenkinsci/atlassian-bitbucket-server-integration-plugin/pull/203[atlassian-bitbucket-server-integration-plugin #203]
 * link:https://github.com/jenkinsci/atlassian-jira-software-cloud-plugin/pull/40[atlassian-jira-software-cloud-plugin #40]
 * link:https://github.com/jenkinsci/deploy-plugin/pull/43[deploy-plugin #43]
+* link:https://github.com/jenkinsci/github-plugin/pull/239[github-plugin #239]
 * link:https://github.com/jenkinsci/xstream/commits/master[Commits] in the custom fork
 * link:https://github.com/jenkinsci/xstream-fork/commit/24bd43b79b4c02df42f50450d2dd238e480259d2[Aggregate patch] of the custom fork
 * link:https://x-stream.github.io/annotations-tutorial.html#AutoDetect[Autodetection of annotations]
