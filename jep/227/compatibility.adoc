@@ -171,9 +171,8 @@ link:https://github.com/jenkinsci/ldap-plugin/pull/49[ldap-plugin #49] (a work i
 would make it natively use Spring Security.
 
 |link:https://plugins.jenkins.io/mac/[mac]
-|Mostly compatible
-|link:https://github.com/jenkinsci/mac-plugin/blob/f1ed5db8e761a26b8883358aaddd2dac9e8c05a5/src/main/java/fr/edf/jenkins/plugins/mac/util/FormUtils.groovy#L63-L75[This code]
-should be switched to `hasPermission` for full compatibility.
+|Compatible
+|As of link:https://github.com/jenkinsci/mac-plugin/releases/tag/mac-1.2.1[1.2.1]. Just a message change, no functional change.
 
 |link:https://plugins.jenkins.io/matrix-auth/[matrix-auth]
 |Compatible
@@ -203,8 +202,8 @@ may need adjustment.
 
 |link:https://plugins.jenkins.io/ownership/[ownership]
 |Mostly compatible
-|link:https://github.com/jenkinsci/ownership-plugin/blob/2b619c3a7dfaa4b706b19560dc465040b1de2dc4/src/main/java/com/synopsys/arc/jenkins/plugins/ownership/OwnershipDescription.java#L425[This code]
-should be adjusted.
+|Manually tested the UI. link:https://github.com/jenkinsci/ownership-plugin/blob/2b619c3a7dfaa4b706b19560dc465040b1de2dc4/src/main/java/com/synopsys/arc/jenkins/plugins/ownership/OwnershipDescription.java#L425[This code]
+should be adjusted (was not specifically tested).
 
 |link:https://plugins.jenkins.io/pam-auth/[pam-auth]
 |Compatible
