@@ -109,7 +109,7 @@ after patching out the `<properties>…</properties>` section.
 
 == Backwards Compatibility
 
-TODO create compatibility chart
+See the link:compatibility.adoc[compatibility table].
 
 === Autodetection of annotations
 
@@ -123,126 +123,7 @@ either in a `static` block or an `@Initializer`.
 find *-plugin/{,*/}src/main/java -type f -print0 | xargs -0 fgrep com.thoughtworks.xstream.annotations
 ----
 
-can be used to find plugins making use of XStream annotations:
-
-[source]
-----
-agile-cockpit-notification-plugin/src/main/java/org/jenkinsci/plugins/cockpitnotification/JobState.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-atlassian-bitbucket-server-integration-plugin/src/main/java/com/atlassian/bitbucket/jenkins/internal/config/BitbucketServerConfiguration.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-atlassian-jira-software-cloud-plugin/src/main/java/com/atlassian/jira/cloud/jenkins/config/JiraCloudSiteConfig.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-checkmarx-plugin/src/main/java/com/checkmarx/jenkins/CxScanBuilder.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-checkmarx-plugin/src/main/java/com/checkmarx/jenkins/CxScanResult.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-cloudtest-plugin/src/main/java/com/soasta/jenkins/JunitResultAction.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-cloudtest-plugin/src/main/java/com/soasta/jenkins/Message.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-cucumber-performance-plugin/src/main/java/com/castlemon/jenkins/performance/domain/reporting/Summary.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-cucumber-performance-plugin/src/main/java/com/castlemon/jenkins/performance/domain/reporting/Summary.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-cucumber-performance-plugin/src/main/java/com/castlemon/jenkins/performance/domain/reporting/ProjectSummary.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-cucumber-performance-plugin/src/main/java/com/castlemon/jenkins/performance/domain/reporting/ProjectSummary.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-cucumber-performance-plugin/src/main/java/com/castlemon/jenkins/performance/domain/reporting/PerformanceEntry.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-deployment-dashboard-plugin/src/main/java/de/codecentric/jenkins/dashboard/persistence/ServerInstance.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-deployment-dashboard-plugin/src/main/java/de/codecentric/jenkins/dashboard/persistence/xmlwrapper/ServerInstances.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-deployment-dashboard-plugin/src/main/java/de/codecentric/jenkins/dashboard/persistence/xmlwrapper/ServerInstances.java:import com.thoughtworks.xstream.annotations.XStreamImplicit;
-deploy-plugin/src/main/java/hudson/plugins/deploy/PasswordProtectedAdapterCargo.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-exam-plugin/src/main/java/jenkins/task/TestrunFilter.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-exam-plugin/src/main/java/jenkins/plugins/exam/config/ExamReportConfig.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-exam-plugin/src/main/java/jenkins/plugins/exam/config/ExamModelConfig.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-external-resource-dispatcher-plugin/src/main/java/com/sonyericsson/jenkins/plugins/externalresource/dispatcher/selection/StringResourceSelection.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-external-resource-dispatcher-plugin/src/main/java/com/sonyericsson/jenkins/plugins/externalresource/dispatcher/data/ExternalResource.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-github-plugin/src/main/java/org/jenkinsci/plugins/github/config/GitHubServerConfig.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-hockeyapp-plugin/src/main/java/hockeyapp/HockeyappApplication.java:import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-htmlresource-plugin/src/main/java/com/cwctravel/jenkinsci/plugins/htmlresource/config/HTMLResourceEntry.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-mailer-plugin/src/main/java/hudson/tasks/MailMessageIdAction.java:import com.thoughtworks.xstream.annotations.XStreamConverter;
-maven-artifact-choicelistprovider-plugin/src/main/java/org/jenkinsci/plugins/maven_artifact_choicelistprovider/nexus/PatchedSearchNGResponse.java:@com.thoughtworks.xstream.annotations.XStreamAlias(value = "searchNGResponse")
-metadata-plugin/src/main/java/com/sonyericsson/hudson/plugins/metadata/model/MetadataNodeProperty.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-metadata-plugin/src/main/java/com/sonyericsson/hudson/plugins/metadata/model/MetadataJobProperty.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-metadata-plugin/src/main/java/com/sonyericsson/hudson/plugins/metadata/model/values/DateMetadataValue.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-metadata-plugin/src/main/java/com/sonyericsson/hudson/plugins/metadata/model/values/StringMetadataValue.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-metadata-plugin/src/main/java/com/sonyericsson/hudson/plugins/metadata/model/values/NumberMetadataValue.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-metadata-plugin/src/main/java/com/sonyericsson/hudson/plugins/metadata/model/values/TreeNodeMetadataValue.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-notification-plugin/src/main/java/com/tikal/hudson/plugins/notification/model/JobState.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-persona-plugin/src/main/java/hudson/plugins/persona/Persona.java:import com.thoughtworks.xstream.annotations.XStreamSerializeAs;
-promoted-builds-plugin/src/main/java/hudson/plugins/promoted_builds/integrations/jobdsl/JobDslManualCondition.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-promoted-builds-plugin/src/main/java/hudson/plugins/promoted_builds/integrations/jobdsl/ReleasePromotionCondition.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-promoted-builds-plugin/src/main/java/hudson/plugins/promoted_builds/integrations/jobdsl/JobDslPromotionProcess.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-skytap-cloud-plugin/src/main/java/org/jenkinsci/plugins/skytap/NetworkConnectStep.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-skytap-cloud-plugin/src/main/java/org/jenkinsci/plugins/skytap/ChangeVMContainerHostStatus.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-skytap-cloud-plugin/src/main/java/org/jenkinsci/plugins/skytap/MergeTemplateIntoConfigurationStep.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-skytap-cloud-plugin/src/main/java/org/jenkinsci/plugins/skytap/GetContainerMetaDataStep.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-skytap-cloud-plugin/src/main/java/org/jenkinsci/plugins/skytap/AddConfigurationToProjectStep.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-skytap-cloud-plugin/src/main/java/org/jenkinsci/plugins/skytap/ChangeContainerStateStep.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-skytap-cloud-plugin/src/main/java/org/jenkinsci/plugins/skytap/DeleteContainerStep.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-skytap-cloud-plugin/src/main/java/org/jenkinsci/plugins/skytap/ListPublishedURLForConfigurationStep.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-skytap-cloud-plugin/src/main/java/org/jenkinsci/plugins/skytap/ConnectToVPNTunnelStep.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-skytap-cloud-plugin/src/main/java/org/jenkinsci/plugins/skytap/AddTemplateToProjectStep.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-skytap-cloud-plugin/src/main/java/org/jenkinsci/plugins/skytap/ListVMPublishedServiceStep.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-skytap-cloud-plugin/src/main/java/org/jenkinsci/plugins/skytap/CreateConfigurationStep.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-skytap-cloud-plugin/src/main/java/org/jenkinsci/plugins/skytap/CreateContainerStep.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-skytap-cloud-plugin/src/main/java/org/jenkinsci/plugins/skytap/CreateTemplateFromConfigurationStep.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-skytap-cloud-plugin/src/main/java/org/jenkinsci/plugins/skytap/DeleteConfigurationStep.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-skytap-cloud-plugin/src/main/java/org/jenkinsci/plugins/skytap/CreatePublishURLStep.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-skytap-cloud-plugin/src/main/java/org/jenkinsci/plugins/skytap/ChangeConfigurationStateStep.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-skytap-cloud-plugin/src/main/java/org/jenkinsci/plugins/skytap/CreatePublishedServiceStep.java:import com.thoughtworks.xstream.annotations.XStreamOmitField;
-team-views-plugin/src/main/java/com/sonymobile/jenkins/plugins/teamview/TeamViewsProperty.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-team-views-plugin/src/main/java/com/sonymobile/jenkins/plugins/teamview/Team.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-venafi-codesigning-plugin/src/main/java/io/jenkins/plugins/venaficodesigning/SigDigestAlgo.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-venafi-codesigning-plugin/src/main/java/io/jenkins/plugins/venaficodesigning/CmdArg.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-venafi-codesigning-plugin/src/main/java/io/jenkins/plugins/venaficodesigning/TimestampingServer.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-venafi-codesigning-plugin/src/main/java/io/jenkins/plugins/venaficodesigning/TppConfig.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-venafi-vcert-plugin/src/main/java/io/jenkins/plugins/venafivcert/DnsName.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-venafi-vcert-plugin/src/main/java/io/jenkins/plugins/venafivcert/EmailAddress.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-venafi-vcert-plugin/src/main/java/io/jenkins/plugins/venafivcert/IpAddress.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-venafi-vcert-plugin/src/main/java/io/jenkins/plugins/venafivcert/ConnectorConfig.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-weblogic-deployer-plugin/src/main/java/org/jenkinsci/plugins/deploy/weblogic/data/WebLogicAuthenticationMode.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-weblogic-deployer-plugin/src/main/java/org/jenkinsci/plugins/deploy/weblogic/data/WeblogicEnvironment.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-weblogic-deployer-plugin/src/main/java/org/jenkinsci/plugins/deploy/weblogic/configuration/WeblogicDeploymentConfiguration.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-workplace-plugin/src/main/java/jenkins/plugins/elanceodesk/workplace/notifier/model/JobState.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-xunit-plugin/src/main/java/org/jenkinsci/plugins/xunit/XUnitBuilder.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-xunit-plugin/src/main/java/org/jenkinsci/plugins/xunit/XUnitPublisher.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-build-configurator-plugin/buildserver/src/main/java/com/amcbridge/buildserver/builder/BuilderManager.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-build-configurator-plugin/buildserver/src/main/java/com/amcbridge/buildserver/builder/Builder.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-build-configurator-plugin/buildserver/src/main/java/com/amcbridge/buildserver/builder/Builder.java:import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-build-configurator-plugin/buildserver/src/main/java/com/amcbridge/jenkins/plugins/serialization/Config.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-build-configurator-plugin/buildserver/src/main/java/com/amcbridge/jenkins/plugins/serialization/Config.java:import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-build-configurator-plugin/buildserver/src/main/java/com/amcbridge/jenkins/plugins/serialization/VersionFile.java:import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-build-configurator-plugin/buildserver/src/main/java/com/amcbridge/jenkins/plugins/serialization/VersionFile.java:import com.thoughtworks.xstream.annotations.XStreamImplicit;
-build-configurator-plugin/buildserver/src/main/java/com/amcbridge/jenkins/plugins/serialization/Repository.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-build-configurator-plugin/buildserver/src/main/java/com/amcbridge/jenkins/plugins/serialization/Repository.java:import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-build-configurator-plugin/buildserver/src/main/java/com/amcbridge/jenkins/plugins/serialization/Job.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-build-configurator-plugin/buildserver/src/main/java/com/amcbridge/jenkins/plugins/serialization/Job.java:import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-build-configurator-plugin/buildserver/src/main/java/com/amcbridge/jenkins/plugins/serialization/Project.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-build-configurator-plugin/buildserver/src/main/java/com/amcbridge/jenkins/plugins/serialization/Project.java:import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-build-configurator-plugin/buildserver/src/main/java/com/amcbridge/jenkins/plugins/serialization/PathToArtifacts.java:import com.thoughtworks.xstream.annotations.XStreamImplicit;
-build-configurator-plugin/configurator/src/main/java/com/amcbridge/jenkins/plugins/serialization/Config.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-build-configurator-plugin/configurator/src/main/java/com/amcbridge/jenkins/plugins/serialization/Config.java:import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-build-configurator-plugin/configurator/src/main/java/com/amcbridge/jenkins/plugins/serialization/VersionFile.java:import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-build-configurator-plugin/configurator/src/main/java/com/amcbridge/jenkins/plugins/serialization/VersionFile.java:import com.thoughtworks.xstream.annotations.XStreamImplicit;
-build-configurator-plugin/configurator/src/main/java/com/amcbridge/jenkins/plugins/serialization/Repository.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-build-configurator-plugin/configurator/src/main/java/com/amcbridge/jenkins/plugins/serialization/Repository.java:import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-build-configurator-plugin/configurator/src/main/java/com/amcbridge/jenkins/plugins/serialization/Job.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-build-configurator-plugin/configurator/src/main/java/com/amcbridge/jenkins/plugins/serialization/Job.java:import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-build-configurator-plugin/configurator/src/main/java/com/amcbridge/jenkins/plugins/serialization/Project.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-build-configurator-plugin/configurator/src/main/java/com/amcbridge/jenkins/plugins/serialization/Project.java:import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-build-configurator-plugin/configurator/src/main/java/com/amcbridge/jenkins/plugins/serialization/PathToArtifacts.java:import com.thoughtworks.xstream.annotations.XStreamImplicit;
-build-configurator-plugin/configurator/src/main/java/com/amcbridge/jenkins/plugins/xstreamelements/SCMLoader.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-build-configurator-plugin/configurator/src/main/java/com/amcbridge/jenkins/plugins/xstreamelements/Builder.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-build-configurator-plugin/configurator/src/main/java/com/amcbridge/jenkins/plugins/xstreamelements/Builder.java:import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-build-configurator-plugin/configurator/src/main/java/com/amcbridge/jenkins/plugins/xstreamelements/SCM.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-build-configurator-plugin/configurator/src/main/java/com/amcbridge/jenkins/plugins/xstreamelements/SCM.java:import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-build-configurator-plugin/configurator/src/main/java/com/amcbridge/jenkins/plugins/xstreamelements/BuilderLoader.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-jbpm-plugin/jbpm/src/main/java/hudson/jbpm/model/gpd/BendPoint.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-jbpm-plugin/jbpm/src/main/java/hudson/jbpm/model/gpd/BendPoint.java:import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-jbpm-plugin/jbpm/src/main/java/hudson/jbpm/model/gpd/GPD.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-jbpm-plugin/jbpm/src/main/java/hudson/jbpm/model/gpd/GPD.java:import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-jbpm-plugin/jbpm/src/main/java/hudson/jbpm/model/gpd/GPD.java:import com.thoughtworks.xstream.annotations.XStreamImplicit;
-jbpm-plugin/jbpm/src/main/java/hudson/jbpm/model/gpd/Label.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-jbpm-plugin/jbpm/src/main/java/hudson/jbpm/model/gpd/Label.java:import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-jbpm-plugin/jbpm/src/main/java/hudson/jbpm/model/gpd/Edge.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-jbpm-plugin/jbpm/src/main/java/hudson/jbpm/model/gpd/Edge.java:import com.thoughtworks.xstream.annotations.XStreamImplicit;
-jbpm-plugin/jbpm/src/main/java/hudson/jbpm/model/gpd/Node.java:import com.thoughtworks.xstream.annotations.XStreamAlias;
-jbpm-plugin/jbpm/src/main/java/hudson/jbpm/model/gpd/Node.java:import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-jbpm-plugin/jbpm/src/main/java/hudson/jbpm/model/gpd/Node.java:import com.thoughtworks.xstream.annotations.XStreamImplicit;
-----
-
+can be used to find plugins making use of XStream annotations.
 Some of these already call `processAnnotations` to explicitly register the classes.
 To be compatible, all of them should be made to either use `processAnnotations`,
 or directly call non-annotation-based APIs such as `alias`.
@@ -265,31 +146,7 @@ Therefore, `ToolInstallation` is no longer `Serializable` as far as Java (or Pip
 find *-plugin/{,*/}src/main/java -type f -print0 | xargs -0 egrep -l 'class \S+ extends ToolInstallation' | xargs fgrep -l MasterToSlave
 ----
 
-can be used to find plugins which might be serializing `ToolInstallation` over Remoting:
-
-[source]
-----
-advanced-installer-msi-builder-plugin/src/main/java/caphyon/jenkins/advinst/AdvinstInstallation.java
-allure-plugin/src/main/java/ru/yandex/qatools/allure/jenkins/tools/AllureCommandlineInstallation.java
-ant-plugin/src/main/java/hudson/tasks/Ant.java
-clang-scanbuild-plugin/src/main/java/jenkins/plugins/clangscanbuild/ClangScanBuildToolInstallation.java
-custom-tools-plugin/src/main/java/com/cloudbees/jenkins/plugins/customtools/CustomTool.java
-dependency-check-plugin/src/main/java/org/jenkinsci/plugins/DependencyCheck/tools/DependencyCheckInstallation.java
-ecutest-plugin/src/main/java/de/tracetronic/jenkins/plugins/ecutest/tool/installation/AbstractToolInstallation.java
-exam-plugin/src/main/java/jenkins/plugins/exam/ExamTool.java
-flyway-runner-plugin/src/main/java/sp/sd/flywayrunner/installation/FlywayInstallation.java
-genexus-plugin/src/main/java/org/jenkinsci/plugins/genexus/GeneXusInstallation.java
-gradle-plugin/src/main/java/hudson/plugins/gradle/GradleInstallation.java
-groovy-plugin/src/main/java/hudson/plugins/groovy/GroovyInstallation.java
-nodejs-plugin/src/main/java/jenkins/plugins/nodejs/tools/NodeJSInstallation.java
-packer-plugin/src/main/java/biz/neustar/jenkins/plugins/packer/PackerInstallation.java
-radargun-plugin/src/main/java/org/jenkinsci/plugins/radargun/RadarGunInstallation.java
-sealights-plugin/src/main/java/io/sealights/plugins/sealightsjenkins/MavenSealightsBuildStep.java
-snyk-security-scanner-plugin/src/main/java/io/snyk/jenkins/tools/SnykInstallation.java
-sonarqube-plugin/src/main/java/hudson/plugins/sonar/SonarRunnerInstallation.java
-sonarqube-plugin/src/main/java/hudson/plugins/sonar/MsBuildSQRunnerInstallation.java
-----
-
+can be used to find plugins which might be serializing `ToolInstallation` over Remoting.
 These should stop doing so (usually refactoring the remote callable to be `static` and carry just a `String home` field),
 but will remain compatible for now with a runtime warning.
 
@@ -351,33 +208,8 @@ link:https://github.com/jenkinsci/jenkins/pull/4944[jenkins #4944] is the main c
 == References
 
 * link:https://github.com/jenkinsci/jenkins/pull/4944[jenkins #4944]
-* link:https://github.com/jenkinsci/persona-plugin/pull/7[persona-plugin #7]
-* link:https://github.com/jenkinsci/matrix-auth-plugin/pull/89[matrix-auth-plugin #89]
-* link:https://github.com/jenkinsci/git-plugin/pull/968[git-plugin #968]
-* link:https://github.com/jenkinsci/groovy-plugin/pull/29[groovy-plugin #29]
-* link:https://github.com/jenkinsci/custom-tools-plugin/pull/51[custom-tools-plugin #51]
-* link:https://github.com/jenkinsci/maven-plugin/pull/142[maven-plugin #142]
-* link:https://github.com/jenkinsci/gradle-plugin/pull/100[gradle-plugin #100]
-* link:https://github.com/jenkinsci/nodejs-plugin/pull/36[nodejs-plugin #36]
-* link:https://github.com/jenkinsci/workflow-cps-global-lib-plugin/pull/100[workflow-cps-global-lib-plugin #100]
 * link:https://github.com/jenkinsci/jenkins-test-harness/pull/243[jenkins-test-harness #243]
-* link:https://github.com/jenkinsci/role-strategy-plugin/pull/141[role-strategy-plugin #141]
-* link:https://github.com/jenkinsci/ssh2easy-plugin/pull/13[ssh2easy-plugin #13]
-* link:https://github.com/jenkinsci/matrix-project-plugin/pull/67[matrix-project-plugin #67]
-* link:https://github.com/jenkinsci/email-ext-plugin/pull/220[email-ext-plugin #220]
-* link:https://github.com/jenkinsci/jira-plugin/pull/273[jira-plugin #273]
-* link:https://github.com/jenkinsci/workflow-cps-plugin/pull/380[workflow-cps-plugin #380]
-* link:https://github.com/jenkinsci/htmlpublisher-plugin/pull/86[htmlpublisher-plugin #86]
-* link:https://github.com/jenkinsci/copyartifact-plugin/pull/131[copyartifact-plugin #131]
-* link:https://github.com/jenkinsci/blueocean-plugin/pull/2108[blueocean-plugin #2108]
-* link:https://github.com/jenkinsci/junit-plugin/pull/172[junit-plugin #172]
-* link:https://github.com/jenkinsci/promoted-builds-plugin/pull/150[promoted-builds-plugin #150]
-* link:https://github.com/jenkinsci/dashboard-view-plugin/pull/71[dashboard-view-plugin #71]
-* link:https://github.com/jenkinsci/atlassian-bitbucket-server-integration-plugin/pull/203[atlassian-bitbucket-server-integration-plugin #203]
-* link:https://github.com/jenkinsci/atlassian-jira-software-cloud-plugin/pull/40[atlassian-jira-software-cloud-plugin #40]
-* link:https://github.com/jenkinsci/deploy-plugin/pull/43[deploy-plugin #43]
-* link:https://github.com/jenkinsci/github-plugin/pull/239[github-plugin #239]
-* link:https://github.com/jenkinsci/xunit-plugin/pull/84[xunit-plugin #84]
+* link:compatibility.adoc[Compatibility table]
 * link:https://github.com/jenkinsci/xstream/commits/master[Commits] in the custom fork
 * link:https://github.com/jenkinsci/xstream-fork/commit/24bd43b79b4c02df42f50450d2dd238e480259d2[Aggregate patch] of the custom fork
 * link:https://x-stream.github.io/annotations-tutorial.html#AutoDetect[Autodetection of annotations]
