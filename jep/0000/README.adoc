@@ -73,13 +73,43 @@ An extension of link:../305/README.adoc[JEP-305] is used to pick deterministic v
 
 == Specification
 
-TODO current system in `incrementals-tools` + `log-cli` plus
+A great deal of infrastructure from link:../305/README.adoc[JEP-305] is reused,
+with some refinements at the component level and new work at the organization level.
 
-* Change the trigger from `master` push to use the link:https://help.github.com/en/actions/reference/events-that-trigger-workflows#status-event-status[`status` event] verifying that `continuous-integration/jenkins/branch` has a `state` of `success`. Then the `mvn deploy` command can just pass `-DskipTests` because ci.jenkins.io has already run our tests in whatever environments are configured.
+=== Component setup
+
+link:https://github.com/jenkinsci/incrementals-tools#superseding-maven-releases[Incrementals: superseding Maven releases]
+describes how to configure a component to be automatically `deploy`’ed to Jenkins Artifactory upon `master` pushes.
+As an example, link:https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/log-cli/31.b37970d51e7c/[`log-cli` plugin version `31.b37970d51e7c`]
+was link:https://github.com/jenkinsci/log-cli-plugin/runs/1255753436#step:4:157[deployed by a GitHub action]
+from a link:https://github.com/jenkinsci/log-cli-plugin/commit/b37970d51e7c2d2d723f39fb7271a263f0d2083d[`master` push].
+The important parts of source setup are the link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/pom.xml#L11-L14[`version` definition]
+with a link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/.mvn/maven.config#L3[custom format]
+and a link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/.github/workflows/release.yaml#L16-L19[GitHub Action definition]
+running link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/.github/workflows/release.sh#L5[`mvn deploy`]
+with a link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/.github/workflows/settings.xml#L6-L7[bot token for Artifactory].
+
+As of this writing unimplemented:
+
+* Change the trigger from `master` push to use the link:https://help.github.com/en/actions/reference/events-that-trigger-workflows#status-event-status[`status` event]
+  verifying that `continuous-integration/jenkins/branch` has a `state` of `success`.
+  Then the `mvn deploy` command can just pass `-DskipTests` because ci.jenkins.io has already run our tests in whatever environments are configured.
 * Use the Action for Release Drafter to create a release (typically including exactly one entry, from a recently merged PR).
-* Patch https://github.com/jenkins-infra/repository-permissions-updater/blob/6ff61dc11b830f1984dde4ba9e82870218d702f7/Jenkinsfile#L54-L56 to recognize some flag in a repo’s YAML entry (e.g., `bot: true`) and create an Artifactory bot account with permissions to only the listed paths, then generate an access token for that account and upload it to the GitHub secret `ARTIFACTORY_TOKEN` in the corresponding repository. (Maybe also create an `ARTIFACTORY_USER` pseudo-secret to match.)
 * Create a new Action wrapping the `release.sh` + `settings.xml` so we do not have this stuff duplicated.
 * Add `block-MRP` profile to `plugin-pom`.
+
+=== Organization setup
+
+To avoid the need for each component maintainer to manually create a bot account and perform similar setup,
+tooling at the organization level should automate this aspect.
+(As of this writing unimplemented.)
+
+link:https://github.com/jenkins-infra/repository-permissions-updater/blob/6ff61dc11b830f1984dde4ba9e82870218d702f7/Jenkinsfile#L54-L56[Repository Permissions Updater (RPU) processing]
+is patched to recognize some flag in a repo’s YAML entry (e.g., `bot: true`)
+and link:https://www.jfrog.com/confluence/display/JFROG/Artifactory+REST+API#ArtifactoryRESTAPI-CreateorReplaceUser[create an Artifactory bot account] with permissions to only the listed paths,
+then link:https://www.jfrog.com/confluence/display/JFROG/Artifactory+REST+API#ArtifactoryRESTAPI-CreateToken[generate an access token for that account]
+and upload it to the GitHub secret `ARTIFACTORY_TOKEN` in the corresponding repository.
+(Maybe also create an `ARTIFACTORY_USER` pseudo-secret to match.)
 
 == Motivation
 
@@ -127,17 +157,44 @@ harness automation to publish the newest source changes right away and without i
 == Reasoning
 
 This JEP is inspired by link:../221/README.adoc[JEP-221],
+and shares similar motivation,
 but diverges from that proposal in various technical aspects.
 
-TODO JEP-305-based version numbers vs. manually managed tags
+The use of JEP-305-based version numbers is attractive in that it requires no maintenance whatsoever:
+merely pushing a commit to `master` (including merging a pull request)
+suffices to trigger a deployment,
+and the version number will uniquely and securely identify that commit,
+with no need to create a redundant Git tag.
+Component maintainers who wish to follow SemVer principles,
+encoding some semantics into version numbers,
+can still do so by appending the generated number as a “micro” component to a manually maintained `major.minor.` prefix.
 
-TODO GitHub Actions vs. webhooks & dedicated trusted CI server
+GitHub Actions are attractive in this context because they define a trust boundary naturally scoped to the repository:
+a given bot token is defined in only repository, useful in only that repository, and used only for a containerized build of that repository.
+A system using a trusted Jenkins server, as proposed in JEP-221, would add more infrastructure complexity and maintenance,
+and the flexibility and visualization of Jenkins is not needed or wanted for this very limited operation:
+running a Maven build and deployment with no test code.
 
-TODO vs. ci.jenkins.io + incrementals-publisher
+The deployment system used for JEP-305, of the link:https://ci.jenkins.io/[standard Jenkins server] plus an `incrementals-publisher` microservice,
+solves a similar problem but is not suitable here.
+On the one hand, this JEP involves deploying from `master` (or perhaps another trusted origin branch),
+so there is no need for the precautions used in JEP-305 to check that the deployed bits match expected metadata.
+And on the flip side, the requirement for a secure execution environment is more stringent:
+if ci.jenkins.io were to be compromised, malicious binaries could be deployed to the user-facing update center,
+not merely an experimental repository used mostly by other CI builds for prerelease testing.
 
 == Backwards Compatibility
 
-TODO updatec-center2 generation, PCT, plugin manager
+The link:https://github.com/jenkins-infra/update-center2[Jenkins update center generator] requires no modifications:
+releases deployed by this JEP’s mechanism appear in the regular Artifactory `releases` repository,
+using unusual but perfectly legal release version numbers.
+
+The Jenkins plugin manager should require no modifications since it will be merely presented with valid-looking releases from the update center generator.
+The mechanism by which those releases were built and deployed is irrelevant.
+
+The link:https://github.com/jenkinsci/plugin-compat-tester[Plugin Compatibility Tester (PCT)] should require no modifications
+to test plugins deployed by this JEP’s mechanism, or plugins depending on such releases:
+it has long since been fixed to tolerate incremental versions and JEP-305’s use of `flatten-maven-plugin`.
 
 == Security
 
@@ -156,12 +213,13 @@ which should only be possible by actually running a GitHub action that would at 
 
 == Infrastructure Requirements
 
-TODO RPU patch
+RPU needs to be enhanced to generate and maintain bot accounts and tokens,
+which has some implications for the security of the RPU CI job itself.
 
 == Testing
 
 Due to the number of moving parts and authentication, it is likely that testing will need to be manual.
-We can use this system for a while on a few canary plugins to flush out any problems with Dependabot, `plugin-compat-tester`, etc.
+We can use this system for a while on a few canary plugins to flush out any problems with Dependabot, PCT, etc.
 
 == Prototype Implementation
 
