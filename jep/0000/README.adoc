@@ -126,11 +126,13 @@ harness automation to publish the newest source changes right away and without i
 
 == Reasoning
 
-This JEP is inspired by [JEP-221](https://jenkins.io/jep/221),
+This JEP is inspired by link:../221/README.adoc[JEP-221],
 but diverges from that proposal in various technical aspects.
 
 TODO JEP-305-based version numbers vs. manually managed tags
+
 TODO GitHub Actions vs. webhooks & dedicated trusted CI server
+
 TODO vs. ci.jenkins.io + incrementals-publisher
 
 == Backwards Compatibility
