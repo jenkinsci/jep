@@ -68,14 +68,14 @@ Maintainers of Jenkins component repositories on GitHub, especially plugins, can
 In this mode, every successful build of the `master` branch by ci.jenkins.io results in a new release of the component.
 GitHub Actions are used to rebuild the component and deploy it to Artifactory,
 without the need for maintainers to use personal credentials or local builds.
-An extension of [JEP-305](https://jenkins.io/jep/305) is used to pick deterministic version numbers;
+An extension of link:../305/README.adoc[JEP-305] is used to pick deterministic version numbers;
 `maven-release-plugin` (MRP) is not used.
 
 == Specification
 
 TODO current system in `incrementals-tools` + `log-cli` plus
 
-* Change the trigger from `master` push to use the [`status` event](https://help.github.com/en/actions/reference/events-that-trigger-workflows#status-event-status) verifying that `continuous-integration/jenkins/branch` has a `state` of `success`. Then the `mvn deploy` command can just pass `-DskipTests` because ci.jenkins.io has already run our tests in whatever environments are configured.
+* Change the trigger from `master` push to use the link:https://help.github.com/en/actions/reference/events-that-trigger-workflows#status-event-status[`status` event] verifying that `continuous-integration/jenkins/branch` has a `state` of `success`. Then the `mvn deploy` command can just pass `-DskipTests` because ci.jenkins.io has already run our tests in whatever environments are configured.
 * Use the Action for Release Drafter to create a release (typically including exactly one entry, from a recently merged PR).
 * Patch https://github.com/jenkins-infra/repository-permissions-updater/blob/6ff61dc11b830f1984dde4ba9e82870218d702f7/Jenkinsfile#L54-L56 to recognize some flag in a repo’s YAML entry (e.g., `bot: true`) and create an Artifactory bot account with permissions to only the listed paths, then generate an access token for that account and upload it to the GitHub secret `ARTIFACTORY_TOKEN` in the corresponding repository. (Maybe also create an `ARTIFACTORY_USER` pseudo-secret to match.)
 * Create a new Action wrapping the `release.sh` + `settings.xml` so we do not have this stuff duplicated.
@@ -83,7 +83,7 @@ TODO current system in `incrementals-tools` + `log-cli` plus
 
 == Motivation
 
-Traditionally, all Jenkins components have been released using the [Maven Release plugin](https://maven.apache.org/maven-release/maven-release-plugin/) (MRP).
+Traditionally, all Jenkins components have been released using the link:https://maven.apache.org/maven-release/maven-release-plugin/[Maven Release plugin] (MRP).
 This is typically invoked by a developer on a local clone of the repository in the `master` branch:
 
 [source,bash]
@@ -165,10 +165,10 @@ We can use this system for a while on a few canary plugins to flush out any prob
 
 == Prototype Implementation
 
-The [`log-cli` plugin](https://github.com/jenkinsci/log-cli-plugin) implements basic aspects of this proposal.
+The link:https://github.com/jenkinsci/log-cli-plugin[`log-cli` plugin] implements basic aspects of this proposal.
 
 == References
 
-* [Incrementals: superseding Maven releases](https://github.com/jenkinsci/incrementals-tools#superseding-maven-releases)
-* [`log-cli` plugin](https://github.com/jenkinsci/log-cli-plugin)
-* [Repository Permissions Updater](https://github.com/jenkins-infra/repository-permissions-updater#about) (RPU)
+* link:https://github.com/jenkinsci/incrementals-tools#superseding-maven-releases[Incrementals: superseding Maven releases]
+* link:https://github.com/jenkinsci/log-cli-plugin[`log-cli` plugin]
+* link:https://github.com/jenkins-infra/repository-permissions-updater#about[Repository Permissions Updater] (RPU)
