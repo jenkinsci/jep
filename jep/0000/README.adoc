@@ -192,6 +192,14 @@ using unusual but perfectly legal release version numbers.
 The Jenkins plugin manager should require no modifications since it will be merely presented with valid-looking releases from the update center generator.
 The mechanism by which those releases were built and deployed is irrelevant.
 
+The link:https://github.com/jenkins-infra/pipeline-library[stock Pipeline library] can be used as is,
+or with arbitrary modifications:
+customizations to how tests are run and so on would affect whether and how quickly ci.jenkins.io produces a passing commit status,
+without any interaction with the subsequent deployment.
+(The library already tolerates incremental versions from JEP-305;
+`infra.maybeDeployIncrementals` could be amended to skip deployment from `master` when `changelist.format` is defined,
+to avoid redundantly deploying the same bits to `incrementals` as would anyway be deployed to `releases`.)
+
 The link:https://github.com/jenkinsci/plugin-compat-tester[Plugin Compatibility Tester (PCT)] should require no modifications
 to test plugins deployed by this JEP’s mechanism, or plugins depending on such releases:
 it has long since been fixed to tolerate incremental versions and JEP-305’s use of `flatten-maven-plugin`.
