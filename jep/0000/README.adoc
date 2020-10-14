@@ -178,7 +178,8 @@ running a Maven build and deployment with no test code.
 The deployment system used for JEP-305, of the link:https://ci.jenkins.io/[standard Jenkins server] plus an `incrementals-publisher` microservice,
 solves a similar problem but is not suitable here.
 On the one hand, this JEP involves deploying from `master` (or perhaps another trusted origin branch),
-so there is no need for the precautions used in JEP-305 to check that the deployed bits match expected metadata.
+so there is no need for the precautions used in JEP-305 to check that the deployed bits match expected metadata,
+or the split between CI build and deployment needed to guard a single Artifactory token from malicious (especially forked) PRs.
 And on the flip side, the requirement for a secure execution environment is more stringent:
 if ci.jenkins.io were to be compromised, malicious binaries could be deployed to the user-facing update center,
 not merely an experimental repository used mostly by other CI builds for prerelease testing.
@@ -228,6 +229,8 @@ which has some implications for the security of the RPU CI job itself.
 
 Due to the number of moving parts and authentication, it is likely that testing will need to be manual.
 We can use this system for a while on a few canary plugins to flush out any problems with Dependabot, PCT, etc.
+The new system can also be tried out on non-plugin components (`jenkins-test-harness`, `bom`, etc.)
+since there is no immediate user impact of a new release appearing of such a component.
 
 == Prototype Implementation
 
