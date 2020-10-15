@@ -65,7 +65,7 @@ endif::[]
 == Abstract
 
 Maintainers of Jenkins component repositories on GitHub, especially plugins, can opt into continuous delivery (CD).
-In this mode, every successful build of the `master` branch by ci.jenkins.io results in a new release of the component.
+In this mode, every successful build of the default branch by ci.jenkins.io results in a new release of the component.
 GitHub Actions are used to rebuild the component and deploy it to Artifactory,
 without the need for maintainers to use personal credentials or local builds.
 An extension of link:../305/README.adoc[JEP-305] is used to pick deterministic version numbers;
