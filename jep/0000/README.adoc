@@ -230,32 +230,32 @@ we might want to have the deployment Action retrieve a short-lived Artifactory t
 For this to be possible, we would need to run a new microservice in the Jenkins cluster
 which had broad Artifactory permissions (sufficient to create bot users and tokens)
 and which could read RPU configuration.
-The Action would need to transmit its temporary +${{ secrets.GITHUB_TOKEN }}+ to the service,
-as well as some +$GITHUB_SHA+ from the repository.
+The Action would need to transmit its temporary `${{ secrets.GITHUB_TOKEN }}` to the service,
+as well as some `$GITHUB_SHA` from the repository.
 The service would then validate this token was in fact an App installation token,
 and determine the repository on which it is valid:
 
 [source,bash]
-====
+----
 repo=$(curl -s -H "Authorization: Bearer $TOKEN" https://api.github.com/installation/repositories | jq -r '.repositories[0].full_name')
-====
+----
 
 It can then (with difficulty) verify that the App has write permission to the repository,
 as an Action token will (to prevent spoofing from low-privileged Apps):
 
 [source,bash]
-====
+----
 tag=permcheck-$RANDOM
 curl -H "Authorization: Bearer $TOKEN" -d '{"ref":"refs/tags/'$tag'","sha":"'$sha'"}' https://api.github.com/repos/$repo/git/refs
 curl -H "Authorization: Bearer $TOKEN" -X DELETE https://api.github.com/repos/$repo/git/refs/tags/$tag
-====
+----
 
 Now knowing that it has been called from an App with write permissions,
 such as the deployment Action,
 it can create a new Artifactory token with a short expiry (say one hour)
 granted permission only to upload to the paths defined for this repository in RPU
 and return that token in its response.
-The Action would then bind this token to an environment variable for use from +settings.xml+.
+The Action would then bind this token to an environment variable for use from `settings.xml`.
 
 == Backwards Compatibility
 
