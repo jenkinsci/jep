@@ -72,8 +72,9 @@ should be simplified to check `hasPermission`.
 |Tests pass as of link:https://github.com/jenkinsci/build-token-root-plugin/releases/tag/build-token-root-1.7[1.7] if not earlier.
 
 |link:https://plugins.jenkins.io/cas-plugin/[cas-plugin]
-|Incompatible
-|Uses `BeanBuilder` and several removed Acegi Security types.
+|Incompatible, fixes prepared
+|link:https://github.com/jenkinsci/cas-plugin/pull/4[cas-plugin #4]
+_may_ provide compatibility with post-Spring Security Jenkins (but cannot be installed on older versions).
 
 |link:https://plugins.jenkins.io/cloudbees-bitbucket-branch-source/[cloudbees-bitbucket-branch-source]
 |Compatible
