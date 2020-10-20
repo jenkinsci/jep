@@ -160,6 +160,8 @@ This JEP is inspired by link:../221/README.adoc[JEP-221],
 and shares similar motivation,
 but diverges from that proposal in various technical aspects.
 
+=== Version format
+
 The use of JEP-305-based version numbers is attractive in that it requires no maintenance whatsoever:
 merely pushing a commit to `master` (including merging a pull request)
 suffices to trigger a deployment,
@@ -169,11 +171,15 @@ Component maintainers who wish to follow SemVer principles,
 encoding some semantics into version numbers,
 can still do so by appending the generated number as a “micro” component to a manually maintained `major.minor.` prefix.
 
+=== GitHub Actions
+
 GitHub Actions are attractive in this context because they define a trust boundary naturally scoped to the repository:
 a given bot token is defined in only repository, useful in only that repository, and used only for a containerized build of that repository.
 A system using a trusted Jenkins server, as proposed in JEP-221, would add more infrastructure complexity and maintenance,
 and the flexibility and visualization of Jenkins is not needed or wanted for this very limited operation:
 running a Maven build and deployment with no test code.
+
+=== Deployment authentication
 
 The deployment system used for JEP-305, of the link:https://ci.jenkins.io/[standard Jenkins server] plus an `incrementals-publisher` microservice,
 solves a similar problem but is not suitable here.
@@ -183,6 +189,73 @@ or the split between CI build and deployment needed to guard a single Artifactor
 And on the flip side, the requirement for a secure execution environment is more stringent:
 if ci.jenkins.io were to be compromised, malicious binaries could be deployed to the user-facing update center,
 not merely an experimental repository used mostly by other CI builds for prerelease testing.
+
+=== Frequency of deployments
+
+The whole point of this JEP is to encourage automatic and frequent deployments.
+If it is widely adopted, there are some risks to this frequency.
+(These are not blockers to experimentation on a few repositories.)
+
+Artifactory might not be able to handle the traffic.
+This is already a concern generally with our hosted Artifactory,
+but the Jenkins project is looking into what precisely the limits are.
+
+Jenkins administrators might tire of constantly seeing entries in the *Plugin Manager » Updates* tab.
+In many cases, there may be few or no behavioral changes in a release, just code cleanups or POM tidying.
+While having these releases is sometimes valuable for PCT, they are not valuable to administrators.
+One mitigation is to slow down the frequency at which the update center is automatically checked, currently one day.
+Another option is to display release notes in the plugin manager GUI so that “chore” updates are more easily ignored.
+
+Releases of development-time components (`plugin-pom`, `bom`, `jenkins-test-harness`, etc.)
+or of widely used API plugins (`workflow-step-api-plugin`, `credentials-plugin`, etc.)
+might create “Dependabot storms” whereby one minor change in a base component triggers a release,
+followed by PRs to intermediate-level components which are then merged and trigger releases,
+followed by PRs to higher-level components with their own releases.
+Excessive updates could consume a lot of CI time and exacerbate the previously mentioned risks.
+
+For any such issues, or for maintainers who prefer to do manual sanity checks prior to release rather than when merging PRs,
+there is another option:
+link:https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/[manual triggers]
+can be used to deploy from a given branch on demand, rather than automatically upon push.
+This is also likely to be the preferred trigger for backport branches.
+Compared to running MRP locally, this is still much less effort for maintainers,
+though such a trigger ought to be sure to validate that there is a passing Jenkins CI check before proceeding.
+
+=== Push vs. pull for Artifactory tokens
+
+Rather than having the RPU build push Artifactory tokens into repository secrets,
+which introduces some issues of token expiry and possible theft by repository owners,
+we might want to have the deployment Action retrieve a short-lived Artifactory token on demand.
+
+For this to be possible, we would need to run a new microservice in the Jenkins cluster
+which had broad Artifactory permissions (sufficient to create bot users and tokens)
+and which could read RPU configuration.
+The Action would need to transmit its temporary +${{ secrets.GITHUB_TOKEN }}+ to the service,
+as well as some +$GITHUB_SHA+ from the repository.
+The service would then validate this token was in fact an App installation token,
+and determine the repository on which it is valid:
+
+[source,bash]
+====
+repo=$(curl -s -H "Authorization: Bearer $TOKEN" https://api.github.com/installation/repositories | jq -r '.repositories[0].full_name')
+====
+
+It can then (with difficulty) verify that the App has write permission to the repository,
+as an Action token will (to prevent spoofing from low-privileged Apps):
+
+[source,bash]
+====
+tag=permcheck-$RANDOM
+curl -H "Authorization: Bearer $TOKEN" -d '{"ref":"refs/tags/'$tag'","sha":"'$sha'"}' https://api.github.com/repos/$repo/git/refs
+curl -H "Authorization: Bearer $TOKEN" -X DELETE https://api.github.com/repos/$repo/git/refs/tags/$tag
+====
+
+Now knowing that it has been called from an App with write permissions,
+such as the deployment Action,
+it can create a new Artifactory token with a short expiry (say one hour)
+granted permission only to upload to the paths defined for this repository in RPU
+and return that token in its response.
+The Action would then bind this token to an environment variable for use from +settings.xml+.
 
 == Backwards Compatibility
 
