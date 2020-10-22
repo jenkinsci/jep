@@ -111,6 +111,12 @@ then link:https://www.jfrog.com/confluence/display/JFROG/Artifactory+REST+API#Ar
 and upload it to the GitHub secret `ARTIFACTORY_TOKEN` in the corresponding repository.
 (Maybe also create an `ARTIFACTORY_USER` pseudo-secret to match.)
 
+It is possible to upload artifacts using a token with a short expiry (say, an hour), and a phony user name.
+The problem is that it is not possible to assign permissions from a “permission target” to an access token, just a group membership.
+RPU will need a larger overhaul for this, between generating/maintaining groups;
+poking GitHub’s Secrets API to update the deployment secret to be valid for some period (such as the RPU run interval + 3 hours or so);
+and perhaps changing the YAML file format to accommodate multi-module projects and the new automated builds.
+
 == Motivation
 
 Traditionally, all Jenkins components have been released using the link:https://maven.apache.org/maven-release/maven-release-plugin/[Maven Release plugin] (MRP).
