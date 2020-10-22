@@ -315,9 +315,14 @@ Currently we presume that component maintainers are not maliciously inserting ba
 So long as maintainers are granted direct access to Artifactory as well as the option to use CD, trusting them is unavoidable,
 and it is desirable to offer this option to maintainers in order for example to produce backport releases—unless
 the proposed system can be used also for non-`master` pushes.
-If a maintainer were _not_ given Artifactory credentials (or simply not listed in RPU),
+If a maintainer were _not_ given Artifactory credentials,
 they would not be able to deploy unauthorized binaries except by stealing the bot access token,
 which should only be possible by actually running a GitHub action that would at least leave an audit trail.
+
+(Originally RPU meant only that a person’s Artifactory account should be allowed to deploy a component.
+It has since been overloaded to track component maintainers, including GitHub repository ownership.
+Making a component _only_ be deployable via this CD system would imply that we need to split up the metadata in RPU,
+or at least add more metadata indicating that its original function should be suppressed.)
 
 == Infrastructure Requirements
 
