@@ -118,7 +118,7 @@ This is typically invoked by a developer on a local clone of the repository in t
 
 [source,bash]
 ----
-mvn -B release:prepare release:perform
+mvn --batch-mode release:prepare release:perform
 ----
 
 MRP presumes that the `<version>` in the POM is something like `1.23-SNAPSHOT`.
@@ -242,7 +242,7 @@ and determine the repository on which it is valid:
 
 [source,bash]
 ----
-repo=$(curl -s -H "Authorization: Bearer $TOKEN" https://api.github.com/installation/repositories | jq -r '.repositories[0].full_name')
+repo=$(curl --silent --header "Authorization: Bearer $TOKEN" https://api.github.com/installation/repositories | jq --raw-output '.repositories[0].full_name')
 ----
 
 It can then (with difficulty) verify that the App has write permission to the repository,
@@ -251,8 +251,8 @@ as an Action token will (to prevent spoofing from low-privileged Apps):
 [source,bash]
 ----
 tag=permcheck-$RANDOM
-curl -H "Authorization: Bearer $TOKEN" -d '{"ref":"refs/tags/'$tag'","sha":"'$sha'"}' https://api.github.com/repos/$repo/git/refs
-curl -H "Authorization: Bearer $TOKEN" -X DELETE https://api.github.com/repos/$repo/git/refs/tags/$tag
+curl --header "Authorization: Bearer $TOKEN" --data '{"ref":"refs/tags/'$tag'","sha":"'$sha'"}' https://api.github.com/repos/$repo/git/refs
+curl --header "Authorization: Bearer $TOKEN" --request DELETE https://api.github.com/repos/$repo/git/refs/tags/$tag
 ----
 
 Now knowing that it has been called from an App with write permissions,
