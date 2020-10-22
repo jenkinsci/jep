@@ -203,7 +203,9 @@ but the Jenkins project is looking into what precisely the limits are.
 Jenkins administrators might tire of constantly seeing entries in the *Plugin Manager » Updates* tab.
 In many cases, there may be few or no behavioral changes in a release, just code cleanups or POM tidying.
 While having these releases is sometimes valuable for PCT, they are not valuable to administrators.
-One mitigation is to slow down the frequency at which the update center is automatically checked, currently one day.
+We could slow down the frequency at which the update center is automatically checked, currently one day,
+but this would also slow down notifications of security updates, which we certainly do not want;
+perhaps very recent updates could be hidden unless specifically requested _or_ can be identified as security updates.
 Another option is to display release notes in the plugin manager GUI so that “chore” updates are more easily ignored.
 
 Releases of development-time components (`plugin-pom`, `bom`, `jenkins-test-harness`, etc.)
@@ -220,6 +222,9 @@ can be used to deploy from a given branch on demand, rather than automatically u
 This is also likely to be the preferred trigger for backport branches.
 Compared to running MRP locally, this is still much less effort for maintainers,
 though such a trigger ought to be sure to validate that there is a passing Jenkins CI check before proceeding.
+(This validation should be part of the Action definition, not manual,
+so we can be sure that deployed releases pass official test suites.
+If there are outages on ci.jenkins.io, the maintainer can wait for a fix, or *Re-run* the build.)
 
 === Push vs. pull for Artifactory tokens
 
@@ -262,6 +267,10 @@ The Action would then bind this token to an environment variable for use from `s
 The link:https://github.com/jenkins-infra/update-center2[Jenkins update center generator] requires no modifications:
 releases deployed by this JEP’s mechanism appear in the regular Artifactory `releases` repository,
 using unusual but perfectly legal release version numbers.
+(It might make sense to ignore specific user names of deployers here, such as `runner`.
+As this is the fallback behavior when no maintainers are defined in the `pom.xml`,
+ignoring such uploader user names from the manifest file might result in plugin-site problems,
+though it is unlikely.)
 
 The Jenkins plugin manager should require no modifications since it will be merely presented with valid-looking releases from the update center generator.
 The mechanism by which those releases were built and deployed is irrelevant.
