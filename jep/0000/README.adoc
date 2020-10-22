@@ -229,7 +229,7 @@ If there are outages on ci.jenkins.io, the maintainer can wait for a fix, or *Re
 === Push vs. pull for Artifactory tokens
 
 Rather than having the RPU build push Artifactory tokens into repository secrets,
-which introduces some issues of token expiry and possible theft by repository owners,
+which introduces questions of token expiry and possible theft by repository owners,
 we might want to have the deployment Action retrieve a short-lived Artifactory token on demand.
 
 For this to be possible, we would need to run a new microservice in the Jenkins cluster
@@ -261,6 +261,17 @@ it can create a new Artifactory token with a short expiry (say one hour)
 granted permission only to upload to the paths defined for this repository in RPU
 and return that token in its response.
 The Action would then bind this token to an environment variable for use from `settings.xml`.
+
+On balance this “pull” approach seems worse than the currently proposed “push” approach:
+
+* It would require a new service to be maintained—the chief obstacle to JEP-221.
+* A publicly accessible service holding high-level Artifactory administrative permissions is a major attack target.
+* A push approach can also expire and rotate tokens, with some care.
+  If the RPU batch job runs at least daily (not only on `master` push),
+  and generates fresh tokens for all enrolled repositories,
+  then it would be fairly safe for tokens to expire after a week, for example.
+* Theft of tokens prior to expiry by malicious maintainers is a possibility under either system;
+  the window of opportunity would differ, as would the sort of audit trail produced.
 
 == Backwards Compatibility
 
@@ -296,8 +307,8 @@ The deployed binaries would still have been built from the source files stored o
 
 Currently we presume that component maintainers are not maliciously inserting backdoors into manually deployed binaries.
 So long as maintainers are granted direct access to Artifactory as well as the option to use CD, trusting them is unavoidable,
-and it is desirable to offer this option to maintainers in order for example to produce backport releases
-(since the current system only handles `master` pushes).
+and it is desirable to offer this option to maintainers in order for example to produce backport releases—unless
+the proposed system can be used also for non-`master` pushes.
 If a maintainer were _not_ given Artifactory credentials (or simply not listed in RPU),
 they would not be able to deploy unauthorized binaries except by stealing the bot access token,
 which should only be possible by actually running a GitHub action that would at least leave an audit trail.
