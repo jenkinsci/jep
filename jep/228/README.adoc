@@ -73,7 +73,7 @@ That fork is now deprecated, and Jenkins core integrates the latest official rel
 
 Automatic dynamic detection of XStream annotations was problematic and has been removed.
 
-If JEP-7 is implemented, then `XStream2.setMapper` and `.getMapperInjectionPoint` can be removed as `ruby-runtime` was the only caller.
+If link:../7/README.adoc[JEP-7] is implemented, then `XStream2.setMapper` and `.getMapperInjectionPoint` can be removed as `ruby-runtime` was the only caller.
 
 == Motivation
 
