@@ -145,8 +145,8 @@ should improve compatibility.
 (Also currently blocked from the update center.)
 
 |link:https://plugins.jenkins.io/promoted-builds/[promoted-builds]
-|Incompatible, fixes prepared
-|Pending link:https://github.com/jenkinsci/promoted-builds-plugin/pull/150[promoted-builds-plugin #150].
+|Compatible
+|As of link:https://github.com/jenkinsci/promoted-builds-plugin/releases/tag/promoted-builds-3.7[3.7].
 
 |link:https://plugins.jenkins.io/radargun/[radargun]
 |Mostly compatible
