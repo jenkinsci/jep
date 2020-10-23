@@ -1,0 +1,219 @@
+= JEP-228: Unforking XStream
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.**JEP Template**
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 228
+
+| Title
+| Unforking XStream
+
+| Sponsor
+| link:https://github.com/jglick[Jesse Glick]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2020-09-29
+
+| BDFL-Delegate
+| TBD
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+
+| Requires
+| JEP-7 (optionally)
+
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+Jenkins uses the XStream serialization library to load and save most of its configuration to XML files in `$JENKINS_HOME`.
+Since its origins in Hudson, this was using a fork of the upstream library maintained by the Jenkins project.
+That fork is now deprecated, and Jenkins core integrates the latest official release instead.
+
+== Specification
+
+`org.jvnet.hudson:xstream:1.4.7-jenkins-1` is now replaced by the latest version of `com.thoughtworks.xstream:xstream`, as of this writing `1.4.13`.
+
+Automatic dynamic detection of XStream annotations was problematic and has been removed.
+
+If JEP-7 is implemented, then `XStream2.setMapper` and `.getMapperInjectionPoint` can be removed as `ruby-runtime` was the only caller.
+
+== Motivation
+
+Maintaining a custom fork of a library was an additional maintenance burden for Jenkins developers.
+The fork was well out of date, leading to suspicions that security hardenings added in recent years may be missing, though no vulnerabilities are known.
+
+A key reason for maintaining the fork was to introduce thread safety as well as concurrency-optimized collections into XStream.
+In fact upstream XStream is designed to be thread-safe _after_ its configuration has been frozen.
+However, Jenkins was relying on autodetection of XStream annotations during serialization (and, with some limitations, deserialization).
+This forced the fork to be patched to prevent race conditions during serialization when annotations were newly discovered.
+The XStream maintainer never agreed with this design and refused to integrate these patches.
+This complicated maintenance of the fork, and may have led to race conditions and/or blocked threads at runtime.
+
+== Reasoning
+
+The original plan for dealing with thread safety was to keep a pool of `XStream2` instances backed by each public field of this type.
+The pooled instances, each limited to one thread at a time, would clone configuration from the main instance.
+This however seemed rather complex (there is no simple interface to implement as a proxy—`XStream` is a class with plenty of state),
+and performance may have suffered from keeping these pools and duplicating various caches.
+Since the number of plugins actually using XStream annotations was fairly small,
+and adapting to the change can be done in as little as one line of code,
+it seems simpler and better to use XStream the way its maintainer intended.
+
+`ToolInstaller.properties` was tough to deal with.
+This field must be serialized via XStream (for example it lists `ToolInstallation` instances),
+but cannot be serialized over Remoting
+(neither its collection type, nor typical element types, are or could reasonably be made `Serializable`).
+Nor did it seems reasonable to mark the field `transient` but define a custom XStream converter, since subclasses have their own fields.
+Fortunately not a lot of plugins seem to attempt to send a `ToolInstaller` over Remoting;
+all the known cases involve some agent-side computation that actually only needs the tool home directory.
+Also it turned out to be possible to detect Remoting-based serialization and delegate the cloning to XStream
+after patching out the `<properties>…</properties>` section.
+
+== Backwards Compatibility
+
+See the link:compatibility.adoc[compatibility table].
+
+=== Autodetection of annotations
+
+Jenkins no longer configures XStream to autodetect annotations on the fly.
+Therefore plugins which use XStream-defined annotations (rather than Java method calls)
+need to call `processAnnotations` as an initialization step,
+either in a `static` block or an `@Initializer`.
+
+[source,bash]
+----
+find *-plugin/{,*/}src/main/java -type f -print0 | xargs -0 fgrep com.thoughtworks.xstream.annotations
+----
+
+can be used to find plugins making use of XStream annotations.
+Some of these already call `processAnnotations` to explicitly register the classes.
+To be compatible, all of them should be made to either use `processAnnotations`,
+or directly call non-annotation-based APIs such as `alias`.
+
+Interestingly, calling `processAnnotations`
+link:https://github.com/jenkinsci/xstream-fork/blob/af17a1b2d8fc7c9dcfee635252a8a3c32f956d26/xstream/src/java/com/thoughtworks/xstream/mapper/AnnotationMapper.java#L158-L166[disables subsequent autodetection]
+of annotations for that `XStream` instance.
+This implies many plugins relying on autodetection of annotations were already broken under some conditions,
+depending on which other plugins were installed and the precise order of operations.
+
+=== Serializability of `ToolInstallation`
+
+Previously, `ToolInstallation` implemented `Serializable` and was eligible for transfer over a Remoting channel to an agent.
+The `properties` field, however, was ignored in this mode, while saved by XStream.
+That trick relied on a custom patch to XStream which has no upstream equivalent.
+Therefore, `ToolInstallation` is no longer `Serializable` as far as Java (or Pipeline) serialization is concerned.
+
+[source,bash]
+----
+find *-plugin/{,*/}src/main/java -type f -print0 | xargs -0 egrep -l 'class \S+ extends ToolInstallation' | xargs fgrep -l MasterToSlave
+----
+
+can be used to find plugins which might be serializing `ToolInstallation` over Remoting.
+These should stop doing so (usually refactoring the remote callable to be `static` and carry just a `String home` field),
+but will remain compatible for now with a runtime warning.
+
+=== Inherited private serialization methods
+
+Older versions of XStream honored `readResolve` or `writeReplace` methods in subclasses even when declared as `private` in the superclass.
+This violated the expectations of Java serialization, and so this behavior has now been fixed:
+only accessible (e.g., `protected`) methods of these names will be considered in the inheritance chain.
+
+The `TestBuilder` test utility in `jenkins-test-harness`, among other classes,
+relied on this trick to avoid saving itself to `config.xml`
+(which would frequently fail due to captured outer class references).
+Numerous plugins use `TestBuilder` (or, more rarely, `TestNotifier`) in functional tests.
+These tests should still run, even if the build step is an inner class,
+but will produce a runtime warning; it is better to update the parent POM to 4.8 or newer to pick up a fix.
+
+=== `XStreamSerializable`
+
+The custom annotation `XStreamSerializable` is no longer available.
+There is no equivalent.
+It was used only in `ToolInstaller`.
+
+=== `XStreamSerializeAs`
+
+The custom annotation `XStreamSerializeAs` is no longer available.
+`XStreamAliasType` can be used instead.
+It was used only in the `persona` plugin,
+which has since been link:https://www.jenkins.io/security/advisory/2020-10-08/#SECURITY-2046[removed from the update center].
+
+=== `HierarchicalStreamReader.peekNextChild`
+
+This method no longer exists.
+It has long been defined in a subtype `ExtendedHierarchicalStreamReader`;
+only the fork redundantly defined it also in the supertype.
+
+== Security
+
+There are no known security risks related to this proposal.
+Defenses introduced in JEP-200 are left intact,
+even though newer versions of XStream include their own simpler serialization security system.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+Besides tests inside Jenkins core itself,
+CloudBees will endeavor to verify that all
+link:https://docs.cloudbees.com/search?&type=ci-plugins&ci-plugins-tier=verified[“Tier 1”] and
+link:https://docs.cloudbees.com/search?&type=ci-plugins&ci-plugins-tier=compatible[“Tier 2”]
+plugins are compatible with the core changes,
+as determined by acceptance tests (ATH) and `plugin-compat-tester` (PCT).
+
+== Prototype Implementation
+
+link:https://github.com/jenkinsci/jenkins/pull/4944[jenkins #4944] is the main change.
+
+== References
+
+* link:https://github.com/jenkinsci/jenkins/pull/4944[jenkins #4944]
+* link:https://github.com/jenkinsci/jenkins-test-harness/pull/243[jenkins-test-harness #243]
+* link:compatibility.adoc[Compatibility table]
+* link:https://github.com/jenkinsci/xstream/commits/master[Commits] in the custom fork
+* link:https://github.com/jenkinsci/xstream-fork/commit/24bd43b79b4c02df42f50450d2dd238e480259d2[Aggregate patch] of the custom fork
+* link:https://x-stream.github.io/annotations-tutorial.html#AutoDetect[Autodetection of annotations]
+* link:https://x-stream.github.io/jira/744/[XSTR-744], rejected custom patch
+* link:https://issues.jenkins-ci.org/browse/JENKINS-13154[JENKINS-13154] _Heavy thread congestion with FingerPrint.save_
+* link:https://issues.jenkins-ci.org/browse/JENKINS-18775[JENKINS-18775] _ConcurrentModificationException from DefaultConverterLookup_
+* link:https://issues.jenkins-ci.org/browse/JENKINS-19561[JENKINS-19561] _Unsafe & inefficient concurrency in XStream_

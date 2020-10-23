@@ -1,0 +1,189 @@
+= JEP-228: Unforking XStream - Compatibility
+
+Use this space to track the status of plugins that may or may not be compatible with JEP-228.
+Refer to general information about link:README.adoc#backwards-compatibility[backwards compatibility]
+for tips on searching for potentially problematic API usages.
+
+Plugins which do not do anything special with XStream need not be listed.
+
+Please use pull requests as needed to help maintain the following table.
+Plugins should be sorted by code identifier
+(usually, but not always, the portion in the GitHub repository name preceding `-plugin`).
+
+[cols=".<1,.<2,5", options="header"]
+|===
+|Plugin |Status |Notes
+
+|link:https://plugins.jenkins.io/advanced-installer-msi-builder/[advanced-installer-msi-builder]
+|Mostly compatible
+|link:https://github.com/jenkinsci/advanced-installer-msi-builder-plugin/blob/3d0f048111deac0bf22c2e73544b0c04d3887d99/src/main/java/caphyon/jenkins/advinst/AdvinstInstallation.java#L48-L56[This code]
+should be fixed.
+
+|link:https://plugins.jenkins.io/allure-jenkins-plugin/[allure-jenkins-plugin]
+|Mostly compatible
+|link:https://github.com/jenkinsci/allure-plugin/pull/271[allure-plugin #271]
+should improve compatibility.
+
+|link:https://plugins.jenkins.io/ant/[ant]
+|Compatible
+|As of link:https://github.com/jenkinsci/ant-plugin/releases/tag/ant-1.11[1.11].
+
+|link:https://plugins.jenkins.io/atlassian-bitbucket-server-integration/[atlassian-bitbucket-server-integration]
+|Incompatible, fixes prepared
+|Pending link:https://github.com/jenkinsci/atlassian-bitbucket-server-integration-plugin/pull/203[atlassian-bitbucket-server-integration-plugin #203].
+
+|link:https://plugins.jenkins.io/atlassian-jira-software-cloud/[atlassian-jira-software-cloud]
+|Incompatible, fixes prepared
+|Pending link:https://github.com/jenkinsci/atlassian-jira-software-cloud-plugin/pull/40[atlassian-jira-software-cloud-plugin #40].
+
+|link:https://plugins.jenkins.io/blueocean/[blueocean]
+|Compatible
+|As of link:https://github.com/jenkinsci/blueocean-plugin/releases/tag/blueocean-parent-1.24.1[1.24.1].
+Actually a suite of coversioned plugins.
+
+|link:https://plugins.jenkins.io/clang-scanbuild/[clang-scanbuild]
+|Mostly compatible
+|link:https://github.com/jenkinsci/clang-scanbuild-plugin/blob/e4913f882cb8721ac21e71903a08ba3b7d0be057/src/main/java/jenkins/plugins/clangscanbuild/ClangScanBuildToolInstallation.java#L72-L82[This code]
+should be fixed.
+
+|link:https://plugins.jenkins.io/copyartifact/[copyartifact]
+|Compatible
+|As of link:https://github.com/jenkinsci/copyartifact-plugin/releases/tag/copyartifact-1.45.2[1.45.2].
+
+|link:https://plugins.jenkins.io/custom-tools-plugin/[custom-tools-plugin]
+|Mostly compatible
+|link:https://github.com/jenkinsci/custom-tools-plugin/pull/51[custom-tools-plugin #51]
+should improve compatibility.
+
+|link:https://plugins.jenkins.io/dashboard-view/[dashboard-view]
+|Compatible
+|link:https://github.com/jenkinsci/dashboard-view-plugin/pull/71[dashboard-view-plugin #71] fixes tests.
+
+|link:https://plugins.jenkins.io/dependency-check-jenkins-plugin/[dependency-check-jenkins-plugin]
+|Probably compatible
+|As of link:https://github.com/jenkinsci/dependency-check-plugin/releases/tag/dependency-check-jenkins-plugin-5.1.1[5.1.1].
+
+|link:https://plugins.jenkins.io/deploy/[deploy]
+|Incompatible, fixes prepared
+|Pending link:https://github.com/jenkinsci/deploy-plugin/pull/43[deploy-plugin #43].
+
+|link:https://plugins.jenkins.io/ecutest/[ecutest]
+|Mostly compatible
+|link:https://github.com/jenkinsci/ecutest-plugin/blob/8f446adb3a726b2f54cc3446372c2ac240ccca88/src/main/java/de/tracetronic/jenkins/plugins/ecutest/tool/installation/AbstractToolInstallation.java#L94-L104[This code]
+should be fixed.
+
+|link:https://plugins.jenkins.io/email-ext/[email-ext]
+|Incompatible, fixes prepared
+|Pending link:https://github.com/jenkinsci/email-ext-plugin/pull/220[email-ext-plugin #220].
+
+|link:https://plugins.jenkins.io/exam/[exam]
+|Mostly compatible
+|link:https://github.com/jenkinsci/exam-plugin/blob/ab1359277251db94cbc4f1472b6534a2c14cf4fa/src/main/java/jenkins/plugins/exam/ExamTool.java#L132-L145[This code]
+should be fixed.
+
+|link:https://plugins.jenkins.io/flyway-runner/[flyway-runner]
+|Mostly compatible
+|link:https://github.com/jenkinsci/flyway-runner-plugin/blob/e7c89458030ae40e3f74331bf39a51caee7e825f/src/main/java/sp/sd/flywayrunner/installation/FlywayInstallation.java#L65-L73[This code]
+should be fixed.
+
+|link:https://plugins.jenkins.io/genexus/[genexus]
+|Mostly compatible
+|link:https://github.com/jenkinsci/genexus-plugin/blob/043b85e5ec5460358a5268e8dd995a06bebc2d03/src/main/java/org/jenkinsci/plugins/genexus/GeneXusInstallation.java#L106-L117[This code]
+should be fixed.
+
+|link:https://plugins.jenkins.io/git/[git]
+|Compatible
+|As of link:https://github.com/jenkinsci/git-plugin/releases/tag/git-4.4.4[4.4.4].
+
+|link:https://plugins.jenkins.io/github/[github]
+|Incompatible, fixes prepared
+|Pending link:https://github.com/jenkinsci/github-plugin/pull/239[github-plugin #239].
+
+|link:https://plugins.jenkins.io/gradle/[gradle]
+|Mostly compatible
+|link:https://github.com/jenkinsci/gradle-plugin/pull/100[gradle-plugin #100]
+should improve compatibility.
+
+|link:https://plugins.jenkins.io/groovy/[groovy]
+|Compatible
+|As of link:https://github.com/jenkinsci/groovy-plugin/releases/tag/groovy-2.3[2.3].
+
+|link:https://plugins.jenkins.io/htmlpublisher/[htmlpublisher]
+|Compatible
+|link:https://github.com/jenkinsci/htmlpublisher-plugin/pull/86[htmlpublisher-plugin #86] fixes tests.
+
+|link:https://plugins.jenkins.io/jira/[jira]
+|Compatible
+|link:https://github.com/jenkinsci/jira-plugin/pull/283[jira-plugin #283] fixes tests.
+
+|link:https://plugins.jenkins.io/junit/[junit]
+|Compatible
+|As of link:https://github.com/jenkinsci/junit-plugin/releases/tag/junit-1.38[1.38].
+
+|link:https://plugins.jenkins.io/matrix-auth/[matrix-auth]
+|Incompatible, fixes prepared
+|Pending link:https://github.com/jenkinsci/matrix-auth-plugin/pull/89[matrix-auth-plugin #89].
+
+|link:https://plugins.jenkins.io/matrix-project/[matrix-project]
+|Compatible
+|As of https://github.com/jenkinsci/matrix-project-plugin/releases/tag/matrix-project-1.18[1.18].
+
+|link:https://plugins.jenkins.io/maven-plugin/[maven-plugin]
+|Compatible
+|As of link:https://github.com/jenkinsci/maven-plugin/releases/tag/maven-plugin-3.8[3.8].
+
+|link:https://plugins.jenkins.io/nodejs/[nodejs]
+|Mostly compatible
+|link:https://github.com/jenkinsci/nodejs-plugin/pull/36[nodejs-plugin #36]
+should improve compatibility.
+
+|link:https://plugins.jenkins.io/packer/[packer]
+|Probably compatible
+|As of link:https://github.com/jenkinsci/packer-plugin/releases/tag/packer-1.5[1.5].
+
+|link:https://plugins.jenkins.io/persona/[persona]
+|Incompatible, fixes prepared
+|Pending link:https://github.com/jenkinsci/persona-plugin/pull/7[persona-plugin #7].
+(Also currently blocked from the update center.)
+
+|link:https://plugins.jenkins.io/promoted-builds/[promoted-builds]
+|Compatible
+|As of link:https://github.com/jenkinsci/promoted-builds-plugin/releases/tag/promoted-builds-3.7[3.7].
+
+|link:https://plugins.jenkins.io/radargun/[radargun]
+|Mostly compatible
+|link:https://github.com/jenkinsci/radargun-plugin/blob/95af0756ef50d61c53b53750489200c69abb79e5/src/main/java/org/jenkinsci/plugins/radargun/RadarGunInstallation.java#L62-L78[This code]
+should be fixed.
+
+|link:https://plugins.jenkins.io/role-strategy/[role-strategy]
+|Probably compatible
+|As of link:https://github.com/jenkinsci/role-strategy-plugin/releases/tag/role-strategy-3.1[3.1].
+
+|link:https://plugins.jenkins.io/sealights/[sealights]
+|Mostly compatible
+|link:https://github.com/jenkinsci/sealights-plugin/blob/45e0f0a2998c52b782f0379bf786cfe057d95faf/src/main/java/io/sealights/plugins/sealightsjenkins/MavenSealightsBuildStep.java#L688-L710[This code]
+should be fixed.
+
+|link:https://plugins.jenkins.io/snyk-security-scanner/[snyk-security-scanner]
+|Mostly compatible
+|link:https://github.com/jenkinsci/snyk-security-scanner-plugin/blob/424ef3583f8c4cf418b7aa07595afd647f98d7a2/src/main/java/io/snyk/jenkins/tools/SnykInstallation.java#L58-L73[This code]
+should be fixed.
+
+|link:https://plugins.jenkins.io/sonar/[sonar]
+|Mostly compatible
+|link:https://github.com/jenkinsci/sonarqube-plugin/pull/10[sonarqube-plugin #10]
+should improve compatibility.
+
+|link:https://plugins.jenkins.io/ssh2easy/[ssh2easy]
+|Incompatible, fixes prepared
+|Pending link:https://github.com/jenkinsci/ssh2easy-plugin/pull/13[ssh2easy-plugin #13].
+
+|link:https://plugins.jenkins.io/workflow-cps/[workflow-cps]
+|Compatible
+|link:https://github.com/jenkinsci/workflow-cps-plugin/pull/380[workflow-cps-plugin #380] fixes tests.
+
+|link:https://plugins.jenkins.io/xunit/[xunit]
+|Incompatible, fixes prepared
+|Pending link:https://github.com/jenkinsci/xunit-plugin/pull/84[xunit-plugin #84].
+
+|===
