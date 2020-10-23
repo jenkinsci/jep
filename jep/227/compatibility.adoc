@@ -20,8 +20,9 @@ Plugins should be sorted by code identifier
 |As of link:https://github.com/jenkinsci/active-directory-plugin/releases/tag/active-directory-2.17[2.17].
 
 |link:https://plugins.jenkins.io/atlassian-bitbucket-server-integration/[atlassian-bitbucket-server-integration]
-|Probably compatible
-|link:https://github.com/jenkinsci/atlassian-bitbucket-server-integration-plugin/blob/f9d48b7d6639a207d73a26452dc2cc5d5c00fc8d/src/test/java/com/atlassian/bitbucket/jenkins/internal/scm/BitbucketScmFormValidationDelegateTest.java#L170[This code]
+|Compatible
+|As of link:https://github.com/jenkinsci/atlassian-bitbucket-server-integration-plugin/releases/tag/atlassian-bitbucket-server-integration-2.1.0[2.1.0].
+link:https://github.com/jenkinsci/atlassian-bitbucket-server-integration-plugin/blob/f9d48b7d6639a207d73a26452dc2cc5d5c00fc8d/src/test/java/com/atlassian/bitbucket/jenkins/internal/scm/BitbucketScmFormValidationDelegateTest.java#L170[This code]
 and similar would likely need to be updated to make tests pass.
 
 |link:https://plugins.jenkins.io/artifactory/[artifactory]
@@ -34,8 +35,8 @@ is necessary.
 |Review and testing required.
 
 |link:https://plugins.jenkins.io/authorize-project/[authorize-project]
-|Probably compatible
-|Tests pass.
+|Compatible
+|As of link:https://github.com/jenkinsci/authorize-project-plugin/releases/tag/authorize-project-1.3.0[1.3.0].
 link:https://github.com/jenkinsci/authorize-project-plugin/pull/46[authorize-project-plugin #46]
 was filed as cleanup to make testing against recent cores easier.
 link:https://github.com/jenkinsci/authorize-project-plugin/pull/49[authorize-project-plugin #49]
@@ -47,21 +48,21 @@ cleans up some related code.
 should be simplified to check `hasPermission`.
 
 |link:https://plugins.jenkins.io/azure-ad/[azure-ad]
-|Unknown
-|Review and testing required.
+|Compatible
+|As of link:https://github.com/jenkinsci/azure-ad-plugin/releases/tag/azure-ad-1.2.0[1.2.0].
 
 |link:https://plugins.jenkins.io/backlog/[backlog]
 |Unknown
 |Review and testing required.
 
 |link:https://plugins.jenkins.io/bitbucket-oauth/[bitbucket-oauth]
-|Unknown
-|Review and testing required.
+|Compatible
+|As of link:https://github.com/jenkinsci/bitbucket-oauth-plugin/releases/tag/bitbucket-oauth-0.10[0.10].
 
 |link:https://plugins.jenkins.io/blueocean/[blueocean]
 |Compatible
-|Actually a suite of plugins released atomically.
 |As of link:https://github.com/jenkinsci/blueocean-plugin/releases/tag/blueocean-parent-1.24.1[1.24.1].
+(Actually a suite of plugins released atomically.)
 
 |link:https://plugins.jenkins.io/branch-api/[branch-api]
 |Compatible
@@ -72,8 +73,9 @@ should be simplified to check `hasPermission`.
 |Tests pass as of link:https://github.com/jenkinsci/build-token-root-plugin/releases/tag/build-token-root-1.7[1.7] if not earlier.
 
 |link:https://plugins.jenkins.io/cas-plugin/[cas-plugin]
-|Incompatible
-|Uses `BeanBuilder` and several removed Acegi Security types.
+|Incompatible, fixes prepared
+|link:https://github.com/jenkinsci/cas-plugin/pull/4[cas-plugin #4]
+_may_ provide compatibility with post-Spring Security Jenkins (but cannot be installed on older versions).
 
 |link:https://plugins.jenkins.io/cloudbees-bitbucket-branch-source/[cloudbees-bitbucket-branch-source]
 |Compatible
@@ -106,8 +108,8 @@ Cleanups integrated as of link:https://github.com/jenkinsci/credentials-plugin/r
 |Uses `BeanBuilder` and possibly other problematic types.
 
 |link:https://plugins.jenkins.io/crowd2/[crowd2]
-|Probably compatible
-|Uses some unusual types from Acegi Security. Needs testing.
+|Compatible
+|As of link:https://github.com/jenkinsci/crowd2-plugin/releases/tag/crowd2-2.0.2[2.0.2].
 
 |link:https://plugins.jenkins.io/declarative-pipeline-migration-assistant/[declarative-pipeline-migration-assistant]
 |Compatible
@@ -123,10 +125,10 @@ could be switched to `hasPermission` for full compatibility.
 |Test cleanup pending link:https://github.com/jenkinsci/extensible-choice-parameter-plugin/pull/42[extensible-choice-parameter-plugin #4].
 
 |link:https://plugins.jenkins.io/github-oauth/[github-oauth]
-|Incompatible, fixes prepared
+|Probably compatible
 |link:https://github.com/jenkinsci/github-oauth-plugin/pull/119[github-oauth-plugin #119]
-is necessary.
-Given that, it seems to work.
+cleans up deprecated usages.
+Given that, it works.
 
 |link:https://plugins.jenkins.io/gitlab-oauth/[gitlab-oauth]
 |Mostly compatible
@@ -138,8 +140,8 @@ Given that, it seems to work.
 would need to be adjusted to make tests pass.
 
 |link:https://plugins.jenkins.io/google-login/[google-login]
-|Probably compatible
-|Untested.
+|Compatible
+|As of link:https://github.com/jenkinsci/google-login-plugin/releases/tag/google-login-1.6[1.6].
 
 |link:https://plugins.jenkins.io/jobConfigHistory/[jobConfigHistory]
 |Probably compatible
@@ -151,19 +153,20 @@ would need to be adjusted to make tests pass.
 would need to be simplified to check `hasPermission`.
 
 |link:https://plugins.jenkins.io/job-dsl/[job-dsl]
-|Probably compatible
-|link:https://github.com/jenkinsci/job-dsl-plugin/blob/c35fc778fc16f6fb21937e680bd63dd01242cbd4/job-dsl-plugin/src/main/groovy/javaposse/jobdsl/plugin/ExecuteDslScripts.java#L370[This idiom]
-is often problematic, but in this case it seems to be catching
-link:https://github.com/jenkinsci/job-dsl-plugin/blob/0ba7b8d04dba75a7e04981d9dd2c3ed926e66a6d/job-dsl-plugin/src/main/groovy/javaposse/jobdsl/plugin/SandboxDslScriptLoader.groovy#L50[this exception]
-without going through Jenkins core, so it is likely compatible.
+|Compatible
+|As of link:https://github.com/jenkinsci/job-dsl-plugin/releases/tag/job-dsl-1.77[1.77].
 
 |link:https://plugins.jenkins.io/junit/[junit]
 |Compatible
 |As of link:https://github.com/jenkinsci/junit-plugin/releases/tag/junit-1.34[1.34].
 
-|link:https://plugins.jenkins.io/keycloak/[keycloak]
-|Unknown
+|link:https://plugins.jenkins.io/kerberos-sso/[kerberos-sso]
+|Probably compatible
 |Review and testing required.
+
+|link:https://plugins.jenkins.io/keycloak/[keycloak]
+|Compatible
+|As of link:https://github.com/jenkinsci/keycloak-plugin/releases/tag/keycloak-2.3.0[2.3.0].
 
 |link:https://plugins.jenkins.io/ldap/[ldap]
 |Compatible
@@ -174,7 +177,8 @@ would make it natively use Spring Security.
 
 |link:https://plugins.jenkins.io/mac/[mac]
 |Mostly compatible
-|link:https://github.com/jenkinsci/mac-plugin/blob/f1ed5db8e761a26b8883358aaddd2dac9e8c05a5/src/main/java/fr/edf/jenkins/plugins/mac/util/FormUtils.groovy#L63-L75[This code]
+|As of link:https://github.com/jenkinsci/mac-plugin/releases/tag/mac-1.2.1[1.2.1]. Just a message change, no functional change.
+link:https://github.com/jenkinsci/mac-plugin/blob/f1ed5db8e761a26b8883358aaddd2dac9e8c05a5/src/main/java/fr/edf/jenkins/plugins/mac/util/FormUtils.groovy#L63-L75[This code]
 should be switched to `hasPermission` for full compatibility.
 
 |link:https://plugins.jenkins.io/matrix-auth/[matrix-auth]
@@ -191,8 +195,8 @@ Some form validation uses Acegi Security exception types but the usages are beli
 |Tests fixed as of link:https://github.com/jenkinsci/nodejs-plugin/releases/tag/nodejs-1.3.8[1.3.8].
 
 |link:https://plugins.jenkins.io/oic-auth/[oic-auth]
-|Unknown
-|Review and testing required.
+|Compatible
+|As of link:https://github.com/jenkinsci/oic-auth-plugin/releases/tag/oic-auth-1.8[1.8].
 
 |link:https://plugins.jenkins.io/openid/[openid]
 |Probably compatible
@@ -205,8 +209,8 @@ may need adjustment.
 
 |link:https://plugins.jenkins.io/ownership/[ownership]
 |Mostly compatible
-|link:https://github.com/jenkinsci/ownership-plugin/blob/2b619c3a7dfaa4b706b19560dc465040b1de2dc4/src/main/java/com/synopsys/arc/jenkins/plugins/ownership/OwnershipDescription.java#L425[This code]
-should be adjusted.
+|Manually tested the UI. link:https://github.com/jenkinsci/ownership-plugin/blob/2b619c3a7dfaa4b706b19560dc465040b1de2dc4/src/main/java/com/synopsys/arc/jenkins/plugins/ownership/OwnershipDescription.java#L425[This code]
+should be adjusted (was not specifically tested).
 
 |link:https://plugins.jenkins.io/pam-auth/[pam-auth]
 |Compatible
@@ -245,10 +249,8 @@ should be adjusted.
 |Refers to `HudsonPrivateSecurityRealm` but is probably safe.
 
 |link:https://plugins.jenkins.io/reverse-proxy-auth-plugin/[reverse-proxy-auth-plugin]
-|Incompatible
-|The code base not only makes use of `BeanBuilder` and Acegi Security APIs for which no compatibility is offered,
-but like the `ldap` plugin it makes use of the LDAP parts of Acegi Security which are heavily refactored in Spring Security.
-Compatibility with this JEP is expected to be significant effort.
+|Incompatible, fixes prepared
+|link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/40[reverse-proxy-auth-plugin #40] may suffice; untested.
 
 link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/38[reverse-proxy-auth-plugin #38]
 is merely cleanup to make it easier to even test against new cores.
@@ -264,8 +266,8 @@ to allow critical fixes for link:../200/README.adoc[JEP-200]
 It appears to now be abandoned and in need of adoption.
 
 |link:https://plugins.jenkins.io/saml/[saml]
-|Probably compatible
-|PCT passes, but not sanity tested.
+|Compatible
+|As of link:https://github.com/jenkinsci/saml-plugin/releases/tag/saml-1.1.7[1.1.7].
 link:https://github.com/jenkinsci/saml-plugin/pull/90[saml-plugin #90]
 would take advantage of the Spring update.
 
@@ -275,8 +277,8 @@ would take advantage of the Spring update.
 is required for full compatibility.
 
 |link:https://plugins.jenkins.io/script-realm/[script-realm]
-|Unknown
-|Review and testing required.
+|Compatible
+|As of link:https://github.com/jenkinsci/script-realm-plugin/releases/tag/script-realm-1.5[1.5].
 
 |link:https://plugins.jenkins.io/script-security/[script-security]
 |Compatible
