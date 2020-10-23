@@ -1,4 +1,6 @@
-Use this space to track the status of plugins that may or may not be compatible with JEP-:bulb:.
+= JEP-228: Unforking XStream - Compatibility
+
+Use this space to track the status of plugins that may or may not be compatible with JEP-228.
 Refer to general information about link:README.adoc#backwards-compatibility[backwards compatibility]
 for tips on searching for potentially problematic API usages.
 
