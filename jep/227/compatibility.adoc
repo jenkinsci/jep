@@ -61,8 +61,8 @@ should be simplified to check `hasPermission`.
 
 |link:https://plugins.jenkins.io/blueocean/[blueocean]
 |Compatible
-|Actually a suite of plugins released atomically.
 |As of link:https://github.com/jenkinsci/blueocean-plugin/releases/tag/blueocean-parent-1.24.1[1.24.1].
+(Actually a suite of plugins released atomically.)
 
 |link:https://plugins.jenkins.io/branch-api/[branch-api]
 |Compatible
@@ -73,8 +73,9 @@ should be simplified to check `hasPermission`.
 |Tests pass as of link:https://github.com/jenkinsci/build-token-root-plugin/releases/tag/build-token-root-1.7[1.7] if not earlier.
 
 |link:https://plugins.jenkins.io/cas-plugin/[cas-plugin]
-|Incompatible
-|Uses `BeanBuilder` and several removed Acegi Security types.
+|Incompatible, fixes prepared
+|link:https://github.com/jenkinsci/cas-plugin/pull/4[cas-plugin #4]
+_may_ provide compatibility with post-Spring Security Jenkins (but cannot be installed on older versions).
 
 |link:https://plugins.jenkins.io/cloudbees-bitbucket-branch-source/[cloudbees-bitbucket-branch-source]
 |Compatible
@@ -124,9 +125,9 @@ could be switched to `hasPermission` for full compatibility.
 |Test cleanup pending link:https://github.com/jenkinsci/extensible-choice-parameter-plugin/pull/42[extensible-choice-parameter-plugin #4].
 
 |link:https://plugins.jenkins.io/github-oauth/[github-oauth]
-|Incompatible, fixes prepared
+|Probably compatible
 |link:https://github.com/jenkinsci/github-oauth-plugin/pull/119[github-oauth-plugin #119]
-is necessary.
+cleans up deprecated usages.
 Given that, it works.
 
 |link:https://plugins.jenkins.io/gitlab-oauth/[gitlab-oauth]
@@ -159,6 +160,10 @@ would need to be simplified to check `hasPermission`.
 |Compatible
 |As of link:https://github.com/jenkinsci/junit-plugin/releases/tag/junit-1.34[1.34].
 
+|link:https://plugins.jenkins.io/kerberos-sso/[kerberos-sso]
+|Probably compatible
+|Review and testing required.
+
 |link:https://plugins.jenkins.io/keycloak/[keycloak]
 |Compatible
 |As of link:https://github.com/jenkinsci/keycloak-plugin/releases/tag/keycloak-2.3.0[2.3.0].
@@ -171,8 +176,10 @@ link:https://github.com/jenkinsci/ldap-plugin/pull/49[ldap-plugin #49] (a work i
 would make it natively use Spring Security.
 
 |link:https://plugins.jenkins.io/mac/[mac]
-|Compatible
+|Mostly compatible
 |As of link:https://github.com/jenkinsci/mac-plugin/releases/tag/mac-1.2.1[1.2.1]. Just a message change, no functional change.
+link:https://github.com/jenkinsci/mac-plugin/blob/f1ed5db8e761a26b8883358aaddd2dac9e8c05a5/src/main/java/fr/edf/jenkins/plugins/mac/util/FormUtils.groovy#L63-L75[This code]
+should be switched to `hasPermission` for full compatibility.
 
 |link:https://plugins.jenkins.io/matrix-auth/[matrix-auth]
 |Compatible
@@ -242,10 +249,8 @@ should be adjusted (was not specifically tested).
 |Refers to `HudsonPrivateSecurityRealm` but is probably safe.
 
 |link:https://plugins.jenkins.io/reverse-proxy-auth-plugin/[reverse-proxy-auth-plugin]
-|Incompatible
-|The code base not only makes use of `BeanBuilder` and Acegi Security APIs for which no compatibility is offered,
-but like the `ldap` plugin it makes use of the LDAP parts of Acegi Security which are heavily refactored in Spring Security.
-Compatibility with this JEP is expected to be significant effort.
+|Incompatible, fixes prepared
+|link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/40[reverse-proxy-auth-plugin #40] may suffice; untested.
 
 link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/38[reverse-proxy-auth-plugin #38]
 is merely cleanup to make it easier to even test against new cores.
