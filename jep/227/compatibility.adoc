@@ -125,7 +125,7 @@ could be switched to `hasPermission` for full compatibility.
 |Test cleanup pending link:https://github.com/jenkinsci/extensible-choice-parameter-plugin/pull/42[extensible-choice-parameter-plugin #4].
 
 |link:https://plugins.jenkins.io/github-oauth/[github-oauth]
-|Probably compatible.
+|Probably compatible
 |link:https://github.com/jenkinsci/github-oauth-plugin/pull/119[github-oauth-plugin #119]
 cleans up deprecated usages.
 Given that, it works.
