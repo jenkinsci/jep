@@ -10,6 +10,9 @@ Please use pull requests as needed to help maintain the following table.
 Plugins should be sorted by code identifier
 (usually, but not always, the portion in the GitHub repository name preceding `-plugin`).
 
+If you file issues in Jira, please apply the `JEP-228` label as well as noting them here.
+(link:https://issues.jenkins-ci.org/issues/?jql=resolution%20%3D%20Unresolved%20and%20labels%20in%20(JEP-227)[Open JEP-228 issues])
+
 [cols=".<1,.<2,5", options="header"]
 |===
 |Plugin |Status |Notes
