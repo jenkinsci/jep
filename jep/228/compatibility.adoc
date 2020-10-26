@@ -121,8 +121,8 @@ should improve compatibility.
 |As of link:https://github.com/jenkinsci/junit-plugin/releases/tag/junit-1.38[1.38].
 
 |link:https://plugins.jenkins.io/matrix-auth/[matrix-auth]
-|Incompatible, fixes prepared
-|Pending link:https://github.com/jenkinsci/matrix-auth-plugin/pull/89[matrix-auth-plugin #89].
+|Compatible
+|As of link:https://github.com/jenkinsci/matrix-auth-plugin/blob/master/CHANGELOG.md#version-264-2020-10-26[2.6.4].
 
 |link:https://plugins.jenkins.io/matrix-project/[matrix-project]
 |Compatible
