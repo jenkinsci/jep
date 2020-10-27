@@ -186,7 +186,7 @@ should improve compatibility.
 |link:https://github.com/jenkinsci/workflow-cps-plugin/pull/380[workflow-cps-plugin #380] fixes tests.
 
 |link:https://plugins.jenkins.io/xunit/[xunit]
-|Incompatible, fixes prepared
-|Pending link:https://github.com/jenkinsci/xunit-plugin/pull/84[xunit-plugin #84].
+|Compatible
+|As of link:https://github.com/jenkinsci/xunit-plugin/releases/tag/xunit-2.4.0[2.4.0].
 
 |===
