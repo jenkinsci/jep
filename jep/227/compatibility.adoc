@@ -223,8 +223,8 @@ should be adjusted (was not specifically tested).
 |As of link:https://github.com/jenkinsci/parameterized-trigger-plugin/releases/tag/parameterized-trigger-2.38[2.38].
 
 |link:https://plugins.jenkins.io/pipeline-maven/[pipeline-maven]
-|Mostly compatible
-|3.9.0-beta-1 and newer should be fully compatible.
+|Compatible
+|As of link:https://github.com/jenkinsci/pipeline-maven-plugin/releases/tag/pipeline-maven-3.9.3[3.9.3].
 
 |link:https://plugins.jenkins.io/pipeline-restful-api/[pipeline-restful-api]
 |Mostly compatible
