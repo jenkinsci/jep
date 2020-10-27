@@ -29,9 +29,8 @@ link:https://github.com/jenkinsci/atlassian-bitbucket-server-integration-plugin/
 and similar would likely need to be updated to make tests pass.
 
 |link:https://plugins.jenkins.io/artifactory/[artifactory]
-|Incompatible, fixes prepared
-|link:https://github.com/jfrog/jenkins-artifactory-plugin/pull/327[artifactory-plugin #327]
-is necessary.
+|Compatible
+|As of link:https://github.com/jfrog/jenkins-artifactory-plugin/releases/tag/artifactory-3.9.0[3.9.0].
 
 |link:https://plugins.jenkins.io/assembla-auth/[assembla-auth]
 |Unknown
@@ -175,7 +174,7 @@ would need to be simplified to check `hasPermission`.
 |Compatible
 |As of link:https://github.com/jenkinsci/ldap-plugin/releases/tag/ldap-1.26[1.26]
 the plugin should work in both old and new cores.
-link:https://github.com/jenkinsci/ldap-plugin/pull/49[ldap-plugin #49] (a work in progress)
+link:https://github.com/jenkinsci/ldap-plugin/pull/49[ldap-plugin #49]
 would make it natively use Spring Security.
 
 |link:https://plugins.jenkins.io/mac/[mac]
@@ -292,9 +291,8 @@ is required for full compatibility.
 |Uses `CliAuthenticator` and some unsupported Acegi Security types.
 
 |link:https://plugins.jenkins.io/splunk-devops/[splunk-devops]
-|Incompatible, fixes prepared
-|link:https://github.com/jenkinsci/splunk-devops-plugin/pull/13[splunk-devops-plugin #13]
-is necessary.
+|Compatible
+|As of link:https://github.com/jenkinsci/splunk-devops-plugin/releases/tag/1.9.5[1.9.5].
 
 |link:https://plugins.jenkins.io/suppress-stack-trace/[suppress-stack-trace]
 |Obsolete
