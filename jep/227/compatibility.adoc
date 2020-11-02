@@ -92,8 +92,8 @@ is throwing the Acegi Security version of the exception.
 At runtime, either should be accepted, due to `AcegiSecurityExceptionFilter` in core.
 
 |link:https://plugins.jenkins.io/coding-webhook/[coding-webhook]
-|Incompatible
-|Uses `CliAuthenticator`.
+|Unknown
+|Review and testing required.
 
 |link:https://plugins.jenkins.io/copyartifact/[copyartifact]
 |Compatible
@@ -288,7 +288,7 @@ is required for full compatibility.
 
 |https://plugins.jenkins.io/sfee/[sfee]
 |Incompatible
-|Uses `CliAuthenticator` and some unsupported Acegi Security types.
+|Uses some unsupported Acegi Security types.
 
 |link:https://plugins.jenkins.io/splunk-devops/[splunk-devops]
 |Compatible
