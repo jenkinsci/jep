@@ -60,7 +60,7 @@ should improve compatibility.
 
 |link:https://plugins.jenkins.io/dashboard-view/[dashboard-view]
 |Compatible
-|link:https://github.com/jenkinsci/dashboard-view-plugin/pull/71[dashboard-view-plugin #71] fixes tests.
+|As of link:https://github.com/jenkinsci/dashboard-view-plugin/releases/tag/dashboard-view-2.14[2.14].
 
 |link:https://plugins.jenkins.io/dependency-check-jenkins-plugin/[dependency-check-jenkins-plugin]
 |Probably compatible
