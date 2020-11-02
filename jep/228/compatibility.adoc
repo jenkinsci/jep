@@ -76,8 +76,8 @@ should improve compatibility.
 should be fixed.
 
 |link:https://plugins.jenkins.io/email-ext/[email-ext]
-|Incompatible, fixes prepared
-|Pending link:https://github.com/jenkinsci/email-ext-plugin/pull/220[email-ext-plugin #220].
+|Compatible
+|As of link:https://github.com/jenkinsci/email-ext-plugin/releases/tag/email-ext-2.78[2.78].
 
 |link:https://plugins.jenkins.io/exam/[exam]
 |Mostly compatible
