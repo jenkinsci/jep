@@ -68,7 +68,7 @@ should improve compatibility.
 
 |link:https://plugins.jenkins.io/deploy/[deploy]
 |Compatible
-|As of link:https://github.com/jenkinsci/deploy-plugin/releases/tag/1.16[1.16].
+|As of link:https://github.com/jenkinsci/deploy-plugin/releases/tag/deploy-1.16[1.16].
 
 |link:https://plugins.jenkins.io/ecutest/[ecutest]
 |Mostly compatible
