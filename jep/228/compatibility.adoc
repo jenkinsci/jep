@@ -76,8 +76,8 @@ should improve compatibility.
 should be fixed.
 
 |link:https://plugins.jenkins.io/email-ext/[email-ext]
-|Incompatible, fixes prepared
-|Pending link:https://github.com/jenkinsci/email-ext-plugin/pull/220[email-ext-plugin #220].
+|Compatible
+|As of link:https://github.com/jenkinsci/email-ext-plugin/releases/tag/email-ext-2.78[2.78].
 
 |link:https://plugins.jenkins.io/exam/[exam]
 |Mostly compatible
@@ -99,8 +99,8 @@ should be fixed.
 |As of link:https://github.com/jenkinsci/git-plugin/releases/tag/git-4.4.4[4.4.4].
 
 |link:https://plugins.jenkins.io/github/[github]
-|Incompatible, fixes prepared
-|Pending link:https://github.com/jenkinsci/github-plugin/pull/239[github-plugin #239].
+|Compatible
+|As of link:https://github.com/jenkinsci/github-plugin/releases/tag/v1.32.0[1.32.0].
 
 |link:https://plugins.jenkins.io/gradle/[gradle]
 |Mostly compatible
@@ -183,7 +183,7 @@ should improve compatibility.
 
 |link:https://plugins.jenkins.io/workflow-cps/[workflow-cps]
 |Compatible
-|link:https://github.com/jenkinsci/workflow-cps-plugin/pull/380[workflow-cps-plugin #380] fixes tests.
+|As of link:https://github.com/jenkinsci/workflow-cps-plugin/releases/tag/workflow-cps-2.84[2.84].
 
 |link:https://plugins.jenkins.io/xunit/[xunit]
 |Compatible
