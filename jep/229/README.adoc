@@ -79,21 +79,29 @@ with some refinements at the component level and new work at the organization le
 === Component setup
 
 link:https://github.com/jenkinsci/incrementals-tools#superseding-maven-releases[Incrementals: superseding Maven releases]
-describes how to configure a component to be automatically `deploy`’ed to Jenkins Artifactory upon `master` pushes.
-As an example, link:https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/log-cli/31.b37970d51e7c/[`log-cli` plugin version `31.b37970d51e7c`]
-was link:https://github.com/jenkinsci/log-cli-plugin/runs/1255753436#step:4:157[deployed by a GitHub action]
-from a link:https://github.com/jenkinsci/log-cli-plugin/commit/b37970d51e7c2d2d723f39fb7271a263f0d2083d[`master` push].
+describes how to configure a component to be `deploy`’able to Jenkins Artifactory without using `maven-release-plugin` (MRP).
+
+Then GitHub Actions can be used to do this automatically after `master` builds succeed in Jenkins.
+As an example, link:https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/log-cli/40.934670f4a9b8/[`log-cli` plugin version `40.934670f4a9b8`]
+was link:https://github.com/jenkinsci/log-cli-plugin/runs/1300621700?check_suite_focus=true#step:5:143[deployed by a GitHub action]
+after a link:https://ci.jenkins.io/job/Plugins/job/log-cli-plugin/job/master/21/[Jenkins build passed]
+triggered by a link:https://github.com/jenkinsci/log-cli-plugin/commit/934670f4a9b84f243f8c0d9bbfc7be30a242e32b[`master` push].
 The important parts of source setup are the link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/pom.xml#L11-L14[`version` definition]
 with a link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/.mvn/maven.config#L3[custom format]
-and a link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/.github/workflows/release.yaml#L16-L19[GitHub Action definition]
-running link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/.github/workflows/release.sh#L5[`mvn deploy`]
+and a link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/.github/workflows/release.yaml#L37-L46[GitHub Action definition]
+running link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/.github/workflows/release.sh#L5[`mvn deploy`]
 with a link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/.github/workflows/settings.xml#L6-L7[bot token for Artifactory].
+
+Note that the deployment skips tests and all other Maven mojos not necessary to produce artifacts, because the GitHub Action first
+link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/.github/workflows/release.yaml#L9-L36[verifies that the Jenkins build passed]
+whether the deployment was triggered
+link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/.github/workflows/release.yaml#L2-L4[automatically or manually].
+It is the responsibility of the
+link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/Jenkinsfile#L1[Jenkinsfile]
+to ensure that an appropriate set of tests, static analyses, etc. are run on appropriate platforms.
 
 As of this writing unimplemented:
 
-* Change the trigger from `master` push to use the link:https://help.github.com/en/actions/reference/events-that-trigger-workflows#status-event-status[`status` event]
-  verifying that `continuous-integration/jenkins/branch` has a `state` of `success`.
-  Then the `mvn deploy` command can just pass `-DskipTests` because ci.jenkins.io has already run our tests in whatever environments are configured.
 * Use the Action for Release Drafter to create a release (typically including exactly one entry, from a recently merged PR).
 * Create a new Action wrapping the `release.sh` + `settings.xml` so we do not have this stuff duplicated.
 * Add `block-MRP` profile to `plugin-pom`.
