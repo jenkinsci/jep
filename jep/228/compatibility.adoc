@@ -183,7 +183,7 @@ should improve compatibility.
 
 |link:https://plugins.jenkins.io/workflow-cps/[workflow-cps]
 |Compatible
-|link:https://github.com/jenkinsci/workflow-cps-plugin/pull/380[workflow-cps-plugin #380] fixes tests.
+|As of link:https://github.com/jenkinsci/workflow-cps-plugin/releases/tag/workflow-cps-2.84[2.84].
 
 |link:https://plugins.jenkins.io/xunit/[xunit]
 |Compatible
