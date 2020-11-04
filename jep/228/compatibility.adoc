@@ -67,8 +67,8 @@ should improve compatibility.
 |As of link:https://github.com/jenkinsci/dependency-check-plugin/releases/tag/dependency-check-jenkins-plugin-5.1.1[5.1.1].
 
 |link:https://plugins.jenkins.io/deploy/[deploy]
-|Incompatible, fixes prepared
-|Pending link:https://github.com/jenkinsci/deploy-plugin/pull/43[deploy-plugin #43].
+|Compatible
+|As of link:https://github.com/jenkinsci/deploy-plugin/releases/tag/deploy-1.16[1.16].
 
 |link:https://plugins.jenkins.io/ecutest/[ecutest]
 |Mostly compatible
