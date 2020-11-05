@@ -251,21 +251,10 @@ should be adjusted (was not specifically tested).
 |Refers to `HudsonPrivateSecurityRealm` but is probably safe.
 
 |link:https://plugins.jenkins.io/reverse-proxy-auth-plugin/[reverse-proxy-auth-plugin]
-|Incompatible, fixes prepared
-|link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/40[reverse-proxy-auth-plugin #40] may suffice; untested.
+|Probably compatible
+|As of link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/releases/tag/reverse-proxy-auth-plugin-1.7.0[1.7.0].
 
-link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/38[reverse-proxy-auth-plugin #38]
-is merely cleanup to make it easier to even test against new cores.
-
-link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/37[reverse-proxy-auth-plugin #37]
-would permit the LDAP-specific portions to be split into its own extension point and perhaps even plugin,
-which could allow the core portion to be made compatible with Spring Security more easily.
-
-The plugin has not been released in 2½ years;
-even then it was only released by Jenkins CERT members
-to allow critical fixes for link:../200/README.adoc[JEP-200]
-(link:https://groups.google.com/g/jenkinsci-dev/c/9mX-S7kLnHk/m/J6tlhM6vAQAJ[background]).
-It appears to now be abandoned and in need of adoption.
+This plugin is in need of adoption.
 
 |link:https://plugins.jenkins.io/saml/[saml]
 |Compatible
