@@ -64,7 +64,7 @@ This work consists of several aspects, both in Jenkins core and plugins.
 * Plugin-facing APIs referring to Acegi Security are kept binary compatible wherever feasible.
 ** Many `org.acegisecurity.*` types are reintroduced, but using clean reimplementations.
 ** Most existing Jenkins API methods referring to `org.acegisecurity.*` types are retained,
-   but deprecated and bridged to new Spring Security equivalents.
+   but deprecated and bridged to new Spring Security equivalents, typically ending in a `2` suffix.
 ** `toSpring` and `fromSpring` methods are provided to interconvert Acegi Security and Spring Security types where applicable.
 ** Subtyping is not used: the Acegi Security and Spring Security types are incomparable.
 ** `org.springframework.dao.DataAccessException` and similar types are deprecated without replacement.
@@ -173,6 +173,22 @@ but with the bodies of those types reimplemented to delegate to Spring Security 
 This seemed very confusing as we would continue to have two related APIs in the classpath and in active use indefinitely.
 It was also unclear how to make Jenkins implementation classes such as security filters work with such façades:
 these classes dive heavily into details of the Acegi/Spring Security APIs, so would need numerous Acegi Security types to delegate, even if no plugin ever cared.
+
+=== Java overloads vs. `2` suffix
+
+In certain cases, a Spring version of a method could have been defined as a Java overload.
+For example, `AccessControlled.hasPermission(Authentication, Permission)` could have had two overloads,
+one for `org.acegisecurity.Authentication` and one for `org.springframework.security.core.Authentication`.
+
+However in many cases the method changed _return_ type, which Java overloads do not support, meaning a new method name was required.
+The convention in Jenkins APIs is to append `2` to replacement interfaces or methods (or `3` after `2`, etc.) so that was adopted here,
+and for consistency was used in all cases even where an overload could have been used.
+
+Thus a plugin developer moving to a post-Spring Jenkins baseline has a straightforward rule for most of the changes:
+replace Acegi Security with Spring Security in `import` statements,
+and append `2` to method calls or overrides where required to satisfy the compiler.
+(There are a few other common changes which do not fit into this pattern, according to design changes in Spring Security,
+such as `GrantedAuthority[]` changing to `Collection<? extends GrantedAuthority>`.)
 
 === Making Acegi Security types extend Spring Security types
 
