@@ -111,9 +111,7 @@ As of this writing unimplemented:
 To avoid the need for each component maintainer to manually create a bot account and perform similar setup,
 tooling at the organization level should automate this aspect.
 
-link:https://github.com/jenkins-infra/(As of this writing unimplemented.)
-114
-repository-permissions-updater/blob/6ff61dc11b830f1984dde4ba9e82870218d702f7/Jenkinsfile#L54-L56[Repository Permissions Updater (RPU) processing]
+link:https://github.com/jenkins-infra/repository-permissions-updater/blob/6ff61dc11b830f1984dde4ba9e82870218d702f7/Jenkinsfile#L54-L56[Repository Permissions Updater (RPU) processing]
 is patched to recognize some flag in a repo’s YAML entry (e.g., `bot: true`)
 and link:https://www.jfrog.com/confluence/display/JFROG/Artifactory+REST+API#ArtifactoryRESTAPI-CreateorReplaceUser[create an Artifactory bot account] with permissions to only the listed paths,
 then link:https://www.jfrog.com/confluence/display/JFROG/Artifactory+REST+API#ArtifactoryRESTAPI-CreateToken[generate an access token for that account]
