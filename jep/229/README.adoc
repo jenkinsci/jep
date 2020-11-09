@@ -100,11 +100,13 @@ It is the responsibility of the
 link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/Jenkinsfile#L1[Jenkinsfile]
 to ensure that an appropriate set of tests, static analyses, etc. are run on appropriate platforms.
 
+Release Drafter is configured as an Action as well, but always publishing the draft release under the placeholder name `next` rather than a real version.
+This runs (fairly) quickly after PRs are merged, and just updates a draft release.
+If and when a release is successfully deployed to Artifactory, the deployment script creates a (lightweight) Git tag and publishes the release.
+
 As of this writing unimplemented:
 
-* Use the Action for Release Drafter to create a release (typically including exactly one entry, from a recently merged PR).
 * Create a new Action wrapping the `release.sh` + `settings.xml` so we do not have this stuff duplicated.
-* Add `block-MRP` profile to `plugin-pom`.
 
 === Organization setup
 
@@ -286,6 +288,13 @@ On balance this “pull” approach seems worse than the currently proposed “p
   then it would be fairly safe for tokens to expire after a week, for example.
 * Theft of tokens prior to expiry by malicious maintainers is a possibility under either system;
   the window of opportunity would differ, as would the sort of audit trail produced.
+
+=== Release Drafter as a step in the release workflow
+
+Unfortunately it is not possible to run Release Drafter as a step in the release workflow,
+since it is designed to take effect link:https://github.com/release-drafter/release-drafter/blob/v5.12.1/index.js#L15[only on `push` events],
+whereas the release workflow from the main branch needs to use `status` events.
+If the Release Drafter action is used in a workflow triggered by another kind of event, it silently does nothing.
 
 == Backwards Compatibility
 
