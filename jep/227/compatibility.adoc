@@ -235,8 +235,8 @@ should be adjusted (was not specifically tested).
 |As of link:https://github.com/jenkinsci/plugin-util-api-plugin/releases/tag/plugin-util-api-1.2.5[1.2.5].
 
 |link:https://plugins.jenkins.io/purge-job-history/[purge-job-history]
-|Mostly compatible
-|Pending link:https://github.com/jenkinsci/purge-job-history-plugin/pull/10[purge-job-history-plugin #10] for full compatibility + bug correction. No functional change.
+|Compatible
+|As of link:https://github.com/jenkinsci/purge-job-history-plugin/releases/tag/purge-job-history-1.5[1.5].
 
 |link:https://plugins.jenkins.io/pwauth/[pwauth]
 |Unknown
