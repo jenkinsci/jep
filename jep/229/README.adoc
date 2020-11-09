@@ -111,7 +111,7 @@ To avoid the need for each component maintainer to manually create a bot account
 tooling at the organization level automates this aspect.
 
 link:https://github.com/jenkins-infra/repository-permissions-updater[Repository Permissions Updater (RPU) processing]
-recognizes a flag in a repo’s YAML entry ('cd.enabled` set to `true`).
+recognizes a flag in a repo’s YAML entry (`cd.enabled` set to `true`).
 If that flag is set, a group whose name is derived from the GitHub repository name is created in Artifactory.
 That group is granted the same permissions as regular maintainers, but contains no users.
 Instead, RPU periodically generates a temporary Artifactory access token that's a member of that group
