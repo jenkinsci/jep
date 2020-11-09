@@ -49,13 +49,10 @@ endif::[]
 // Uncomment if this JEP depends on one or more other JEPs.
 //| Requires
 //| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
-//
-//
-// Uncomment and fill if this JEP is rendered obsolete by a later JEP
-//| Superseded-By
-//| :bulb: JEP-NUMBER :bulb:
-//
-//
+
+| Superseded-By
+| JEP-229
+
 // Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
 //| Resolution
 //| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
