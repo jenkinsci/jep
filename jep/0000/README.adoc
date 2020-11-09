@@ -189,6 +189,7 @@ Users upgrading Jenkins past the change will see these now-detached plugins inst
 Installations actually requiring use of agent installers should explicitly install the new plugin.
 
 Non-GUI installations of Jenkins may need to add `instance-identity` to the plugin set in order for TCP inbound agents to work.
+Similarly, they would need to add `sshd` to the plugin set in order to enable SSH service for the Jenkins CLI.
 
 == Security
 
