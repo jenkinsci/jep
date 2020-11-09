@@ -88,9 +88,9 @@ after a link:https://ci.jenkins.io/job/Plugins/job/log-cli-plugin/job/master/21/
 triggered by a link:https://github.com/jenkinsci/log-cli-plugin/commit/934670f4a9b84f243f8c0d9bbfc7be30a242e32b[`master` push].
 The important parts of source setup are the link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/pom.xml#L11-L14[`version` definition]
 with a link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/.mvn/maven.config#L3[custom format]
-and a link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/.github/workflows/release.yaml#L37-L46[GitHub Action definition]
-running link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/.github/workflows/release.sh#L5[`mvn deploy`]
-with a link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/.github/workflows/settings.xml#L6-L7[bot token for Artifactory].
+and a link:https://github.com/jenkinsci/log-cli-plugin/blob/d041abc4ff822401430b3bc00bf5da31f1d6e8d9/.github/workflows/release.yaml#L37-L49[GitHub Action definition]
+running link:https://github.com/jenkinsci/log-cli-plugin/blob/d041abc4ff822401430b3bc00bf5da31f1d6e8d9/.github/workflows/release.sh#L5[`mvn deploy`]
+with a link:https://github.com/jenkinsci/log-cli-plugin/blob/d041abc4ff822401430b3bc00bf5da31f1d6e8d9/.github/workflows/settings.xml[bot token for Artifactory].
 
 Note that the deployment skips tests and all other Maven mojos not necessary to produce artifacts, because the GitHub Action first
 link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/.github/workflows/release.yaml#L9-L36[verifies that the Jenkins build passed]
@@ -102,29 +102,22 @@ to ensure that an appropriate set of tests, static analyses, etc. are run on app
 
 Release Drafter is configured as an Action as well, but always publishing the draft release under the placeholder name `next` rather than a real version.
 This runs (fairly) quickly after PRs are merged, and just updates a draft release.
-If and when a release is successfully deployed to Artifactory, the deployment script creates a (lightweight) Git tag and publishes the release.
+If and when a release is successfully deployed to Artifactory, the deployment script
+link:https://github.com/jenkinsci/log-cli-plugin/blob/d041abc4ff822401430b3bc00bf5da31f1d6e8d9/.github/workflows/release.sh#L6-L10[creates a (lightweight) Git tag and publishes the release].
 
-As of this writing unimplemented:
-
-* Create a new Action wrapping the `release.sh` + `settings.xml` so we do not have this stuff duplicated.
+In the future there may also be a new Action or other tooling wrapping most of `release.yaml`, `release.sh`, and `settings.xml` to avoid duplicating shell scripts across repositories.
 
 === Organization setup
 
 To avoid the need for each component maintainer to manually create a bot account and perform similar setup,
-tooling at the organization level should automate this aspect.
+tooling at the organization level automates this aspect.
 
-link:https://github.com/jenkins-infra/repository-permissions-updater/blob/6ff61dc11b830f1984dde4ba9e82870218d702f7/Jenkinsfile#L54-L56[Repository Permissions Updater (RPU) processing]
-is patched to recognize some flag in a repo’s YAML entry (e.g., `bot: true`)
-and link:https://www.jfrog.com/confluence/display/JFROG/Artifactory+REST+API#ArtifactoryRESTAPI-CreateorReplaceUser[create an Artifactory bot account] with permissions to only the listed paths,
-then link:https://www.jfrog.com/confluence/display/JFROG/Artifactory+REST+API#ArtifactoryRESTAPI-CreateToken[generate an access token for that account]
-and upload it to the GitHub secret `ARTIFACTORY_TOKEN` in the corresponding repository.
-(Maybe also create an `ARTIFACTORY_USER` pseudo-secret to match.)
-
-It is possible to upload artifacts using a token with a short expiry (say, an hour), and a phony user name.
-The problem is that it is not possible to assign permissions from a “permission target” to an access token, just a group membership.
-RPU will need a larger overhaul for this, between generating/maintaining groups;
-poking GitHub’s Secrets API to update the deployment secret to be valid for some period (such as the RPU run interval + 3 hours or so);
-and perhaps changing the YAML file format to accommodate multi-module projects and the new automated builds.
+link:https://github.com/jenkins-infra/repository-permissions-updater[Repository Permissions Updater (RPU) processing]
+recognizes a flag in a repo’s YAML entry ('cd.enabled` set to `true`)
+and creates an Artifactory bot account with permissions to only the listed paths
+(via a synthetic Artifactory group),
+then generates an access token for that account
+and saves it to the GitHub secrets `ARTIFACTORY_USERNAME` and `ARTIFACTORY_TOKEN` in the corresponding repository.
 
 == Motivation
 
