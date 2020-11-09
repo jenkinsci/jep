@@ -360,6 +360,9 @@ implements basic aspects of this proposal from the developer side.
 link:https://github.com/jenkins-infra/repository-permissions-updater/pull/1747[repository-permissions-updater #1747]
 implements changes to infrastructure.
 
+link:https://github.com/jenkinsci/plugin-pom/pull/375[plugin-pom #375] and link:https://github.com/jenkinsci/pom/pull/147[pom #147]
+add a POM profile to block MRP in CD mode.
+
 == References
 
 * link:https://github.com/jenkinsci/incrementals-tools#superseding-maven-releases[Incrementals: superseding Maven releases]
