@@ -112,7 +112,6 @@ As of this writing unimplemented:
 
 To avoid the need for each component maintainer to manually create a bot account and perform similar setup,
 tooling at the organization level should automate this aspect.
-(As of this writing unimplemented.)
 
 link:https://github.com/jenkins-infra/repository-permissions-updater/blob/6ff61dc11b830f1984dde4ba9e82870218d702f7/Jenkinsfile#L54-L56[Repository Permissions Updater (RPU) processing]
 is patched to recognize some flag in a repo’s YAML entry (e.g., `bot: true`)
@@ -355,7 +354,11 @@ since there is no immediate user impact of a new release appearing of such a com
 
 == Prototype Implementation
 
-The link:https://github.com/jenkinsci/log-cli-plugin[`log-cli` plugin] implements basic aspects of this proposal.
+The link:https://github.com/jenkinsci/log-cli-plugin[`log-cli` plugin]
+implements basic aspects of this proposal from the developer side.
+
+link:https://github.com/jenkins-infra/repository-permissions-updater/pull/1747[repository-permissions-updater #1747]
+implements changes to infrastructure.
 
 == References
 

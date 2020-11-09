@@ -79,6 +79,8 @@ If link:../7/README.adoc[JEP-7] is implemented, then `XStream2.setMapper` and `.
 
 Maintaining a custom fork of a library was an additional maintenance burden for Jenkins developers.
 The fork was well out of date, leading to suspicions that security hardenings added in recent years may be missing, though no vulnerabilities are known.
+Jenkins was also missing out on potentially useful improvements, such as
+link:https://github.com/x-stream/xstream/issues/101[better Java 11 compatibility].
 
 A key reason for maintaining the fork was to introduce thread safety as well as concurrency-optimized collections into XStream.
 In fact upstream XStream is designed to be thread-safe _after_ its configuration has been frozen.
