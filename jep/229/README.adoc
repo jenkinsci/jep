@@ -88,14 +88,14 @@ after a link:https://ci.jenkins.io/job/Plugins/job/log-cli-plugin/job/master/21/
 triggered by a link:https://github.com/jenkinsci/log-cli-plugin/commit/934670f4a9b84f243f8c0d9bbfc7be30a242e32b[`master` push].
 The important parts of source setup are the link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/pom.xml#L11-L14[`version` definition]
 with a link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/.mvn/maven.config#L3[custom format]
-and a link:https://github.com/jenkinsci/log-cli-plugin/blob/d041abc4ff822401430b3bc00bf5da31f1d6e8d9/.github/workflows/release.yaml#L37-L49[GitHub Action definition]
-running link:https://github.com/jenkinsci/log-cli-plugin/blob/d041abc4ff822401430b3bc00bf5da31f1d6e8d9/.github/workflows/release.sh#L5[`mvn deploy`]
-with a link:https://github.com/jenkinsci/log-cli-plugin/blob/d041abc4ff822401430b3bc00bf5da31f1d6e8d9/.github/workflows/settings.xml[bot token for Artifactory].
+and a link:https://github.com/jenkinsci/log-cli-plugin/blob/b1ee6375b940508709ff64cd8e154ad99eb270ce/.github/workflows/cd.yaml[GitHub Action workflow]
+running link:https://github.com/jglick/jenkins-maven-cd-action/blob/3f1f2fa2739ce0747de9a2545aee5d54917a7abb/run.sh#L4[`mvn deploy`]
+with a link:https://github.com/jglick/jenkins-maven-cd-action/blob/3f1f2fa2739ce0747de9a2545aee5d54917a7abb/settings.xml[bot token for Artifactory].
 
 Note that the deployment skips tests and all other Maven mojos not necessary to produce artifacts, because the GitHub Action first
-link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/.github/workflows/release.yaml#L9-L36[verifies that the Jenkins build passed]
+link:https://github.com/jglick/verify-ci-status-action/blob/7ed33273673b4d6d9d8b0533166dfda072b96807/run.sh[verifies that the Jenkins build passed]
 whether the deployment was triggered
-link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/.github/workflows/release.yaml#L2-L4[automatically or manually].
+link:https://github.com/jenkinsci/log-cli-plugin/blob/b1ee6375b940508709ff64cd8e154ad99eb270ce/.github/workflows/cd.yaml#L2-L4[automatically or manually].
 It is the responsibility of the
 link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/Jenkinsfile#L1[Jenkinsfile]
 to ensure that an appropriate set of tests, static analyses, etc. are run on appropriate platforms.
@@ -103,9 +103,7 @@ to ensure that an appropriate set of tests, static analyses, etc. are run on app
 Release Drafter is configured as an Action as well, but always publishing the draft release under the placeholder name `next` rather than a real version.
 This runs (fairly) quickly after PRs are merged, and just updates a draft release.
 If and when a release is successfully deployed to Artifactory, the deployment script
-link:https://github.com/jenkinsci/log-cli-plugin/blob/d041abc4ff822401430b3bc00bf5da31f1d6e8d9/.github/workflows/release.sh#L6-L10[creates a (lightweight) Git tag and publishes the release].
-
-In the future there may also be a new Action or other tooling wrapping most of `release.yaml`, `release.sh`, and `settings.xml` to avoid duplicating shell scripts across repositories.
+link:https://github.com/jglick/jenkins-maven-cd-action/blob/3f1f2fa2739ce0747de9a2545aee5d54917a7abb/run.sh#L5-L8[creates a (lightweight) Git tag and publishes the release].
 
 === Organization setup
 
@@ -298,6 +296,12 @@ These could be combined at the cost of a slower and more expensive short-circuit
 (which is run several times as Jenkins sets pending CI statuses),
 but the CD workflow would still need to define steps to check out sources and set up the JDK.
 
+Another easier-to-use variant would be for the CD workflow to _wait_ for Jenkins to set a final CI status,
+as for example the link:https://github.com/marketplace/actions/wait-for-commit-statuses[wait-for-commit-statuses]
+and link:https://github.com/marketplace/actions/await-status-action[await-status-action]
+Actions let you do generically.
+However, this would waste Action minutes waiting for a Jenkins build that could take hours to complete in the worst case.
+
 == Backwards Compatibility
 
 The link:https://github.com/jenkins-infra/update-center2[Jenkins update center generator] requires no modifications:
@@ -365,6 +369,11 @@ implements changes to infrastructure.
 
 link:https://github.com/jenkinsci/plugin-pom/pull/375[plugin-pom #375] and link:https://github.com/jenkinsci/pom/pull/147[pom #147]
 add a POM profile to block MRP in CD mode.
+
+The link:https://github.com/jglick/verify-ci-status-action[verify-ci-status] Action and
+the link:https://github.com/jglick/jenkins-maven-cd-action[jenkins-maven-cd] Action
+implement most of the logic of the CD process.
+(These should be moved to the `jenkins-infra` organization when approved.)
 
 == References
 
