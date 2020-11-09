@@ -288,6 +288,16 @@ since it is designed to take effect link:https://github.com/release-drafter/rele
 whereas the release workflow from the main branch needs to use `status` events.
 If the Release Drafter action is used in a workflow triggered by another kind of event, it silently does nothing.
 
+=== Single Action for release CI check and actual release
+
+It would be more convenient to have a single Action which encapsulates the entire logic of a CD workflow.
+Unfortunately pending link:https://github.com/actions/runner/issues/438[actions/runner #438] (part of link:https://github.com/actions/runner/issues/646[actions/runner #646])
+two distinct Actions would be needed, one for the Jenkins CI status check,
+and one to perform the release after sources have been checked out.
+These could be combined at the cost of a slower and more expensive short-circuit status check
+(which is run several times as Jenkins sets pending CI statuses),
+but the CD workflow would still need to define steps to check out sources and set up the JDK.
+
 == Backwards Compatibility
 
 The link:https://github.com/jenkins-infra/update-center2[Jenkins update center generator] requires no modifications:
