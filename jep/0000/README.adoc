@@ -130,6 +130,12 @@ they might have needed to be loaded in the same `ClassLoader` as `jenkins-core.j
 for example to use `@MetaInfServices`.
 In fact this was not the case; they all implement regular `@Extension` points.
 
+One objection to an earlier proposal,
+in which all eight modules were individually made into plugins and marked detached,
+was that it would bloat the implied dependencies of existing plugins
+and the list of installed plugins.
+This is less of a concern when there are only two detached plugins being added.
+
 === Switching `groupId`
 
 The Maven group id could be switched to, say, `io.jenkins.plugins` to more closely match the conventional style.
