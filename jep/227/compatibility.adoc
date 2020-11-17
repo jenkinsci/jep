@@ -174,8 +174,8 @@ would need to be simplified to check `hasPermission`.
 |Compatible
 |As of link:https://github.com/jenkinsci/ldap-plugin/releases/tag/ldap-1.26[1.26]
 the plugin should work in both old and new cores.
-link:https://github.com/jenkinsci/ldap-plugin/pull/49[ldap-plugin #49]
-would make it natively use Spring Security.
+link:https://github.com/jenkinsci/ldap-plugin/releases/tag/ldap-2.0[2.0]
+uses Spring Security natively.
 
 |link:https://plugins.jenkins.io/mac/[mac]
 |Mostly compatible
