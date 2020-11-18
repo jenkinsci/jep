@@ -1,0 +1,131 @@
+= JEP-311: Upgrade guava to 30.0-jre
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.**JEP Template**
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 311
+
+| Title
+| Upgrade guava to 30.0-jre
+
+| Sponsor
+| link:https://github.com/dbreheret[Dominique Breheret]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2020-11-18
+
+| BDFL-Delegate
+| TBD
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+
+| Requires
+|
+
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+Jenkins uses guava version 11.0.1, which is seriously dated.
+Security AppScan are not happy about this version.
+
+== Specification
+
+Guava is a suite of core and expanded libraries that include
+utility classes, google's collections, io classes, and much
+much more.
+
+ Guava (complete) has only one code dependency - javax.annotation,
+    per the JSR-305 spec.
+
+See the https://xxxhttps://github.com/google/guava/releases/tag/v30.0[Guava release notes]
+
+== Motivation
+
+To be up to date and avoid https://nvd.nist.gov/vuln/detail/CVE-2018-10237
+
+== Reasoning
+
+
+
+== Backwards Compatibility
+
+See the link:compatibility.adoc[compatibility table].
+
+=== Predicate enforces @Nullable
+
+The only change needed on Jenkins core was to fix compilation errors raised by @Nullable attribute.
+
+See the related guava class:
+
+[source,java]
+package com.google.common.base;
+...
+public interface Predicate<T> extends java.util.function.Predicate<T> {
+  boolean apply(@Nullable T var1);
+  ...
+}
+
+
+== Security
+
+There are no known security risks related to this proposal.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+Besides tests inside Jenkins core itself,
+CloudBees will endeavor to verify that all
+link:https://docs.cloudbees.com/search?&type=ci-plugins&ci-plugins-tier=verified[“Tier 1”] and
+link:https://docs.cloudbees.com/search?&type=ci-plugins&ci-plugins-tier=compatible[“Tier 2”]
+plugins are compatible with the core changes,
+as determined by acceptance tests (ATH) and `plugin-compat-tester` (PCT).
+
+== Prototype Implementation
+
+link:https://github.com/jenkinsci/jenkins/pull/5059[jenkins #5059] is the main change.
+
+== References
+
+* link:https://github.com/jenkinsci/jenkins/pull/5059[jenkins #5059]
+* link:compatibility.adoc[Compatibility table]

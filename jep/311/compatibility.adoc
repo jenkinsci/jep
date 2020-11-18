@@ -1,0 +1,176 @@
+= JEP-311: Upgrading guava to 30.0-jre
+
+Use this space to track the status of plugins that may or may not be compatible with JEP-311.
+Refer to general information about link:README.adoc#backwards-compatibility[backwards compatibility]
+for tips on searching for potentially problematic API usages.
+
+Plugins which do not do anything special with XStream need not be listed.
+
+Please use pull requests as needed to help maintain the following table.
+Plugins should be sorted by code identifier
+(usually, but not always, the portion in the GitHub repository name preceding `-plugin`).
+
+If you file issues in Jira, please apply the `JEP-311` label as well as noting them here.
+(link:https://issues.jenkins-ci.org/issues/?jql=resolution%20%3D%20Unresolved%20and%20labels%20in%20(JEP-311)[Open JEP-228 issues])
+
+[cols=".<1,.<2,5", options="header"]
+|===
+|Plugin |Status |Notes
+
+|link:https://plugins.jenkins.io/advanced-installer-msi-builder/[advanced-installer-msi-builder]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/allure-jenkins-plugin/[allure-jenkins-plugin]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/ant/[ant]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/atlassian-bitbucket-server-integration/[atlassian-bitbucket-server-integration]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/atlassian-jira-software-cloud/[atlassian-jira-software-cloud]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/blueocean/[blueocean]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/clang-scanbuild/[clang-scanbuild]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/copyartifact/[copyartifact]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/custom-tools-plugin/[custom-tools-plugin]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/dashboard-view/[dashboard-view]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/dependency-check-jenkins-plugin/[dependency-check-jenkins-plugin]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/deploy/[deploy]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/ecutest/[ecutest]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/email-ext/[email-ext]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/exam/[exam]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/flyway-runner/[flyway-runner]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/genexus/[genexus]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/git/[git]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/github/[github]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/gradle/[gradle]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/groovy/[groovy]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/htmlpublisher/[htmlpublisher]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/jira/[jira]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/junit/[junit]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/matrix-auth/[matrix-auth]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/matrix-project/[matrix-project]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/maven-plugin/[maven-plugin]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/nodejs/[nodejs]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/packer/[packer]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/persona/[persona]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/promoted-builds/[promoted-builds]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/radargun/[radargun]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/role-strategy/[role-strategy]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/sealights/[sealights]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/snyk-security-scanner/[snyk-security-scanner]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/sonar/[sonar]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/ssh2easy/[ssh2easy]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/workflow-cps/[workflow-cps]
+|To be investigated
+|
+
+|link:https://plugins.jenkins.io/xunit/[xunit]
+|To be investigated
+|
+
+|===
