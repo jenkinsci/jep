@@ -18,7 +18,7 @@ endif::[]
 | 311
 
 | Title
-| Upgrade guava to 30.0-jre
+| Upgrade Guava
 
 | Sponsor
 | link:https://github.com/dbreheret[Dominique Breheret]
