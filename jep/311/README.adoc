@@ -75,7 +75,7 @@ much more.
  Guava (complete) has only one code dependency - javax.annotation,
     per the JSR-305 spec.
 
-See the https://xxxhttps://github.com/google/guava/releases/tag/v30.0[Guava release notes]
+See the link:https://github.com/google/guava/releases/tag/v30.0[Guava release notes]
 
 == Motivation
 
