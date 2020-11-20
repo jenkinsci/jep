@@ -31,7 +31,7 @@ endif::[]
 | Standards
 
 | Created
-| 2020-11-18
+| :bulb:
 
 | BDFL-Delegate
 | TBD
