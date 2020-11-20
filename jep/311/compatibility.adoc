@@ -4,7 +4,7 @@ Use this space to track the status of plugins that may or may not be compatible 
 Refer to general information about link:README.adoc#backwards-compatibility[backwards compatibility]
 for tips on searching for potentially problematic API usages.
 
-Plugins which do not do anything special with XStream need not be listed.
+Plugins which do not do anything special with Guava need not be listed.
 
 Please use pull requests as needed to help maintain the following table.
 Plugins should be sorted by code identifier
