@@ -115,7 +115,7 @@ recognizes a flag in a repo’s YAML entry (`cd.enabled` set to `true`).
 If that flag is set, a group whose name is derived from the GitHub repository name is created in Artifactory.
 That group is granted the same permissions as regular maintainers, but contains no users.
 Instead, RPU periodically generates a temporary Artifactory access token that's a member of that group
-and saves it to the GitHub secrets `ARTIFACTORY_USERNAME` and `ARTIFACTORY_TOKEN` in the corresponding repository.
+and saves it to the GitHub secrets `MAVEN_USERNAME` and `MAVEN_TOKEN` in the corresponding repository.
 
 == Motivation
 
