@@ -36,8 +36,8 @@ should improve compatibility.
 |Pending link:https://github.com/jenkinsci/atlassian-bitbucket-server-integration-plugin/pull/203[atlassian-bitbucket-server-integration-plugin #203].
 
 |link:https://plugins.jenkins.io/atlassian-jira-software-cloud/[atlassian-jira-software-cloud]
-|Incompatible, fixes prepared
-|Pending link:https://github.com/jenkinsci/atlassian-jira-software-cloud-plugin/pull/40[atlassian-jira-software-cloud-plugin #40].
+|Compatible
+|As of link:https://github.com/jenkinsci/atlassian-jira-software-cloud-plugin/releases/tag/atlassian-jira-software-cloud-1.3.0[1.3.0].
 
 |link:https://plugins.jenkins.io/blueocean/[blueocean]
 |Compatible
