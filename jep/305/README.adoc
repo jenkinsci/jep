@@ -853,3 +853,4 @@ is the Azure function used to promote CI builds into the repository.
 * link:https://github.com/jenkinsci/plugin-pom/pull/100[`plugin-pom` PR 100]
 * link:https://github.com/jenkins-infra/iep/blob/master/iep-009/README.adoc[IEP-9]
 * link:https://github.com/jenkinsci/incrementals-tools/blob/master/README.md[Usage guide]
+* link:https://www.slideshare.net/jgcloudbees/continual-delivery-with-maven-microrepos[Continual Delivery with Maven Microrepos] (slides from talk on 2019-10-14)
