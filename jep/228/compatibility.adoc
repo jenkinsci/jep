@@ -173,9 +173,8 @@ should be fixed.
 should be fixed.
 
 |link:https://plugins.jenkins.io/sonar/[sonar]
-|Mostly compatible
-|link:https://github.com/jenkinsci/sonarqube-plugin/pull/10[sonarqube-plugin #10]
-should improve compatibility.
+|Compatible
+|As of link:https://github.com/jenkinsci/sonarqube-plugin/releases/tag/sonar-2.13[2.13].
 
 |link:https://plugins.jenkins.io/ssh2easy/[ssh2easy]
 |Incompatible, fixes prepared
