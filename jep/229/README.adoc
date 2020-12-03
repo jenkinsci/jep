@@ -286,6 +286,10 @@ since it is designed to take effect link:https://github.com/release-drafter/rele
 whereas the release workflow from the main branch needs to use `status` events.
 If the Release Drafter action is used in a workflow triggered by another kind of event, it silently does nothing.
 
+The Jenkins project’s own link:https://github.com/jenkinsci/core-changelog-generator[core-changelog-generator] could serve as an alternative,
+though this is targeted at Jenkins core rather than components/plugins,
+and to minimize disruption to repository maintainers it would be preferable to retain the exact behavior of Release Drafter.
+
 === Single Action for release CI check and actual release
 
 It would be more convenient to have a single Action which encapsulates the entire logic of a CD workflow.
