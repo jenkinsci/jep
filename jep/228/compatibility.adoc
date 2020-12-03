@@ -23,9 +23,8 @@ If you file issues in Jira, please apply the `JEP-228` label as well as noting t
 should be fixed.
 
 |link:https://plugins.jenkins.io/allure-jenkins-plugin/[allure-jenkins-plugin]
-|Mostly compatible
-|link:https://github.com/jenkinsci/allure-plugin/pull/271[allure-plugin #271]
-should improve compatibility.
+|Compatible
+|As of link:https://github.com/jenkinsci/allure-plugin/releases/tag/2.29.0[2.29.0].
 
 |link:https://plugins.jenkins.io/ant/[ant]
 |Compatible
