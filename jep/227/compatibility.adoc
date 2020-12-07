@@ -75,9 +75,9 @@ should be simplified to check `hasPermission`.
 |Tests pass as of link:https://github.com/jenkinsci/build-token-root-plugin/releases/tag/build-token-root-1.7[1.7] if not earlier.
 
 |link:https://plugins.jenkins.io/cas-plugin/[cas-plugin]
-|Incompatible, fixes prepared
-|link:https://github.com/jenkinsci/cas-plugin/pull/4[cas-plugin #4]
-_may_ provide compatibility with post-Spring Security Jenkins (but cannot be installed on older versions).
+|Compatible
+|As of link:https://github.com/jenkinsci/cas-plugin/releases/tag/cas-plugin-1.5.0[1.5.0].
+Warning: older versions are not compatible and this version cannot be installed in advance. Make sure to upgrade Jenkins and cas-plugin together (see link:https://github.com/jenkinsci/cas-plugin/blob/master/README.md#upgrade-notice[Upgrade notice]).
 
 |link:https://plugins.jenkins.io/cloudbees-bitbucket-branch-source/[cloudbees-bitbucket-branch-source]
 |Compatible
@@ -174,8 +174,8 @@ would need to be simplified to check `hasPermission`.
 |Compatible
 |As of link:https://github.com/jenkinsci/ldap-plugin/releases/tag/ldap-1.26[1.26]
 the plugin should work in both old and new cores.
-link:https://github.com/jenkinsci/ldap-plugin/pull/49[ldap-plugin #49]
-would make it natively use Spring Security.
+link:https://github.com/jenkinsci/ldap-plugin/releases/tag/ldap-2.0[2.0]
+uses Spring Security natively.
 
 |link:https://plugins.jenkins.io/mac/[mac]
 |Mostly compatible
@@ -235,8 +235,8 @@ should be adjusted (was not specifically tested).
 |As of link:https://github.com/jenkinsci/plugin-util-api-plugin/releases/tag/plugin-util-api-1.2.5[1.2.5].
 
 |link:https://plugins.jenkins.io/purge-job-history/[purge-job-history]
-|Mostly compatible
-|Pending link:https://github.com/jenkinsci/purge-job-history-plugin/pull/10[purge-job-history-plugin #10] for full compatibility + bug correction. No functional change.
+|Compatible
+|As of link:https://github.com/jenkinsci/purge-job-history-plugin/releases/tag/purge-job-history-1.5[1.5].
 
 |link:https://plugins.jenkins.io/pwauth/[pwauth]
 |Unknown
@@ -251,21 +251,10 @@ should be adjusted (was not specifically tested).
 |Refers to `HudsonPrivateSecurityRealm` but is probably safe.
 
 |link:https://plugins.jenkins.io/reverse-proxy-auth-plugin/[reverse-proxy-auth-plugin]
-|Incompatible, fixes prepared
-|link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/40[reverse-proxy-auth-plugin #40] may suffice; untested.
+|Probably compatible
+|As of link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/releases/tag/reverse-proxy-auth-plugin-1.7.0[1.7.0].
 
-link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/38[reverse-proxy-auth-plugin #38]
-is merely cleanup to make it easier to even test against new cores.
-
-link:https://github.com/jenkinsci/reverse-proxy-auth-plugin/pull/37[reverse-proxy-auth-plugin #37]
-would permit the LDAP-specific portions to be split into its own extension point and perhaps even plugin,
-which could allow the core portion to be made compatible with Spring Security more easily.
-
-The plugin has not been released in 2½ years;
-even then it was only released by Jenkins CERT members
-to allow critical fixes for link:../200/README.adoc[JEP-200]
-(link:https://groups.google.com/g/jenkinsci-dev/c/9mX-S7kLnHk/m/J6tlhM6vAQAJ[background]).
-It appears to now be abandoned and in need of adoption.
+This plugin is in need of adoption.
 
 |link:https://plugins.jenkins.io/saml/[saml]
 |Compatible

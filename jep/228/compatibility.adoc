@@ -23,9 +23,8 @@ If you file issues in Jira, please apply the `JEP-228` label as well as noting t
 should be fixed.
 
 |link:https://plugins.jenkins.io/allure-jenkins-plugin/[allure-jenkins-plugin]
-|Mostly compatible
-|link:https://github.com/jenkinsci/allure-plugin/pull/271[allure-plugin #271]
-should improve compatibility.
+|Compatible
+|As of link:https://github.com/jenkinsci/allure-plugin/releases/tag/2.29.0[2.29.0].
 
 |link:https://plugins.jenkins.io/ant/[ant]
 |Compatible
@@ -36,8 +35,8 @@ should improve compatibility.
 |Pending link:https://github.com/jenkinsci/atlassian-bitbucket-server-integration-plugin/pull/203[atlassian-bitbucket-server-integration-plugin #203].
 
 |link:https://plugins.jenkins.io/atlassian-jira-software-cloud/[atlassian-jira-software-cloud]
-|Incompatible, fixes prepared
-|Pending link:https://github.com/jenkinsci/atlassian-jira-software-cloud-plugin/pull/40[atlassian-jira-software-cloud-plugin #40].
+|Compatible
+|As of link:https://github.com/jenkinsci/atlassian-jira-software-cloud-plugin/releases/tag/atlassian-jira-software-cloud-1.3.0[1.3.0].
 
 |link:https://plugins.jenkins.io/blueocean/[blueocean]
 |Compatible
@@ -67,8 +66,8 @@ should improve compatibility.
 |As of link:https://github.com/jenkinsci/dependency-check-plugin/releases/tag/dependency-check-jenkins-plugin-5.1.1[5.1.1].
 
 |link:https://plugins.jenkins.io/deploy/[deploy]
-|Incompatible, fixes prepared
-|Pending link:https://github.com/jenkinsci/deploy-plugin/pull/43[deploy-plugin #43].
+|Compatible
+|As of link:https://github.com/jenkinsci/deploy-plugin/releases/tag/deploy-1.16[1.16].
 
 |link:https://plugins.jenkins.io/ecutest/[ecutest]
 |Mostly compatible
@@ -113,7 +112,7 @@ should improve compatibility.
 
 |link:https://plugins.jenkins.io/htmlpublisher/[htmlpublisher]
 |Compatible
-|link:https://github.com/jenkinsci/htmlpublisher-plugin/pull/86[htmlpublisher-plugin #86] fixes tests.
+|As of link:https://github.com/jenkinsci/htmlpublisher-plugin/releases/tag/htmlpublisher-1.24[1.24].
 
 |link:https://plugins.jenkins.io/jira/[jira]
 |Compatible
@@ -173,9 +172,8 @@ should be fixed.
 should be fixed.
 
 |link:https://plugins.jenkins.io/sonar/[sonar]
-|Mostly compatible
-|link:https://github.com/jenkinsci/sonarqube-plugin/pull/10[sonarqube-plugin #10]
-should improve compatibility.
+|Compatible
+|As of link:https://github.com/jenkinsci/sonarqube-plugin/releases/tag/sonar-2.13[2.13].
 
 |link:https://plugins.jenkins.io/ssh2easy/[ssh2easy]
 |Incompatible, fixes prepared
