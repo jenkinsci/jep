@@ -217,9 +217,11 @@ can be used to test behavior of one agent installer.
 == Prototype Implementation
 
 * link:https://github.com/jenkinsci/jenkins/pull/3988[jenkins #3988]
+* link:https://github.com/jenkinsci/jenkins/pull/5049[jenkins #5049]
 * link:https://github.com/jenkinsci/instance-identity-module/pull/17[instance-identity-module #17]
 * link:https://github.com/jenkinsci/ssh-cli-auth-module/pull/9[ssh-cli-auth-module #9]
 * link:https://github.com/jenkinsci/sshd-module/pull/29[sshd-module #29]
+* link:https://github.com/jenkinsci/sshd-module/pull/38[sshd-module #38]
 * link:https://github.com/jenkinsci/slave-installer-module/pull/5[slave-installer-module #5]
 * link:https://github.com/jenkinsci/windows-slave-installer-module/pull/24[windows-slave-installer-module #24]
 * link:https://github.com/jenkinsci/launchd-slave-installer-module/pull/3[launchd-slave-installer-module #3]
