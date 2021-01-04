@@ -88,7 +88,7 @@ after a link:https://ci.jenkins.io/job/Plugins/job/log-cli-plugin/job/master/21/
 triggered by a link:https://github.com/jenkinsci/log-cli-plugin/commit/934670f4a9b84f243f8c0d9bbfc7be30a242e32b[`master` push].
 The important parts of source setup are the link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/pom.xml#L11-L14[`version` definition]
 with a link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/.mvn/maven.config#L3[custom format]
-and a link:https://github.com/jenkinsci/log-cli-plugin/blob/b1ee6375b940508709ff64cd8e154ad99eb270ce/.github/workflows/cd.yaml[GitHub Action workflow]
+and a link:https://github.com/jenkinsci/log-cli-plugin/blob/6ed0d675af346460f215d835904f6bcc026e4538/.github/workflows/cd.yaml[GitHub Action workflow]
 running link:https://github.com/jglick/jenkins-maven-cd-action/blob/3f1f2fa2739ce0747de9a2545aee5d54917a7abb/run.sh#L4[`mvn deploy`]
 with a link:https://github.com/jglick/jenkins-maven-cd-action/blob/3f1f2fa2739ce0747de9a2545aee5d54917a7abb/settings.xml[bot token for Artifactory].
 
@@ -101,8 +101,9 @@ link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbf
 to ensure that an appropriate set of tests, static analyses, etc. are run on appropriate platforms.
 
 Release Drafter is configured as an Action as well, but always publishing the draft release under the placeholder name `next` rather than a real version.
-This runs (fairly) quickly after PRs are merged, and just updates a draft release.
-If and when a release is successfully deployed to Artifactory, the deployment script
+Before an attempt is made to deploy a release to Artifactory,
+Release Drafter updates a draft release,
+then the deployment script (if successful)
 link:https://github.com/jglick/jenkins-maven-cd-action/blob/3f1f2fa2739ce0747de9a2545aee5d54917a7abb/run.sh#L5-L8[creates a (lightweight) Git tag and publishes the release].
 
 === Organization setup
@@ -279,16 +280,11 @@ On balance this “pull” approach seems worse than the currently proposed “p
 * Theft of tokens prior to expiry by malicious maintainers is a possibility under either system;
   the window of opportunity would differ, as would the sort of audit trail produced.
 
-=== Release Drafter as a step in the release workflow
+=== Configuring Release Drafter to publish releases
 
-Unfortunately it is not possible to run Release Drafter as a step in the release workflow,
-since it is designed to take effect link:https://github.com/release-drafter/release-drafter/blob/v5.12.1/index.js#L15[only on `push` events],
-whereas the release workflow from the main branch needs to use `status` events.
-If the Release Drafter action is used in a workflow triggered by another kind of event, it silently does nothing.
-
-The Jenkins project’s own link:https://github.com/jenkinsci/core-changelog-generator[core-changelog-generator] could serve as an alternative,
-though this is targeted at Jenkins core rather than components/plugins,
-and to minimize disruption to repository maintainers it would be preferable to retain the exact behavior of Release Drafter.
+As of version 5.13.0 it is possible to run Release Drafter as a step in the release workflow.
+Therefore the last few lines of the deployment script could be omitted if this Action were configured to do the publishing itself.
+However such a configuration would be more convoluted in `cd.yaml` and not really any easier to understand.
 
 === Single Action for release CI check and actual release
 
