@@ -88,41 +88,35 @@ after a link:https://ci.jenkins.io/job/Plugins/job/log-cli-plugin/job/master/21/
 triggered by a link:https://github.com/jenkinsci/log-cli-plugin/commit/934670f4a9b84f243f8c0d9bbfc7be30a242e32b[`master` push].
 The important parts of source setup are the link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/pom.xml#L11-L14[`version` definition]
 with a link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/.mvn/maven.config#L3[custom format]
-and a link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/.github/workflows/release.yaml#L37-L46[GitHub Action definition]
-running link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/.github/workflows/release.sh#L5[`mvn deploy`]
-with a link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/.github/workflows/settings.xml#L6-L7[bot token for Artifactory].
+and a link:https://github.com/jenkinsci/log-cli-plugin/blob/ed19cf0ca4af31c7a5733c70c6ce34c21c68fb34/.github/workflows/cd.yaml[GitHub Action workflow]
+running link:https://github.com/jglick/jenkins-maven-cd-action/blob/3f1f2fa2739ce0747de9a2545aee5d54917a7abb/run.sh#L4[`mvn deploy`]
+with a link:https://github.com/jglick/jenkins-maven-cd-action/blob/3f1f2fa2739ce0747de9a2545aee5d54917a7abb/settings.xml[bot token for Artifactory].
 
 Note that the deployment skips tests and all other Maven mojos not necessary to produce artifacts, because the GitHub Action first
-link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/.github/workflows/release.yaml#L9-L36[verifies that the Jenkins build passed]
+link:https://github.com/jglick/verify-ci-status-action/blob/b0876c30447ad118e38aec162e9de12ae0bda767/run.sh[verifies that the Jenkins build passed]
 whether the deployment was triggered
-link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/.github/workflows/release.yaml#L2-L4[automatically or manually].
+link:https://github.com/jenkinsci/log-cli-plugin/blob/ed19cf0ca4af31c7a5733c70c6ce34c21c68fb34/.github/workflows/cd.yaml#L2-L6[automatically or manually].
 It is the responsibility of the
 link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/Jenkinsfile#L1[Jenkinsfile]
 to ensure that an appropriate set of tests, static analyses, etc. are run on appropriate platforms.
 
-As of this writing unimplemented:
-
-* Use the Action for Release Drafter to create a release (typically including exactly one entry, from a recently merged PR).
-* Create a new Action wrapping the `release.sh` + `settings.xml` so we do not have this stuff duplicated.
-* Add `block-MRP` profile to `plugin-pom`.
+Release Drafter is configured as an Action as well, but always publishing the draft release under the placeholder name `next` rather than a real version.
+Before an attempt is made to deploy a release to Artifactory,
+Release Drafter updates a draft release,
+then the deployment script (if successful)
+link:https://github.com/jglick/jenkins-maven-cd-action/blob/3f1f2fa2739ce0747de9a2545aee5d54917a7abb/run.sh#L5-L8[creates a (lightweight) Git tag and publishes the release].
 
 === Organization setup
 
 To avoid the need for each component maintainer to manually create a bot account and perform similar setup,
-tooling at the organization level should automate this aspect.
+tooling at the organization level automates this aspect.
 
-link:https://github.com/jenkins-infra/repository-permissions-updater/blob/6ff61dc11b830f1984dde4ba9e82870218d702f7/Jenkinsfile#L54-L56[Repository Permissions Updater (RPU) processing]
-is patched to recognize some flag in a repo’s YAML entry (e.g., `bot: true`)
-and link:https://www.jfrog.com/confluence/display/JFROG/Artifactory+REST+API#ArtifactoryRESTAPI-CreateorReplaceUser[create an Artifactory bot account] with permissions to only the listed paths,
-then link:https://www.jfrog.com/confluence/display/JFROG/Artifactory+REST+API#ArtifactoryRESTAPI-CreateToken[generate an access token for that account]
-and upload it to the GitHub secret `ARTIFACTORY_TOKEN` in the corresponding repository.
-(Maybe also create an `ARTIFACTORY_USER` pseudo-secret to match.)
-
-It is possible to upload artifacts using a token with a short expiry (say, an hour), and a phony user name.
-The problem is that it is not possible to assign permissions from a “permission target” to an access token, just a group membership.
-RPU will need a larger overhaul for this, between generating/maintaining groups;
-poking GitHub’s Secrets API to update the deployment secret to be valid for some period (such as the RPU run interval + 3 hours or so);
-and perhaps changing the YAML file format to accommodate multi-module projects and the new automated builds.
+link:https://github.com/jenkins-infra/repository-permissions-updater[Repository Permissions Updater (RPU) processing]
+recognizes a flag in a repo’s YAML entry (`cd.enabled` set to `true`).
+If that flag is set, a group whose name is derived from the GitHub repository name is created in Artifactory.
+That group is granted the same permissions as regular maintainers, but contains no users.
+Instead, RPU periodically generates a temporary Artifactory access token that's a member of that group
+and saves it to the GitHub secrets `MAVEN_USERNAME` and `MAVEN_TOKEN` in the corresponding repository.
 
 == Motivation
 
@@ -286,6 +280,28 @@ On balance this “pull” approach seems worse than the currently proposed “p
 * Theft of tokens prior to expiry by malicious maintainers is a possibility under either system;
   the window of opportunity would differ, as would the sort of audit trail produced.
 
+=== Configuring Release Drafter to publish releases
+
+As of version 5.13.0 it is possible to run Release Drafter as a step in the release workflow.
+Therefore the last few lines of the deployment script could be omitted if this Action were configured to do the publishing itself.
+However such a configuration would be more convoluted in `cd.yaml` and not really any easier to understand.
+
+=== Single Action for release CI check and actual release
+
+It would be more convenient to have a single Action which encapsulates the entire logic of a CD workflow.
+Unfortunately pending link:https://github.com/actions/runner/issues/438[actions/runner #438] (part of link:https://github.com/actions/runner/issues/646[actions/runner #646])
+two distinct Actions would be needed, one for the Jenkins CI status check,
+and one to perform the release after sources have been checked out.
+These could be combined at the cost of a slower and more expensive short-circuit status check
+(which is run several times as Jenkins sets pending CI statuses),
+but the CD workflow would still need to define steps to check out sources and set up the JDK.
+
+Another easier-to-use variant would be for the CD workflow to _wait_ for Jenkins to set a final CI status,
+as for example the link:https://github.com/marketplace/actions/wait-for-commit-statuses[wait-for-commit-statuses]
+and link:https://github.com/marketplace/actions/await-status-action[await-status-action]
+Actions let you do generically.
+However, this would waste Action minutes waiting for a Jenkins build that could take hours to complete in the worst case.
+
 == Backwards Compatibility
 
 The link:https://github.com/jenkins-infra/update-center2[Jenkins update center generator] requires no modifications:
@@ -338,7 +354,7 @@ which has some implications for the security of the RPU CI job itself.
 
 == Testing
 
-Due to the number of moving parts and authentication, it is likely that testing will need to be manual.
+Due to the number of moving parts and authentication, testing is manual.
 We can use this system for a while on a few canary plugins to flush out any problems with Dependabot, PCT, etc.
 The new system can also be tried out on non-plugin components (`jenkins-test-harness`, `bom`, etc.)
 since there is no immediate user impact of a new release appearing of such a component.
@@ -348,8 +364,17 @@ since there is no immediate user impact of a new release appearing of such a com
 The link:https://github.com/jenkinsci/log-cli-plugin[`log-cli` plugin]
 implements basic aspects of this proposal from the developer side.
 
-link:https://github.com/jenkins-infra/repository-permissions-updater/pull/1747[repository-permissions-updater #1747]
-implements changes to infrastructure.
+link:https://github.com/jenkins-infra/repository-permissions-updater/pull/1747[repository-permissions-updater #1747] and
+link:https://github.com/jenkins-infra/repository-permissions-updater/pull/1779[repository-permissions-updater #1779]
+implement changes to infrastructure.
+
+link:https://github.com/jenkinsci/plugin-pom/pull/375[plugin-pom #375] and link:https://github.com/jenkinsci/pom/pull/147[pom #147]
+add a POM profile to block MRP in CD mode.
+
+The link:https://github.com/jglick/verify-ci-status-action[verify-ci-status] Action and
+the link:https://github.com/jglick/jenkins-maven-cd-action[jenkins-maven-cd] Action
+implement most of the logic of the CD process.
+(These should be moved to the `jenkins-infra` organization when approved.)
 
 == References
 
