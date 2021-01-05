@@ -44,13 +44,13 @@ Over time, Jenkins plugin maintainers need to change as the original maintainer 
 to move on to other work.
 link:https://jenkins.io/doc/developer/plugin-governance/adopt-a-plugin/[Adopt a Plugin] outlines the process for adopting a plugin.
 This page mentions that the Jenkins developer mailing list should be e-mailed to start the process.
-This JEP proposes some process improvements to adopting a plugin which
+This JEP proposes some process improvements to adopting a plugin.
 
 == Specification
 
 === Existing plugin adoption process
 
-The existing plugin adoption process is outlined here on link:https://jenkins.io/doc/developer/plugin-governance/adopt-a-plugin/[this page].
+The existing plugin adoption process is outlined on link:https://jenkins.io/doc/developer/plugin-governance/adopt-a-plugin/[this page].
 
 The above web page can be summarized as follows.
 
