@@ -88,14 +88,14 @@ after a link:https://ci.jenkins.io/job/Plugins/job/log-cli-plugin/job/master/21/
 triggered by a link:https://github.com/jenkinsci/log-cli-plugin/commit/934670f4a9b84f243f8c0d9bbfc7be30a242e32b[`master` push].
 The important parts of source setup are the link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/pom.xml#L11-L14[`version` definition]
 with a link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/.mvn/maven.config#L3[custom format]
-and a link:https://github.com/jenkinsci/log-cli-plugin/blob/6ed0d675af346460f215d835904f6bcc026e4538/.github/workflows/cd.yaml[GitHub Action workflow]
+and a link:https://github.com/jenkinsci/log-cli-plugin/blob/ed19cf0ca4af31c7a5733c70c6ce34c21c68fb34/.github/workflows/cd.yaml[GitHub Action workflow]
 running link:https://github.com/jglick/jenkins-maven-cd-action/blob/3f1f2fa2739ce0747de9a2545aee5d54917a7abb/run.sh#L4[`mvn deploy`]
 with a link:https://github.com/jglick/jenkins-maven-cd-action/blob/3f1f2fa2739ce0747de9a2545aee5d54917a7abb/settings.xml[bot token for Artifactory].
 
 Note that the deployment skips tests and all other Maven mojos not necessary to produce artifacts, because the GitHub Action first
-link:https://github.com/jglick/verify-ci-status-action/blob/7ed33273673b4d6d9d8b0533166dfda072b96807/run.sh[verifies that the Jenkins build passed]
+link:https://github.com/jglick/verify-ci-status-action/blob/b0876c30447ad118e38aec162e9de12ae0bda767/run.sh[verifies that the Jenkins build passed]
 whether the deployment was triggered
-link:https://github.com/jenkinsci/log-cli-plugin/blob/b1ee6375b940508709ff64cd8e154ad99eb270ce/.github/workflows/cd.yaml#L2-L4[automatically or manually].
+link:https://github.com/jenkinsci/log-cli-plugin/blob/ed19cf0ca4af31c7a5733c70c6ce34c21c68fb34/.github/workflows/cd.yaml#L2-L6[automatically or manually].
 It is the responsibility of the
 link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/Jenkinsfile#L1[Jenkinsfile]
 to ensure that an appropriate set of tests, static analyses, etc. are run on appropriate platforms.
@@ -354,7 +354,7 @@ which has some implications for the security of the RPU CI job itself.
 
 == Testing
 
-Due to the number of moving parts and authentication, it is likely that testing will need to be manual.
+Due to the number of moving parts and authentication, testing is manual.
 We can use this system for a while on a few canary plugins to flush out any problems with Dependabot, PCT, etc.
 The new system can also be tried out on non-plugin components (`jenkins-test-harness`, `bom`, etc.)
 since there is no immediate user impact of a new release appearing of such a component.
