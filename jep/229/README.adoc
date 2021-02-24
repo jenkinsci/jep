@@ -105,6 +105,7 @@ Before an attempt is made to deploy a release to Artifactory,
 Release Drafter updates a draft release,
 then the deployment script (if successful)
 link:https://github.com/jenkins-infra/jenkins-maven-cd-action/blob/3f1f2fa2739ce0747de9a2545aee5d54917a7abb/run.sh#L5-L8[creates a (lightweight) Git tag and publishes the release].
+Release Drafter categories are used to skip automatic releases if there are no “interesting” changes.
 
 === Organization setup
 
@@ -213,7 +214,6 @@ While having these releases is sometimes valuable for PCT, they are not valuable
 We could slow down the frequency at which the update center is automatically checked, currently one day,
 but this would also slow down notifications of security updates, which we certainly do not want;
 perhaps very recent updates could be hidden unless specifically requested _or_ can be identified as security updates.
-Another option is to display release notes in the plugin manager GUI so that “chore” updates are more easily ignored.
 
 Releases of development-time components (`plugin-pom`, `bom`, `jenkins-test-harness`, etc.)
 or of widely used API plugins (`workflow-step-api-plugin`, `credentials-plugin`, etc.)
@@ -221,6 +221,7 @@ might create “Dependabot storms” whereby one minor change in a base componen
 followed by PRs to intermediate-level components which are then merged and trigger releases,
 followed by PRs to higher-level components with their own releases.
 Excessive updates could consume a lot of CI time and exacerbate the previously mentioned risks.
+By default, no such storm will occur, since 📦 updates from Dependabot do not by themselves trigger releases.
 
 For any such issues, or for maintainers who prefer to do manual sanity checks prior to release rather than when merging PRs,
 there is another option:
@@ -228,8 +229,8 @@ link:https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-wit
 can be used to deploy from a given branch on demand, rather than automatically upon push.
 This is also likely to be the preferred trigger for backport branches.
 Compared to running MRP locally, this is still much less effort for maintainers,
-though such a trigger ought to be sure to validate that there is a passing Jenkins CI check before proceeding.
-(This validation should be part of the Action definition, not manual,
+though such a trigger does require that there is a passing Jenkins CI check before proceeding.
+(This validation is part of the Action definition, not manual,
 so we can be sure that deployed releases pass official test suites.
 If there are outages on ci.jenkins.io, the maintainer can wait for a fix, or *Re-run* the build.)
 
