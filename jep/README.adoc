@@ -78,7 +78,7 @@
 | link:https://github.com/slide[Alex{nbsp}Earl]
 
 | Draft{nbsp}:speech_balloon:
-| link:15/README.adoc[JEP-15: Jenkins funding on Community Bridge]
+| link:15/README.adoc[JEP-15: Jenkins funding on LFX Crowdfunding]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | TBD
 
