@@ -31,8 +31,8 @@ should be fixed.
 |As of link:https://github.com/jenkinsci/ant-plugin/releases/tag/ant-1.11[1.11].
 
 |link:https://plugins.jenkins.io/atlassian-bitbucket-server-integration/[atlassian-bitbucket-server-integration]
-|Incompatible, fixes prepared
-|Pending link:https://github.com/jenkinsci/atlassian-bitbucket-server-integration-plugin/pull/203[atlassian-bitbucket-server-integration-plugin #203].
+|Probably Compatible
+|As of link:https://github.com/jenkinsci/atlassian-bitbucket-server-integration-plugin/releases/tag/atlassian-bitbucket-server-integration-2.1.1[2.1.1].
 
 |link:https://plugins.jenkins.io/atlassian-jira-software-cloud/[atlassian-jira-software-cloud]
 |Compatible
@@ -136,8 +136,7 @@ should improve compatibility.
 
 |link:https://plugins.jenkins.io/nodejs/[nodejs]
 |Mostly compatible
-|link:https://github.com/jenkinsci/nodejs-plugin/pull/36[nodejs-plugin #36]
-should improve compatibility.
+|As of link:https://github.com/jenkinsci/nodejs-plugin/releases/tag/nodejs-1.3.10[1.3.10].
 
 |link:https://plugins.jenkins.io/packer/[packer]
 |Probably compatible
