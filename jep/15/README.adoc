@@ -1,4 +1,4 @@
-= JEP-15: Jenkins funding on Community Bridge
+= JEP-15: Jenkins funding on LFX Crowdfunding
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -16,7 +16,7 @@ endif::[]
 | 15
 
 | Title
-| Jenkins funding on Community Bridge
+| Jenkins funding on LFX Crowdfunding
 
 | Sponsor
 | link:https://github.com/oleg-nenashev[Oleg Nenashev]
@@ -59,9 +59,9 @@ endif::[]
 
 == Abstract
 
-This JEP documents the policy for donations received through the Community Bridge Funding portal.
+This JEP documents the policy for donations received through the LFX Crowdfunding Funding portal.
 This JEP replaces original funding through SPI and ffis.de documented on link:https://www.jenkins.io/donate/p[jenkins.io/donate].
-Jenkins profile on CommunityBridge is available link:https://funding.communitybridge.org/projects/jenkins[here].
+Jenkins profile on CommunityBridge is available link:https://crowdfunding.lfx.linuxfoundation.org/projects/jenkins[here].
 
 == Motivation
 
@@ -73,24 +73,24 @@ see link:https://issues.jenkins-ci.org/browse/WEBSITE-703[WEBSITE-703].
 
 Jenkins project operates thanks to contributions and sponsorship (infra, meetups, swag, etc.).
 Historically we did not have high cash flows in the project.
-We mostly spend money on infra and outreach programs (swag, travel grants, Outreachy and Community Bridge in 2019).
+We mostly spend money on infra and outreach programs (swag, travel grants, Outreachy and LFX Crowdfunding in 2019).
 Sponsorships cover most of our "big" expenses (e.g. Azure, meetup.com, contributor summits, etc.),
 and there is a plan to formalize such donations through Continuous Delivery Foundation (CDF).
 Sponsorship through CDF is a lengthy process not suitable for small donations.
 
 It would be great to have a simple process so that we can raise money to facilitate the initiatives in the project and to cover infrastructure costs which have no sponsorship.
-This proposal suggests using the link:https://funding.communitybridge.org/[CommunityBridge] service which is operated by the Linux Foundation and used by many projects within the foundation and sub-foundations like CDF. 
+This proposal suggests using the link:https://crowdfunding.lfx.linuxfoundation.org/[LFX Crowdfunding] service which is operated by the Linux Foundation and used by many projects within the foundation and sub-foundations like CDF. 
 
 == Specification
 
 === Profile setup
 
-Jenkins project will have a single profile link:https://funding.communitybridge.org/projects/jenkins[here].
+Jenkins project will have a single profile link:https://crowdfunding.lfx.linuxfoundation.org/projects/jenkins[here].
 Sub-projects and plugin teams may introduce their own profiles on CommunityBridge or elsewhere,
 but it is not within scope of this JEP.
 The profile page will have a project description and a reference to this process JEP.
 
-image::funding_top.png[Community Bridge Profile]
+image::funding_top.png[LFX Crowdfunding Profile]
 
 === Donation destinations
 
@@ -163,7 +163,7 @@ Jenkins governance board is responsible for approving all expenses submitted thr
 
 ==== Use of donations
 
-As stated in the link:https://docs.linuxfoundation.org/docs/communitybridge/communitybridge-funding/[CommunityBridge documentation],
+As stated in the link:https://docs.linuxfoundation.org/lfx/crowdfunding[CommunityBridge documentation],
 _the project maintainers can adjust fund allocations and may not use the funds per requested allocation_.
 In the Jenkins project we intend to respect the targeted allocations,
 and to follow the requested allocation when possible.
@@ -179,7 +179,7 @@ the Governance meeting will be doing a formal approval/rejection based on the co
 
 Donations should be submitted through the CommunityBridge Funding system which supports donations by individuals and by organizations.
 It is possible to do a donation for "all project needs" or a targeted donation to any destination listed above.
-The process is documented link:https://docs.linuxfoundation.org/docs/communitybridge/communitybridge-funding/[here].
+The process is documented link:https://docs.linuxfoundation.org/lfx/crowdfunding[here].
 
 For the Jenkins project all payment options are enabled:
 
@@ -234,9 +234,9 @@ image::github_sponsor.PNG[Sample GitHub Sponsors]
 
 ==== Promotion
 
-Once the CommunityBridge funding is finalized and the JEP is accepted,
+Once the LFX Crowdfunding setup is finalized and the JEP is accepted,
 we will promote the new funding portal through the Jenkins blog and social media.
-CDF and CommunityBridge resources will be also used to promote the funding portal.
+CDF and Linux Foundation resources will be used to promote the funding portal.
 
 There will be no wide promotion campaign of funding through the Jenkins resources and distributions.
 It might be considered if the Jenkins project needs to raise money to cover the day-to-day operations needs,
@@ -244,7 +244,7 @@ but it is out of the scope of this JEP.
 
 == Reasoning
 
-=== Why Community Bridge and not another service?
+=== Why LFX Crowdfunding and not another service?
 
 There are indeed multiple funding and donations services available for open-source projects.
 Notable ones are Open Collective, GitHub Sponsors, Patreon and so on.
@@ -264,7 +264,7 @@ There are some advantages which justify this choice:
 * Support provided by the Linux Foundation which is not a 3rd party for the project.
 * Expensify as a backend for expense reports management.
   It simplifies managing expenses by contributors, with the Linux Foundation providing support for payment logistics.
-* Integration with the link:https://people.communitybridge.org/[Community Bridge Mentorship service] which allows running mentorship programs and funding them through community Bridge.
+* Integration with the link:https://lfx.linuxfoundation.org/tools/mentorship[LFX Mentorship service] which allows running mentorship programs and funding them through community Bridge.
 
 == Backwards Compatibility
 
@@ -275,13 +275,13 @@ N/A
 * Only Jenkins board members will have access to the Expensify administrative backend.
   This might be changed in future versions of this JEP (e.g. when a new treasurer role is introduced).
 * All Expensify account administrators will be required to configure a two-factor authentication
-* CommunityBridge account administrators are expected to periodically review the list of beneficiaries and clean up obsolete entries
+* LFX account administrators are expected to periodically review the list of beneficiaries and clean up obsolete entries
   so that a limited number of users can submit the expense reports.
 
 == Infrastructure Requirements
 
 * Infrastructure is provided by the Linux Foundation
-** link:https://funding.communitybridge.org/[Community Bridge Funding Portal]
+** link:https://crowdfunding.lfx.linuxfoundation.org/[LFX Crowdfunding Portal]
 
 == Testing
 
@@ -289,14 +289,14 @@ N/A
 
 == Prototype Implementation
 
-A Community Bridge Funding proof-of-concept was set up as a part of the Community Bridge Mentorship evaluation in 2019.
+A LFX Crowdfunding proof-of-concept was set up as a part of the LFX Mentorship evaluation in 2019.
 
-* link:https://funding.communitybridge.org/projects/jenkins[Jenkins project's profile] on CommunityBridge.
+* link:https://crowdfunding.lfx.linuxfoundation.org/projects/jenkins[Jenkins project's profile] on LFX Crowdfunding.
 * link:https://github.com/oleg-nenashev/demo-jenkins-config-as-code[Sample repository] with `FUNDING.yml` setup.
 
 == References
 
-* link:https://funding.communitybridge.org/projects/jenkins[Jenkins Profile on Community Bridge]
-* link:https://docs.linuxfoundation.org/docs/communitybridge/communitybridge-funding[Community Bridge Funding Documentation]
-* link:https://communitybridge.org/faq/#funding[Community Bridge Funding FAQ]
+* link:https://crowdfunding.lfx.linuxfoundation.org/projects/jenkins[Jenkins Profile on LFX Crowdfunding]
+* link:https://docs.linuxfoundation.org/lfx/crowdfunding[LFX Crowdfunding Funding Documentation]
+* link:https://lfx.linuxfoundation.org/#funding[LFX Crowdfunding Funding FAQ]
 * link:https://wiki.jenkins.io/display/JENKINS/Reimbursement+of+Expenses+via+SPI[Reimbursement of Expenses via SPI]
