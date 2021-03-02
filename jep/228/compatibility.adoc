@@ -70,9 +70,8 @@ should improve compatibility.
 |As of link:https://github.com/jenkinsci/deploy-plugin/releases/tag/deploy-1.16[1.16].
 
 |link:https://plugins.jenkins.io/ecutest/[ecutest]
-|Mostly compatible
-|link:https://github.com/jenkinsci/ecutest-plugin/blob/8f446adb3a726b2f54cc3446372c2ac240ccca88/src/main/java/de/tracetronic/jenkins/plugins/ecutest/tool/installation/AbstractToolInstallation.java#L94-L104[This code]
-should be fixed.
+|Compatible
+|As of link:https://github.com/jenkinsci/ecutest-plugin/releases/tag/ecutest-2.25[2.25].
 
 |link:https://plugins.jenkins.io/email-ext/[email-ext]
 |Compatible
