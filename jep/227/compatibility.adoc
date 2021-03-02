@@ -259,8 +259,6 @@ This plugin is in need of adoption.
 |link:https://plugins.jenkins.io/saml/[saml]
 |Compatible
 |As of link:https://github.com/jenkinsci/saml-plugin/releases/tag/saml-1.1.7[1.1.7].
-link:https://github.com/jenkinsci/saml-plugin/pull/90[saml-plugin #90]
-would take advantage of the Spring update.
 
 |link:https://plugins.jenkins.io/scm-sync-configuration/[scm-sync-configuration]
 |Mostly compatible
