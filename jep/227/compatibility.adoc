@@ -197,8 +197,8 @@ Some form validation uses Acegi Security exception types but the usages are beli
 |Tests fixed as of link:https://github.com/jenkinsci/nodejs-plugin/releases/tag/nodejs-1.3.8[1.3.8].
 
 |link:https://plugins.jenkins.io/oic-auth/[oic-auth]
-|Compatible
-|As of link:https://github.com/jenkinsci/oic-auth-plugin/releases/tag/oic-auth-1.8[1.8].
+|Mostly compatible
+|The “escape hatch” function does not work: link:https://github.com/jenkinsci/oic-auth-plugin/issues/105[issue #105].
 
 |link:https://plugins.jenkins.io/openid/[openid]
 |Probably compatible
