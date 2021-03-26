@@ -75,7 +75,7 @@ An extension of link:../305/README.adoc[JEP-305] is used to pick deterministic v
 
 A great deal of infrastructure from link:../305/README.adoc[JEP-305] is reused,
 with some refinements at the component level and new work at the organization level.
- 
+
 === Component setup
 
 link:https://github.com/jenkinsci/incrementals-tools#superseding-maven-releases[Incrementals: superseding Maven releases]
