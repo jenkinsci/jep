@@ -88,14 +88,14 @@ after a link:https://ci.jenkins.io/job/Plugins/job/log-cli-plugin/job/master/21/
 triggered by a link:https://github.com/jenkinsci/log-cli-plugin/commit/934670f4a9b84f243f8c0d9bbfc7be30a242e32b[`master` push].
 The important parts of source setup are the link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/pom.xml#L11-L14[`version` definition]
 with a link:https://github.com/jenkinsci/log-cli-plugin/blob/b37970d51e7c2d2d723f39fb7271a263f0d2083d/.mvn/maven.config#L3[custom format]
-and a link:https://github.com/jenkinsci/.github/blob/master/workflow-templates/cd.yaml[GitHub Action workflow]
+and a link:https://github.com/jenkinsci/.github/blob/b2de09f74aecb4997e174dc74e5ce249fb163b86/workflow-templates/cd.yaml[GitHub Action workflow]
 running link:https://github.com/jenkins-infra/jenkins-maven-cd-action/blob/3f1f2fa2739ce0747de9a2545aee5d54917a7abb/run.sh#L4[`mvn deploy`]
 with a link:https://github.com/jenkins-infra/jenkins-maven-cd-action/blob/3f1f2fa2739ce0747de9a2545aee5d54917a7abb/settings.xml[bot token for Artifactory].
 
 Note that the deployment skips tests and all other Maven mojos not necessary to produce artifacts, because the GitHub Action first
 link:https://github.com/jenkins-infra/verify-ci-status-action/blob/b0876c30447ad118e38aec162e9de12ae0bda767/run.sh[verifies that the Jenkins build passed]
 whether the deployment was triggered
-link:https://github.com/jenkinsci/.github/blob/master/workflow-templates/cd.yaml#L4-L8[automatically or manually].
+link:https://github.com/jenkinsci/.github/blob/b2de09f74aecb4997e174dc74e5ce249fb163b86/workflow-templates/cd.yaml#L4-L8[automatically or manually].
 It is the responsibility of the
 link:https://github.com/jenkinsci/log-cli-plugin/blob/934670f4a9b84f243f8c0d9bbfc7be30a242e32b/Jenkinsfile#L1[Jenkinsfile]
 to ensure that an appropriate set of tests, static analyses, etc. are run on appropriate platforms.
