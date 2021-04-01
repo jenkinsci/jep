@@ -1,0 +1,241 @@
+= JEP-230: Convert modules to plugins
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 230
+
+| Title
+| Convert modules to plugins
+
+| Sponsor
+| link:https://github.com/jglick[Jesse Glick]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2020-11-04
+
+| BDFL-Delegate
+| TBD
+
+| JIRA
+| https://issues.jenkins-ci.org/browse/JENKINS-55582[JENKINS-55582]
+
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+The technical ability to package JARs as Jenkins modules is retained
+but all such existing modules currently bundled in the Jenkins WAR
+are converted to regular plugins.
+Some modules are coalesced into a single plugin for simplicity.
+
+== Specification
+
+`instance-identity` is converted from a module to a detached plugin.
+It is given a dependency on the `bouncycastle-api` plugin rather than a repackaged copy of BouncyCastle.
+Popular plugins currently depending on this module in `provided` scope are made to declare a regular plugin-to-plugin dependency.
+
+`sshd` is converted from a module to a detached plugin.
+It is updated to Apache SSH 2.x.
+`ssh-cli-auth` is inlined into the same plugin.
+Popular plugins (notable `git-server`) can again be given a regular plugin dependency on `sshd`.
+
+`slave-installer` is converted from a module to a plugin (_not_ detached).
+The four installer implementations are inlined into the same plugin.
+
+=== Cleanup options
+
+As another cleanup step, `workflow-cps-global-lib` can be given a dependency on `git-server` and thus `sshd` for its original Git-based design,
+but formally deprecated and the SCM-based library system almost exclusively used these days
+split into a new plugin such as `pipeline-libraries` without this dependency.
+
+The `jenkins-module` packaging could be removed from `maven-hpi-plugin`, if there are no other users.
+(Theoretically some vendors could be using it for a `ConfidentialStore` implementation, for example.)
+
+== Motivation
+
+Having hundreds of extensions be built and packaged in one way, as plugins,
+yet eight in another way, as modules,
+is an added conceptual complication to the Jenkins architecture
+that increases the learning curve and can introduce exceptional cases to various tools and processes.
+
+One particular example of special behavior is that modules are treated differently at build time from either plugins or Jenkins core library dependencies.
+They must be included in plugin POMs using `provided` scope.
+To define the right version requires use of the `jenkins-bom`:
+they are not implied as transitive dependencies of `jenkins-core`,
+nor are they listed like plugin dependencies in the plugin `bom`,
+and the versions must be aligned with that of Jenkins core.
+
+Like anything else packaged in `jenkins.war`,
+modules cannot be updated except part of the relatively slow Jenkins core weekly/LTS cycle.
+This makes it more difficult to keep up with libraries such as Apache SSH.
+
+== Reasoning
+
+=== Inlining all modules into core
+
+All of these modules could be made part of `jenkins-core.jar`.
+This would however go against the principle of allowing Jenkins to be modular
+and letting administrators and packaging systems (such as `jenkinsfile-runner`) decide which pieces are important.
+Some of them also have dependency issues (see below about `instance-identity`).
+
+=== Status quo
+
+These eight packages could be left as modules.
+But to reverse the question, suppose functionality of this kind,
+such as adding an SSH server,
+were proposed as a new feature of Jenkins.
+The author would likely be urged to do so as a new plugin.
+Jenkins core developers would certainly not accept a proposal to introduce a novel mechanism for bundling extensions
+when plugin packaging is used for everything else and works fine.
+
+You might assume that the existing modules were written as modules because they _had_ to be:
+they might have needed to be loaded in the same `ClassLoader` as `jenkins-core.jar`,
+for example to use `@MetaInfServices`.
+In fact this was not the case; they all implement regular `@Extension` points.
+
+One objection to an earlier proposal,
+in which all eight modules were individually made into plugins and marked detached,
+was that it would bloat the implied dependencies of existing plugins
+and the list of installed plugins.
+This is less of a concern when there are only two detached plugins being added.
+
+=== Switching `groupId`
+
+The Maven group id could be switched to, say, `io.jenkins.plugins` to more closely match the conventional style.
+Instead the existing group and artifacts ids are retained (for example `org.jenkins-ci.modules:sshd`)
+to simplify updates from plugin POMs and to make it clear that these _are_ updates.
+
+=== Inlining `instance-identity` into core
+
+Since instance identity is conceptually a basic part of Jenkins core,
+and `InstanceIdentityProvider` expects to have a single implementation `InstanceIdentityRSAProvider`,
+it would be nicer to simply inline this into core and deprecate the extension point.
+That would also assure that `IdentityRootAction` is always present;
+and would ensure that inbound TCP agents always work, without needing to extract them to a plugin depending on `instance-identity`.
+(WebSocket-based inbound agents from link:../222/README.adoc[JEP-222] do not require `instance-identity`.)
+
+Unfortunately doing so would require including BouncyCastle in core,
+something we would prefer not do;
+it is currently included as a library wrapper plugin.
+For now it seems much more straightforward to make `instance-identity` a (detached) plugin.
+If this decision needs to be reversed in the future,
+`InstanceIdentityRSAProvider` or its equivalent could just be added to core
+and `instance-identity` made an empty deprecated “tombstone”.
+
+=== Keeping `ssh-cli-auth` separate
+
+As of the removal of Remoting-based CLI,
+`ssh-cli-auth` merely provided utility classes used by `sshd`,
+with no independent functionality.
+Therefore there is no advantage in offering it as a separate plugin.
+
+=== Marking `slave-installer` as detached
+
+There is no real likelihood that other plugins would depend on the original extension point or its implementations,
+so treating it as detached would merely add spurious dependencies from numerous plugins,
+making it more difficult to uninstall.
+
+Thes resulting plugin can be considered more or less deprecated,
+since it is only useful when running an inbound agent using the JNLP GUI launcher,
+which is probably unusual in modern environments and does not even work on Java 11.
+Those users who actually want this functionality can install the plugin,
+and it could be mentioned in the setup wizard,
+but it need not be part of the recommended list.
+The functionality imposes a small cost on every agent connection, so it is not free to enable.
+
+For similar reasons, it is simpler to package all this functionality into one plugin,
+rather than litter the plugin list with five plugins,
+most of them containing just a single class.
+(Only the Windows installer—by far the most popular—contains any external dependency, on `winsw`.)
+
+== Backwards Compatibility
+
+The use of the detached plugin mechanism should assure that plugins formerly depending on functionality here,
+namely in `instance-identity` and `sshd`,
+continue to run.
+Users upgrading Jenkins past the change will see these now-detached plugins installed automatically.
+
+Installations actually requiring use of agent installers should explicitly install the new plugin.
+
+Non-GUI installations of Jenkins may need to add `instance-identity` to the plugin set in order for TCP inbound agents to work.
+Similarly, they would need to add `sshd` to the plugin set in order to enable SSH service for the Jenkins CLI.
+
+== Security
+
+There are no security risks related to this proposal.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+Various scenarios involving affected code need to be tested either manually or in acceptance tests;
+`JenkinsRule` tests are inadequate since the nature of the changes involves class loading,
+which `JenkinsRule` bypasses.
+
+link:https://github.com/jenkinsci/systemd-slave-installer-module#testing[These tips]
+can be used to test behavior of one agent installer.
+
+== Prototype Implementation
+
+* link:https://github.com/jenkinsci/jenkins/pull/3988[jenkins #3988]
+* link:https://github.com/jenkinsci/jenkins/pull/5049[jenkins #5049]
+* link:https://github.com/jenkinsci/instance-identity-module/pull/17[instance-identity-module #17]
+* link:https://github.com/jenkinsci/ssh-cli-auth-module/pull/9[ssh-cli-auth-module #9]
+* link:https://github.com/jenkinsci/sshd-module/pull/29[sshd-module #29]
+* link:https://github.com/jenkinsci/sshd-module/pull/38[sshd-module #38]
+* link:https://github.com/jenkinsci/slave-installer-module/pull/5[slave-installer-module #5]
+* link:https://github.com/jenkinsci/windows-slave-installer-module/pull/24[windows-slave-installer-module #24]
+* link:https://github.com/jenkinsci/launchd-slave-installer-module/pull/3[launchd-slave-installer-module #3]
+* link:https://github.com/jenkinsci/upstart-slave-installer-module/pull/2[upstart-slave-installer-module #2]
+* link:https://github.com/jenkinsci/systemd-slave-installer-module/pull/3[systemd-slave-installer-module #3]
+
+As of this writing, the preceding pull requests need to be reworked to reflect design changes:
+* Simplifying the core patch to reflect changes already incorporated separately.
+* Coalescing some plugins.
+* Removing agent installer functionality from the detached list.
+* Switching to Apache SSH 2.
+
+== References
+
+* link:https://github.com/jenkinsci/jenkins/pull/2875[jenkins #2875]: _Detach JNLP protocol management logic to a plugin_
+* link:https://stackoverflow.com/a/39344081/12916[BouncyCastle needed to generate self-signed certificates]
+* link:https://github.com/jenkinsci/jenkins/pull/2480[jenkins #2480]: _Allow accessing instance identity from core_ (and matching link:https://github.com/jenkinsci/instance-identity-module/pull/8[instance-identity-module #8])
