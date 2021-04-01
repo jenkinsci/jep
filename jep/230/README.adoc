@@ -1,4 +1,4 @@
-= JEP-0000: Convert modules to plugins
+= JEP-230: Convert modules to plugins
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -13,7 +13,7 @@ endif::[]
 [cols="1h,1"]
 |===
 | JEP
-| 0000
+| 230
 
 | Title
 | Convert modules to plugins
@@ -23,13 +23,13 @@ endif::[]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
-| Not Submitted :information_source:
+| Draft :speech_balloon:
 
 | Type
 | Standards
 
 | Created
-| :bulb: Date (YYYY-MM-DD) :bulb:
+| 2020-11-04
 
 | BDFL-Delegate
 | TBD
