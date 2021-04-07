@@ -146,8 +146,8 @@ would need to be adjusted to make tests pass.
 |As of link:https://github.com/jenkinsci/google-login-plugin/releases/tag/google-login-1.6[1.6].
 
 |link:https://plugins.jenkins.io/jobConfigHistory/[jobConfigHistory]
-|Probably compatible
-|Pending link:https://github.com/jenkinsci/jobConfigHistory-plugin/pull/127[jobConfigHistory-plugin #127] for test passing and ensuring full compatibility when users are lacking permissions.
+|Compatible
+|As of link:https://github.com/jenkinsci/jobConfigHistory-plugin/releases/tag/jobConfigHistory-2.27[2.27].
 
 |link:https://plugins.jenkins.io/jobtemplates/[jobtemplates]
 |Mostly compatible
