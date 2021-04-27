@@ -79,7 +79,7 @@ Distribution of plugins depending on them will be suspended until their dependen
 
 Ruby runtime and Python SDK will be added to the `artifact-ignores` file of the update center generator, so it is no longer available for download on update sites.
 A warning will be added to the update center so that all users of the plugins receive a warning in advance.
-The plugins will be also marked for adoption so that users can step up and take over maintenance without a 2 weeks waiting delay.
+Plugins depending on the either the Ruby runtime or the Python SDK will be also marked for adoption so that users can step up and take over maintenance (by switching to the regular Java runtime) without a 2 weeks waiting delay.
 
 Plugins with a mandatory dependency on the runtimes will be added to the same file, as they will not be installable without the respective runtimes being available.
 The multiple Git repositories holding the `ruby-runtime` and Python SDK source code will be archived on GitHub.
@@ -98,7 +98,7 @@ Bug reports to core and related components about their impact on `ruby-runtime` 
 
 At least 1 month before removal::
 
-* Announcement blogpost on jenkins.io with the user-focused overview of the change and the delcivery plan
+* Announcement blogpost on jenkins.io with the user-focused overview of the change and the delivery plan
 * Plugins are marked for adoption
 * Plugins will be deprecated in the Update site immediately after the announcement.
   The deprecation notice will reference the announcement blogpost as justification.
@@ -129,7 +129,7 @@ After this release new Jenkins LTS versions will not be able to run the plugins 
 This change will be documented in the LTS upgrade guidelines.
 
 Plugins may be restored in the update centers once
-there are contributors who take ownership of a plugin and migrate it to the new runtime.
+there are contributors who take ownership of a plugin and migrate it to the standard Java plugin runtime.
 It may be done in a compatible or incompatible way.
 
 == Motivation
@@ -229,10 +229,6 @@ CI Skip::
 Last released **7 years ago**. +
 Suggestion: Use the plugin:github-scm-trait-commit-skip[GitHub Commit Skip SCM Behaviour], plugin:bitbucket-scm-trait-commit-skip[Bitbucket Commit Skip SCM Behaviour], or plugin:scmskip[SCM Skip] to skip builds based on the content of commit messages.
 Alternately, use `sh`, `bat`, or other scripts to read git commit messages and conditionally execute Pipeline steps.
-
-InstallShield::
-Last released **7 years ago**. +
-Suggestion: Use `sh`, `bat`, or other scripts to run InstallShield.
 
 MySQL Job Databases::
 Last released **7 years ago**. +
