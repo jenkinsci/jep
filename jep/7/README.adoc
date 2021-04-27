@@ -1,4 +1,4 @@
-= JEP-7: Deprecation of ruby-runtime
+= JEP-7: Deprecation of Ruby and Python plugin runtimes
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -16,7 +16,7 @@ endif::[]
 | 7
 
 | Title
-| Deprecation of Ruby runtime
+| Deprecation of Ruby and Python plugin runtimes
 
 | Sponsor
 | link:https://github.com/daniel-beck/[Daniel Beck],
@@ -69,22 +69,68 @@ endif::[]
 
 == Abstract
 
-Due to its negative impact on core maintenance, distribution of the unmaintained `ruby-runtime` plugin will be suspended.
-Distribution of plugins depending on it will be suspended until their dependency is removed.
+Due to its negative impact on core maintenance, distribution of the unmaintained
+link:https://github.com/jenkinsci/ruby-runtime-plugin[Ruby Runtime plugin] and
+link:https://github.com/jenkinsci/jenkins.py[Jenkins Python SDK] will be suspended.
+Distribution of plugins depending on them will be suspended until their dependency is removed.
 
 
 == Specification
 
-`ruby-runtime` will be added to the `artifact-ignores` file of the update center generator so it is no longer available for download on update sites.
-// Perhaps: Add security warning?
+Ruby runtime and Python SDK will be added to the `artifact-ignores` file of the update center generator, so it is no longer available for download on update sites.
+A warning will be added to the update center so that all users of the plugins receive a warning in advance.
+The plugins will be also marked for adoption so that users can step up and take over maintenance without a 2 weeks waiting delay.
 
-Plugins with a mandatory dependency on `ruby-runtime` will be added to the same file, as they will not be installable without `ruby-runtime` being available.
+Plugins with a mandatory dependency on the runtimes will be added to the same file, as they will not be installable without the respective runtimes being available.
+The multiple Git repositories holding the `ruby-runtime` and Python SDK source code will be archived on GitHub.
 
-The multiple Git repositories holding the `ruby-runtime` source code will be archived on GitHub.
+Support for Ruby Runtime in the Jenkins core will be removed in future Jenkins versions.
+This includes but not limited to:
 
-Workarounds in Jenkins core implemented specifically to enable `ruby-runtime` will be reviewed and considered for reversal.
-No future core development will consider the impact on `ruby-runtime` and plugins based on it, and bug reports to core and related components about their impact on `ruby-runtime` and plugins based on it will be closed as *Won't Fix*.
+* link:https://github.com/stapler/stapler/tree/master/jruby[Stapler JRuby library] bundled in the Jenkins core
+* Permit lists for link:/jep/200[JEP-200: Switch Remoting/XStream denylist to a permitlist]
+* XStream converters for JRuby components
 
+No future core development will consider the impact on Ruby/Python runtimes and plugins based on them.
+Bug reports to core and related components about their impact on `ruby-runtime` and plugins based on it will be closed as *Won't Fix*.
+
+=== Rollout plan
+
+At least 1 month before removal::
+
+* Announcement blogpost on jenkins.io with the user-focused overview of the change and the delcivery plan
+* Plugins are marked for adoption
+* Plugins will be deprecated in the Update site immediately after the announcement.
+  The deprecation notice will reference the announcement blogpost as justification.
+* Plugin users will have 1 month to bring up their concerns, if any.
+  They will have an option to step up and contribute to the plugins so that they are migrated to the standard Jenkins plugin runtime.
+
+Removal date::
+
+* Plugins are removed from official Jenkins update centers.
+  Users of both weekly and LTS release baselines will no longer be able to install or update the plugins.
+* Maybe: Additional announcement is published on jenkins.io to advice deletion of the plugins
+* If there are any unbpublished security issues related to the depublished plugins,
+  a security advisory is released for them shortly after depublishing.
+* Ruby and Python plugin runtime codebases are archived on GitHub.
+
+After the removal::
+
+A pull request is submitted to the Jenkins, with a cleanup of the code and functionality slated for deletion.
+Stapler JRuby library might be also deleted from the Stapler codebase.
+This is a breaking change.
+Once the pull request is merged, the next weekly release will no longer be able to run the Ruby/Python runtime based plugins properly,
+with undefined behavior and likely Jenkins startup failure as a result.
+This needs to be explicitly referenced in the changelog.
+
+Jenkins LTS users will be able to continue using the deprecated/depublished plugins until a new LTS baseline picks up the change.
+ETA for it - the September 2021 LTS release.
+After this release new Jenkins LTS versions will not be able to run the plugins as well.
+This change will be documented in the LTS upgrade guidelines.
+
+Plugins may be restored in the update centers once
+there are contributors who take ownership of a plugin and migrate it to the new runtime.
+It may be done in a compatible or incompatible way.
 
 == Motivation
 
@@ -94,7 +140,7 @@ There are currently two Git repositories holding different states of its source 
 It is unmaintained and the changelog mentions a version 0.13 that has never actually been released.
 
 Over the past year, multiple changes to core negatively impacted ruby-runtime based plugins, and core maintainers had to implement workarounds to address these problems.
-Example: link:/jep/200[JEP-200]
+Example: link:/jep/200[JEP-200: Switch Remoting/XStream denylist to a permitlist].
 Due to its design, it is not always possible to apply corresponding changes to ruby-runtime itself.
 Instead, every dependent plugin may need to be adapted individually, if a change to core results in problems to ruby-runtime.
 
@@ -103,6 +149,8 @@ In a Jenkins developers mailing list thread proposing the deprecation of `ruby-r
 
 Therefore this JEP proposed the deprecation of ruby-runtime, and to suspend its distribution via Jenkins project update sites.
 
+The same reasoning applies to the Jenkins Python SDK.
+This SDK is used just for one plugin at the moment.
 
 == Reasoning
 
@@ -135,7 +183,7 @@ Workarounds for this include downloading affected plugins from Artifactory, and 
 
 If previous core compatibility fixes are reverted, or future core changes break ruby-runtime, users of those plugins will be impacted.
 
-=== Affected plugins
+=== Affected plugins, Ruby runtime
 
 Below you can find a list of the affected plugins which are/were being hosted in the main Jenkins update center.
 There might be other 3rd-party plugins affected.
@@ -229,10 +277,16 @@ Last released **7 years ago**.
 buddycloud::
 Last released **7 years ago**.
 
+=== Affected plugins, Python runtime
+
+InstallShield::
+Last released **7 years ago**.
+
 == Security
 
 There are no security risks related to this proposal.
-
+If there are known issues for the removed/deprecated plugins,
+the security advisory will be released after depublishing of the plugins.
 
 == Infrastructure Requirements
 
@@ -256,3 +310,9 @@ n/a
 * https://groups.google.com/d/msg/jenkinsci-dev/Ve0fqAud3Mk/MTIxw6ZyBwAJ
 * https://github.com/jenkinsci/ruby-runtime-plugin[Ruby Runtime Plugin]
 * https://github.com/jenkins-infra/jenkins.io/pull/4256[Announcement Draft]
+* https://github.com/jenkins-infra/jenkins.io/pull/4256[Announcement blogpost]
+
+== Change history
+
+* April 2021 - Extend the scope to include the Python plugin runtime,
+  clarify the scope and the rollout plan based on the dev list discussion.
