@@ -1,4 +1,4 @@
-= JEP-229: Continuous Delivery of Jenkins Components
+= JEP-229: Continuous Delivery of Jenkins Components and Plugins
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -16,7 +16,7 @@ endif::[]
 | 229
 
 | Title
-| Continuous Delivery of Jenkins Components
+| Continuous Delivery of Jenkins Components and Plugins
 
 | Sponsor
 | link:https://github.com/jglick[Jesse Glick]
@@ -64,9 +64,9 @@ endif::[]
 
 == Abstract
 
-Maintainers of Jenkins component repositories on GitHub, especially plugins, can opt into continuous delivery (CD).
-In this mode, every successful build of the default branch by ci.jenkins.io results in a new release of the component.
-GitHub Actions are used to rebuild the component and deploy it to Artifactory,
+Maintainers of Jenkins component or plugin repositories on GitHub, can opt into continuous delivery (CD).
+In this mode, every successful build of the default branch by ci.jenkins.io results in a new release of the artifact.
+GitHub Actions are used to rebuild the code and deploy it to Artifactory,
 without the need for maintainers to use personal credentials or local builds.
 An extension of link:../305/README.adoc[JEP-305] is used to pick deterministic version numbers;
 `maven-release-plugin` (MRP) is not used.
@@ -74,12 +74,12 @@ An extension of link:../305/README.adoc[JEP-305] is used to pick deterministic v
 == Specification
 
 A great deal of infrastructure from link:../305/README.adoc[JEP-305] is reused,
-with some refinements at the component level and new work at the organization level.
+with some refinements at the component/plugins build level and new work at the organization level.
 
 === Component setup
 
 link:https://github.com/jenkinsci/incrementals-tools#superseding-maven-releases[Incrementals: superseding Maven releases]
-describes how to configure a component to be `deploy`’able to Jenkins Artifactory without using `maven-release-plugin` (MRP).
+describes how to configure a repository to be `deploy`’able to Jenkins Artifactory without using `maven-release-plugin` (MRP).
 
 Then GitHub Actions can be used to do this automatically after `master` builds succeed in Jenkins.
 As an example, link:https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/log-cli/40.934670f4a9b8/[`log-cli` plugin version `40.934670f4a9b8`]
@@ -109,7 +109,7 @@ Release Drafter categories are used to skip automatic releases if there are no �
 
 === Organization setup
 
-To avoid the need for each component maintainer to manually create a bot account and perform similar setup,
+To avoid the need for each repository maintainer to manually create a bot account and perform similar setup,
 tooling at the organization level automates this aspect.
 
 link:https://github.com/jenkins-infra/repository-permissions-updater[Repository Permissions Updater (RPU) processing]
@@ -121,7 +121,7 @@ and saves it to the GitHub secrets `MAVEN_USERNAME` and `MAVEN_TOKEN` in the cor
 
 == Motivation
 
-Traditionally, all Jenkins components have been released using the link:https://maven.apache.org/maven-release/maven-release-plugin/[Maven Release plugin] (MRP).
+Traditionally, all Jenkins components and plugins have been released using the link:https://maven.apache.org/maven-release/maven-release-plugin/[Maven Release plugin] (MRP).
 This is typically invoked by a developer on a local clone of the repository in the `master` branch:
 
 [source,bash]
@@ -133,11 +133,11 @@ MRP presumes that the `<version>` in the POM is something like `1.23-SNAPSHOT`.
 It will create a commit `[maven-release-plugin] prepare release mycomponent-1.23` with a tag and a release version.
 It will then create a commit `[maven-release-plugin] prepare for next development iteration` going to `1.24-SNAPSHOT`,
 push both commits to the `master` branch,
-build the component from the release tag,
+build the artifact(s) from the release tag,
 and deploy that binary to Artifactory.
 
 MRP has numerous intrinsic flaws that render it poorly suited to a project like Jenkins
-with a huge number of interrelated components (mainly, though not exclusively, plugins) and many maintainers:
+with a huge number of interrelated artifacts (mainly, though not exclusively, plugins) and many maintainers:
 
 * Every maintainer must obtain (and keep secure) personal credentials to Artifactory in order to perform releases.
   Each maintainer also needs to be listed in `repository-permissions-updater`,
@@ -149,7 +149,7 @@ with a huge number of interrelated components (mainly, though not exclusively, p
 * Developers need to pick version numbers whether or not the numbers have any meaning to humans.
 * Every release must have two machine-generated Git commits,
   since the version number is encoded in the version-controlled `pom.xml`.
-* It is tricky to `git bisect` a problem reproduced only by a _dependency_ on a component
+* It is tricky to `git bisect` a problem reproduced only by a _dependency_ on a artifact
   since even local builds (`mvn install`) get various version numbers.
 * The `perform` phase cannot be simulated in advance,
   and involves procedures never used in other circumstances,
@@ -217,9 +217,9 @@ perhaps very recent updates could be hidden unless specifically requested _or_ c
 
 Releases of development-time components (`plugin-pom`, `bom`, `jenkins-test-harness`, etc.)
 or of widely used API plugins (`workflow-step-api-plugin`, `credentials-plugin`, etc.)
-might create “Dependabot storms” whereby one minor change in a base component triggers a release,
-followed by PRs to intermediate-level components which are then merged and trigger releases,
-followed by PRs to higher-level components with their own releases.
+might create “Dependabot storms” whereby one minor change in a base component/plugin triggers a release,
+followed by PRs to intermediate-level components/plugins which are then merged and trigger releases,
+followed by PRs to higher-level components/plugins with their own releases.
 Excessive updates could consume a lot of CI time and exacerbate the previously mentioned risks.
 By default, no such storm will occur, since 📦 updates from Dependabot do not by themselves trigger releases.
 
@@ -332,10 +332,10 @@ it has long since been fixed to tolerate incremental versions and JEP-305’s us
 
 The GitHub runner is solely responsible for rebuilding binary artifacts (such as plugin `*.hpi`) from sources.
 This defends against certain supply-chain attacks:
-if ci.jenkins.io were compromised, at worst this could result in components with test failures being deployed.
+if ci.jenkins.io were compromised, at worst this could result in components and pluguins with test failures being deployed.
 The deployed binaries would still have been built from the source files stored on GitHub.
 
-Currently we presume that component maintainers are not maliciously inserting backdoors into manually deployed binaries.
+Currently we presume that maintainers are not maliciously inserting backdoors into manually deployed binaries.
 So long as maintainers are granted direct access to Artifactory as well as the option to use CD, trusting them is unavoidable,
 and it is desirable to offer this option to maintainers in order for example to produce backport releases—unless
 the proposed system can be used also for non-`master` pushes.
@@ -343,9 +343,9 @@ If a maintainer were _not_ given Artifactory credentials,
 they would not be able to deploy unauthorized binaries except by stealing the bot access token,
 which should only be possible by actually running a GitHub action that would at least leave an audit trail.
 
-(Originally RPU meant only that a person’s Artifactory account should be allowed to deploy a component.
-It has since been overloaded to track component maintainers, including GitHub repository ownership.
-Making a component _only_ be deployable via this CD system would imply that we need to split up the metadata in RPU,
+(Originally RPU meant only that a person’s Artifactory account should be allowed to deploy an artifact.
+It has since been overloaded to track component and plugin maintainers, including GitHub repository ownership.
+Making an artifact _only_ be deployable via this CD system would imply that we need to split up the metadata in RPU,
 or at least add more metadata indicating that its original function should be suppressed.)
 
 == Infrastructure Requirements
