@@ -74,7 +74,7 @@ An extension of link:../305/README.adoc[JEP-305] is used to pick deterministic v
 == Specification
 
 A great deal of infrastructure from link:../305/README.adoc[JEP-305] is reused,
-with some refinements at the component/plugins build level and new work at the organization level.
+with some refinements at the component/plugin build level and new work at the organization level.
 
 === Component setup
 
@@ -332,7 +332,7 @@ it has long since been fixed to tolerate incremental versions and JEP-305’s us
 
 The GitHub runner is solely responsible for rebuilding binary artifacts (such as plugin `*.hpi`) from sources.
 This defends against certain supply-chain attacks:
-if ci.jenkins.io were compromised, at worst this could result in components and pluguins with test failures being deployed.
+if ci.jenkins.io were compromised, at worst this could result in components and plugins with test failures being deployed.
 The deployed binaries would still have been built from the source files stored on GitHub.
 
 Currently we presume that maintainers are not maliciously inserting backdoors into manually deployed binaries.
