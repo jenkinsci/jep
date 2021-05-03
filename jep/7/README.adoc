@@ -110,13 +110,13 @@ Removal date::
 * Plugins are removed from official Jenkins update centers.
   Users of both weekly and LTS release baselines will no longer be able to install or update the plugins.
 * Maybe: Additional announcement is published on jenkins.io to advice deletion of the plugins
-* If there are any unbpublished security issues related to the depublished plugins,
+* If there are any unpublished security issues related to the depublished plugins,
   a security advisory is released for them shortly after depublishing.
 * Ruby and Python plugin runtime codebases are archived on GitHub.
 
 After the removal::
 
-A pull request is submitted to the Jenkins, with a cleanup of the code and functionality slated for deletion.
+A pull request may be submitted to the Jenkins core at some point, with a cleanup of the code and functionality slated for deletion.
 Stapler JRuby library might be also deleted from the Stapler codebase.
 This is a breaking change.
 Once the pull request is merged, the next weekly release will no longer be able to run the Ruby/Python runtime based plugins properly,
@@ -139,7 +139,7 @@ Development of ruby-runtime stopped around 2013.
 There are currently two Git repositories holding different states of its source code: jenkinsci/ruby-runtime-plugin and jenkinsci/jenkins.rb.
 It is unmaintained and the changelog mentions a version 0.13 that has never actually been released.
 
-Over the past year, multiple changes to core negatively impacted ruby-runtime based plugins, and core maintainers had to implement workarounds to address these problems.
+Over the past years, multiple changes to core negatively impacted ruby-runtime based plugins, and core maintainers had to implement workarounds to address these problems.
 Example: link:/jep/200[JEP-200: Switch Remoting/XStream denylist to a permitlist].
 Due to its design, it is not always possible to apply corresponding changes to ruby-runtime itself.
 Instead, every dependent plugin may need to be adapted individually, if a change to core results in problems to ruby-runtime.
