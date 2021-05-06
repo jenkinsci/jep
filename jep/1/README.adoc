@@ -18,8 +18,8 @@ endif::[]
 | Title
 | Jenkins Enhancement Proposal Format
 
-| Sponsor
-| link:https://github.com/rtyler[R Tyler Croy], link:https://github.com/bitwiseman[Liam Newman]
+| Champion
+| link:https://github.com/rtyler[R Tyler Croy], link:https://github.com/bitwiseman[Liam Newman], link:https://github.com/oleg-nenashev[Oleg Nenashev]
 
 | Status
 | Active :smile:
@@ -29,6 +29,9 @@ endif::[]
 
 | Created
 | 2017-09-12
+
+| Last updated
+| May TODO, 2020
 
 |===
 
@@ -58,8 +61,8 @@ and discusses the rationale behind the design.
 JEPs are the primary mechanism for proposing major new
 features, for collecting community input on an issue, and for
 documenting the design decisions that have gone into Jenkins.
-Each JEP must have at least one <<Sponsor>>.
-The JEP Sponsor is responsible for the JEP overall - building
+Each JEP must have at least one <<Champion>>.
+The JEP Champion is responsible for the JEP overall - building
 consensus for that JEP within the community, documenting dissenting opinions,
 coordinating contributors work, and generally ensuring the JEP
 meets the style, format, and quality guidelines described below.
@@ -112,22 +115,14 @@ There are three kinds of JEP:
 
 There are several references in this JEP to the "BDFL". This acronym stands for
 "link:https://en.wikipedia.org/wiki/Benevolent_dictator_for_life[Benevolent Dictator for Life]".
-The BDFL is a single person whose role in the project is to act as decision maker
-when a unilateral decision is needed. The responsibilities of the BDFL are:
-
-* Review JEPs and decide whether they will be accepted
-* Resolve disputes or arguments within the JEP process that cannot be resolved by consensus
-* Delegate their responsibilities to other contributors as neeeded on a per-JEP basis (see <<BDFL Delegate>>)
-* Take any other actions as part of the JEP process that they deem best for the Jenkins project
-* Clearly communicate the reasoning for any actions taken or decisions made
-* Refrain from using their power, letting the community self-govern whenever possible
-
-WARNING: Under very specific conditions, described in "<<Resolving Disputes>>",
-contributors may ask the Governance Meeting to review a decision by the BDFL.
-
 For the Jenkins project the BDFL is
 link:https://github.com/kohsuke[Kohsuke Kawaguchi],
 original creator of Jenkins.
+In the current version of the proposal, the BDFL role has no special privileges or responsibilities.
+
+NOTE: Before the process changes in May 2021, the BDFL was responsible to review and accept JEPs.
+Now this role is held by the Jenkins community and driven by the standard decision making process
+documented in the link:https://www.jenkins.io/project/governance/[Jenkins Governance Document].
 
 ==== Editor
 
@@ -153,13 +148,25 @@ help write, implement, discuss, or offer feedback about that JEP.
 One contributor might do only one or any combination of these
 of these things during any part of the life of a JEP.
 While we invite contributions by companies or other organizations, contributors listed in a JEP
-(such as Sponsors or BDFL Delegates below) need to be specific people.
+(such as Champions or Advisors below) need to be specific people.
+The final decision may be made by a group of contributors,
+e.g. by the Jenkins community or another community entity.
 
-==== Sponsor
+==== Jenkins community
 
-Each JEP has at least one "Sponsor".
+The _Jenkins community_ term represents all community members,
+regardless of whether they contribute to a particular JEP or not.
+The Jenkins community makes decisions about JEPs according to the process defined in the
+link:https://www.jenkins.io/project/governance[Jenkins Governance Document].
+As long as the process is followed,
+accepting or rejecting a JEP is considered a community decision.
+The Jenkins community can also delegate the decision to another community entity or individual contributor,
+hence the "Reviewer" term is used for the review process (see below).
 
-The JEP Sponsor is a contributor who is responsible for the JEP throughout its lifecycle.
+==== Champion
+
+Each JEP has at least one "Champion".
+The JEP Champion is a contributor who is responsible for the JEP throughout its lifecycle.
 Their responsibilities include:
 
 * Building consensus for that JEP within the community
@@ -169,56 +176,70 @@ Their responsibilities include:
 * Maintaining the JEP after it is finalized
 * Setting and communicating the schedule as needed
 
-The Sponsor of a JEP may or may not do any of the tasks other contributors do.
-For example, one sponsor might write large portions of one JEP,
-while another sponsor might leave the writing to other contributors.
+The Champion of a JEP may or may not do any of the tasks other contributors do.
+For example, one champion might write large portions of one JEP,
+while another champion might leave the writing to other contributors.
 
-Anyone may be Sponsor for a JEP,
+Anyone may be Champion for a JEP,
 though it should be someone familiar enough with Jenkins, the Jenkins project,
 and the JEP workflow to effectively guide the JEP to completion.
 
-A JEP may have more than one Sponsor, especially after it has been finalized
+A JEP may have more than one Champion, especially after it has been finalized
 and is being maintained over time.
 For simplicity, this document uses the singular
-("The JEP Sponsor", "a sponsor")
-when referring the one or more people in the role of "Sponsor" of a JEP.
+("The JEP Champion", "a champion")
+when referring the one or more people in the role of "Champion" of a JEP.
 
-Sponsors have committer/write access on the JEP repository, but should
+Champions may have committer/write access on the JEP repository, but should
 only approve and merge pull requests for JEPs to which they are assigned.
 
-==== BDFL Delegate
+==== Advisor
 
-The <<BDFL>> may delegate their responsibilities to another contributor,
-a "BDFL Delegate" on a per-JEP basis.
-The BDFL Delegate for a JEP has all the responsibilities of the BDFL within the context of that JEP,
-except that BDFL Delegate may not delegate to someone else - there is no such thing as a "BDFL Delegate Delegate".
+This role is used in the case when a less experienced contributor submits a JEP and becomes a JEP champion.
+An Advisor is a nominated or a self-nominated experienced contributor
+who helps the Champion to go through the JEP process and, particularly,
+to ensure there is enough public discussion and a consensus built around accepting the JEP,
+and that the decision making process is followed. 
+JEP Advisor may or may not participate in the reviews and implementation of the JEP.
 
-A BDFL Delegate may be selected at any point before the JEP is reviewed.
-A record of this selection must be available publicly.
-Any contributor with sufficient technical and organizational
-experience to make the final decision on that JEP,
-may offer to be the BDFL's Delegate for a JEP.
-If their self-nomination is accepted by the other core contributors and the BDFL,
-then that contributor will have the authority to accept (or reject) that JEP.
-The BDFL Delegate for a JEP will be recorded in the
-<<header-delegate, "BDFL-Delegate" header>> in the JEP.
+Anyone may be Advisor for a JEP,
+though it should be someone familiar enough either with the subject matter, or the Jenkins project,
+or the JEP workflow to effectively guide the JEP to completion.
 
-A JEP's <<Sponsor>> may also be the BDFL Delegate for that JEP,
-taking on the responsibilities of both roles.
-
-If a Delegate wishes to leave a JEP, they may do so at any time by emailing jenkinsci-dev@googlegroups.com.
-They can also be removed from a JEP by the BDFL.
-When a BDFL Delegate leaves or is removed from a JEP,
-the BDFL becomes the reviewer again and may ask someone else to be the BDFL Delegate for that JEP.
-
-BDFL Delegates have committer/write access on the JEP repository, but should
-only approve and merge pull requests for JEPs to which they are assigned.
+A JEP may have more than one Advisor.
+There might be no JEP advisor for JEPs submitted by experienced contributors
+who are familiar with the Jenkins community and the JEP workflow.
+For simplicity, this document uses the singular form.
 
 ==== Reviewer
 
-The JEP Reviewer is the contributor who will make the final decision whether to accept a JEP.
-In all cases where this document refers to the "Reviewer",
-it means "the BDFL or BDFL Delegate that will review this JEP."
+A community entity or an individual contributor that reviews the JEP and makes an acceptance decision.
+By default this role refers to the <<Jenkins community>> unless it makes a decision
+to delegate the role to another community entity or individual contributor.
+The delegation may be done only by the <<Jenkins community>> according to the decision making process,
+and cannot be delegated further.
+The <<Jenkins community>> is also eligible to revoke the delegation if it deems it nessessary.
+
+NOTE: Before May 2021 the term referred to "the BDFL or BDFL Delegate that will review this JEP".
+This does no longer apply.
+
+=== Deprecated terms
+
+There are terms which were used in previous editions of the JEP,
+but they are no longer applied in the modern version of the process.
+The terms are listed here for historical reference reasons.
+
+==== Sponsor
+
+The term is replaced by _Champion_.
+
+==== BDFL Delegate
+
+A deprecated term which was used before the changes in May 2021.
+The <<BDFL>> was able delegate their review and decision making responsibilities to another contributor,
+a "BDFL Delegate" on a per-JEP basis.
+The BDFL Delegate for a JEP had all the responsibilities of the BDFL within the context of that JEP,
+except delegating their role.
 
 [[requirement-levels]]
 ==== Must/Should/May
@@ -255,10 +276,10 @@ let's take a high-level look at how JEP might go.
 
 . **<<start, Initial Discussion>>** - Andrea has an idea for new feature and emails it jenkinsci-dev@googlegroups.com.
   She discusses the idea with the group, determining that the idea is worth pursuing.
-  She chooses to be the "<<Sponsor>>" for this potential JEP.
+  She chooses to be the "<<Champion>>" for this potential JEP.
   She <<discussion, gathers initial feedback>> from the community, adjusts her design as needed,
   records the reasons for design choices, and keeps track of differing views.
-  Kelly, an expert in the area for this JEP, volunteers to be the <<BDFL Delegate>> for this JEP.
+  Kelly, an expert in the area for this JEP, volunteers to be the <<Advisor>> for this JEP.
 
 . **<<submission, Submission>>** - Andrea writes up the proposal using the JEP document template as a guide.
   She includes supporting documentation
@@ -276,17 +297,28 @@ let's take a high-level look at how JEP might go.
   When Andrea believes the JEP is stable,
   addresses all major design and scope questions,
   and represents the consensus of the community,
-  she then asks the <<Reviewer>>, in this case the <<BDFL Delegate>> Kelly,
-  to review the JEP for Acceptance.
+  she then asks the the <<Jenkins community>> to review the JEP for Acceptance.
+  This happens in the main Jenkins developer list,
+  and the message should reference the JEP discussion channel.
 
-. **<<review, Review>>** - Kelly reviews the JEP
-  and any related discussions and implementation.
-  Kelly agrees with Andrea that consensus has been reached regarding the JEP
+. **<<review, Review>>** - the <<Jenkins community>> reviews the JEP
+  and any related discussions and implementation,
+  and then makes a decision whether the <<Reviewer>> role needs to be delegated to another entity.
+  Too speedup the process, Andrea may suggest a <<Reviewer>> delegation while the JEP is in the draft state.
+  If the delegation happens, the <<Reviewer>> also processes the JEP.
+  The reviewer agrees with Andrea that consensus has been reached regarding the JEP
   and that the implementation is far enough along to enusure that
   the design is stable and complete.
-  Kelly marks the JEP as an "<<accepted, Accepted>>" JEP.
+  This decision is made in a publicly traceable form.
+  Andrea announces the decision in the discussion channel defined for the JEP,
+  and explicitly sets the final response timeout (see <<accepted>>),
+  e.g. by saying "this JEP might be accepted in 7 calendar days unless there is unaddressed negative feedback".
+  The champion submits a pull request that marks the JEP as an "<<accepted, Accepted>>" JEP.
+  
 
-. **<<accepted, Accepted Status>>** - Andrea and other contributors
+. **<<accepted, Accepted Status>>** -
+  If there is a new feedback until the deadline, a JEP Editor merges the status update pull request.
+  Andrea and other contributors
   complete all remaining implementation related to the
   "<<accepted, Accepted>>" JEP (code, documentation, or other changes).
 
@@ -299,7 +331,7 @@ let's take a high-level look at how JEP might go.
 
 . **<<maintenance, Maintenance>>** - At some later date,
   the JEP may need to be updated with minor changes and clarifications.
-  As <<Sponsor>> of the JEP, Andrea makes changes as needed or hands off sponsorship to someone else.
+  As <<Champion>> of the JEP, Andrea makes changes as needed or hands off the role to someone else.
   Updates follow the same basic JEP workflow.
   For extensive changes or additions,
   Andrea will start a whole new JEP instead of updating the original JEP.
@@ -321,7 +353,7 @@ A single JEP should contain a single key proposal or new idea.
 The more focused the JEP, the more successful it tends to be.
 The JEP editors reserve the right to reject potential JEPs
 if they appear too unfocused or too broad.
-If in doubt, sponsors should split their JEP into several well-focused ones.
+If in doubt, champions should split their JEP into several well-focused ones.
 
 [NOTE]
 ====
@@ -334,12 +366,12 @@ being able to link the `regression`-labelled JIRA issue to the placeholder is va
 In such a case be sure to specify a "<<header-jira, JIRA>>" section.
 ====
 
-==== Find a Sponsor
+==== Find a Champion
 
-Each JEP must have a "<<Sponsor>>" -- someone who writes the JEP using the style and
+Each JEP must have a "<<Champion>>" -- someone who writes the JEP using the style and
 format described below, shepherds the discussions in the appropriate forums,
 and attempts to build community consensus around the idea.
-The JEP Sponsor should first attempt to ascertain whether the idea is JEP-able.
+The JEP Champion should first attempt to ascertain whether the idea is JEP-able.
 Posting to the jenkinsci-dev@googlegroups.com mailing list is the best way to
 go about this.
 
@@ -347,28 +379,28 @@ go about this.
 ==== Discuss the idea with the community
 
 Vetting an idea publicly before going as far as writing a JEP is meant
-to save the potential sponsor time. Many ideas have been brought
+to save the potential champion time. Many ideas have been brought
 forward for changing Jenkins that have been rejected for various
 reasons. Asking the Jenkins community first if an idea is original
 helps prevent too much time being spent on something that is
 guaranteed to be rejected based on prior discussions (searching
 the internet does not always do the trick). It also helps to make sure
-the idea is applicable to the entire community and not just the sponsor. Just
-because an idea sounds good to the sponsor does not mean it will work for most
+the idea is applicable to the entire community and not just the champion. Just
+because an idea sounds good to the champion does not mean it will work for most
 people in most areas where Jenkins is used.
 
-Once the sponsor has asked the Jenkins community whether an idea has any
+Once the champion has asked the Jenkins community whether an idea has any
 chance of acceptance, a "pre-Draft" JEP should be presented to jenkinsci-dev@googlegroups.com.
-This gives the sponsor a chance to flesh out the JEP to make sure it is
+This gives the champion a chance to flesh out the JEP to make sure it is
 properly formatted, of high quality, and to address initial concerns about the
 proposal.
 
-Even for "pre-Draft" discussion, sponsors may find it convient to follow the
+Even for "pre-Draft" discussion, the champion may find it convient to follow the
 <<submission, JEP Submission>> steps below, including creating a PR,
 but state in PR comments that they not yet ready to submit the JEP.
 This allows them to use the PR request tools for discussion and modification right away,
 and sets them up for a smooth submission process.
-In this case, the sponsor only needs to notify `@jenkinsci/jep-editors` when they are ready to
+In this case, the champion only needs to notify `@jenkinsci/jep-editors` when they are ready to
 submit the JEP for <<approval, approval as Draft>>.
 
 [[submission]]
@@ -382,7 +414,7 @@ IMPORTANT: All submissions must go through pull request,
 even those by editors or contributors with "git push" privileges
 for the JEP repository footnoteref:[repo].
 
-To submit a JEP for <<approval, approval as Draft>>, the JEP sponsor should:
+To submit a JEP for <<approval, approval as Draft>>, the JEP champion should:
 
 . Fork the JEP repository footnoteref:[repo].
 . Clone their forked repository locally.
@@ -401,7 +433,7 @@ To submit a JEP for <<approval, approval as Draft>>, the JEP sponsor should:
   If this is a PR that was created earlier to gather feedback,
   the line requesting approval should be added as a comment when the JEP is ready.
 
-The sponsor may alter the steps above or do something else entirely
+The champion may alter the steps above or do something else entirely
 as long the result is a PR with a submission in the appropriate format
 with a comment asking for approval as draft.
 
@@ -413,11 +445,11 @@ JEP structure and formatting guidelines.
 Editors may make minor changes to make the submission meet
 the requirements for approval as a Draft JEP.
 If a JEP requires major changes, editors will add specific feedback
-and send the submission back to the sponsor for revision.
+and send the submission back to the champion for revision.
 
 IMPORTANT: "Approval as Draft" is *not* the same as <<accepted, accepting the JEP>>.
 "Approval as Draft" is an initial conformance and viability check.
-When a sponsor submits a JEP for approval, Editors and contributors
+When a champion submits a JEP for approval, Editors and contributors
 should restrict their feedback to issues which would cause the JEP
 to be denied <<draft, Draft>> status.
 This keeps the approval process from bogging down in details that are outside
@@ -468,7 +500,7 @@ The prototype implementation should be co-developed with the JEP,
 as ideas that sound good in principle sometimes turn out to be impractical
 when subjected to the test of implementation.
 
-A JEP's sponsor is responsible for collecting community feedback on a JEP
+A JEP's champion is responsible for collecting community feedback on a JEP
 before submitting it for review.
 Potential changes to a draft JEP may be discussed further on jenkinsci-dev@googlegroups.com.
 However, long open-ended discussions are not recommended on mailing lists.
@@ -476,24 +508,24 @@ Strategies to keep the discussion efficient include:
 
 * setting up a series of in-person, or video-conferencing sessions to
   discuss the JEP with necessary stakeholders.
-* having the JEP sponsor accept private comments in the early design phases
+* having the JEP champion accept private comments in the early design phases
 * setting up a wiki page, etc.
 * committing and reviewing small concrete changes via Pull Requests
   rather than large sweeping changes
 
-JEP sponsors should use their discretion here.
+JEP champion should use their discretion here.
 
-The JEP sponsor may also ask JEP editors for further feedback regarding the
+The JEP champion may also ask JEP editors for further feedback regarding the
 style and consistency of a JEP and its readiness for review.
 
-As updates are necessary, the JEP sponsor and other contributors
+As updates are necessary, the JEP champion and other contributors
 should push commits to their fork of the JEP repository footnoteref:[repo],
 and submit pull requests targeting the `master` branch.
 
 [[review]]
 ==== JEP Review
 
-Once the sponsor believes a JEP meets at least the minimum criteria to be "<<Accepted, Accepted>>",
+Once the champion believes a JEP meets at least the minimum criteria to be "<<Accepted, Accepted>>",
 they request the JEP be reviewed for acceptance, usually via
 an email to the jenkinsci-dev@googlegroups.com mailing list.
 The JEP <<Reviewer>> and their chosen consultants then review the JEP.
@@ -528,12 +560,19 @@ It must:
 * have the same license as the component the
   proposal is meant to be added to (or MIT licensed by default).
 
-By marking a JEP as "Accepted" the Reviewer indicates they believe that the JEP has
+By marking a JEP as "Accepted" the champion indicates they believe that the JEP has
 clear scope, design completeness, community consensus, and (if applicable) in-progress implementation.
 Without all of these a JEP cannot be accepted.
 For this reason, it is not unusual for JEPs to remain in "Draft" state
 even after they have strong community support and progressing implementation.
 They must still pass the other criteria, such as scoping and design completeness.
+
+Before accepting the JEP, an explicit JEP readiness notification must be sent by a champion to the discussion channel defined for the JEP.
+This message should explicitly declare that the JEP is ready to be accepted and that it may be merged
+if there is no unaddressed negative feedback within a period of at least **7 calendar days**.
+The <<Reviewer>> may define a longer period final review period if needed.
+If there is a negative feedback which needs substantial changes in the JEP,
+the countdown should be reset.
 
 Once a JEP has been accepted, the implementation must continue to progress
 and eventually be completed.
@@ -549,18 +588,18 @@ which would alter the intent, scope, API, or core behavior of the JEP.
 
 All changes to an already "Accepted" JEP, must be submitted via PR as usual.
 In the case of major changes,
-the Sponsor should also communicate those changes on the mailing list
+the Champion should also communicate those changes on the mailing list
 and take sufficient time to ensure there is consensus on the changes before merging them.
 A link to any discussion should be added to the PR for the change
 and to the <<Required Sections, References>> section.
 If there are significant objections or questions around proposed changes,
-the JEP Sponsor or Reviewer may choose to return the JEP to a "Draft" status
+the JEP Champion or Reviewer may choose to return the JEP to a "Draft" status
 for more extensive discussion and eventual <<review, review again for acceptance>>.
 
 [[final]]
 ==== Finalizing a JEP
 When the implementation is complete and incorporated into the
-appropriate "main" code repository, the JEP sponsor will change
+appropriate "main" code repository, the JEP champion will change
 the JEP's status changed to "Final".
 
 Active:: [[active]]
@@ -601,22 +640,22 @@ Rejecting a JEP is a very strong statement.
 If the reviewer believes the JEP might eventually be accepted with sufficient modification,
 the reviewer will not reject the JEP.
 If a reviewer is confident JEP will never be accepted,
-they should inform the JEP sponsor as soon as possible to prevent wasted effort.
+they should inform the JEP champion as soon as possible to prevent wasted effort.
 On the other hand, even an <<accepted, Accepted>> JEP may ultimately be rejected
 at some point before it reaches "<<final, Final>>" status,
 due to factors not known at the time it was Accepted.
 +
-Upon the request of the sponsor, the reviewer may choose to return a
+Upon the request of the champion, the reviewer may choose to return a
 Rejected JEP to Draft status, but this is at the discretion of the reviewer.
 
 Withdrawn:: [[withdrawn]]
-A JEP <<Sponsor>> may choose to withdraw a JEP.
-Similar to "Rejected", "Withdrawn" means that the JEP sponsor
+A JEP <<Champion>> may choose to withdraw a JEP.
+Similar to "Rejected", "Withdrawn" means that the JEP champion
 themselves has decided that the JEP is actually a bad idea,
 or agrees that a competing proposal is a better alternative.
 
 Deferred:: [[deferred]]
-A JEP can also be assigned a status of "Deferred". The JEP sponsor or an
+A JEP can also be assigned a status of "Deferred". The JEP champion or an
 editor can assign the JEP this status when no progress is being made
 on the JEP. Once a JEP is deferred, a JEP editor can re-assign it
 to draft status.
@@ -640,12 +679,15 @@ This workflow does not dictate specific time frames for any actions.
 In general, it is expected that a JEP should make reasonable progress over time,
 and all involved should respond in everyone can agree is timely manner.
 If it becomes necessary to set specific timeframes for action,
-it is the sponsors responsibility to do so.
-Just as the sponsor must build consensus for a JEP,
+it is the Champion's responsibility to do so.
+Just as the Champion must build consensus for a JEP,
 they must also set and communicate a reasonable schedule to keep a JEP moving forward.
 If one or more contributors are not responding
-and the sponsor chooses to move forward without their feedback,
+and the Champion chooses to move forward without their feedback,
 they should document that choice in the "<<Reasoning>>" section of the JEP.
+
+For decisions made by the <<Jenkins Community>>,
+see the timeframes in the link:https://www.jenkins.io/project/governance[Jenkins Governance Document].
 
 ==== Resolving Disputes
 
@@ -654,26 +696,24 @@ the JEP process is run by
 link:https://en.wikipedia.org/wiki/Consensus_decision-making[consensus].
 It is the responsibility of every contributor to respect other contributors,
 listen to their perspectives, and attempt to find solutions that work for everyone.
+The link:https://www.jenkins.io/project/conduct/[Jenkins Code of Conduct] applies
+to all sides and to all aspects of the JEP process.
 
 If consensus cannot be achieved on a JEP,
 contributors may request that the <<reviewer, JEP Reviewer>> intervene.
 The reviewer will consider the matter, and render their decision,
 including describing what actions will be taken and documenting their reasoning.
 
-For disputes involving a decision by a <<BDFL Delegate>>
-or the overall JEP process (rather than one specific JEP),
-contributors may request that the <<BDFL>> intervene.
-The BDFL will consider the matter and render their decision,
-including describing what actions will be taken and documenting their reasoning.
-The BDFL's decision may include technical direction and other specific instructions as needed.
-
-If contributors believe a decision made by the BDFL runs counter to the best interests to Jenkins project,
-they may request the Governance meeting review the BDFL's decision.
-The Governance meeting will take up the matter and render a decision within a reasonable timeframe.
-Similar to the judiciary, the Governance meeting will _not_ make technical decisions,
-they will only affirm or reject the BDFL's decision.
+If contributors believe a decision made by the <<Reviewer>> runs counter to the best interests to Jenkins project,
+they may request the <<Jenkins community>> to review the decision.
+Also, they may do in the case of the  the overall JEP process disputes (rather than one specific JEP).
+The community or, if needed, the Jenkins Governance Board,
+will take up the matter and render a decision within a reasonable timeframe.
+Similar to the judiciary, the community will _not_ make technical decisions,
+they will only affirm or reject the Reviewer's decision.
 If they affirm, the matter is closed.
-If they reject, the BDFL will render a new decision taking into account the Governance Meeting's input.
+If they reject, the <<Reviewer>> will render a new decision taking into account the input.
+If deemed necessary, the <<Jenkins community>> may assign another Reviewer.
 
 === JEP Guidelines
 
@@ -683,7 +723,7 @@ All JEPs MUST have the following parts to be "approved as Draft":
 
 . **Metadata** - table containing the <<metadata, JEP Header Preamble>> about the JEP,
   including the JEP number, a short descriptive title, the names,
-  and optionally the contact info for each sponsor, etc.
+  and optionally the contact info for each champion, etc.
 . **Abstract** - short (200 word) description of the technical issue
   being addressed.
 . **Specification** - The technical specification should describe the
@@ -776,8 +816,11 @@ JEP:
 | Title
 | Jenkins Enhancement Proposal Format
 
-| Sponsor
-| link:https://github.com/rtyler[R Tyler Croy]
+| Champion
+| link:https://github.com/rtyler[R Tyler Croy], link:https://github.com/bitwiseman[Liam Newman],
+  
+| Advisor
+| link:https://github.com/oleg-nenashev[Oleg Nenashev]
 
 | Status
 | Draft :speech_balloon:
@@ -793,7 +836,7 @@ JEP:
 
 . **JEP** -- Proposal number, given by the JEP editors. Use "0000" until one is assigned.
 . **Title** -- Brief title explaining the proposal in fewer than 50 characters
-. **Sponsor** -- <<Sponsor>> of the JEP, in essence, the individual
+. **Champion** -- <<Champion>> of the JEP, in essence, the individual
   responsible for seeing the JEP through the process.
 . **Status** -- Draft :speech_balloon:, Deferred :hourglass:, Accepted :ok_hand:,
   Rejected :no_entry:, Withdrawn :hand:, Final :lock:, Replaced :dagger:, Active :smile:.
@@ -805,9 +848,9 @@ JEP:
 JIRA:: [[header-jira]]
 A **JIRA** row is available to specify a linked placeholder JIRA issue, if any.
 
-BDFL-Delegate:: [[header-delegate]]
-A **<<BDFL-Delegate>>** row records who will make the final decision to approve or reject a JEP.
-If this row is not included, the BDFL will make the decision.
+Reviewer:: [[header-delegate]]
+A **<<Reviewer>>** row records who will make the final decision to approve or reject a JEP.
+If this row is not included, the <<Jenkins community>> will make the decision.
 
 Discussions-To:: [[header-discussions-to]]
 For a JEP where final pronouncement will be made on a list other than
@@ -842,44 +885,44 @@ the directory with the `README.adoc` describing the JEP.
 === Reporting JEP Bugs, or Submitting JEP Updates
 
 The process for reporting a bug or submitting a JEP update depends on several factors,
-such as the maturity of the JEP, the preferences of the JEP sponsor, and the nature
+such as the maturity of the JEP, the preferences of the JEP champion, and the nature
 of the comments. For the early draft stages of the JEP, it's probably best to
-send  comments and changes directly to the JEP sponsor. For more mature, or
+send  comments and changes directly to the JEP champion. For more mature, or
 finished JEPs consider submitting corrections to the JEP repository
 footnoteref:[repo] or the Jenkins issue tracker
-footnoteref:[issues,https://issues.jenkins-ci.org].  If the JEP sponsor is a
+footnoteref:[issues,https://issues.jenkins-ci.org].  If the JEP champion is a
 Jenkins developer, assign the bug/patch to them, otherwise assign it to a JEP
 editor.
 
 When in doubt about where to send changes, please check first
-with the JEP sponsor and/or a JEP editor.
+with the JEP champion and/or a JEP editor.
 
 
-Even JEP sponsors with git push privileges for the JEP repository should submit
+Even JEP champions with git push privileges for the JEP repository should submit
 via Pull Request, with the exception of status or resolution updates
 which may be pushed directly given the change was already discussed
 and agreed to elsewhere.
 
 [[transferring]]
-=== Transferring JEP Sponsorship
+=== Transferring JEP Championship
 
-It occasionally becomes necessary to transfer sponsorship of JEPs to a
-new sponsor. In general, it is preferable to retain the original sponsor as
-a co-sponsor of the transferred JEP, but that's really up to the
-original sponsor. A good reason to transfer sponsorship is because the
-original sponsor no longer has the time or interest in updating it or
+It occasionally becomes necessary to transfer the role to a
+new champion. In general, it is preferable to retain the original champion as
+a co-champion of the transferred JEP, but that's really up to the
+original champion. A good reason to transferthe role is because the
+original champion no longer has the time or interest in updating it or
 following through with the JEP process, or has fallen off the face of
 the 'net (i.e. is unreachable or not responding to email). A bad
-reason to transfer sponsorship is because the sponsor doesn't agree with the
+reason to transfer the role is because the champion doesn't agree with the
 direction of the JEP. One aim of the JEP process is to try to build
-consensus around a JEP, but if that's not possible, a sponsor can always
+consensus around a JEP, but if that's not possible, a champion can always
 submit a competing JEP.
 
 Ownership of a JEP may also be assumed via pull request.
-Fork the JEP repository, footnoteref:[repo] make the sponsorship
+Fork the JEP repository, footnoteref:[repo] make the champion
 modification, and submit a pull request. At the same time, send a message asking
-to take over, addressed to both the original sponsor and the JEP editors via
-jenkinsci-dev@googlegroups.com.  If the original sponsor doesn't respond to email in a timely
+to take over, addressed to both the original champion and the JEP editors via
+jenkinsci-dev@googlegroups.com.  If the original champion doesn't respond to email in a timely
 manner, the JEP editors will make a unilateral decision (it's not like such
 decisions can't be reversed :).
 
@@ -913,7 +956,7 @@ the editor may choose to provide feedback instead.
 
 ==== Request Changes
 
-If the JEP isn't ready, an editor will send it back to the sponsor for
+If the JEP isn't ready, an editor will send it back to the champion for
 revision with specific instructions.
 
 ==== Approve as Draft
@@ -930,11 +973,11 @@ Once the JEP is ready for the repository, a JEP editor will:
 
 ==== Permission group membership
 
-Editors add and remove Sponsors and BDFL Delegates
+Editors add and remove Champions and Advisors
 from the appropriate permission groups on the JEP repository.
-When a JEP includes a new Sponsor or BDFL Delegate an editor will add that
-person to the "JEP Sponsors" or "JEP BDFL Delegates" GitHub group respectively.
-When someone is no longer an active Sponsor or BDFL Delegate,
+When a JEP includes a new Champion or Advisor an editor may add that
+person to the "JEP Champions" or "JEP Advisor" GitHub group respectively.
+When someone is no longer an active Champion or Advisor,
 a JEP editor will remove them from the permission group.  
 Editors will clean up the the permission groups from time to time 
 as they see the need or are asked to do so.
@@ -1014,31 +1057,39 @@ but that existing RFC was a good justification for keeping the terms.
 
 === Limits of BDFL model
 
-People expressed concern over the limits of the current model where the BDFL
+During the original discussion of the JEP process in 2017,
+people expressed concern over the limits of the current model where the BDFL
 has final say in a number of steps.
 They felt having 1-person bottlenecks in the JEP process could be problematic.
-The BDFL delegating to others addresses some of that,
-but it is still worth noting possible alternatives.
+The BDFL delegating to others addressed some of that,
+but proved to not be efficient in longer run.
 
-One alternative would be for the Jenkins project Governance meeting to have final say.
-Another alternative would be to create some sort of "Technical Steering Committee",
-separate from Governance, to do this job.
-
-Issues mentioned in relation to these alternatives:
+In 2021 the process was updated so that the standard link:https://www.jenkins.io/project/governance[Decision making process] applies.
+The decision maybe either made by the <<Jenkins community>> or delegated to another 
+project entity as documented above.
+Issues mentioned in 2017 in relation to this approach:
 
 * **Voting policy** - a voting policy would need to be established,
 outlining what percentage of the meeting would need to vote for or against a JEP.
+** **RESOLUTION: ** A standard consensus building process applies.
+   If the community fails to reach the consensus, the standard escalation process applies.
 * **Committee vs Delegation** - a strictly committee-approval approach
 may not result in good decisions being made in a timely manner. For example,
 only a few people are qualified to make decisions on Remoting.
 It would be difficult for a group of people in `#jenkins-meeting` to vote
 sensibly on a JEP relating to Remoting which most of them don't fully understand.
 Delegation to experts and stakeholders is much more likely to produce high quality improvements.
+** **RESOLUTION: ** The <<Jenkins community>> can decide to delegate the decision to another
+  community entity including but not limited to teams, special interest groups or maintainer teams.
 * **Lack of established process** - structured technical decision making
 in the Jenkins project (as outlined in this JEP) is still in its early stages.
+** **RESOLUTION: ** The <<Jenkins community>> is expected to make a decision or,
+  if there is not enough expertise to make a technical decision,
+  to delegate the decision to another community entity.
 
-The BDFL model with Delegation as needed may not be sufficient in the long run,
-but it will suffice for now.
+Another alternative would be to create some sort of "Technical Steering Committee",
+separate from Governance, to do this job for **Standard Track** and **Informational** JEPs.
+Creation of such a committee is considered for the future.
 
 === Timeliness
 
@@ -1047,9 +1098,9 @@ some wanted to add specific language to set expectations timeliness
 (also sometimes referred to a
 "link:https://en.wikipedia.org/wiki/Service-level_agreement[service-level agreements]", or SLAs).
 The "<<Deferred>>" status addresses what happens if
-a sponsor does not move a JEP forward in a timely manner,
+a <<Champion>> does not move a JEP forward in a timely manner,
 but there are no contingencies for slow response from
-contributors, editors, BDFL, or BDFL delegates.
+contributors, editors, or reviewers.
 
 There are any number of ways to set expectations about timeliness.
 For example, regarding the review process, one person mentioned put forward,
@@ -1112,6 +1163,7 @@ This JEP leverages existing infrastructure.
 
 === Related Processes
 
+* link:https://www.jenkins.io/project/governance[Jenkins Governance Document: Decision Making]
 * link:https://www.python.org/dev/peps/[Python Enhancement Proposals]
 * link:https://github.com/jenkins-infra/iep[Infrastructure Enhancement Proposal]
 * link:http://www.ietf.org/rfc.html[IETF RFC]
@@ -1120,11 +1172,35 @@ This JEP leverages existing infrastructure.
 
 * link:https://groups.google.com/d/msg/jenkinsci-dev/spDAr8EJm3c/T9Nmhn-fAQAJ[Request for feedback: Jenkins Enhancement Proposal]
 * link:https://groups.google.com/d/topic/jenkinsci-dev/tw0ETwvboAM/discussion[Modification of "Accepted" JEPs]
+* link:https://groups.google.com/g/jenkinsci-dev/c/hepntz6WZak[Changes in the JEP process and the BDFL role] (2020-2021)
 
 === Pull Requests
+
+Initial release:
 
 * link:https://github.com/jenkinsci/jep/pull/1[PR 1]
 * link:https://github.com/jenkinsci/jep/pull/12[PR 12]
 * link:https://github.com/jenkinsci/jep/pull/19[PR 19]
 * link:https://github.com/jenkinsci/jep/pull/76[PR 76]
 
+== Change history
+
+This section lists major changes in this process JEP.
+
+=== May TODO, 2021
+
+JEP-1 was modified according to the discussion in link:https://groups.google.com/g/jenkinsci-dev/c/hepntz6WZak[this thread] and the Jenkins governance meeting.
+Key changes:
+
+* Replace the former BDFL-driven review and acceptance process by the standard
+  link:https://www.jenkins.io/project/governance/#meeting[decision making process]
+  documented in the governance document.
+  The <<BDFL>> role does no longer include JEP reviews and decision making.
+* Deprecate the <<BDFL Delegate>> role.
+  This change also deprecates link:https://github.com/jenkinsci/jep/blob/master/jep/1/README.ado[JEP-9: How BDFL Delegates],
+  because the delegation is no longer needed.
+* UYpdate <<Limits of BDFL model>> reasoning to document the current state and reasons which led to the change.
+* Replace the <<Sponsor>> role by <<Champion>>
+* Introduce the new <<Advisor>> role.
+* Define the minimum 7 calendar days period between the JEP is approved by the <<Reviewer>> and transferred
+  to the Accepted state.
