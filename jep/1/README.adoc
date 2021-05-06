@@ -1191,6 +1191,8 @@ This section lists major changes in this process JEP.
 === May TODO, 2021
 
 JEP-1 was modified according to the discussion in link:https://groups.google.com/g/jenkinsci-dev/c/hepntz6WZak[this thread] and the Jenkins governance meeting.
+The goal is to simplify the process by removing the BDFL delegation bottleneck and adopting the standard community decision making process instead.
+
 Key changes:
 
 * Replace the former BDFL-driven review and acceptance process by the standard
