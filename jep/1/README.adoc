@@ -818,9 +818,6 @@ JEP:
 
 | Champion
 | link:https://github.com/rtyler[R Tyler Croy], link:https://github.com/bitwiseman[Liam Newman],
-  
-| Advisor
-| link:https://github.com/oleg-nenashev[Oleg Nenashev]
 
 | Status
 | Draft :speech_balloon:
@@ -847,6 +844,10 @@ JEP:
 
 JIRA:: [[header-jira]]
 A **JIRA** row is available to specify a linked placeholder JIRA issue, if any.
+
+Advisor:: [[header-advisor]]
+An <<Advisor>> role records who acts as advisor in this JEP.
+If the row is not included, there is no advisor.
 
 Reviewer:: [[header-delegate]]
 A **<<Reviewer>>** row records who will make the final decision to approve or reject a JEP.
@@ -1199,7 +1200,7 @@ Key changes:
 * Deprecate the <<BDFL Delegate>> role.
   This change also deprecates link:https://github.com/jenkinsci/jep/blob/master/jep/1/README.ado[JEP-9: How BDFL Delegates],
   because the delegation is no longer needed.
-* UYpdate <<Limits of BDFL model>> reasoning to document the current state and reasons which led to the change.
+* Update <<Limits of BDFL model>> reasoning to document the current state and reasons which led to the change.
 * Replace the <<Sponsor>> role by <<Champion>>
 * Introduce the new <<Advisor>> role.
 * Define the minimum 7 calendar days period between the JEP is approved by the <<Reviewer>> and transferred
