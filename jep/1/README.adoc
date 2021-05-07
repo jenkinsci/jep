@@ -121,7 +121,7 @@ original creator of Jenkins.
 In the current version of the proposal, the BDFL role has no special privileges or responsibilities.
 
 NOTE: Before the process changes in May 2021, the BDFL was responsible to review and accept JEPs.
-Now this role is held by the Jenkins community and driven by the standard decision making process
+Now the responsibilities of this role are handled by the Jenkins community and driven by the standard decision making process
 documented in the link:https://www.jenkins.io/project/governance/[Jenkins Governance Document].
 
 ==== Editor
@@ -155,13 +155,15 @@ e.g. by the Jenkins community or another community entity.
 ==== Jenkins community
 
 The _Jenkins community_ term represents all community members,
-regardless of whether they contribute to a particular JEP or not.
-The Jenkins community makes decisions about JEPs according to the process defined in the
-link:https://www.jenkins.io/project/governance[Jenkins Governance Document].
-As long as the process is followed,
+regardless of the degree to which they contribute to a particular JEP.
+The Jenkins community consists of anyone who contributes to improving the Jenkins or the Jenkins community.
+The community is not a single homogenous entity, but rather a group of individuals with a common interest.  
+The community makes decisions on most topics including JEPs based on the general consensus of all interested members of the Jenkins community following the philosophy defined in the
+link:https://www.jenkins.io/project/governance[Jenkins Governance Document] and the [Jenkins Code of Conduct](https://www.jenkins.io/project/conduct/).
+As long as a consensus can be reached,
 accepting or rejecting a JEP is considered a community decision.
-The Jenkins community can also delegate the decision to another community entity or individual contributor,
-hence the "Reviewer" term is used for the review process (see below).
+The Jenkins community may choose to delegate the decision to another community entity such as the members of a SIG or even to one individual, 
+hence the "<<Reviewer>>" term is used for the review process.
 
 ==== Champion
 
@@ -195,16 +197,15 @@ only approve and merge pull requests for JEPs to which they are assigned.
 
 ==== Advisor
 
-This role is used in the case when a less experienced contributor submits a JEP and becomes a JEP champion.
-An Advisor is a nominated or a self-nominated experienced contributor
-who helps the Champion to go through the JEP process and, particularly,
-to ensure there is enough public discussion and a consensus built around accepting the JEP,
+
+An Advisor is an experienced contributor who helps the <<Champion>> understand and work through the JEP process, ensuring that there is enough public discussion and a consensus built around accepting the JEP,
 and that the decision making process is followed. 
+Having an Advisor for a JEP is optional, usually only needed when a less experienced contributor submits a JEP and becomes a JEP champion.
 JEP Advisor may or may not participate in the reviews and implementation of the JEP.
 
 Anyone may be Advisor for a JEP,
-though it should be someone familiar enough either with the subject matter, or the Jenkins project,
-or the JEP workflow to effectively guide the JEP to completion.
+though it should be someone familiar enough either with the subject matter, the Jenkins project,
+and the JEP workflow to effectively guide the JEP to completion.
 
 A JEP may have more than one Advisor.
 There might be no JEP advisor for JEPs submitted by experienced contributors
@@ -213,7 +214,7 @@ For simplicity, this document uses the singular form.
 
 ==== Reviewer
 
-A community entity or an individual contributor that reviews the JEP and makes an acceptance decision.
+The JEP Reviewer is a community entity or an individual contributor that reviews the JEP and makes an acceptance decision.
 By default this role refers to the <<Jenkins community>> unless it makes a decision
 to delegate the role to another community entity or individual contributor.
 The delegation may be done only by the <<Jenkins community>> according to the decision making process,
@@ -279,7 +280,7 @@ let's take a high-level look at how JEP might go.
   She chooses to be the "<<Champion>>" for this potential JEP.
   She <<discussion, gathers initial feedback>> from the community, adjusts her design as needed,
   records the reasons for design choices, and keeps track of differing views.
-  Kelly, an expert in the area for this JEP, volunteers to be the <<Advisor>> for this JEP.
+  This is Andrea's first JEP. Juan, an experienced contributor, volunteers to be Andrea's <<Advisor>> for this JEP.
 
 . **<<submission, Submission>>** - Andrea writes up the proposal using the JEP document template as a guide.
   She includes supporting documentation
@@ -297,16 +298,14 @@ let's take a high-level look at how JEP might go.
   When Andrea believes the JEP is stable,
   addresses all major design and scope questions,
   and represents the consensus of the community,
-  she then asks the the <<Jenkins community>> to review the JEP for Acceptance.
+  she then asks the <<Jenkins community>> to review the JEP for Acceptance.
   This happens in the main Jenkins developer list,
   and the message should reference the JEP discussion channel.
 
-. **<<review, Review>>** - the <<Jenkins community>> reviews the JEP
-  and any related discussions and implementation,
-  and then makes a decision whether the <<Reviewer>> role needs to be delegated to another entity.
-  Too speedup the process, Andrea may suggest a <<Reviewer>> delegation while the JEP is in the draft state.
-  If the delegation happens, the <<Reviewer>> also processes the JEP.
-  The reviewer agrees with Andrea that consensus has been reached regarding the JEP
+. **<<review, Review>>** - any interested members of <<Jenkins community>> review the JEP
+  and any related discussions and implementation. 
+  Alternatively, if the <<Reviewer>> role had been delegated to another entity then they would also perform a review. 
+  All Reviewers agree with Andrea that consensus has been reached regarding the JEP
   and that the implementation is far enough along to enusure that
   the design is stable and complete.
   This decision is made in a publicly traceable form.
@@ -317,7 +316,7 @@ let's take a high-level look at how JEP might go.
   
 
 . **<<accepted, Accepted Status>>** -
-  If there is a new feedback until the deadline, a JEP Editor merges the status update pull request.
+  If there is no new feedback before the deadline, a JEP Editor merges the status update pull request.
   Andrea and other contributors
   complete all remaining implementation related to the
   "<<accepted, Accepted>>" JEP (code, documentation, or other changes).
@@ -846,12 +845,12 @@ JIRA:: [[header-jira]]
 A **JIRA** row is available to specify a linked placeholder JIRA issue, if any.
 
 Advisor:: [[header-advisor]]
-An <<Advisor>> role records who acts as advisor in this JEP.
+An **<<Advisor>>** row records who acts as advisor in this JEP.
 If the row is not included, there is no advisor.
 
 Reviewer:: [[header-delegate]]
 A **<<Reviewer>>** row records who will make the final decision to approve or reject a JEP.
-If this row is not included, the <<Jenkins community>> will make the decision.
+If this row is not included, the decision will be made based on the consensus of the <<Jenkins community>>.
 
 Discussions-To:: [[header-discussions-to]]
 For a JEP where final pronouncement will be made on a list other than
