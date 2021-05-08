@@ -159,7 +159,8 @@ regardless of the degree to which they contribute to a particular JEP.
 The Jenkins community consists of anyone who contributes to improving the Jenkins or the Jenkins community.
 The community is not a single homogenous entity, but rather a group of individuals with a common interest.  
 The community makes decisions on most topics including JEPs based on the general consensus of all interested members of the Jenkins community following the philosophy defined in the
-link:https://www.jenkins.io/project/governance[Jenkins Governance Document] and the [Jenkins Code of Conduct](https://www.jenkins.io/project/conduct/).
+link:https://www.jenkins.io/project/governance[Jenkins Governance Document] and the
+link:https://www.jenkins.io/project/conduct[Jenkins Code of Conduct].
 As long as a consensus can be reached,
 accepting or rejecting a JEP is considered a community decision.
 The Jenkins community may choose to delegate the decision to another community entity such as the members of a SIG or even to one individual, 
@@ -215,14 +216,11 @@ For simplicity, this document uses the singular form.
 ==== Reviewer
 
 The JEP Reviewer is a community entity or an individual contributor that reviews the JEP and makes an acceptance decision.
-By default this role refers to the <<Jenkins community>> unless it makes a decision
-to delegate the role to another community entity or individual contributor.
-The delegation may be done only by the <<Jenkins community>> according to the decision making process,
-and cannot be delegated further.
-The <<Jenkins community>> is also eligible to revoke the delegation if it deems it nessessary.
-
-NOTE: Before May 2021 the term referred to "the BDFL or BDFL Delegate that will review this JEP".
-This does no longer apply.
+By default this role is not specified, making review and acceptance of a JEP the responsibility of any interested members of the <<Jenkins community>> with consensus of being sufficient for acceptance.  
+The community may choose to delegate the role of Reviewer to another community entity or individual contributor. 
+This delegation will be made only based on consensus of any interested members including the intended Reviewer.  
+Delegation may be revoked only with the consensus of any interested members aside from the currently assigned reviewer. 
+A Reviewer may decline or resign from the role but cannot assign or delegate it to anyone else.
 
 === Deprecated terms
 
@@ -232,7 +230,7 @@ The terms are listed here for historical reference reasons.
 
 ==== Sponsor
 
-The term is replaced by _Champion_.
+The term is replaced by <<Champion>>.
 
 ==== BDFL Delegate
 
@@ -904,7 +902,7 @@ which may be pushed directly given the change was already discussed
 and agreed to elsewhere.
 
 [[transferring]]
-=== Transferring JEP Championship
+=== Transferring JEP Champion role
 
 It occasionally becomes necessary to transfer the role to a
 new champion. In general, it is preferable to retain the original champion as
@@ -1182,7 +1180,7 @@ Initial release:
 * link:https://github.com/jenkinsci/jep/pull/12[PR 12]
 * link:https://github.com/jenkinsci/jep/pull/19[PR 19]
 * link:https://github.com/jenkinsci/jep/pull/76[PR 76]
-
+* link:https://github.com/jenkinsci/jep/pull/359[PR 359] 
 == Change history
 
 This section lists major changes in this process JEP.
