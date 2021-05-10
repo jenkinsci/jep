@@ -70,6 +70,7 @@ We will describe these two groups of changes separately.
 
 === Core
 
+
 TODO: Describe the API exposed by Core that is being removed. What does the API provide.
 TODO: Note that Core does not use this API at all.
 
@@ -313,8 +314,8 @@ PRs filed
 
 == References
 
-* link:https://commons.apache.org/proper/commons-digester/[Apache Commons Digester]
-* link:https://issues.jenkins.io/browse/JENKINS-65161
+* link:https://commons.apache.org/proper/commons-digester[Apache Commons Digester]
+* link:https://issues.jenkins.io/browse/JENKINS-65161[JENKINS-65161]
 * link:https://github.com/jenkinsci/jenkins/pull/5320[jenkinsci/jenkins#5320]
-* link:https://groups.google.com/g/jenkinsci-dev/c/m2fEX5ALvbg/m/ZGeLMwcsBAAJ - Discussion of removal
+* link:https://groups.google.com/g/jenkinsci-dev/c/m2fEX5ALvbg/m/ZGeLMwcsBAAJ[jenkins-dev: Removing commons-digester from Jenkins Core]
 
