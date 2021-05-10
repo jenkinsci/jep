@@ -70,21 +70,42 @@ We will describe these two groups of changes separately.
 
 === Core
 
-
-TODO: Describe the API exposed by Core that is being removed. What does the API provide.
-TODO: Note that Core does not use this API at all.
+Jenkins Core implemented 
+link:https://github.com/jenkinsci/jenkins/blob/22fcc54bd3879c765b5595371e57fd180860daff/core/src/main/java/hudson/util/Digester2.java[`hudson.util.Digester2`] 
+which extended `org.apache.commons.digester.Digester`
+attempting to set secure parsing defaults to prevent XXE (XML External Entity) vulnerabilities.
+Neither class was used by Jenkins Core, `hudson.util.Digester2` was purely provided as a helper for plugins.
 
 === Plugins
 
 Plugins will need to be updated to avoid breaking during this change.
 The changes needed are relatively straightforward.
 Assuming the dependency cannot be removed, the code changes needed are generally not complex.
-Most effected plugins
-
 
 ==== Example change to plugin code
 
-TODO: Example from PR
+Plugins can be updated using the following code snippet: 
+
+[source,java]
+----
+import org.apache.commons.digester3.Digester;
+....
+public static Digester createDigester(boolean secure) throws SAXException {
+    Digester digester = new Digester();
+    if (secure) {
+        digester.setXIncludeAware(false);
+        try {
+            digester.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            digester.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            digester.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            digester.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        } catch (ParserConfigurationException ex) {
+            throw new SAXException("Failed to securely configure xml digester parser", ex);
+        }
+    }
+    return digester;
+}
+----
 
 ==== Effected plugins (fixes planned)
 
