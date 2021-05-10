@@ -1055,39 +1055,62 @@ but that existing RFC was a good justification for keeping the terms.
 
 === Limits of BDFL model
 
-During the original discussion of the JEP process in 2017,
-people expressed concern over the limits of the current model where the BDFL
+People expressed concern over the limits of the current model where the BDFL
 has final say in a number of steps.
 They felt having 1-person bottlenecks in the JEP process could be problematic.
 The BDFL delegating to others addressed some of that,
-but proved to not be efficient in longer run.
+but proved to not be efficient. 
+The current model is based on community consensus with optional delegation. 
 
-In 2021 the process was updated so that the standard link:https://www.jenkins.io/project/governance[Decision making process] applies.
-The decision maybe either made by the <<Jenkins community>> or delegated to another 
-project entity as documented above.
-Issues mentioned in 2017 in relation to this approach:
+=== Replaced BDFL with community consensus
 
-* **Voting policy** - a voting policy would need to be established,
-outlining what percentage of the meeting would need to vote for or against a JEP.
-** **RESOLUTION: ** A standard consensus building process applies.
-   If the community fails to reach the consensus, the standard escalation process applies.
+In May of 2021, JEP-1 was modified according to the discussion in 
+link:https://groups.google.com/g/jenkinsci-dev/c/hepntz6WZak[this thread] and the Jenkins governance meeting.
+The goal was to simplify the process by removing the BDFL delegation bottleneck and adopting the standard community decision making process instead.
+
+Key changes:
+
+* Replace the former BDFL-driven review and acceptance process with the standard
+  link:https://www.jenkins.io/project/governance/#meeting[decision making process]
+  documented in the governance document.
+  This includes community consensus as the default model with the Jenkins project Governance meeting to have final say if consensus cannot be reached.
+  The <<BDFL>> role no longer includes JEP reviews or decision making.
+* Deprecate the <<BDFL Delegate>> role.
+  This change also deprecates link:https://github.com/jenkinsci/jep/blob/master/jep/1/README.ado[JEP-9: How BDFL Delegates],
+  because the delegation is no longer needed.
+* Change the name of the <<Sponsor>> role to <<Champion>>
+* Introduce the new <<Advisor>>.
+* Define the minimum 7 calendar days period between when the JEP is approved by the <<Reviewer>> and transferred
+  to the Accepted state.
+
+=== Limits of community consensus model
+
+In 2021 the process was updated use the standard
+link:https://www.jenkins.io/project/governance[Decision making process] 
+of the Jenkins project for review and acceptance of JEPs.
+The decision to accept a JEP can either made by a consensus of interested members of the <<Jenkins community>> 
+or delegated to another project entity or individual.
+In the case of disputes that cannot be resolved by consensus, the Governance board may be asked to render a decision.
+This model has worked well for the Jenkins project in general and we believe it can also work well for JEPs.
+
+This hybrid model addresses most concerns: 
+
+* **Difficulties of Consensus building** - making decisions purely via consensus can be extremely challenging.
+  The option to delegate or in extreme cases appeal to the Governance board provides a backstop in cases where 
+  consensus cannot be reached. 
 * **Committee vs Delegation** - a strictly committee-approval approach
-may not result in good decisions being made in a timely manner. For example,
-only a few people are qualified to make decisions on Remoting.
-It would be difficult for a group of people in `#jenkins-meeting` to vote
-sensibly on a JEP relating to Remoting which most of them don't fully understand.
-Delegation to experts and stakeholders is much more likely to produce high quality improvements.
-** **RESOLUTION: ** The <<Jenkins community>> can decide to delegate the decision to another
-  community entity including but not limited to teams, special interest groups or maintainer teams.
-* **Lack of established process** - structured technical decision making
-in the Jenkins project (as outlined in this JEP) is still in its early stages.
-** **RESOLUTION: ** The <<Jenkins community>> is expected to make a decision or,
-  if there is not enough expertise to make a technical decision,
-  to delegate the decision to another community entity.
-
+  may not result in good decisions being made in a timely manner. For example,
+  only a few people are qualified to make decisions on Remoting.
+  It could be difficult for a group of people in `#jenkins-meeting` to vote
+  sensibly on a JEP relating to Remoting which most of them don't fully understand.
+  For this reason, delegation to experts and stakeholders is much more likely to produce high quality improvements.
+* **Building on established process** - structured technical decision making
+  in the Jenkins project (as outlined in this JEP) is still being refined.
+  Building on the existing decision making process reduces confusion and complexity.  
+  
 Another alternative would be to create some sort of "Technical Steering Committee",
-separate from Governance, to do this job for **Standard Track** and **Informational** JEPs.
-Creation of such a committee is considered for the future.
+separate from Governance, to do reivew **Standard Track** and **Informational** JEPs.
+Creation of such a committee may be considered at some future date. 
 
 === Timeliness
 
@@ -1105,7 +1128,7 @@ For example, regarding the review process, one person mentioned put forward,
 link:https://github.com/jenkinsci/jep/pull/1#discussion-diff-139636422R362[this possible outline].
 
 For now, we have chosen to add a "<<Scheduling and timeframes>>" section
-and not to set specific timeframes for action or response.
+and mostly not to set specific timeframes for action or response.
 Attempting to set exact limits on a volunteer organization could lead to more
 difficulties than leaving the timing up to the contributors to each JEP.
 
@@ -1113,8 +1136,8 @@ difficulties than leaving the timing up to the contributors to each JEP.
 
 Some contributors were concerned that changes to a component
 "must be the same license as the component the proposal is
-meant to added to (or MIT licensed by default)."
-The mentioned that  some companies strictly require "Apache v.2",
+meant to be added to (or MIT licensed by default)."
+They mentioned that some companies strictly require "Apache v.2",
 because MIT is not explicit about the patent release.
 By setting this condition we explicitly require contributors
 to create at least a prototype implementation with the MIT license,
@@ -1181,26 +1204,4 @@ Initial release:
 * link:https://github.com/jenkinsci/jep/pull/19[PR 19]
 * link:https://github.com/jenkinsci/jep/pull/76[PR 76]
 * link:https://github.com/jenkinsci/jep/pull/359[PR 359] 
-== Change history
 
-This section lists major changes in this process JEP.
-
-=== May TODO, 2021
-
-JEP-1 was modified according to the discussion in link:https://groups.google.com/g/jenkinsci-dev/c/hepntz6WZak[this thread] and the Jenkins governance meeting.
-The goal is to simplify the process by removing the BDFL delegation bottleneck and adopting the standard community decision making process instead.
-
-Key changes:
-
-* Replace the former BDFL-driven review and acceptance process by the standard
-  link:https://www.jenkins.io/project/governance/#meeting[decision making process]
-  documented in the governance document.
-  The <<BDFL>> role does no longer include JEP reviews and decision making.
-* Deprecate the <<BDFL Delegate>> role.
-  This change also deprecates link:https://github.com/jenkinsci/jep/blob/master/jep/1/README.ado[JEP-9: How BDFL Delegates],
-  because the delegation is no longer needed.
-* Update <<Limits of BDFL model>> reasoning to document the current state and reasons which led to the change.
-* Replace the <<Sponsor>> role by <<Champion>>
-* Introduce the new <<Advisor>> role.
-* Define the minimum 7 calendar days period between the JEP is approved by the <<Reviewer>> and transferred
-  to the Accepted state.
