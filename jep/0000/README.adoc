@@ -65,14 +65,34 @@ This JEP describes the steps taken to remove link:https://commons.apache.org/pro
 
 == Specification
 
+Removing link:https://commons.apache.org/proper/commons-digester/[Apache Commons Digester] from Jenkins Core requires changes to Core and to a number of plugins. 
+We will describe these two groups of changes separately.
+
 === Core
 
-
-
+TODO: Describe the API exposed by Core that is being removed. What does the API provide. 
+TODO: Note that Core does not use this API at all. 
 
 === Plugins
 
-Below is a table of the effected plugins and the actions taken in relation to each. 
+Plugins will need to be updated to avoid breaking during this change. 
+The changes needed are relatively straightforward.
+Assuming the dependency cannot be removed, the code changes needed are generally not complex. 
+Most effected plugins 
+
+
+==== Example change to plugin code
+
+TODO: Example from PR
+
+==== Effected plugins (fixes planned)
+
+
+Below is a table of the effected plugins with PRs submitted to fix their breaks.  
+These PRs may or may not be merged before removal is complete, depending on whether 
+maintainers merge and release the submitted PRs.   
+
+This table will be updated as needed to track the state of each plugin. 
 
 Legend:
 
@@ -110,7 +130,13 @@ Legend:
 | :stop_sign: (no maintainer)                                                                                    | link:https://github.com/jenkinsci/cmvc-plugin[cmvc]                               |  link:https://github.com/jenkinsci/cmvc-plugin/pull/3[jenkinsci/cmvc-plugin#3]  (last activity 9 years ago...)                                                                                                                                | 18                          |
 |===
 
-==== Plugins that got suspended
+
+==== Effected plugins (no fixes planned)
+
+===== Suspended plugins
+
+Some plugins were found which were suspended when Jenkins 2 was released. 
+These will not be updated as part of this effort.  
 
 * https://plugins.jenkins.io/svn-release-mgr suspended since https://issues.jenkins-ci.org/browse/INFRA-2487
 * https://github.com/jenkinsci/cpptest-plugin suspended since https://issues.jenkins-ci.org/browse/INFRA-2487
@@ -120,13 +146,15 @@ Legend:
 * https://github.com/jenkinsci/rtc-plugin (superseded by team-concert)
 
 
-==== Never released
+===== Never released plugins
+
+Some plugins were found which were suspended when Jenkins 2 was released. 
+These will not be updated as part of this effort.  
 
 * https://github.com/jenkinsci/cocoemma-plugin
 * https://github.com/jenkinsci/jwsdp-sqe-plugin
 * https://github.com/jenkinsci/pucm-plugin
 * https://github.com/jenkinsci/purecm-plugin
-
 
 
 == Motivation
@@ -158,7 +186,6 @@ We decided against creating a detached pluging because there were a small number
 The creating and maintaining a detached plugin would still be a significant amount of work and would cause the security vulnerabilities we are trying to address to remain open.
 
 
-
 == Backwards Compatibility
 
 The current plan causes plugins which depend on Jenkins to provide Digester to fail unless they are updated.  
@@ -183,8 +210,9 @@ PRs filed
 
 == References
 
-* https://issues.jenkins.io/browse/JENKINS-65161
-*  link:https://github.com/jenkinsci/jenkins/pull/5320[jenkinsci/jenkins#5320]
-* https://groups.google.com/g/jenkinsci-dev/c/m2fEX5ALvbg/m/ZGeLMwcsBAAJ - Discussion of removal
+* link:https://commons.apache.org/proper/commons-digester/[Apache Commons Digester]
+* link:https://issues.jenkins.io/browse/JENKINS-65161
+* link:https://github.com/jenkinsci/jenkins/pull/5320[jenkinsci/jenkins#5320]
+* link:https://groups.google.com/g/jenkinsci-dev/c/m2fEX5ALvbg/m/ZGeLMwcsBAAJ - Discussion of removal
 
 
