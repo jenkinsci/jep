@@ -1,4 +1,4 @@
-= JEP-0000: Remove commons-digester dependency from Jenkin Core
+= JEP-0000: Remove commons-digester dependency from Jenkins Core
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -16,7 +16,7 @@ endif::[]
 | 0000
 
 | Title
-| Remove commons-digester dependency from Jenkin Core
+| Remove commons-digester dependency from Jenkins Core
 
 | Sponsor
 | link:https://github.com/olamy[Olivier Lamy], link:https://github.com/bitwiseman[Liam Newman]
@@ -214,5 +214,4 @@ PRs filed
 * link:https://issues.jenkins.io/browse/JENKINS-65161
 * link:https://github.com/jenkinsci/jenkins/pull/5320[jenkinsci/jenkins#5320]
 * link:https://groups.google.com/g/jenkinsci-dev/c/m2fEX5ALvbg/m/ZGeLMwcsBAAJ - Discussion of removal
-
 
