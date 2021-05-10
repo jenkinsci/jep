@@ -287,7 +287,7 @@ These will not be updated as part of this effort.
 The link:https://commons.apache.org/proper/commons-digester/[Apache Commons Digester] that was included as a dependency of Jenkins Core is old and poorly maintained.
 It contains security vulnerabilities and also is not actually used by any part of Jenkins Core itself.
 Jenkins Core exposes an API to plugin that mitigates some of these security issues, but it is not the job of Jenkins to do this.
-Instead, we should remove the Digester dependency from Jenkins Coret and the plugins that actually use Digester should handle these security concerns themselves.
+Instead, we should remove the Digester dependency from Jenkins Core and the plugins that actually use Digester should handle these security concerns themselves.
 Also, because it is a dependency of Core, some plugins have taken a dependency on Digester being provided by Jenkins rather than using the API provided by Jenkins.
 
 Plugins in either of these scenarios will need to be updated or they will break after this removal.
@@ -339,4 +339,3 @@ PRs filed
 * link:https://issues.jenkins.io/browse/JENKINS-65161[JENKINS-65161]
 * link:https://github.com/jenkinsci/jenkins/pull/5320[jenkinsci/jenkins#5320]
 * link:https://groups.google.com/g/jenkinsci-dev/c/m2fEX5ALvbg/m/ZGeLMwcsBAAJ[jenkins-dev: Removing commons-digester from Jenkins Core]
-
