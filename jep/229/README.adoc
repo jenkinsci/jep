@@ -78,7 +78,7 @@ with some refinements at the component/plugin build level and new work at the or
 
 === Component setup
 
-link:https://github.com/jenkinsci/incrementals-tools#superseding-maven-releases[Incrementals: superseding Maven releases]
+link:https://www.jenkins.io/redirect/continuous-delivery-of-plugins[Setting up automated plugin release]
 describes how to configure a repository to be `deploy`’able to Jenkins Artifactory without using `maven-release-plugin` (MRP).
 
 Then GitHub Actions can be used to do this automatically after `master` builds succeed in Jenkins.
@@ -378,6 +378,6 @@ implement most of the logic of the CD process.
 
 == References
 
-* link:https://github.com/jenkinsci/incrementals-tools#superseding-maven-releases[Incrementals: superseding Maven releases]
+* link:https://www.jenkins.io/redirect/continuous-delivery-of-plugins[Setting up automated plugin release]
 * link:https://github.com/jenkinsci/log-cli-plugin[`log-cli` plugin]
 * link:https://github.com/jenkins-infra/repository-permissions-updater#about[Repository Permissions Updater] (RPU)
