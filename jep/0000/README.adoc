@@ -107,10 +107,10 @@ public static Digester createDigester(boolean secure) throws SAXException {
 }
 ----
 
-==== Effected plugins (fixes planned)
+==== Affected plugins (fixes planned)
 
 
-Below is a table of the effected plugins with PRs submitted to fix their breaks.
+Below is a table of the affected plugins with PRs submitted to fix their breaks.
 These PRs may or may not be merged before removal is complete, depending on whether
 maintainers merge and release the submitted PRs.
 
@@ -118,9 +118,9 @@ This table will be updated as needed to track the state of each plugin.
 
 Legend:
 
-* :heavy_check_mark: - Fixed or no need to fix
-* :stop_sign: 	     - It's not going to be fixed (no maintainer mainly)
-* :exclamation: 	 - Waiting for something (merge or release)
+* :heavy_check_mark: Fixed or no need to fix
+* :stop_sign: 	     It's not going to be fixed (no maintainer mainly)
+* :exclamation: 	 Waiting for something (merge or release)
 
 [cols="1,1,4,1",options="header"]
 |===
@@ -256,7 +256,7 @@ Legend:
 |===
 
 
-==== Effected plugins (no fixes planned)
+==== Affected plugins (no fixes planned)
 
 ===== Suspended plugins
 
@@ -273,7 +273,7 @@ These will not be updated as part of this effort.
 
 ===== Never released plugins
 
-Some plugins were found which were suspended when Jenkins 2 was released.
+Some plugins were never released.
 These will not be updated as part of this effort.
 
 * https://github.com/jenkinsci/cocoemma-plugin
@@ -299,16 +299,16 @@ Plugins in either of these scenarios will need to be updated or they will break 
 We chose to remove Digester from Jenkins Core in a manner that causes plugins which depend on it to fail unless they are updated.
 We made this choice based on an analysis of all plugins which are currently distributed by the Jenkins Update Center or which are
 in a repository in the link:https://github.com/jenkinsci[`jenkinsci` org on GitHub].
-All but a few of the plugins effected by this change are some combination of unmaintained, rarely used, and no longer or never published.
-We submitted PRs to all effected plugins.
+All but a few of the plugins affected by this change are some combination of unmaintained, rarely used, and no longer or never published.
+We submitted PRs to all affected plugins.
 
 
 === Detached plugin to maintain compatibility
 
 The current plan causes plugins which depend on Jenkins to provide Digester to fail unless they are updated.
 This could be mitigated by moving this dependency to a detached plugin.
-We decided against creating a detached pluging because there were a small number effected plugins and only a few of them have significant install base.
-The creating and maintaining a detached plugin would still be a significant amount of work and would cause the security vulnerabilities we are trying to address to remain open.
+We decided against creating a detached pluging because there were a small number of affected plugins and only a few of them have significant install base.
+The creating and maintaining of a detached plugin would still be a significant amount of work and would cause the security vulnerabilities we are trying to address to remain open.
 
 
 == Backwards Compatibility
@@ -327,7 +327,7 @@ There are no new infrastructure requirements related to this proposal.
 
 == Testing
 
-There are not testing issues related to this proposal.
+There are no testing issues related to this proposal.
 
 == Prototype Implementation
 
