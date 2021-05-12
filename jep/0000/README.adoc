@@ -84,7 +84,11 @@ Assuming the dependency cannot be removed, the code changes needed are generally
 
 ==== Example change to plugin code
 
-Plugins can be updated using the following code snippet: 
+Plugins may be better off not using Digester at all, taking this opportunity to replace some scary-looking reflection with plain old Java programming.
+The changes needed in that case will vary depending on the plugin, but an example can be seen in
+link:https://github.com/jenkinsci/mercurial-plugin/commit/84af58b08f80bb92792f7bc04a31487f3eeee95a[jenkinsci/mercurial-plugin @ `84af58b`]
+
+If making that more significant change is not an feasible, plugins can be updated using the following code snippet to configure Digester with more secure settings: 
 
 [source,java]
 ----
