@@ -1,4 +1,4 @@
-= JEP-200: Switch Remoting/XStream denylist to a permitlist
+= JEP-200: Switch Remoting/XStream denylist to a allowlist
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -16,7 +16,7 @@ endif::[]
 | 200
 
 | Title
-| Switch Remoting/XStream denylist to a permitlist
+| Switch Remoting/XStream denylist to a allowlist
 
 | Sponsor
 | link:https://github.com/jglick[Jesse Glick]
@@ -65,9 +65,9 @@ endif::[]
 Since its early days, Jenkins has used two object serialization frameworks:
 Java’s built-in API, from the Remoting layer;
 and XStream, for persisting configuration and settings.
-Both permit any Java class to be loaded merely by specifying its name in the input.
+Both allow any Java class to be loaded merely by specifying its name in the input.
 
-This proposal switches the denylist to a permitlist of a few dozen entries:
+This proposal switches the denylist to a allowlist of a few dozen entries:
 for Jenkins to process a third-party class, it must be explicitly approved.
 Classes defined in Jenkins core or plugins are exempt, as are a few special categories.
 
@@ -89,14 +89,14 @@ The new filter has several levels of rules:
 * Some classes defined in test utilities, by mocking frameworks, etc., are accepted when running inside tests.
 * Classes defined in a `RemoteClassLoader` (so, already sent to this JVM from a presumably trusted source) are accepted.
   This is needed at least by CloudBees Jenkins Operations Center, and clients of the `master-to-master-api` plugin if there are any.
-* Any other class is accepted if it is explicitly mentioned in a list `permitlisted-classes.txt` bundled in Jenkins core. These consist of:
+* Any other class is accepted if it is explicitly mentioned in a list `whitelisted-classes.txt` bundled in Jenkins core. These consist of:
 ** Basic Java utility types (see the reference implementation).
 ** Some other collection types defined in Google Guava.
 ** A handful of safe types defined in some libraries used by Jenkins core.
 ** A handful of types used by some plugins known to otherwise fail: Git, Pipeline, Maven, Job DSL, etc.
 
-The permitlist has been built up by repeatedly running a large array of tests against a patched core and collecting relevant errors.
-It is expected that the standard permitlist will be expanded somewhat as field reports arrive of less common code paths needing new entries.
+The allowlist has been built up by repeatedly running a large array of tests against a patched core and collecting relevant errors.
+It is expected that the standard allowlist will be expanded somewhat as field reports arrive of less common code paths needing new entries.
 
 When a class is (first) rejected, a warning is printed to the system log.
 This is particularly useful when scanning large automated test results for regressions caused by this change.
@@ -104,7 +104,7 @@ Typically the rejection will also trigger an exception which gets displayed in s
 
 === Extensibility
 
-Plugin developers will be able to permit the classes in their libraries/plugins using
+Plugin developers will be able to allow the classes in their libraries/plugins using
 the following approaches:
 
 0. By providing a custom `META-INF/hudson.remoting.ClassFilter` resource file in their plugin
@@ -112,7 +112,7 @@ the following approaches:
 ** Old Hudson plugins **may** need an update to be processed as Jenkins plugins by the extensions mentioned above.
 ** The manifest should have `Short-Name`, and any of `Plugin-Version`/`Jenkins-Version` entries
 ** The entries are known to be fine for Jenkins/Hudson plugin POM versions newer than 1.320 (with default maven-hpi-plugin settings)
-0. By implementing the `CustomClassFilter` extension point, for dynamic permitlists—for example, all implementations of some interface.
+0. By implementing the `CustomClassFilter` extension point, for dynamic allowlists—for example, all implementations of some interface.
 
 === Rollout plan
 
@@ -138,7 +138,7 @@ Target date: Jan 13, 2017
 0. The JEP sponsor will write an announcement blogpost, which will describe the change and provide links to mitigation guidelines
 ** This blog-post will be used as part of the upgrade guideline for LTS
 ** Upgrade guidelines should explicitly recommend backing up the instance before the upgrade
-** Upgrade guidelines will also provide permitlist management guidelines to plugin developers
+** Upgrade guidelines will also provide allowlist management guidelines to plugin developers
 ** The blog post will include a reference to a
 link:https://wiki.jenkins.io/display/JENKINS/Plugins+affected+by+fix+for+JEP-200[Plugins affected by JEP-200] Wiki page,
 which will be providing info to Jenkins administrators about new discoveries if any.
@@ -154,7 +154,7 @@ will be responsible to provide an extra support for the issues:
 Finally, they are expected to communicate the triage outcome.
 * Possible triage outcomes:
 ** Accepted - patch in the plugin. Patch to be proposed by _JEP-200 maintainer(s)_
-** Accepted - update permitlist in the core (similar to link:https://github.com/jenkinsci/jenkins/pull/3120/files#diff-ff24cb984ddd641f49a22cc13a90cfd3[these cases]),
+** Accepted - update allowlist in the core (similar to link:https://github.com/jenkinsci/jenkins/pull/3120/files#diff-ff24cb984ddd641f49a22cc13a90cfd3[these cases]),
 patch to be proposed by _JEP-200 maintainer(s)_
 ** Rejected - functional defect.
 _JEP-200 maintainer(s)_ are **not responsible** to fix any issue,
@@ -199,11 +199,11 @@ Typically the attacks involve fairly exotic classes in the Java Platform, or sun
 The Jenkins CERT has responded to such reports reactively, by prohibiting the affected classes or packages.
 That approach has proven unmaintainable, as there is a constant threat of further exploits using unexamined classes.
 
-This proposal switches the denylist to a permitlist of a few dozen entries.
+This proposal switches the denylist to a allowlist of a few dozen entries.
 
-In practice it seems that very few plugins actually need to serialize any (third-party) types outside the permitlist.
+In practice it seems that very few plugins actually need to serialize any (third-party) types outside the allowlist.
 Many such cases point to dubious design decisions, but to retain compatibility a few such entries are bundled in core.
-Plugins or administrators can also expand the permitlist if regressions arise.
+Plugins or administrators can also expand the allowlist if regressions arise.
 
 The past few years have seen a flurry of activity by security researchers regarding Java deserialization vulnerabilities.
 The `ysoserial` attack library has been created to host standard "gadgets";
@@ -234,9 +234,9 @@ Similarly, after 2017-02-01 a potential attack vector involving console notes (m
 these must now be signed by a key available only inside Jenkins, and deserialization is only performed after successful signature verification.
 
 However, deserialization is still performed on data an attacker could control in two cases.
-Messages sent from an agent to the Jenkins controller (unprompted, or responses to requests) are normally passed through a "callable permitlist" as of
+Messages sent from an agent to the Jenkins controller (unprompted, or responses to requests) are normally passed through a "callable allowlist" as of
 link:https://jenkins.io/security/advisory/2014-10-30/[2014-10-30].
-This permitlist is only applied _after_ deserializing the message, though, at which point it may be too late.
+This allowlist is only applied _after_ deserializing the message, though, at which point it may be too late.
 Since an agent JVM is assumed to be compromisable with a little effort by a rogue build (for example, of a malicious pull request),
 the controller must apply a filter on incoming classes.
 
@@ -253,7 +253,7 @@ This is not considered a security issue since the `program.dat` files are never 
 
 The CERT team could continue to expand the denylist in response to newly reported vulnerabilities.
 This has proven to be a significant maintenance burden, and there is little trust in the result.
-Outside security authorities have repeatedly urged the Jenkins team to switch to a permitlist.
+Outside security authorities have repeatedly urged the Jenkins team to switch to a allowlist.
 
 Jenkins could theoretically switch to other designs that do not involve Java object deserialization.
 In practice this would be wildly incompatible, requiring a rewrite of much of Jenkins core and most plugins.
@@ -263,7 +263,7 @@ This would be a gigantic list, however, and would consist mostly of types define
 it is perfectly common to define callables, settings, or nested "structs" in a plugin for purposes of communication or persistence.
 It seems a reasonable compromise to expect that classes defined specifically for use in Jenkins not expose unsafe deserialization behaviors.
 
-In the other direction, it would be possible to reduce the size of the permitlist
+In the other direction, it would be possible to reduce the size of the allowlist
 by automatically approving any third-party class which does not define a custom deserialization method such as `readResolve`.
 (There are some tricky points here involving subclasses, since the Serialization specification allows some inheritance of behaviors.)
 This would defend against the most obvious attacks which involve unexpected code execution during deserialization of the exploited class itself.
@@ -271,7 +271,7 @@ However, some more subtle gadgets rely on a combination of behaviors:
 custom deserialization methods in quite standard classes (usually some kind of collection) which call methods like `equals` or `hashCode` on elements;
 and unusual classes which have unsafe implementations of these methods.
 Some experimentation was done on this strategy,
-but in fact the permitlist size increase needed to handle third-party classes with no deserialization methods is not dramatic,
+but in fact the allowlist size increase needed to handle third-party classes with no deserialization methods is not dramatic,
 and this seems well worth the added measure of safety and transparency.
 
 http://openjdk.java.net/jeps/290[JDK Enhancement Proposal (JEP) 290] provides a standard way to apply deserialization filters in Java.
@@ -284,11 +284,11 @@ The declarative filters are available in Java 8, but are too limited
 (for example, we cannot automatically approve types defined in Jenkins code);
 these have the advantage of applying to any `ObjectInputStream` in the system,
 but that is only really helpful when defending against attacks like the `SignedObject` exploit in 2017-04-26,
-which was already covered by a denylist entry (and now a lack of permitting as well).
+which was already covered by a denylist entry (and now a lack of allowing as well).
 
-=== Concern about the single permitlist approach
+=== Concern about the single allowlist approach
 
-https://github.com/oleg-nenashev[@oleg-nenashev] raised a concern about using the same permitlist for Remoting and XStream:
+https://github.com/oleg-nenashev[@oleg-nenashev] raised a concern about using the same allowlist for Remoting and XStream:
 
 * With the reference implementation in link:https://github.com/jenkinsci/jenkins/pull/3120[Jenkins PR #3120]
 there is no way to approve serialization only for a single serialization type
@@ -316,7 +316,7 @@ If a need arises, it can been contributed by somebody else.
 
 == Backwards Compatibility
 
-There is an obvious risk that some plugins will have a legitimate need to serialize and deserialize third-party types not covered in the permitlist.
+There is an obvious risk that some plugins will have a legitimate need to serialize and deserialize third-party types not covered in the allowlist.
 In fact it is expected that there will be some such cases;
 this is simply the cost of having a tighter security policy.
 
@@ -326,14 +326,14 @@ Some runs of `acceptance-test-harness` (ATH) were already performed in this mode
 `plugin-compat-tester` (PCT) was also run against an array of plugins.
 See the list in _Appendix A_ for more details.
 
-If new permitlist entries are needed after release, they can be added to core in weekly updates.
-Plugins can also contribute their own permitlist (or even denylist) entries for third-party libraries they bundle,
+If new allowlist entries are needed after release, they can be added to core in weekly updates.
+Plugins can also contribute their own allowlist (or even denylist) entries for third-party libraries they bundle,
 as described in Extensibility above.
 
-Finally, an individual administrator can define site-specific permitlist (or denylist) entries with a system property `hudson.remoting.ClassFilter`.
-This could be useful as an emergency measure, permitting functionality to be restored while awaiting a new plugin release.
+Finally, an individual administrator can define site-specific allowlist (or denylist) entries with a system property `hudson.remoting.ClassFilter`.
+This could be useful as an emergency measure, allowing functionality to be restored while awaiting a new plugin release.
 (Such a command-line option could be noted as a workaround in a JIRA bug report by someone familiar with the Jenkins security architecture.)
-`jenkins.security.ClassFilterImpl.SUPPRESS_WHITELIST` disables the permitlist, logging violations, but keeps the denylist;
+`jenkins.security.ClassFilterImpl.SUPPRESS_WHITELIST` disables the allowlist, logging violations, but keeps the denylist;
 `jenkins.security.ClassFilterImpl.SUPPRESS_ALL` disables them both (which is very dangerous).
 
 == Security
@@ -344,7 +344,7 @@ as the existing denylist is retained as a fallback unless deliberately overridde
 == Infrastructure Requirements
 
 A new redirect `https://jenkins.io/redirect/class-filter/` has been offered, pointing to a wiki page.
-This permalink is printed to log messages appearing when a permitlist violation is encountered;
+This permalink is printed to log messages appearing when a allowlist violation is encountered;
 in these cases plugin developers or administrators are likely to need instructions on how to proceed.
 
 == Testing
@@ -354,10 +354,10 @@ Additional testing has been performed during the JEP-200 review in order to eval
 Testing notes for the JEP review phase can be found in _Appendix A_ and the linked documents.
 
 The reference implementation includes test coverage for the essential aspects of the newly added filter:
-for example, that an example library class not currently included in the permitlist is rejected under the expected conditions.
+for example, that an example library class not currently included in the allowlist is rejected under the expected conditions.
 
 A number of core tests had already been added during various advisories as mentioned in the motivation.
-When the fallback to the original denylist is disabled, these continue to pass, indicating that the permitlist alone is a good defense.
+When the fallback to the original denylist is disabled, these continue to pass, indicating that the allowlist alone is a good defense.
 (In a few cases, some technical changes had to made to these tests to ensure that they exercised a realistic code path.)
 
 The interesting testing is however driven by scanning ATH and PCT results for failures mentioning certain keywords,
@@ -369,9 +369,9 @@ was already detected by an automated test run, and a simple fix proposed and mer
 
 Testing against this proposal also rediscovered
 link:https://issues.jenkins-ci.org/browse/JENKINS-47158[JENKINS-47158],
-though sufficient reasonable permitlist entries were added to not cause regressions for Blue Ocean even if that were not fixed.
+though sufficient reasonable allowlist entries were added to not cause regressions for Blue Ocean even if that were not fixed.
 
-In several cases, test failures and consequent permitlist additions highlighted poor design decisions in existing code.
+In several cases, test failures and consequent allowlist additions highlighted poor design decisions in existing code.
 For example, as of
 link:https://github.com/jenkinsci/git-plugin/pull/497[PR 497]
 the `git` plugin does a lot of tricky things with the Eclipse JGit library.
@@ -380,7 +380,7 @@ In this case, `GitSCM.printCommitMessageToLog` asks the agent to return a `RevCo
 which is serialized and deserialized, and then the controller calls `getShortMessage()` on that structure.
 It would be simpler, faster, and safer to do this processing on the agent and send back a `String`,
 but the deceptive ease of Remoting tempts developers to do the wrong thing.
-Enforcing a permitlist in the baseline version of Jenkins might help guide them to the simpler solution.
+Enforcing a allowlist in the baseline version of Jenkins might help guide them to the simpler solution.
 
 Functional tests (using `JenkinsRule`) which employ mocking frameworks (Mockito / PowerMock)
 force the new filter to be disabled, as the changes to class loading prevent normal operation.
