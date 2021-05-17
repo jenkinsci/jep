@@ -288,17 +288,33 @@ These will not be updated as part of this effort.
 
 == Motivation
 
-The link:https://commons.apache.org/proper/commons-digester/[Apache Commons Digester] that was included as a dependency of Jenkins Core is old and poorly maintained.
-It is not actually used by any part of Jenkins Core itself.
-It is also inherently risky from a security perspective:
+The link:https://commons.apache.org/proper/commons-digester/[Apache Commons Digester]
+included as a dependency of Jenkins Core is old and poorly maintained.
+Digester and its dependencies have been a source of a number of security vulnerabilities. 
+Examples of this include: 
 
-* XML is overcomplicated and the XML parsing might be subject to XXE, maybe allowing clever attacks to do things like load `../../../credentials.xml`.
-* Even if you make sure it is being fed a plain old self-contained XML document, you are still taking user-controlled strings and using them to look up and invoke Java methods, which is subject to abuse in numerous ways.
-Jenkins Core exposes an API to plugin that mitigates some of these security issues, but it is not the job of Jenkins to do this.
-Instead, we should remove the Digester dependency from Jenkins Core and the plugins that actually use Digester should handle these security concerns themselves.
-Also, because it is a dependency of Core, some plugins have taken a dependency on Digester being provided by Jenkins rather than using the API provided by Jenkins.
+* link:https://nvd.nist.gov/vuln/detail/CVE-2020-2304[CVE-2020-2304]
+* link:https://nvd.nist.gov/vuln/detail/CVE-2020-2305[CVE-2020-2305]
+* link:https://nvd.nist.gov/vuln/detail/CVE-2018-1000054[CVE-2018-1000054]
+* link:https://nvd.nist.gov/vuln/detail/CVE-2018-1000055[CVE-2018-1000055]
 
-Plugins in either of these scenarios will need to be updated or they will break after this removal.
+The version of Digester could be updated, but in some sense any use of Digester is inherently risky from a security perspective:
+
+* XML is overcomplicated and the XML parsing might be subject to XXE, allowing clever attacks to do things like load `../../../credentials.xml`.
+* Even after verifying the input is a plain old self-contained XML document, Digester still takes user-controlled strings and uses them to look up and invoke Java methods, which is subject to abuse in numerous ways.
+
+Over 15 years ago, the `Digester2` class was added to Jenkins Core to address 
+link:https://issues.apache.org/jira/browse/DIGESTER-118[DIGESTER-118].
+In the years since then, all usages of `Digester` and `Digester2` have been removed from Jenkins Core itself.
+They remain only to avoid breaking plugins that depend on `Digester` and `Digester2` .
+
+However, this means that addressing security issues related to `Digester` generally requires an update to Jenkins Core.
+Also, because Digester is a dependency of Core, some plugins continue to use the `Digester` class being provided by from the dependency rather than using the `Digester2` API provided by Jenkins.
+
+The right thing to do is to remove the Digester dependency from Jenkins Core along with the `Digester2` class.
+Then the plugins that actually use Digester can handle any security concerns themselves.
+Plugins that use `Digester` or `Digester2` will need to be updated or they will break after this removal, however only those plugins will need updating.
+The number of plugins affected is relatively small and the minimal change required to unbreak them is relatively straightforward. 
 
 == Reasoning
 
