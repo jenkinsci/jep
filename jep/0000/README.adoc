@@ -334,6 +334,10 @@ This could be mitigated by moving this dependency to a detached plugin.
 We decided against creating a detached pluging because there were a small number of affected plugins and only a few of them have significant install base.
 The creating and maintaining of a detached plugin would still be a significant amount of work and would cause the security vulnerabilities we are trying to address to remain open.
 
+=== Testing limited to known plugins
+
+We considered using `plugin-compat-tester` to test on a broad set of plugins beyond those known to be affected
+(link:https://github.com/jenkinsci/jep/pull/361/files#r633849804[PR thread]). It was decided that the code searches we did within the `jenkinsci` repositories were sufficient. We could not think of any failures that would be caught by the PCT that were not already addressed by the code search. 
 
 == Backwards Compatibility
 
