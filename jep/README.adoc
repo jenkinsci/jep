@@ -232,6 +232,11 @@
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | TBD
 
+| Draft{nbsp}:speech_balloon:
+| link:231/README.adoc[JEP-231: Remove commons-digester dependency from Jenkins Core]
+| link:https://github.com/olamy[Olivier{nbsp}Lamy], link:https://github.com/bitwiseman[Liam{nbsp}Newman]
+| _not{nbsp}delegated_
+
 | Accepted{nbsp}:ok_hand:
 | link:300/README.adoc[JEP-300: Jenkins Evergreen]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
