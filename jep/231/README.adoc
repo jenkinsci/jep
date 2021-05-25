@@ -183,7 +183,7 @@ Legend:
 |  link:https://github.com/jenkinsci/teamconcert-plugin/pull/20[jenkinsci/teamconcert-plugin#20] (last activity/release early 2020)
 | 1640
 
-| :exclamation: awaiting merge
+| :stop_sign: (no maintainer)
 | link:https://github.com/jenkinsci/vs-code-metrics-plugin[vs-code-metrics]
 |  link:https://github.com/jenkinsci/vs-code-metrics-plugin/pull/5[jenkinsci/vs-code-metrics-plugin#5] (last activity/release 2014)
 | 1435
