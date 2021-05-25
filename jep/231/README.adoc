@@ -148,7 +148,7 @@ Legend:
 |  link:https://github.com/jenkinsci/subversion-plugin/pull/254[jenkinsci/subversion-plugin#254]
 | 170k
 
-| :exclamation: merged, waiting for release
+| :heavy_check_mark: link:https://github.com/jenkinsci/cvs-plugin/releases/tag/cvs-2.19[2.19]
 | link:https://github.com/jenkinsci/cvs-plugin[cvs]
 |  link:https://github.com/jenkinsci/cvs-plugin/pull/55[jenkinsci/cvs-plugin#55]
 | 39k
@@ -198,17 +198,17 @@ Legend:
 |  link:https://github.com/jenkinsci/javatest-report-plugin/pull/4[jenkinsci/javatest-report-plugin#4] (last real activity 6 years ago)
 | 440
 
-| :exclamation:  PR in active review, by @mig42
+| :heavy_check_mark: link:https://github.com/jenkinsci/plasticscm-plugin/releases/tag/plasticscm-plugin-3.6[3.6]
 | link:https://github.com/jenkinsci/plasticscm-plugin[plasticscm-plugin]
 |  link:https://github.com/jenkinsci/plasticscm-plugin/pull/40[jenkinsci/plasticscm-plugin#40] (last release late 2020, recent activity)
 | 284
 
-| :stop_sign: (maintainers will mark it for adoption)
+| :heavy_check_mark: link:https://github.com/jenkinsci/clearcase-ucm-plugin/releases/tag/clearcase-ucm-plugin-1.7.3[1.7.3]
 | link:https://github.com/jenkinsci/clearcase-ucm-plugin[clearcase-ucm]
 |  link:https://github.com/jenkinsci/clearcase-ucm-plugin/pull/5[jenkinsci/clearcase-ucm-plugin#5] (last release 2016)
 | 266
 
-| :exclamation: awaiting release
+| :heavy_check_mark: link:https://github.com/jenkinsci/vectorcast-coverage-plugin/releases/tag/vectorcast-coverage-0.17[0.17]
 | link:https://github.com/jenkinsci/vectorcast-coverage-plugin[vectorcast-coverage]
 |  link:https://github.com/jenkinsci/vectorcast-coverage-plugin/pull/4[jenkinsci/vectorcast-coverage-plugin#4] (last release in 2021)
 | 206
@@ -228,7 +228,7 @@ Legend:
 |  link:https://github.com/jenkinsci/genexus-plugin/pull/15[jenkinsci/genexus-plugin#15] (activity Sept 2020 & release in April 2020)
 | 149
 
-| :exclamation: awaiting release
+| :heavy_check_mark: link:https://github.com/jenkinsci/dimensionsscm-plugin/releases/tag/dimensionsscm-0.9.1[0.9.1]
 | link:https://github.com/jenkinsci/dimensionsscm-plugin[dimensionsscm]
 |  link:https://github.com/jenkinsci/dimensionsscm-plugin/pull/21[jenkinsci/dimensionsscm-plugin#21]
 | 113
@@ -248,7 +248,7 @@ Legend:
 |  link:https://github.com/jenkinsci/harvest-plugin/pull/5[jenkinsci/harvest-plugin#5] (last activity 6 years ago)
 | 49
 
-| :exclamation: maintainers testing
+| :heavy_check_mark: link:https://github.com/jenkinsci/plasticscm-mergebot-plugin/releases/tag/plasticscm-mergebot-0.15[0.15]
 | link:https://github.com/jenkinsci/plasticscm-mergebot-plugin[plasticscm-mergebot]
 |  link:https://github.com/jenkinsci/plasticscm-mergebot-plugin/pull/3[jenkinsci/plasticscm-mergebot-plugin#3]  (last active/release late 2019)
 | 55
