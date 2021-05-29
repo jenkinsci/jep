@@ -16,7 +16,7 @@ endif::[]
 | 200
 
 | Title
-| Switch Remoting/XStream denylist to a allowlist
+| Switch Remoting/XStream denylist to an allowlist
 
 | Sponsor
 | link:https://github.com/jglick[Jesse Glick]
@@ -67,7 +67,7 @@ Java’s built-in API, from the Remoting layer;
 and XStream, for persisting configuration and settings.
 Both allow any Java class to be loaded merely by specifying its name in the input.
 
-This proposal switches the denylist to a allowlist of a few dozen entries:
+This proposal switches the denylist to an allowlist of a few dozen entries:
 for Jenkins to process a third-party class, it must be explicitly approved.
 Classes defined in Jenkins core or plugins are exempt, as are a few special categories.
 
@@ -199,7 +199,7 @@ Typically the attacks involve fairly exotic classes in the Java Platform, or sun
 The Jenkins CERT has responded to such reports reactively, by prohibiting the affected classes or packages.
 That approach has proven unmaintainable, as there is a constant threat of further exploits using unexamined classes.
 
-This proposal switches the denylist to a allowlist of a few dozen entries.
+This proposal switches the denylist to an allowlist of a few dozen entries.
 
 In practice it seems that very few plugins actually need to serialize any (third-party) types outside the allowlist.
 Many such cases point to dubious design decisions, but to retain compatibility a few such entries are bundled in core.
@@ -253,7 +253,7 @@ This is not considered a security issue since the `program.dat` files are never 
 
 The CERT team could continue to expand the denylist in response to newly reported vulnerabilities.
 This has proven to be a significant maintenance burden, and there is little trust in the result.
-Outside security authorities have repeatedly urged the Jenkins team to switch to a allowlist.
+Outside security authorities have repeatedly urged the Jenkins team to switch to an allowlist.
 
 Jenkins could theoretically switch to other designs that do not involve Java object deserialization.
 In practice this would be wildly incompatible, requiring a rewrite of much of Jenkins core and most plugins.
@@ -343,7 +343,7 @@ as the existing denylist is retained as a fallback unless deliberately overridde
 
 == Infrastructure Requirements
 
-A new redirect `https://jenkins.io/redirect/class-filter/` has been offered, pointing to a wiki page.
+A new redirect `https://jenkins.io/redirect/class-filter/` has been offered, pointing to documentation for this feature.
 This permalink is printed to log messages appearing when a allowlist violation is encountered;
 in these cases plugin developers or administrators are likely to need instructions on how to proceed.
 
@@ -380,7 +380,7 @@ In this case, `GitSCM.printCommitMessageToLog` asks the agent to return a `RevCo
 which is serialized and deserialized, and then the controller calls `getShortMessage()` on that structure.
 It would be simpler, faster, and safer to do this processing on the agent and send back a `String`,
 but the deceptive ease of Remoting tempts developers to do the wrong thing.
-Enforcing a allowlist in the baseline version of Jenkins might help guide them to the simpler solution.
+Enforcing an allowlist in the baseline version of Jenkins might help guide them to the simpler solution.
 
 Functional tests (using `JenkinsRule`) which employ mocking frameworks (Mockito / PowerMock)
 force the new filter to be disabled, as the changes to class loading prevent normal operation.

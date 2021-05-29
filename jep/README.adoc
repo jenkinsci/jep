@@ -83,7 +83,7 @@
 | TBD
 
 | Final{nbsp}:lock:
-| link:200/README.adoc[JEP-200: Switch Remoting/XStream denylist to a permitlist]
+| link:200/README.adoc[JEP-200: Switch Remoting/XStream denylist to an allowlist]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 
