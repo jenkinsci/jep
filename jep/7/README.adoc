@@ -83,6 +83,7 @@ The multiple Git repositories holding the `ruby-runtime` source code will be arc
 Workarounds in Jenkins core implemented specifically to enable `ruby-runtime` will be reviewed and considered for reversal.
 No future core development will consider the impact on `ruby-runtime` and plugins based on it, and bug reports to core and related components about their impact on `ruby-runtime` and plugins based on it will be closed as *Won't Fix*.
 
+The `jruby` module will be removed from Stapler.
 
 == Motivation
 
