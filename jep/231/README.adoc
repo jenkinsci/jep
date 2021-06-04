@@ -163,12 +163,12 @@ Legend:
 |  link:https://github.com/jenkinsci/clover-plugin/pull/24[jenkinsci/clover-plugin#24]
 | 3521
 
-| :stop_sign: (no maintainer)
+| :heavy_check_mark: link:https://github.com/jenkinsci/emma-plugin/releases/tag/emma-1.31[1.31]
 | link:https://github.com/jenkinsci/emma-plugin[emma]
 |  link:https://github.com/jenkinsci/emma-plugin/pull/11[jenkinsci/emma-plugin#11] (last real activity 6 years ago)
 | 3216
 
-| :stop_sign: (no maintainer)
+| :heavy_check_mark: link:https://github.com/jenkinsci/cloverphp-plugin/releases/tag/cloverphp-0.6[0.6]
 | link:https://github.com/jenkinsci/cloverphp-plugin[cloverphp]
 |  link:https://github.com/jenkinsci/cloverphp-plugin/pull/10[jenkinsci/cloverphp-plugin#10]  (last activity 6 years ago...)
 | 2,801
@@ -183,7 +183,7 @@ Legend:
 |  link:https://github.com/jenkinsci/teamconcert-plugin/pull/20[jenkinsci/teamconcert-plugin#20] (last activity/release early 2020)
 | 1640
 
-| :stop_sign: (no maintainer)
+| :exclamation: awaiting merge
 | link:https://github.com/jenkinsci/vs-code-metrics-plugin[vs-code-metrics]
 |  link:https://github.com/jenkinsci/vs-code-metrics-plugin/pull/5[jenkinsci/vs-code-metrics-plugin#5] (last activity/release 2014)
 | 1435
@@ -223,7 +223,7 @@ Legend:
 |  link:https://github.com/jenkinsci/vss-plugin/pull/8[jenkinsci/vss-plugin#8] (last release/activity 2011)
 | 168
 
-| :stop_sign: (no maintainer)
+| :heavy_check_mark: link:https://github.com/jenkinsci/genexus-plugin/releases/tag/genexus-1.10[1.10]
 | link:https://github.com/jenkinsci/genexus-plugin[genexus]
 |  link:https://github.com/jenkinsci/genexus-plugin/pull/15[jenkinsci/genexus-plugin#15] (activity Sept 2020 & release in April 2020)
 | 149
