@@ -138,7 +138,7 @@ If a channel manager is not available, YouTube account owners or other channel m
 ==== Requesting permissions
 
 Permissions should be requested by creating a new Jenkins JIRA ticket
-(project: *INFRA*, component: *youtube*).
+(project: *INFRA*, component: *account*).
 Requests should contain the following information:
 
 * Justification: purpose of the requests with references to the projects/SIGs
@@ -154,7 +154,7 @@ There is no special process for that.
 YouTube Channel issues are managed in the link:https://issues.jenkins-ci.org/[Jenkins JIRA].
 
 * Project: *INFRA*
-* Component: *youtube*
+* Component: *account*
 
 Security-related issues are managed according to the standard
 link:https://issues.jenkins-ci.org/[Jenkins Security Process].
@@ -204,8 +204,8 @@ Additional requirements are set to ensure the limited access (e.g. Two-factor au
 
 == Infrastructure Requirements
 
-* "youtube" component is created within the Jenkins _INFRA_ project in JIRA
-* "youtube" component is created within the Jenkins _SECURITY_ project in JIRA
+* "account" component is created within the Jenkins _INFRA_ project in JIRA
+* "account" component is created within the Jenkins _SECURITY_ project in JIRA
 
 == Testing
 
