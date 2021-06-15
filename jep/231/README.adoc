@@ -82,13 +82,38 @@ Plugins will need to be updated to avoid breaking during this change.
 The changes needed are relatively straightforward.
 Assuming the dependency cannot be removed, the code changes needed are generally not complex.
 
-==== Example change to plugin code
+==== Example changes to plugin code
+
+===== Removing Digester
 
 Plugins may be better off not using Digester at all, taking this opportunity to replace some scary-looking reflection with plain old Java programming.
 The changes needed in that case will vary depending on the plugin, but an example can be seen in
-link:https://github.com/jenkinsci/mercurial-plugin/commit/84af58b08f80bb92792f7bc04a31487f3eeee95a[jenkinsci/mercurial-plugin @ `84af58b`]
+link:https://github.com/jenkinsci/mercurial-plugin/commit/84af58b08f80bb92792f7bc04a31487f3eeee95a[mercurial-plugin @ `84af58b`]
+and another in
+link:https://github.com/jenkinsci/subversion-plugin/pull/259[subversion-plugin #259].
+In both of these cases, Digester was being used to convert an XML file in a fairly simple format to some POJOs used for changelogs:
 
-If making that more significant change is not an feasible, plugins can be updated using the following code snippet to configure Digester with more secure settings: 
+* Remove the Maven dependency on Digester (and Commons Beanutils if relevant).
+* Use `XMLUtils.parse` to actually parse the file to DOM.
+  (Or you could use DOM4j or other APIs. Just be careful to use XXE-safe parser configurations.)
+* Replace `addObjectCreate` configurations with calls to the POJO constructor in a loop.
+* Replace `addSetProperties` configurations with code to get DOM element attributes and call corresponding POJO setters.
+  (Remember that `""` may be the same as an attribute which is not present.)
+* Replace `addBeanPropertySetter` configurations with checks for child elements whose text content can be bound to POJO setters.
+* Consult Digester Javadoc for other similar configuration methods.
+  Refer to sample XML files read by tests to see what you are parsing.
+
+When you have everything working, consider simplifying the resulting POJO(s) and parser using regular Java refactoring tools.
+The JavaBeans-style pattern preferred by Digester (no-argument constructor plus `public` getter/setter)
+is not necessarily the most legible and maintainable.
+POJO classes could take fields in a package-accessible constructor rather than a setter.
+Getters could be given more limited Java access, if they are not being used e.g. for `@Exported` or `@Override`.
+Field/method names need not match XML attribute/element names if it would be more natural to align with other APIs.
+Look for unused methods and gratuitous `public` modifiers.
+
+===== Securing Digester
+
+If making that more significant change is not feasible, plugins can be updated using the following code snippet to configure Digester with more secure settings: 
 
 [source,java]
 ----
