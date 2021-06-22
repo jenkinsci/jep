@@ -55,18 +55,12 @@ If no suitable BDFL-Delegate can be found, that row may be commented out.
 | BDFL-Delegate
 | TBD
 
-//
-//
-// Uncomment if there is an associated placeholder JIRA issue.
+
 | JIRA
-| https://issues.jenkins.io/browse/JENKINS-42816[JENKINS-42816 renaming Slave to Agent EPIC]
 | https://issues.jenkins.io/browse/JENKINS-65398[JENKINS-65398 renaming Master to Controller/Built-in node ; whitelist and blacklist deprecation]
-//
-//
-// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+
 | Discussions-To
 | https://community.jenkins.io/t/jenkins-terminology-cleanup-initiative-coordination/180
-| https://groups.google.com/u/0/g/jenkinsci-dev/c/x5vdlJDvntw/m/8USafY_RBAAJ
 
 
 |===
@@ -98,7 +92,7 @@ If you find a missing word in some language, please propose a PR on top of this 
 
 === Translations
 
-==== French - property suffix 
+==== French - Français
 
 * property suffix: fr
 
@@ -190,5 +184,8 @@ Provide links to any related documents.
 This will include links to discussions on the mailing list, pull requests, and meeting notes.
 ====
 
-
-
+https://issues.jenkins.io/browse/JENKINS-42816[JENKINS-42816 renaming Slave to Agent EPIC]
+https://issues.jenkins.io/browse/JENKINS-65398[JENKINS-65398 renaming Master to Controller/Built-in node ; whitelist and blacklist deprecation]
+https://community.jenkins.io/t/jenkins-terminology-cleanup-initiative-coordination/180
+https://groups.google.com/u/0/g/jenkinsci-dev/c/x5vdlJDvntw/m/8USafY_RBAAJ [Discussions on controller]
+https://github.com/orgs/jenkinsci/projects/5 [Github board with related PRs]
