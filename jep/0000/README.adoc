@@ -37,7 +37,7 @@ If no suitable BDFL-Delegate can be found, that row may be commented out.
 | 0000
 
 | Title
-| Continuous terminology update and identified offensive words including translations
+| Inclusive terminology guidelines and continuous updates
 
 | Sponsor
 | :bulb: link:https://github.com/aHenryJard[aHenryJard], link:https://github.com/username2[User Name 2] :bulb:
