@@ -1,4 +1,4 @@
-= JEP-0000: :bulb: Continuous terminology update and identified offensive words including translations :bulb:
+= JEP-0000: :bulb: Inclusive terminology guidelines and continuous updates :bulb:
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -40,7 +40,7 @@ If no suitable BDFL-Delegate can be found, that row may be commented out.
 | Inclusive terminology guidelines and continuous updates
 
 | Sponsor
-| :bulb: link:https://github.com/aHenryJard[aHenryJard], link:https://github.com/username2[User Name 2] :bulb:
+| link:https://github.com/aHenryJard[aHenryJard]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
@@ -263,9 +263,12 @@ TBD: stands for "To Be Done", it means that there is no community agreement yet.
 
 == Motivation
 
-There is more and more deprecated words and replacement. Discussions and motivations on new term can be done in discussion channels, but once the descision is made by the community we need to have all deprecated terminology and replacement at one place.
+There is more and more deprecated words and replacement.
+Discussions and motivations on new term can be done in discussion channels, but once the descision is made by the community we need to have all deprecated terminology and replacement at one place.
 
-As updating terminology is a huge work accross all Jenkins ecosystem, we wish to make it easy for new contributor to help. Having deprecated words to search and replacement face to face make it more easy. Having translations deprecated words and replacements is also more easy for maintainer to review PR that are not in native or spoken language.
+As updating terminology is a huge work accross all Jenkins ecosystem, we wish to make it easy for new contributor to help.
+Having deprecated words to search and replacement face to face make it more easy.
+Having translations deprecated words and replacements is also more easy for maintainer to review PR that are not in native or spoken language.
 
 == Reasoning
 
@@ -327,12 +330,6 @@ There are no testing issues related to this proposal.
 ====
 
 == References
-
-[TIP]
-====
-Provide links to any related documents.
-This will include links to discussions on the mailing list, pull requests, and meeting notes.
-====
 
 * https://issues.jenkins.io/browse/JENKINS-42816[JENKINS-42816 renaming Slave to Agent EPIC]
 * https://issues.jenkins.io/browse/JENKINS-65398[JENKINS-65398 renaming Master to Controller/Built-in node ; whitelist and blacklist deprecation]
