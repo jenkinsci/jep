@@ -1,0 +1,194 @@
+= JEP-0000: :bulb: Continuous terminology update and identified offensive words including translations :bulb:
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.**JEP Template**
+[TIP]
+====
+In this document, all text in a "Tip" block (or inline text with with a ":bulb:" on either side)
+MUST be removed and/or replaced with text appropriate to this JEP before submission.
+
+Sections may include additional help and advice in comments.
+":bulb:" entries in comments only need to be filled in if that text is uncommented.
+
+See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for full and accurate description of the JEP process and what is required in each section.
+====
+
+[TIP]
+====
+*BDFL-Delegate* is uncommented by default.
+As part of the in initial conversation or the JEP submission the sponsor should
+look for a BDFL Delegate.
+While not required, it is better for the community if Delegates perform most reviews.
+If no suitable BDFL-Delegate can be found, that row may be commented out.
+====
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 0000
+
+| Title
+| Continuous terminology update and identified offensive words including translations
+
+| Sponsor
+| :bulb: link:https://github.com/aHenryJard[aHenryJard], link:https://github.com/username2[User Name 2] :bulb:
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Informational
+
+| Created
+| Date (2021-06-22)
+
+| BDFL-Delegate
+| TBD
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+| JIRA
+| https://issues.jenkins.io/browse/JENKINS-42816[JENKINS-42816 renaming Slave to Agent EPIC]
+| https://issues.jenkins.io/browse/JENKINS-65398[JENKINS-65398 renaming Master to Controller/Built-in node ; whitelist and blacklist deprecation]
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+| Discussions-To
+| https://community.jenkins.io/t/jenkins-terminology-cleanup-initiative-coordination/180
+| https://groups.google.com/u/0/g/jenkinsci-dev/c/x5vdlJDvntw/m/8USafY_RBAAJ
+
+
+|===
+
+== Abstract
+
+The goal of this JEP is to have the latest status of deprecated word or terms and agreed replacements in a table at one place that can be discussed with history.
+The proposal is to have git to keep history of changes, and discussion on new term on PRs.
+
+Deprecated term are written explicitly to be searchable.
+
+== Specification
+
+If you find a missing word in some language, please propose a PR on top of this JEP.
+
+=== English - Default
+
+* property suffix: <none>
+
+[options="header"]
+|======================
+| Deprecated term root           | New term root                 | New term declinaisons and comments               |
+| slave                          | agent                         | agents (plural)                                  |
+| master                         | controller                    | about the Jenkins instance                       |
+| master                         | built-in node                 | about the node embedded in the Jenkins instance  |
+| whitelist                      | allowlist                     | default but can be adapted to context            |
+| blacklist                      | denylist or blocklist         | default but can be adapted to context            |
+|======================
+
+=== Translations
+
+==== French - property suffix 
+
+* property suffix: fr
+
+* Table
+
+[options="header"]
+|======================
+| English term                  |Deprecated term                | New term root                 | Comments                                                   |
+| agent                         | esclave, esclaves             | agent                         | "esclave" can be valid in a context of a spoken language.  |
+| controller                    | maître, maitre                | contrôleur                    |                                                            |
+| built-in node                 | maître, maitre                | built-in node                 |                                                            |
+| allowlist                     |                               |                               |                                                            |
+| denylist or blocklist         |                               |                               |                                                            |
+|======================
+
+* Known Exceptions
+** esclave is valid in https://github.com/jenkinsci/jenkins/blob/677fbb2a81fa8e9a0bc37ad5eca56565612e1f2e/core/report-l10n.rb#L173
+
+== Motivation
+
+There is more and more deprecated words and replacement. Discussions and motivations on new term can be done in discussion channels, but once the descision is made by the community we need to have all deprecated terminology and replacement at one place.
+
+As updating terminology is a huge work accross all Jenkins ecosystem, we wish to make it easy for new contributor to help. Having deprecated words to search and replacement face to face make it more easy. Having translations deprecated words and replacements is also more easy for maintainer to review PR that are not in native or spoken language.
+
+== Reasoning
+
+[TIP]
+====
+Explain why particular design decisions were made.
+Describe alternate designs that were considered and related work. For example, how the feature is supported in other systems.
+Provide evidence of consensus within the community and discuss important objections or concerns raised during discussion.
+
+* Use sub-headings to organize this section for ease of readability.
+* Do not talk about history or why this needs to be done - that is part of Motivation section.
+====
+
+== Backwards Compatibility
+
+[TIP]
+====
+Describe any incompatibilities and their severity.
+Describe how the JEP proposes to deal with these incompatibilities.
+
+If there are no backwards compatibility concerns, this section may simply say:
+There are no backwards compatibility concerns related to this proposal.
+====
+
+* UI text: nothing to do, except change it on tests too
+* log/console text: nothing to do, except change it on test too
+* jCasC symbol: TBD :bulb:
+* HTTP URL / methods: TBD :bulb:
+* System properties: TBD :bulb:
+* code changes: TBD :bulb:
+
+== Security
+
+There are no security risks related to this proposal.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+[TIP]
+====
+If the JEP involves any kind of behavioral change to code
+(whether in a Jenkins product or backend infrastructure),
+give a summary of how its correctness (and, if applicable, compatibility, security, etc.) can be tested.
+
+In the preferred case that automated tests can be developed to cover all significant changes, simply give a short summary of the nature of these tests.
+
+If some or all of the changes will require human interaction to verify them, explain why automated tests are considered impractical.
+Then, summarize what kinds of test cases might be required: user scenarios with action steps and expected outcomes.
+Detail whether behavior might be different based on the platform (operating system, servlet container, web browser, etc.)?
+Are there foreseeable interactions between different permissible versions of components (Jenkins core, plugins, etc.)?
+Does this change require that any special tools, proprietary software, or online service accounts to exercise a related code path (e.g., Active Directory server, GitHub login, etc.)?
+When will you complete testing relative to merging code changes, and might retesting be required if other changes are made to this area in the future?
+
+If this proposal requires no testing, this section may simply say:
+There are no testing issues related to this proposal.
+====
+
+== References
+
+[TIP]
+====
+Provide links to any related documents.
+This will include links to discussions on the mailing list, pull requests, and meeting notes.
+====
+
+
+
