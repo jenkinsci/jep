@@ -74,7 +74,13 @@ Deprecated term are written explicitly to be searchable.
 
 == Specification
 
-If you find a missing word in some language, please propose a PR on top of this JEP.
+* The term in table must be in lower case (when the language allows it). 
+
+* To add a new language, propose a PR on top of this JEP by a copy/paste one language (other than English) and add a new section.
+
+* To add a new term in an existing language, propose a PR on top of this JEP with the modified table.
+
+TBD: stands for "To Be Done", it means that there is no community agreement yet. If you have a proposal feel welcome to propose it as a PR or in https://community.jenkins.io/t/jenkins-terminology-cleanup-initiative-coordination/180[Discourse terminology thread]
 
 === English - Default
 
@@ -82,17 +88,17 @@ If you find a missing word in some language, please propose a PR on top of this 
 
 [options="header"]
 |======================
-| Deprecated term root           | New term root                 | New term declinaisons and comments               |
-| slave                          | agent                         | agents (plural)                                  |
-| master                         | controller                    | about the Jenkins instance                       |
-| master                         | built-in node                 | about the node embedded in the Jenkins instance  |
-| whitelist                      | allowlist                     | default but can be adapted to context            |
-| blacklist                      | denylist or blocklist         | default but can be adapted to context            |
+| Deprecated term root           | New term root                 | New term declinaisons and comments              
+| slave                          | agent                         | agents (plural)                                 
+| master                         | controller                    | Frontend for Jenkins users and administrators.                     
+| master                         | built-in node                 | Jenkins “main node” label - Aligned with “Jenkins as node”
+| whitelist                      | allowlist                     | default but can be adapted to context           
+| blacklist                      | denylist or blocklist         | default but can be adapted to context           
 |======================
 
 === Translations
 
-==== French - Français
+==== French
 
 * property suffix: fr
 
@@ -100,16 +106,160 @@ If you find a missing word in some language, please propose a PR on top of this 
 
 [options="header"]
 |======================
-| English term                  |Deprecated term                | New term root                 | Comments                                                   |
-| agent                         | esclave, esclaves             | agent                         | "esclave" can be valid in a context of a spoken language.  |
-| controller                    | maître, maitre                | contrôleur                    |                                                            |
-| built-in node                 | maître, maitre                | built-in node                 |                                                            |
-| allowlist                     |                               |                               |                                                            |
-| denylist or blocklist         |                               |                               |                                                            |
+| English term                  |Deprecated term                | New term root                 | Comments                                                 
+| agent                         | esclave, esclaves             | agent                         | "esclave" can be valid in a context of a spoken language.
+| controller                    | maître, maitre                | contrôleur                    |                                                          
+| built-in node                 | maître, maitre                | TDB                           |                                                          
+| allowlist                     |                               |                               |                                                          
+| denylist or blocklist         |                               |                               |                                                          
 |======================
 
 * Known Exceptions
 ** esclave is valid in https://github.com/jenkinsci/jenkins/blob/677fbb2a81fa8e9a0bc37ad5eca56565612e1f2e/core/report-l10n.rb#L173
+
+==== German
+
+* property suffix: TODO
+
+* Table
+
+[options="header"]
+|======================
+| English term                  |Deprecated term                | New term root                 | Comments
+| agent                         | TBD                           | agent                         | agenten 
+| controller                    | TBD                           | controller                    |         
+| built-in node                 | TBD                           | TDB                           |         
+| allowlist                     |                               |                               |         
+| denylist or blocklist         |                               |                               |         
+|======================
+
+* Known Exceptions
+
+==== Spanish
+
+* property suffix: TODO
+
+* Table
+
+[options="header"]
+|======================
+| English term                  |Deprecated term                | New term root                 | Comments
+| agent                         | TBD                           | agente                        |         
+| controller                    | TBD                           | controlador                   |         
+| built-in node                 | TBD                           | TDB                           |         
+| allowlist                     |                               |                               |         
+| denylist or blocklist         |                               |                               |         
+|======================
+
+* Known Exceptions
+
+==== Chinese
+
+* property suffix: TODO
+
+* Table
+
+[options="header"]
+|======================
+| English term                  |Deprecated term                | New term root                 | Comments  
+| agent                         | TBD                           | TDB                           |           
+| controller                    | TBD                           | 控制者                         |          
+| built-in node                 | TBD                           | TDB                           |           
+| allowlist                     |                               |                               |           
+| denylist or blocklist         |                               |                               |           
+|======================
+
+* Known Exceptions
+
+==== Italian
+
+* property suffix: TODO
+
+* Table
+
+[options="header"]
+|======================
+| English term                  |Deprecated term                | New term root                 | Comments  
+| agent                         | TBD                           | TDB                           |           
+| controller                    | TBD                           | controllore                   |           
+| built-in node                 | TBD                           | TDB                           |           
+| allowlist                     |                               |                               |           
+| denylist or blocklist         |                               |                               |           
+|======================
+
+* Known Exceptions
+
+==== Russian
+
+* property suffix: TODO
+
+* Table
+
+[options="header"]
+|======================
+| English term                  |Deprecated term                | New term root                 | Comments   
+| agent                         | TBD                           | агент                         |            
+| controller                    | TBD                           | контроллер                    |            
+| built-in node                 | TBD                           | TDB                           |            
+| allowlist                     |                               |                               |            
+| denylist or blocklist         |                               |                               |            
+|======================
+
+* Known Exceptions
+
+==== Portuguese
+
+* property suffix: TODO
+
+* Table
+
+[options="header"]
+|======================
+| English term                  |Deprecated term                | New term root                 | Comments     
+| agent                         | TBD                           | controlador                   |              
+| controller                    | TBD                           | TDB                           |              
+| built-in node                 | TBD                           | TDB                           |              
+| allowlist                     |                               |                               |              
+| denylist or blocklist         |                               |                               |              
+|======================
+
+* Known Exceptions
+
+==== Danish
+
+* property suffix: TODO
+
+* Table
+
+[options="header"]
+|======================
+| English term                  |Deprecated term                | New term root                 | Comments      
+| agent                         | TBD                           | agent                         | plural agenter
+| controller                    | TBD                           | controller                    |               
+| built-in node                 | TBD                           | TDB                           |               
+| allowlist                     |                               |                               |               
+| denylist or blocklist         |                               |                               |               
+|======================
+
+* Known Exceptions
+
+==== Japanese
+
+* property suffix: TODO
+
+* Table
+
+[options="header"]
+|======================
+| English term                  |Deprecated term                | New term root                 | Comments      
+| agent                         | TBD                           | TBD                           | 
+| controller                    | TBD                           | コントローラ                    |               
+| built-in node                 | TBD                           | TDB                           |               
+| allowlist                     |                               |                               |               
+| denylist or blocklist         |                               |                               |               
+|======================
+
+* Known Exceptions
 
 == Motivation
 
@@ -184,8 +334,8 @@ Provide links to any related documents.
 This will include links to discussions on the mailing list, pull requests, and meeting notes.
 ====
 
-https://issues.jenkins.io/browse/JENKINS-42816[JENKINS-42816 renaming Slave to Agent EPIC]
-https://issues.jenkins.io/browse/JENKINS-65398[JENKINS-65398 renaming Master to Controller/Built-in node ; whitelist and blacklist deprecation]
-https://community.jenkins.io/t/jenkins-terminology-cleanup-initiative-coordination/180
-https://groups.google.com/u/0/g/jenkinsci-dev/c/x5vdlJDvntw/m/8USafY_RBAAJ [Discussions on controller]
-https://github.com/orgs/jenkinsci/projects/5 [Github board with related PRs]
+* https://issues.jenkins.io/browse/JENKINS-42816[JENKINS-42816 renaming Slave to Agent EPIC]
+* https://issues.jenkins.io/browse/JENKINS-65398[JENKINS-65398 renaming Master to Controller/Built-in node ; whitelist and blacklist deprecation]
+* https://community.jenkins.io/t/jenkins-terminology-cleanup-initiative-coordination/180[Discourse related topic]
+* https://groups.google.com/u/0/g/jenkinsci-dev/c/x5vdlJDvntw/m/8USafY_RBAAJ[Discussions on controller]
+* https://github.com/orgs/jenkinsci/projects/5[Github board with related PRs]
