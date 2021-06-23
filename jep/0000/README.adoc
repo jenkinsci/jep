@@ -111,7 +111,7 @@ TBD: stands for "To Be Done", it means that there is no community agreement yet.
 | controller                    | maître, maitre                | contrôleur                    |                                                          
 | built-in node                 | maître, maitre                | TDB                           |                                                          
 | allowlist                     |                               |                               |                                                          
-| denylist or blocklist         |                               |                               |                                                          
+| denylist         |                               |                               |                                                          
 |======================
 
 * Known Exceptions
