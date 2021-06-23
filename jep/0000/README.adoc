@@ -75,9 +75,7 @@ Deprecated term are written explicitly to be searchable.
 == Specification
 
 * The term in table must be in lower case (when the language allows it). 
-
 * To add a new language, propose a PR on top of this JEP by a copy/paste one language (other than English) and add a new section.
-
 * To add a new term in an existing language, propose a PR on top of this JEP with the modified table.
 
 TBD: stands for "To Be Done", it means that there is no community agreement yet. If you have a proposal feel welcome to propose it as a PR or in https://community.jenkins.io/t/jenkins-terminology-cleanup-initiative-coordination/180[Discourse terminology thread]
@@ -98,11 +96,7 @@ TBD: stands for "To Be Done", it means that there is no community agreement yet.
 
 === Translations
 
-==== French
-
-* property suffix: fr
-
-* Table
+==== French (*-fr.properties)
 
 [options="header"]
 |======================
@@ -114,8 +108,8 @@ TBD: stands for "To Be Done", it means that there is no community agreement yet.
 | denylist         |                               |                               |                                                          
 |======================
 
-* Known Exceptions
-** esclave is valid in https://github.com/jenkinsci/jenkins/blob/677fbb2a81fa8e9a0bc37ad5eca56565612e1f2e/core/report-l10n.rb#L173
+Known Exceptions
+* `esclave` is valid in https://github.com/jenkinsci/jenkins/blob/677fbb2a81fa8e9a0bc37ad5eca56565612e1f2e/core/report-l10n.rb#L173
 
 ==== German
 
@@ -263,7 +257,7 @@ TBD: stands for "To Be Done", it means that there is no community agreement yet.
 
 == Motivation
 
-There is more and more deprecated words and replacement.
+There is more and more deprecated terms and replacements.
 Discussions and motivations on new term can be done in discussion channels, but once the descision is made by the community we need to have all deprecated terminology and replacement at one place.
 
 As updating terminology is a huge work accross all Jenkins ecosystem, we wish to make it easy for new contributor to help.
@@ -284,15 +278,6 @@ Provide evidence of consensus within the community and discuss important objecti
 
 == Backwards Compatibility
 
-[TIP]
-====
-Describe any incompatibilities and their severity.
-Describe how the JEP proposes to deal with these incompatibilities.
-
-If there are no backwards compatibility concerns, this section may simply say:
-There are no backwards compatibility concerns related to this proposal.
-====
-
 * UI text: nothing to do, except change it on tests too
 * log/console text: nothing to do, except change it on test too
 * jCasC symbol: TBD :bulb:
@@ -310,24 +295,7 @@ There are no new infrastructure requirements related to this proposal.
 
 == Testing
 
-[TIP]
-====
-If the JEP involves any kind of behavioral change to code
-(whether in a Jenkins product or backend infrastructure),
-give a summary of how its correctness (and, if applicable, compatibility, security, etc.) can be tested.
-
-In the preferred case that automated tests can be developed to cover all significant changes, simply give a short summary of the nature of these tests.
-
-If some or all of the changes will require human interaction to verify them, explain why automated tests are considered impractical.
-Then, summarize what kinds of test cases might be required: user scenarios with action steps and expected outcomes.
-Detail whether behavior might be different based on the platform (operating system, servlet container, web browser, etc.)?
-Are there foreseeable interactions between different permissible versions of components (Jenkins core, plugins, etc.)?
-Does this change require that any special tools, proprietary software, or online service accounts to exercise a related code path (e.g., Active Directory server, GitHub login, etc.)?
-When will you complete testing relative to merging code changes, and might retesting be required if other changes are made to this area in the future?
-
-If this proposal requires no testing, this section may simply say:
-There are no testing issues related to this proposal.
-====
+N/A
 
 == References
 
