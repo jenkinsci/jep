@@ -9,26 +9,6 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-.**JEP Template**
-[TIP]
-====
-In this document, all text in a "Tip" block (or inline text with with a ":bulb:" on either side)
-MUST be removed and/or replaced with text appropriate to this JEP before submission.
-
-Sections may include additional help and advice in comments.
-":bulb:" entries in comments only need to be filled in if that text is uncommented.
-
-See https://github.com/jenkinsci/jep/blob/master/jep/1/README.adoc[JEP-1] for full and accurate description of the JEP process and what is required in each section.
-====
-
-[TIP]
-====
-*BDFL-Delegate* is uncommented by default.
-As part of the in initial conversation or the JEP submission the sponsor should
-look for a BDFL Delegate.
-While not required, it is better for the community if Delegates perform most reviews.
-If no suitable BDFL-Delegate can be found, that row may be commented out.
-====
 
 .Metadata
 [cols="1h,1"]
