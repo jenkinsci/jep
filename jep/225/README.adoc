@@ -1,0 +1,248 @@
+= JEP-225: Folder-based access control for any credentials provider
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.**JEP Template**
+
+[TIP]
+====
+*BDFL-Delegate* is uncommented by default.
+As part of the in initial conversation or the JEP submission the sponsor should
+look for a BDFL Delegate.
+While not required, it is better for the community if Delegates perform most reviews.
+If no suitable BDFL-Delegate can be found, that row may be commented out.
+====
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 225
+
+| Title
+| Folder-based access control for any credentials provider
+
+| Sponsor
+| link:https://github.com/chriskilding[chriskilding]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2020-01-30
+
+| BDFL-Delegate
+| TBD
+
+
+
+| JIRA
+| https://issues.jenkins-ci.org/browse/JENKINS-60897[JENKINS-60897]
+
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+This proposal describes an Access Control Layer (ACL) which is aware of credentials and folders. This allows us to formulate access control rules for any credential, from **any** provider.
+
+Examples:
+
+- "Only jobs in folders 'foo' and 'bar' can access credential 'baz'".
+- "All jobs can access [global] credential 'qux'".
+
+This proposal generalizes and supersedes the folder-based credentials ACL in the link:https://plugins.jenkins.io/cloudbees-folder[Cloudbees Folders plugin].
+
+== Specification
+
+* Provide a transparent ACL proxy layer over (or in) the standard CredentialsProvider API.
+* Support credentials in ACL rules.
+* Support standard folders in ACL rules.
+* Support folder-like constructs in ACL rules (e.g. GitHub Organization Folders).
+* Allow ACL to be specified in Configuration As Code.
+* Provide a Web UI for editing the ACL.
+* Refactor CredentialsProvider API to remove function arguments that are only used for access control purposes.
+
+TBC:
+
+* Remove FolderCredentialsProvider, or remove its storage mechanism to make it a single-purpose proxy for other providers.
+* Provide migration path to move credentials stored in FolderCredentialsProvider to the standard on-disk credentials provider.
+
+=== Related Components
+
+==== link:https://docs.cloudbees.com/docs/admin-resources/latest/plugins/rbac[Cloudbees RBAC plugin]
+
+Summary: This plugin lets us define various roles. The Jenkins administrator can assign those roles to groups of users. The assignment of roles can take place either at the global level, or limited to specific objects within the system. This plugin combines with the Folders plugin to let us manage a multi-tenant Jenkins. The Jenkins admin can create folders for each of the teams and then create groups in those folders for each of the roles that team members can have.
+
+==== link:https://github.com/jenkinsci/role-strategy-plugin[Role Strategy plugin] and link:https://github.com/jenkinsci/folder-auth-plugin[Folder Auth plugin]
+
+Role Strategy plugin: This plugin adds a new role-based mechanism to manage users' permissions. Supported features: 'Global Roles', 'Project Roles', 'Agent Roles'. These are assigned to users and groups.
+
+Folder Auth plugin: This is a niche version of the Role Strategy Plugin, for installations where the performance overhead of regexes is unacceptable.
+
+==== link:https://plugins.jenkins.io/matrix-auth[Matrix Authorization Strategy plugin]
+
+Summary: This authorization scheme allows for granular control over which users and groups are able to perform which actions in the Jenkins environment
+
+== Motivation
+
+In the past the folders plugin reimplemented the local disk credentials provider, and put an access control layer over it. This worked, but it meant that if a user wanted to restrict access to a particular credential by folder, they had to store it in the FolderCredentialsProvider.
+
+This was a reasonable solution in the days of single-server or on-premise Jenkins installations. But it did not hold up once Jenkins installations moved to cloud platforms with remote secrets management services. Today, Jenkins users need the ability to use the folder-based ACL over any credential, from any provider.
+
+The link:https://github.com/jenkinsci/aws-secrets-manager-credentials-provider-plugin[AWS Secrets Manager] and link:https://github.com/jenkinsci/kubernetes-credentials-provider-plugin[Kubernetes] credentials providers are among the components that benefit from this change.
+
+Use cases:
+
+* *Dev/Production environment isolation.* Users want to isolate environment-specific credentials, so that only dev jobs can access dev credentials, and only production jobs can access production credentials.
+* *Multi-tenant Jenkins team isolation.* Users want multiple teams in their organization to share a central Jenkins. They use folders (or folder-like constructs) to separate the teams' jobs. They want to isolate team-specific credentials, so only a given team's jobs can access those credentials.
+
+Benefits of the change:
+
+- *Only write the access control logic once.* Before this change, authors of other providers would have to copy-paste the intricate ACL logic from the folders plugin, and then keep that up to date with any changes. Provider authors either omitted this feature entirely, or ran a high risk of mistakes in trying to do it.
+- *ACL works the same way everywhere.* Folders-based ACL does not have provider-specific behaviour, or a provider-specific storage schema.
+- *ACL can be written declaratively in JCasC.* Each folder entry has a list of allowed credential IDs.
+- *Observes the Single Responsibility Principle.* Providers do one thing: store and retrieve credentials. Folders plugin does one thing (for credentials): run the ACL over the providers.
+
+== Reasoning
+
+[TIP]
+====
+Explain why particular design decisions were made.
+Describe alternate designs that were considered and related work. For example, how the feature is supported in other systems.
+Provide evidence of consensus within the community and discuss important objections or concerns raised during discussion.
+====
+
+=== CredentialsProvider API deprecations
+
+* Extra parameters in API functions that are only used for access control (like ItemGroup) are [deprecated | removed | unchanged]. This is because ...
+
+=== Web UI
+
+TBC
+
+=== JCasC schema
+
+[source,yaml]
+----
+jenkins:
+  TBC: ???
+----
+
+NOTE: This may depend on link:https://issues.jenkins-ci.org/browse/JENKINS-58951[JENKINS-58951] (add YAML configurator to the folders plugin) being implemented first.
+
+=== Default access policy
+
+Credentials may exist in the underlying provider with no corresponding rules in the ACL.
+
+* The policy for credentials with no explicit rules is [Default Allow | Default Deny.] This is because ...
+* The policy for credentials with no explicit rules is [user-configurable | hardcoded]. This is because ...
+
+== Backwards Compatibility
+
+The general pattern is "going from 'anybody can do anything' to 'somebody can only do something if the ACL allows it'". There is no totally backwards-compatible way of doing this. (Another example of this pattern was the introduction of the app sandbox system in macOS.)
+
+* The FolderCredentialProvider will have breaking changes.
+* The CredentialsProvider API will have breaking changes (to remove access control concerns).
+* Any credentials providers that had their own access control features in the past may consider removing them.
+* The presence of folders plugin in a Jenkins installation may affect whether existing credentials are still available to existing jobs. Users must check this.
+
+== Security
+
+=== ACL misconfiguration
+
+The JEP introduces an ACL. A user could misconfigure it.
+
+* Users might expose credentials to jobs they did not want to access them. (But this is no worse than the status quo, where any job can use any credential.)
+* Users might forget to give a job access to a credential that it should have. The job would fail when it tries to use that credential.
+
+=== Interaction with other components
+
+* TBC Interaction with Jenkins permissions layer?
+* TBC Interaction with credentials providers?
+* TBC Interaction with credentials consumers?
+* TBC Interaction with RBAC plugins?
+
+=== Default access policy
+
+* TBC If we make the policy for unnamed credentials configurable (i.e. let the user select "Default Allow" vs "Default Deny") then they might choose the wrong one. There would be no obvious indication that the wrong choice was made, until a job accessed a credential that it should not be able to see. Jenkins admins who look after multiple installations could easily get confused about which policy should be in play.
+
+[TIP]
+====
+Outline what was done to identify and evaluate security issues,
+discuss potential security issues and how they are mitigated or prevented,
+and detail how the JEP interacts with existing elements in Jenkins, such as permissions, authentication, authorization, etc.
+====
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+=== Automated Tests
+
+* Add unit and integration tests for this feature to the relevant plugins.
+* If a plugin gets credentials from the folder plugin in its scenario tests, it should account for the ACL feature in its tests (and add any necessary ACL rules to its Jenkins config).
+
+=== Manual Tests
+
+* Determine whether the feature is compatible with old credentials provider versions from before it existed.
+* Determine whether the feature is compatible with old credentials consumer versions from before it existed.
+* Security team to try and break the feature (get access to credentials they shouldn't be able to see, modify ACL without authorization etc).
+
+[TIP]
+====
+
+Summarize what kinds of test cases might be required: user scenarios with action steps and expected outcomes.
+When will you complete testing relative to merging code changes, and might retesting be required if other changes are made to this area in the future?
+====
+
+== Prototype Implementation
+
+[TIP]
+====
+Link to any open source reference implementation of code changes for this proposal.
+The implementation need not be completed before the JEP is
+link:https://github.com/jenkinsci/jep/tree/master/jep/1#accepted[accepted],
+but must be completed before any JEP is given
+"link:https://github.com/jenkinsci/jep/tree/master/jep/1#final[Final]" status.
+
+JEPs which will not include code changes may omit this section.
+====
+
+== References
+
+[TIP]
+====
+Provide links to any related documents.
+This will include links to discussions on the mailing list, pull requests, and meeting notes.
+====
+
+
