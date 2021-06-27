@@ -82,6 +82,11 @@
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | TBD
 
+| Draft{nbsp}:speech_balloon:
+| link:16/README.adoc[JEP-16: Inclusive terminology guidelines and continuous updates]
+| link:https://github.com/aHenryJard[Angélique{nbsp}Jard] +
+| TBD
+
 | Final{nbsp}:lock:
 | link:200/README.adoc[JEP-200: Switch Remoting/XStream blacklist to a whitelist]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]

@@ -1,4 +1,4 @@
-= JEP-0000: :bulb: Inclusive terminology guidelines and continuous updates :bulb:
+= JEP-16: Inclusive terminology guidelines and continuous updates
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -14,18 +14,18 @@ endif::[]
 [cols="1h,1"]
 |===
 | JEP
-| 0000
+| 16
 
 | Title
 | Inclusive terminology guidelines and continuous updates
 
 | Sponsor
-| link:https://github.com/aHenryJard[Angélique Jard]
-| link:https://githumb.com/mikecirioli[Mike Cirioli]
+| link:https://github.com/aHenryJard[Angélique Jard] +
+  link:https://githumb.com/mikecirioli[Mike Cirioli]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
-| Not Submitted :information_source:
+| Draft :speech_balloon:
 
 | Type
 | Informational
@@ -38,8 +38,8 @@ endif::[]
 
 
 | JIRA
-| https://issues.jenkins.io/browse/JENKINS-65398[JENKINS-65398 renaming Master to Controller/Built-in node ; whitelist and blacklist deprecation]
-| https://issues.jenkins.io/browse/JENKINS-42816[JENKINS-42816 renaming Slave to Agent EPIC]
+| https://issues.jenkins.io/browse/JENKINS-65398[JENKINS-65398 renaming Master to Controller/Built-in node ; whitelist and blacklist deprecation] +
+  https://issues.jenkins.io/browse/JENKINS-42816[JENKINS-42816 Agent terminology cleanup EPIC]
 
 | Discussions-To
 | https://community.jenkins.io/t/jenkins-terminology-cleanup-initiative-coordination/180
@@ -56,7 +56,7 @@ Deprecated term are written explicitly to be searchable.
 
 == Specification
 
-* The term in table must be in lower case (when the language allows it). 
+* The term in the table must be in lower case (when the language allows it). 
 * To add a new language, propose a PR on top of this JEP by a copy/paste one language (other than English) and add a new section.
 * To add a new term in an existing language, propose a PR on top of this JEP with the modified table.
 
