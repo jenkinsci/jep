@@ -88,6 +88,8 @@ split into a new plugin such as `pipeline-libraries` without this dependency.
 The `jenkins-module` packaging could be removed from `maven-hpi-plugin`, if there are no other users.
 (Theoretically some vendors could be using it for a `ConfidentialStore` implementation, for example.)
 
+The core classes in the `jenkins.slaves.restarter` package could be moved to the `slave-installer` plugin.
+
 == Motivation
 
 Having hundreds of extensions be built and packaged in one way, as plugins,
