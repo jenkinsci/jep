@@ -91,6 +91,8 @@ This includes but not limited to:
 * Permit lists for link:/jep/200[JEP-200: Switch Remoting/XStream denylist to a permitlist]
 * XStream converters for JRuby components
 
+The `jruby` module will be removed from Stapler.
+
 No future core development will consider the impact on Ruby/Python runtimes and plugins based on them.
 Bug reports to core and related components about their impact on `ruby-runtime` and plugins based on it will be closed as *Won't Fix*.
 
@@ -131,6 +133,7 @@ This change will be documented in the LTS upgrade guidelines.
 Plugins may be restored in the update centers once
 there are contributors who take ownership of a plugin and migrate it to the standard Java plugin runtime.
 It may be done in a compatible or incompatible way.
+=======
 
 == Motivation
 

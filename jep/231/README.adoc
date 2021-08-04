@@ -1,0 +1,394 @@
+= JEP-231: Remove commons-digester dependency from Jenkins Core
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 231
+
+| Title
+| Remove commons-digester dependency from Jenkins Core
+
+| Sponsor
+| link:https://github.com/olamy[Olivier Lamy], link:https://github.com/bitwiseman[Liam Newman]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Informational
+
+| Created
+| 2021-05-07
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+This JEP describes the steps taken to remove link:https://commons.apache.org/proper/commons-digester/[Apache Commons Digester] as a dependency of Jenkins Core.
+
+== Specification
+
+Removing link:https://commons.apache.org/proper/commons-digester/[Apache Commons Digester] from Jenkins Core requires changes to Core and to a number of plugins.
+We will describe these two groups of changes separately.
+
+=== Core
+
+Jenkins Core implemented 
+link:https://github.com/jenkinsci/jenkins/blob/22fcc54bd3879c765b5595371e57fd180860daff/core/src/main/java/hudson/util/Digester2.java[`hudson.util.Digester2`] 
+which extended `org.apache.commons.digester.Digester`
+attempting to set secure parsing defaults to prevent XXE (XML External Entity) vulnerabilities.
+Neither class was used by Jenkins Core, `hudson.util.Digester2` was purely provided as a helper for plugins.
+
+=== Plugins
+
+Plugins will need to be updated to avoid breaking during this change.
+The changes needed are relatively straightforward.
+Assuming the dependency cannot be removed, the code changes needed are generally not complex.
+
+==== Example changes to plugin code
+
+===== Removing Digester
+
+Plugins may be better off not using Digester at all, taking this opportunity to replace some scary-looking reflection with plain old Java programming.
+The changes needed in that case will vary depending on the plugin, but an example can be seen in
+link:https://github.com/jenkinsci/mercurial-plugin/commit/84af58b08f80bb92792f7bc04a31487f3eeee95a[mercurial-plugin @ `84af58b`]
+and another in
+link:https://github.com/jenkinsci/subversion-plugin/pull/259[subversion-plugin #259].
+In both of these cases, Digester was being used to convert an XML file in a fairly simple format to some POJOs used for changelogs:
+
+* Remove the Maven dependency on Digester (and Commons Beanutils if relevant).
+* Use `XMLUtils.parse` to actually parse the file to DOM.
+  (Or you could use DOM4j or other APIs. Just be careful to use XXE-safe parser configurations.)
+* Replace `addObjectCreate` configurations with calls to the POJO constructor in a loop.
+* Replace `addSetProperties` configurations with code to get DOM element attributes and call corresponding POJO setters.
+  (Remember that `""` may be the same as an attribute which is not present.)
+* Replace `addBeanPropertySetter` configurations with checks for child elements whose text content can be bound to POJO setters.
+* Consult Digester Javadoc for other similar configuration methods.
+  Refer to sample XML files read by tests to see what you are parsing.
+
+When you have everything working, consider simplifying the resulting POJO(s) and parser using regular Java refactoring tools.
+The JavaBeans-style pattern preferred by Digester (no-argument constructor plus `public` getter/setter)
+is not necessarily the most legible and maintainable.
+POJO classes could take fields in a package-accessible constructor rather than a setter.
+Getters could be given more limited Java access, if they are not being used e.g. for `@Exported` or `@Override`.
+Field/method names need not match XML attribute/element names if it would be more natural to align with other APIs.
+Look for unused methods and gratuitous `public` modifiers.
+
+===== Securing Digester
+
+If making that more significant change is not feasible, plugins can be updated using the following code snippet to configure Digester with more secure settings: 
+
+[source,java]
+----
+import org.apache.commons.digester3.Digester;
+....
+public static Digester createDigester(boolean secure) throws SAXException {
+    Digester digester = new Digester();
+    if (secure) {
+        digester.setXIncludeAware(false);
+        try {
+            digester.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            digester.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            digester.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            digester.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        } catch (ParserConfigurationException ex) {
+            throw new SAXException("Failed to securely configure xml digester parser", ex);
+        }
+    }
+    return digester;
+}
+----
+
+==== Affected plugins (fixes planned)
+
+
+Below is a table of the affected plugins with PRs submitted to fix their breaks.
+These PRs may or may not be merged before removal is complete, depending on whether
+maintainers merge and release the submitted PRs.
+
+This table will be updated as needed to track the state of each plugin.
+
+Legend:
+
+* :heavy_check_mark: Fixed or no need to fix
+* :stop_sign: 	     It's not going to be fixed (no maintainer mainly)
+* :exclamation: 	 Waiting for something (merge or release)
+
+[cols="1,1,4,1",options="header"]
+|===
+| Status
+| Plugin
+| Fix PR and/or status
+| Number of OSS Installations
+
+| :heavy_check_mark:
+| https://github.com/jenkinsci/jelly
+| only used by RSS Reader and core is producing RSS not reading it
+| infinity and beyond
+
+| :heavy_check_mark:
+| https://github.com/jenkinsci/jenkins-test-harness
+| Tests only
+|
+
+| :heavy_check_mark:  link:https://github.com/jenkinsci/subversion-plugin/releases/tag/subversion-2.14.1[2.14.1]
+|  link:https://github.com/jenkinsci/subversion-plugin[subversion]
+|  link:https://github.com/jenkinsci/subversion-plugin/pull/254[jenkinsci/subversion-plugin#254]
+| 170k
+
+| :heavy_check_mark: link:https://github.com/jenkinsci/cvs-plugin/releases/tag/cvs-2.19[2.19]
+| link:https://github.com/jenkinsci/cvs-plugin[cvs]
+|  link:https://github.com/jenkinsci/cvs-plugin/pull/55[jenkinsci/cvs-plugin#55]
+| 39k
+
+| :heavy_check_mark: link:https://github.com/jenkinsci/maven-info-plugin/releases/tag/maven-info-0.3.0[0.3.0]
+|  link:https://github.com/jenkinsci/maven-info-plugin[maven-info]
+|  link:https://github.com/jenkinsci/maven-info-plugin/pull/9[jenkinsci/maven-info-plugin#9] (last release 7 years ago)
+| 5502
+
+| :heavy_check_mark: link:https://github.com/jenkinsci/clover-plugin/releases/tag/clover-4.12.0[4.12.0]
+|  link:https://github.com/jenkinsci/clover-plugin[clover]
+|  link:https://github.com/jenkinsci/clover-plugin/pull/24[jenkinsci/clover-plugin#24]
+| 3521
+
+| :heavy_check_mark: link:https://github.com/jenkinsci/emma-plugin/releases/tag/emma-1.31[1.31]
+| link:https://github.com/jenkinsci/emma-plugin[emma]
+|  link:https://github.com/jenkinsci/emma-plugin/pull/11[jenkinsci/emma-plugin#11] (last real activity 6 years ago)
+| 3216
+
+| :heavy_check_mark: link:https://github.com/jenkinsci/cloverphp-plugin/releases/tag/cloverphp-0.6[0.6]
+| link:https://github.com/jenkinsci/cloverphp-plugin[cloverphp]
+|  link:https://github.com/jenkinsci/cloverphp-plugin/pull/10[jenkinsci/cloverphp-plugin#10]  (last activity 6 years ago...)
+| 2,801
+
+| :heavy_check_mark: link:https://github.com/jenkinsci/clearcase-plugin/releases/tag/clearcase-1.6.7[1.6.7]
+|  link:https://github.com/jenkinsci/clearcase-plugin[clearcase]
+|  link:https://github.com/jenkinsci/clearcase-plugin/pull/41[jenkinsci/clearcase-plugin#41]
+| 2094
+
+| :heavy_check_mark: link:https://github.com/jenkinsci/teamconcert-plugin/releases/tag/teamconcert-2.4.0[2.4.0]
+| link:https://github.com/jenkinsci/teamconcert-plugin[teamconcert]
+|  link:https://github.com/jenkinsci/teamconcert-plugin/pull/20[jenkinsci/teamconcert-plugin#20] (last activity/release early 2020)
+| 1640
+
+| :exclamation: awaiting merge
+| link:https://github.com/jenkinsci/vs-code-metrics-plugin[vs-code-metrics]
+|  link:https://github.com/jenkinsci/vs-code-metrics-plugin/pull/5[jenkinsci/vs-code-metrics-plugin#5] (last activity/release 2014)
+| 1435
+
+| :stop_sign: (no maintainer)
+| link:https://github.com/jenkinsci/BlameSubversion-plugin[BlameSubversion]
+|  link:https://github.com/jenkinsci/BlameSubversion-plugin/pull/5[jenkinsci/BlameSubversion-plugin#5]  (last activity 8 years ago...)
+| 878
+
+| :stop_sign: (no maintainer)
+| link:https://github.com/jenkinsci/javatest-report-plugin[javatest-report]
+|  link:https://github.com/jenkinsci/javatest-report-plugin/pull/4[jenkinsci/javatest-report-plugin#4] (last real activity 6 years ago)
+| 440
+
+| :heavy_check_mark: link:https://github.com/jenkinsci/plasticscm-plugin/releases/tag/plasticscm-plugin-3.6[3.6]
+| link:https://github.com/jenkinsci/plasticscm-plugin[plasticscm-plugin]
+|  link:https://github.com/jenkinsci/plasticscm-plugin/pull/40[jenkinsci/plasticscm-plugin#40] (last release late 2020, recent activity)
+| 284
+
+| :heavy_check_mark: link:https://github.com/jenkinsci/clearcase-ucm-plugin/releases/tag/clearcase-ucm-plugin-1.7.3[1.7.3]
+| link:https://github.com/jenkinsci/clearcase-ucm-plugin[clearcase-ucm]
+|  link:https://github.com/jenkinsci/clearcase-ucm-plugin/pull/5[jenkinsci/clearcase-ucm-plugin#5] (last release 2016)
+| 266
+
+| :heavy_check_mark: link:https://github.com/jenkinsci/vectorcast-coverage-plugin/releases/tag/vectorcast-coverage-0.17[0.17]
+| link:https://github.com/jenkinsci/vectorcast-coverage-plugin[vectorcast-coverage]
+|  link:https://github.com/jenkinsci/vectorcast-coverage-plugin/pull/4[jenkinsci/vectorcast-coverage-plugin#4] (last release in 2021)
+| 206
+
+| :heavy_check_mark: link:https://github.com/jenkinsci/zos-connector-plugin/releases/tag/zos-connector-2.3.5[2.3.5]
+|  link:https://github.com/jenkinsci/zos-connector-plugin[zos-connector]
+|  link:https://github.com/jenkinsci/zos-connector-plugin/pull/13[jenkinsci/zos-connector-plugin#13] (recent activity in 2020)
+| 173
+
+| :stop_sign: (no maintainer)
+| link:https://github.com/jenkinsci/vss-plugin[vss]
+|  link:https://github.com/jenkinsci/vss-plugin/pull/8[jenkinsci/vss-plugin#8] (last release/activity 2011)
+| 168
+
+| :heavy_check_mark: link:https://github.com/jenkinsci/genexus-plugin/releases/tag/genexus-1.10[1.10]
+| link:https://github.com/jenkinsci/genexus-plugin[genexus]
+|  link:https://github.com/jenkinsci/genexus-plugin/pull/15[jenkinsci/genexus-plugin#15] (activity Sept 2020 & release in April 2020)
+| 149
+
+| :heavy_check_mark: link:https://github.com/jenkinsci/dimensionsscm-plugin/releases/tag/dimensionsscm-0.9.1[0.9.1]
+| link:https://github.com/jenkinsci/dimensionsscm-plugin[dimensionsscm]
+|  link:https://github.com/jenkinsci/dimensionsscm-plugin/pull/21[jenkinsci/dimensionsscm-plugin#21]
+| 113
+
+| :stop_sign: (no maintainer)
+| link:https://github.com/jenkinsci/synergy_scm-plugin[synergy]
+|  link:https://github.com/jenkinsci/synergy_scm-plugin/pull/17[jenkinsci/synergy_scm-plugin#17]) (last activity 6 years ago)
+| 96
+
+| :stop_sign: (no maintainer, needed repo missed)
+| link:https://github.com/jenkinsci/config-rotator-plugin[config-rotator]
+|  link:https://github.com/jenkinsci/config-rotator-plugin/pull/3[jenkinsci/config-rotator-plugin#3] (last activity 4 years ago)  :rotating_light: need help from Praqma, as https://code.praqma.net/repo/maven/ no longer exists
+| 62
+
+| :stop_sign: (no maintainer)
+| link:https://github.com/jenkinsci/harvest-plugin[harvest]
+|  link:https://github.com/jenkinsci/harvest-plugin/pull/5[jenkinsci/harvest-plugin#5] (last activity 6 years ago)
+| 49
+
+| :heavy_check_mark: link:https://github.com/jenkinsci/plasticscm-mergebot-plugin/releases/tag/plasticscm-mergebot-0.15[0.15]
+| link:https://github.com/jenkinsci/plasticscm-mergebot-plugin[plasticscm-mergebot]
+|  link:https://github.com/jenkinsci/plasticscm-mergebot-plugin/pull/3[jenkinsci/plasticscm-mergebot-plugin#3]  (last active/release late 2019)
+| 55
+
+| :stop_sign: (no maintainer)
+| link:https://github.com/jenkinsci/cmvc-plugin[cmvc]
+|  link:https://github.com/jenkinsci/cmvc-plugin/pull/3[jenkinsci/cmvc-plugin#3]  (last activity 9 years ago...)
+| 18
+|===
+
+
+==== Affected plugins (no fixes planned)
+
+===== Suspended plugins
+
+Some plugins were found which were suspended when Jenkins 2 was released.
+These will not be updated as part of this effort.
+
+* https://plugins.jenkins.io/svn-release-mgr suspended since https://issues.jenkins-ci.org/browse/INFRA-2487
+* https://github.com/jenkinsci/cpptest-plugin suspended since https://issues.jenkins-ci.org/browse/INFRA-2487
+* https://github.com/jenkinsci/tfs-plugin suspended since https://issues.jenkins-ci.org/browse/INFRA-2751
+* https://github.com/jenkinsci/cflint-plugin (link:https://github.com/jenkinsci/CFLint-plugin/pull/3[PR-3]) suspended since https://issues.jenkins-ci.org/browse/INFRA-2751
+* https://github.com/jenkinsci/script-scm-plugin SECURITY-461
+* https://github.com/jenkinsci/rtc-plugin (superseded by team-concert)
+
+
+===== Never released plugins
+
+Some plugins were never released.
+These will not be updated as part of this effort.
+
+* https://github.com/jenkinsci/cocoemma-plugin
+* https://github.com/jenkinsci/jwsdp-sqe-plugin
+* https://github.com/jenkinsci/pucm-plugin
+* https://github.com/jenkinsci/purecm-plugin
+
+
+== Motivation
+
+The link:https://commons.apache.org/proper/commons-digester/[Apache Commons Digester]
+included as a dependency of Jenkins Core is old and poorly maintained.
+Digester and its dependencies have been a source of a number of security vulnerabilities. 
+Examples of this include: 
+
+* link:https://nvd.nist.gov/vuln/detail/CVE-2020-2304[CVE-2020-2304]
+* link:https://nvd.nist.gov/vuln/detail/CVE-2020-2305[CVE-2020-2305]
+* link:https://nvd.nist.gov/vuln/detail/CVE-2018-1000054[CVE-2018-1000054]
+* link:https://nvd.nist.gov/vuln/detail/CVE-2018-1000055[CVE-2018-1000055]
+
+The version of Digester could be updated, but in some sense any use of Digester is inherently risky from a security perspective:
+
+* XML is overcomplicated and the XML parsing might be subject to XXE, allowing clever attacks to do things like load `../../../credentials.xml`.
+* Even after verifying the input is a plain old self-contained XML document, Digester still takes user-controlled strings and uses them to look up and invoke Java methods, which is subject to abuse in numerous ways.
+
+Over 15 years ago, the `Digester2` class was added to Jenkins Core to address 
+link:https://issues.apache.org/jira/browse/DIGESTER-118[DIGESTER-118].
+In the years since then, all usages of `Digester` and `Digester2` have been removed from Jenkins Core itself.
+They remain only to avoid breaking plugins that depend on `Digester` and `Digester2` .
+
+However, this means that addressing security issues related to `Digester` generally requires an update to Jenkins Core.
+Also, because Digester is a dependency of Core, some plugins continue to use the `Digester` class being provided by from the dependency rather than using the `Digester2` API provided by Jenkins.
+
+The right thing to do is to remove the Digester dependency from Jenkins Core along with the `Digester2` class.
+Then the plugins that actually use Digester can handle any security concerns themselves.
+Plugins that use `Digester` or `Digester2` will need to be updated or they will break after this removal, however only those plugins will need updating.
+The number of plugins affected is relatively small and the minimal change required to unbreak them is relatively straightforward. 
+
+== Reasoning
+
+=== Risks of complete removal
+
+We chose to remove Digester from Jenkins Core in a manner that causes plugins which depend on it to fail unless they are updated.
+We made this choice based on an analysis of all plugins which are currently distributed by the Jenkins Update Center or which are
+in a repository in the link:https://github.com/jenkinsci[`jenkinsci` org on GitHub].
+All but a few of the plugins affected by this change are some combination of unmaintained, rarely used, and no longer or never published.
+We submitted PRs to all affected plugins.
+
+
+=== Detached plugin to maintain compatibility
+
+The current plan causes plugins which depend on Jenkins to provide Digester to fail unless they are updated.
+This could be mitigated by moving this dependency to a detached plugin.
+We decided against creating a detached pluging because there were a small number of affected plugins and only a few of them have significant install base.
+The creating and maintaining of a detached plugin would still be a significant amount of work and would cause the security vulnerabilities we are trying to address to remain open.
+
+=== Testing limited to known plugins
+
+We considered using `plugin-compat-tester` to test on a broad set of plugins beyond those known to be affected
+(link:https://github.com/jenkinsci/jep/pull/361/files#r633849804[PR thread]). It was decided that the code searches we did within the `jenkinsci` repositories were sufficient. We could not think of any failures that would be caught by the PCT that were not already addressed by the code search. 
+
+== Backwards Compatibility
+
+The current plan causes plugins which depend on Jenkins to provide Digester to fail unless they are updated.
+The majority of this JEP is devoted to discussion of how to mitigate these breaks.
+
+
+== Security
+
+The motivation for this change is mitigating a number of known security issues
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+There are no testing issues related to this proposal.
+
+== Prototype Implementation
+
+PRs filed
+
+== References
+
+* link:https://commons.apache.org/proper/commons-digester[Apache Commons Digester]
+* link:https://issues.jenkins.io/browse/JENKINS-65161[JENKINS-65161]
+* link:https://github.com/jenkinsci/jenkins/pull/5320[jenkinsci/jenkins#5320]
+* link:https://groups.google.com/g/jenkinsci-dev/c/m2fEX5ALvbg/m/ZGeLMwcsBAAJ[jenkins-dev: Removing commons-digester from Jenkins Core]

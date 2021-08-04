@@ -1,0 +1,288 @@
+= JEP-16: Inclusive terminology guidelines and continuous updates
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 16
+
+| Title
+| Inclusive terminology guidelines and continuous updates
+
+| Sponsor
+| link:https://github.com/aHenryJard[Angélique Jard] +
+  link:https://githumb.com/mikecirioli[Mike Cirioli]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Informational
+
+| Created
+| Date (2021-06-22)
+
+| BDFL-Delegate
+| TBD
+
+
+| JIRA
+| https://issues.jenkins.io/browse/JENKINS-65398[JENKINS-65398 renaming Master to Controller/Built-in node ; whitelist and blacklist deprecation] +
+  https://issues.jenkins.io/browse/JENKINS-42816[JENKINS-42816 Agent terminology cleanup EPIC]
+
+| Discussions-To
+| https://community.jenkins.io/t/jenkins-terminology-cleanup-initiative-coordination/180
+
+
+|===
+
+== Abstract
+
+The goal of this JEP is to have the latest status of deprecated word or terms and agreed replacements in a table at one place that can be discussed with history.
+The proposal is to have git to keep history of changes, and discussion on new term on PRs.
+
+Deprecated term are written explicitly to be searchable.
+
+== Specification
+
+* The term in the table must be in lower case (when the language allows it). 
+* To add a new language, propose a PR on top of this JEP by a copy/paste one language (other than English) and add a new section.
+* To add a new term in an existing language, propose a PR on top of this JEP with the modified table.
+
+TBD: stands for "To Be Done", it means that there is no community agreement yet. If you have a proposal feel welcome to propose it as a PR or in https://community.jenkins.io/t/jenkins-terminology-cleanup-initiative-coordination/180[Discourse terminology thread]
+
+=== English - Default
+
+* property suffix: <none>
+
+[options="header"]
+|======================
+| Deprecated term root           | New term root                 | New term declinaisons and comments              
+| slave                          | agent                         | agents (plural)                                 
+| master                         | controller                    | Frontend for Jenkins users and administrators.                     
+| master                         | built-in node                 | Jenkins “main node” label - Aligned with “Jenkins as node”
+| whitelist                      | allowlist                     | default but can be adapted to context           
+| blacklist                      | denylist or blocklist         | default but can be adapted to context           
+|======================
+
+=== Translations
+
+==== French (*-fr.properties)
+
+[options="header"]
+|======================
+| English term                  |Deprecated term                | New term root                 | Comments                                                 
+| agent                         | esclave, esclaves             | agent                         | "esclave" can be valid in a context of a spoken language.
+| controller                    | maître, maitre                | contrôleur                    |                                                          
+| built-in node                 | maître, maitre                | TDB                           |                                                          
+| allowlist                     |                               |                               |                                                          
+| denylist         |                               |                               |                                                          
+|======================
+
+Known Exceptions
+* `esclave` is valid in https://github.com/jenkinsci/jenkins/blob/677fbb2a81fa8e9a0bc37ad5eca56565612e1f2e/core/report-l10n.rb#L173
+
+==== German
+
+* property suffix: TODO
+
+* Table
+
+[options="header"]
+|======================
+| English term                  |Deprecated term                | New term root                 | Comments
+| agent                         | TBD                           | agent                         | agenten 
+| controller                    | TBD                           | controller                    |         
+| built-in node                 | TBD                           | TDB                           |         
+| allowlist                     |                               |                               |         
+| denylist or blocklist         |                               |                               |         
+|======================
+
+* Known Exceptions
+
+==== Spanish
+
+* property suffix: TODO
+
+* Table
+
+[options="header"]
+|======================
+| English term                  |Deprecated term                | New term root                 | Comments
+| agent                         | TBD                           | agente                        |         
+| controller                    | TBD                           | controlador                   |         
+| built-in node                 | TBD                           | TDB                           |         
+| allowlist                     |                               |                               |         
+| denylist or blocklist         |                               |                               |         
+|======================
+
+* Known Exceptions
+
+==== Chinese
+
+* property suffix: TODO
+
+* Table
+
+[options="header"]
+|======================
+| English term                  |Deprecated term                | New term root                 | Comments  
+| agent                         | TBD                           | TDB                           |           
+| controller                    | TBD                           | 控制者                         |          
+| built-in node                 | TBD                           | TDB                           |           
+| allowlist                     |                               |                               |           
+| denylist or blocklist         |                               |                               |           
+|======================
+
+* Known Exceptions
+
+==== Italian
+
+* property suffix: TODO
+
+* Table
+
+[options="header"]
+|======================
+| English term                  |Deprecated term                | New term root                 | Comments  
+| agent                         | TBD                           | TDB                           |           
+| controller                    | TBD                           | controllore                   |           
+| built-in node                 | TBD                           | TDB                           |           
+| allowlist                     |                               |                               |           
+| denylist or blocklist         |                               |                               |           
+|======================
+
+* Known Exceptions
+
+==== Russian
+
+* property suffix: TODO
+
+* Table
+
+[options="header"]
+|======================
+| English term                  |Deprecated term                | New term root                 | Comments   
+| agent                         | TBD                           | агент                         |            
+| controller                    | TBD                           | контроллер                    |            
+| built-in node                 | TBD                           | TDB                           |            
+| allowlist                     |                               |                               |            
+| denylist or blocklist         |                               |                               |            
+|======================
+
+* Known Exceptions
+
+==== Portuguese
+
+* property suffix: TODO
+
+* Table
+
+[options="header"]
+|======================
+| English term                  |Deprecated term                | New term root                 | Comments     
+| agent                         | TBD                           | controlador                   |              
+| controller                    | TBD                           | TDB                           |              
+| built-in node                 | TBD                           | TDB                           |              
+| allowlist                     |                               |                               |              
+| denylist or blocklist         |                               |                               |              
+|======================
+
+* Known Exceptions
+
+==== Danish
+
+* property suffix: TODO
+
+* Table
+
+[options="header"]
+|======================
+| English term                  |Deprecated term                | New term root                 | Comments      
+| agent                         | TBD                           | agent                         | plural agenter
+| controller                    | TBD                           | controller                    |               
+| built-in node                 | TBD                           | TDB                           |               
+| allowlist                     |                               |                               |               
+| denylist or blocklist         |                               |                               |               
+|======================
+
+* Known Exceptions
+
+==== Japanese
+
+* property suffix: TODO
+
+* Table
+
+[options="header"]
+|======================
+| English term                  |Deprecated term                | New term root                 | Comments      
+| agent                         | TBD                           | TBD                           | 
+| controller                    | TBD                           | コントローラ                    |               
+| built-in node                 | TBD                           | TDB                           |               
+| allowlist                     |                               |                               |               
+| denylist or blocklist         |                               |                               |               
+|======================
+
+* Known Exceptions
+
+== Motivation
+
+There is more and more deprecated terms and replacements.
+Discussions and motivations on new term can be done in discussion channels, but once the descision is made by the community we need to have all deprecated terminology and replacement at one place.
+
+As updating terminology is a huge work accross all Jenkins ecosystem, we wish to make it easy for new contributor to help.
+Having deprecated words to search and replacement face to face make it more easy.
+Having translations deprecated words and replacements is also more easy for maintainer to review PR that are not in native or spoken language.
+
+== Reasoning
+
+[TIP]
+====
+Explain why particular design decisions were made.
+Describe alternate designs that were considered and related work. For example, how the feature is supported in other systems.
+Provide evidence of consensus within the community and discuss important objections or concerns raised during discussion.
+
+* Use sub-headings to organize this section for ease of readability.
+* Do not talk about history or why this needs to be done - that is part of Motivation section.
+====
+
+== Backwards Compatibility
+
+* UI text: nothing to do, except change it on tests too
+* log/console text: nothing to do, except change it on test too
+* jCasC symbol: TBD :bulb:
+* HTTP URL / methods: TBD :bulb:
+* System properties: TBD :bulb:
+* code changes: TBD :bulb:
+
+== Security
+
+There are no security risks related to this proposal.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+N/A
+
+== References
+
+* https://issues.jenkins.io/browse/JENKINS-42816[JENKINS-42816 renaming Slave to Agent EPIC]
+* https://issues.jenkins.io/browse/JENKINS-65398[JENKINS-65398 renaming Master to Controller/Built-in node ; whitelist and blacklist deprecation]
+* https://community.jenkins.io/t/jenkins-terminology-cleanup-initiative-coordination/180[Discourse related topic]
+* https://groups.google.com/u/0/g/jenkinsci-dev/c/x5vdlJDvntw/m/8USafY_RBAAJ[Discussions on controller]
+* https://github.com/orgs/jenkinsci/projects/5[Github board with related PRs]

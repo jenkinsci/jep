@@ -227,8 +227,8 @@ should be adjusted (was not specifically tested).
 |As of link:https://github.com/jenkinsci/pipeline-maven-plugin/releases/tag/pipeline-maven-3.9.3[3.9.3].
 
 |link:https://plugins.jenkins.io/pipeline-restful-api/[pipeline-restful-api]
-|Mostly compatible
-|Pending link:https://github.com/jenkinsci/pipeline-restful-api-plugin/pull/13[pipeline-restful-api-plugin #13] for full compatibility.
+|Compatible
+|As of link:https://github.com/jenkinsci/pipeline-restful-api-plugin/releases/tag/pipeline-restful-api-0.10[0.10].
 
 |link:https://plugins.jenkins.io/plugin-util-api/[plugin-util-api]
 |Compatible
