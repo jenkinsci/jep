@@ -164,9 +164,8 @@ should be fixed.
 should be fixed.
 
 |link:https://plugins.jenkins.io/snyk-security-scanner/[snyk-security-scanner]
-|Mostly compatible
-|link:https://github.com/jenkinsci/snyk-security-scanner-plugin/blob/424ef3583f8c4cf418b7aa07595afd647f98d7a2/src/main/java/io/snyk/jenkins/tools/SnykInstallation.java#L58-L73[This code]
-should be fixed.
+|Compatible
+|As of link:https://github.com/jenkinsci/snyk-security-scanner-plugin/releases/tag/3.1.0[3.1.0].
 
 |link:https://plugins.jenkins.io/sonar/[sonar]
 |Compatible
