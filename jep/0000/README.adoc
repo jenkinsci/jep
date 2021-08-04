@@ -68,6 +68,10 @@ Jenkins has supported Java 11 for two and a half years.
 More and more users are choosing Java 11 for its improved platform support and additional features.
 Adopt Java 11 for improved platform support and to prepare for eventual end of support for Java 8.
 
+Initial alternatives, risks, and compromises were discussed in a link:https://groups.google.com/g/jenkinsci-dev/c/VfRq09Yfloo/m/3W8WWEQEAgAJ[Jenkins Developers mailing list thread].
+More details were discussed in the link:https://www.youtube.com/watch?v=Hger_BTp3D0[Java 11 track] of the June 25, 2021 Contributor Summit.
+Ongoing discussions are invited to continue on the link:https://community.jenkins.io/t/java-11-as-default-in-jenkins-2-302-1-docker-images/283["Java 11 as default in Jenkins 2.302.1 Docker images"] topic on community.jenkins.io.
+
 == Specification
 
 The specification describes specific steps that will be taken to change Jenkins Docker images to use Java 11 instead of Java 8 as the base image.
