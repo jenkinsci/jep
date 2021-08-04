@@ -1,0 +1,316 @@
+= JEP-0000: Use Java 11 in Docker images
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.**JEP Template**
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 0000
+
+| Title
+| Use Java 11 in Docker images
+
+| Sponsor
+| link:https://github.com/MarkEWaite[Mark Waite]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2021-08-03
+
+| BDFL-Delegate
+| TBD
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//| Requires
+//| JEP-7 (optionally)
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+This JEP updates the Jenkins default Docker images to use Java 11 instead of Java 8.
+Jenkins has supported Java 11 for two and a half years.
+More and more users are choosing Java 11 for its improved platform support and additional features.
+Adopt Java 11 for improved platform support and to prepare for eventual end of support for Java 8.
+
+== Specification
+
+The specification describes specific steps that will be taken to change Jenkins Docker images to use Java 11 instead of Java 8 as the base image.
+
+=== Modify existing tags
+
+**Modify existing Docker images to use Java 11** as their JDK instead of Java 8.
+First changes will be applied in a weekly release, then 1 week later will be available in an LTS release.
+
+Change to JDK 11 in the link:https://hub.docker.com/r/jenkins/jenkins[weekly controller images] that do not include an explicit JDK in their tag, like:
+
+* 2.307
+* 2.307-alpine
+* 2.307-centos7
+* 2.307-slim
+* alpine
+* centos7
+* latest
+* slim
+
+Change to JDK 11 in the link:https://hub.docker.com/r/jenkins/jenkins[long term support controller images] that do not include an explicit JDK in their tag, like:
+
+* 2.302.1
+* 2.302.1-alpine
+* 2.302.1-centos7
+* 2.302.1-slim
+* lts
+* lts-alpine
+* lts-centos7
+* lts-slim
+
+Change to JDK 11 in the link:https://hub.docker.com/r/jenkins/agent/[agent images] that do not include an explicit JDK in their tag, like:
+
+* 4.9-1
+* 4.9-1-alpine
+* 4.9-1-windowsservercore-ltsc2019
+* alpine
+* archlinux
+* latest
+* latest-archlinux
+* stretch - stop publishing updates to this image, replace with buster image
+
+Change to JDK 11 in the link:https://hub.docker.com/r/jenkins/inbound-agent[inbound agent images] that do not include an explicit JDK in their tag, like:
+
+* 4.9-1
+* 4.9-1-alpine
+* 4.9-1-windowsservercore-ltsc2019
+* alpine
+* latest
+
+Change to JDK 11 in the link:https://hub.docker.com/r/jenkins/ssh-agent/[outbound (ssh) agent images] that do not include an explicit JDK in their tag, like:
+
+* 2.1.0-alpine
+* 3.0.0
+* 3.0.0-alpine
+* alpine
+* latest
+* stretch - no change, retire the image
+
+=== Add new tags and images
+
+Additional tags will be added for those users who require a Java 8 image.
+
+**Provide additional Docker images for Java 8** in case users have critical requirements that must use Java 8.
+
+Add JDK 8 tags for the link:https://hub.docker.com/r/jenkins/jenkins[weekly controller images] as a fallback for users requiring JDK 8:
+
+* latest-jdk8
+* slim-jdk8
+* centos7-jdk8
+* alpine-jdk8
+
+Add JDK 8 tags for the link:https://hub.docker.com/r/jenkins/jenkins[long term support controller images] that do not include an explicit JDK in their tag, like:
+
+* lts-jdk8
+* lts-slim-jdk8
+* lts-centos7-jdk8
+* lts-alpine-jdk8
+
+Add JDK 8 tags to the link:https://hub.docker.com/r/jenkins/inbound-agent[inbound agent images] that do not include an explicit JDK in their tag, like:
+
+* 4.9-1-jdk8
+* 4.9-1-jdk8-alpine
+* 4.9-1-jdk8-windowsservercore-ltsc2019
+* alpine-jdk8
+* latest-jdk8
+
+Add JDK 8 tags to the link:https://hub.docker.com/r/jenkins/ssh-agent/[outbound (ssh) agent images] that do not include an explicit JDK in their tag, like:
+
+* 2.1.0-alpine-jdk8
+* 3.0.0-jdk8
+* 3.0.0-alpine-jdk8
+* alpine-jdk8
+* latest-jdk8
+* stretch no change, retire the image
+
+Some of the existing tags are for operating systems that have ended their standard support life.
+Add new operating system tags to use actively maintained operating systems.
+
+**Add Docker images for Debian 10 (buster)** in those images that include a link:https://www.debian.org/releases/stretch/[Debian 9 (stretch)] image.
+Debian 9 switched to link:https://wiki.debian.org/LTS[long term support] July 9, 2020.
+Debian 9 link:https://wiki.debian.org/LTS[long term support] will end June 30, 2022.
+
+Add Debian Buster image to the outbound (ssh) agent images to replace Debian stretch:
+
+* buster
+
+=== Stop publishing obsolete tags
+
+**Stop publishing `centos` tags** because they use CentOS 8 as a baseline and CentOS 8 is no longer receiving updates from the Red Hat Enterprise Linux upstream.
+See the link:https://blog.centos.org/2020/12/future-is-centos-stream/[CentOS blog post] that describes the change from CentOS as downstream from Red Hat Enterprise Linux to being upstream of Red Hat Enterprise Linux.
+If we want to retain a centos image, then we need to migrate from CentOS 8 to CentOS Stream 8 if an official Docker image is ever created for CentOS Stream 8.
+
+**Remove "lts" suffix in existing tags** when they are preceded by a version number.
+Replacements will be:
+
+* 2.302.1-lts to 2.302.1
+* 2.302.1-lts-alpine to 2.302.1-alpine
+* 2.302.1-lts-centos7 to 2.302.1-centos7
+* 2.302.1-lts-slim to 2.302.1-slim
+
+=== Image tagging convention
+
+Use the existing image tagging conventions in each of the repositories to add tags with additional information.
+See the link:https://docs.google.com/spreadsheets/d/1wtyycBpuhzk5-N9Vuh7tSFqoZwQq6a2Q05PRHS2xKd0/edit?usp=sharing[image tagging conventions worksheet] that collects the conventions used in the different repositories.
+
+=== Issues to review
+
+The link:https://issues.jenkins.io/issues/?jql=labels%20%3D%20java11-compatibility%20and%20status%20not%20in%20(Closed%2CResolved)[Java 11 compatibility issue reports] have been reviewed to identify plugins that do not support Java 11.
+
+Illegal reflective access warnings from Jenkins core or from plugins do not block the transition to Java 11 as the default JDK.
+
+== Motivation
+
+Jenkins has supported Java 11 for over two and a half years (since Jenkins 2.164).
+More and more users are choosing Java 11 for its improved platform support and additional features.
+Adopt Java 11 for improved platform support and to prepare for eventual end of support for Java 8.
+
+== Reasoning
+
+We considered dropping support for Java 8 but the number of users running Java 8 is still too great to immediately end support for Java 8.
+It is better to transition more users to Java 11 before the Jenkins project drops support for Java 8.
+
+== Backwards Compatibility
+
+Users that require a Java 8 Docker image will be able to change the definition of their Dockerfile to use a Java 8 image instead of the Java 11 image.
+For example, if they previously used `jenkins/jenkins:lts`, they will be able to switch their Docker image to `jenkins/jenkins:lts-jdk8`.
+
+=== Ruby runtime plugin and dependencies
+
+The link:https://plugins.jenkins.io/ruby-runtime/[ruby runtime plugin] is not supported with Java 11.
+Plugins that depend on the ruby runtime will not load after the Docker image uses Java 11.
+
+Plugins that depend on the ruby runtime include:
+
+* Ruby runtime plugins with more than 1000 installations:
+** link:https://plugins.jenkins.io/gitlab-hook[Gitlab Hook] - 13842 installs, multiple security vulnerabilities
+** link:https://plugins.jenkins.io/cucumber[Cucumber] - 1812 installs
+** link:https://plugins.jenkins.io/rvm[Rvm] - 1654 installs
+** link:https://plugins.jenkins.io/pyenv[pyenv] - 1649 installs
+
+* Ruby runtime plugins with less than 700 installations:
+** link:https://plugins.jenkins.io/capitomcat/[Capitomcat] - 635 installs
+** link:https://plugins.jenkins.io/chef/[Chef] - 390 installs
+** link:https://plugins.jenkins.io/ci-skip[Ci Skip] - 412 installs
+** link:https://plugins.jenkins.io/commit-message-trigger-plugin[Commit Message Trigger] - 569 installs
+** link:https://plugins.jenkins.io/git-notes[git-notes] - 531 installs
+** link:https://plugins.jenkins.io/mysql-job-databases[MySQL Job Databases] - 267 installs
+** link:https://plugins.jenkins.io/pathionore[Pathignore] - 325 installs
+** link:https://plugins.jenkins.io/perl[Perl] - 191 installs
+** link:https://plugins.jenkins.io/rbenv[rbenv] - 753 installs
+** link:https://plugins.jenkins.io/singleuseslave[Single Use Slave] - 107 installs
+** link:https://plugins.jenkins.io/travis-yml[Travis YML] - 224 installs
+
+* Ruby runtime plugins with less than 100 installations:
+** link:https://plugins.jenkins.io/buddycloud[buddycloud] - 3 installs
+** link:https://plugins.jenkins.io/devstack[DevStack] - 12 installs
+** link:https://plugins.jenkins.io/ikachan[Ikachan] - 7 installs
+** link:https://plugins.jenkins.io/jenkinsspider[Jenkinspider] - 13 installs
+** link:https://plugins.jenkins.io/perl-smoke-test[Perl Smoke Test] - 34 installs
+** link:https://plugins.jenkins.io/pry[pry] - 57 installs
+** link:https://plugins.jenkins.io/yammer[Yammer] - 76 installs
+
+=== Other incompatible plugins
+
+* link:https://plugins.jenkins.io/cppcheck[cppcheck plugin] - link:https://issues.jenkins.io/browse/JENKINS-63808[JENKINS-63808] - 3929 installs
+
+== Security
+
+There are no known security risks related to this proposal.
+Updating the Docker images to use Java 11 is updating to a configuration that is already supported by Jenkins platform installers like the RPM, Deb, and MSI installers.
+
+Docker image build and consistency improvement provide some help by building security fixes more quickly.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+The ci.jenkins.io installation has already been running Java 11 for over a year.
+Agents on ci.jenkins.io already have Java 11 available.
+Agents are now managed on ci.jenkins.io with configuration as code.
+Code updates may be needed for agent images currently using Java 8.
+
+== Testing
+
+Testing of Java 11 implementations has been running on ci.jenkins.io for over a year.
+Additional testing has been done by Tim Jacomb on his installation and by Mark Waite on his installation.
+Others are invited to test and report their results.
+
+== Prototype Implementation
+
+Similar Docker image transitions have been made in the past.
+Those transitions include:
+
+* Alpine 3.9 to Alpine 3.12 in agents and controllers
+* Debian 9 to Debian 10 for the controller Docker images
+* Java provider transition from OpenJDK to AdoptOpenJDK
+* Java version transition to newer Java releases
+
+Communication of the changes and their implementation was done in the past through blog posts, tweets, and LinkedIn posts.
+
+== References
+
+* insert links here
+
+== Milestones
+
+* Next LTS version (2.302) was selected in July 2021
+* Next LTS release candidate (2.302.1-rc) is August 11, 2021
+* First weekly release with the change is 2.307, August 17, 2021
+* Next LTS release (2.302.1) is August 25, 2021
+
+== Impact analysis
+
+Changing the weekly image and the agent images 1 weeks before the LTS release will give us early experience with the transition.
+However, it will also change the Java image used by agents on LTS images.
+That will create a period of 1 week where the Jenkins Docker agent of an LTS user may be running Java 11 while they are still running Java 8 on the controller.
+This will be counter to the often recommended advice to use the same Java version on the Jenkins controller and the Jenkins agent.
+
+== Announcements and documentation
+
+* Describe the change in the 2.302.1 Upgrade Guide
+* Describe the change in the 2.302.1 changelog
+* Describe the change in the 2.307 changelog
+* Describe the change in a blog post that coincides with the 2.307 weekly release.
+  The blog post can be used as though it were an upgrade guide for the weekly release
+* Present a Jenkins Online Meetup that introduces the change and other improvements that have come to the Jenkins Docker images
