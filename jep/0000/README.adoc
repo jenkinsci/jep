@@ -308,7 +308,9 @@ Communication of the changes and their implementation was done in the past throu
 Changing the weekly image and the agent images 1 weeks before the LTS release will give us early experience with the transition.
 However, it will also change the Java image used by agents on LTS images.
 That will create a period of 1 week where the Jenkins Docker agent of an LTS user may be running Java 11 while they are still running Java 8 on the controller.
-This will be counter to the often recommended advice to use the same Java version on the Jenkins controller and the Jenkins agent.
+This will be counter to the link:https://www.jenkins.io/doc/administration/requirements/upgrade-java-guidelines/#jvm-version-on-agents[official guidance] to use the same Java version on the Jenkins controller and the Jenkins agent.
+
+See the <<backwards-compatibility,backwards compatibility>> section for more details of  compatibiility issues.
 
 == Announcements and documentation
 
