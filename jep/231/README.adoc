@@ -203,7 +203,7 @@ Legend:
 |  link:https://github.com/jenkinsci/clearcase-plugin/pull/41[jenkinsci/clearcase-plugin#41]
 | 2094
 
-| :exclamation: maintainers answered
+| :heavy_check_mark: link:https://github.com/jenkinsci/teamconcert-plugin/releases/tag/teamconcert-2.4.0[2.4.0]
 | link:https://github.com/jenkinsci/teamconcert-plugin[teamconcert]
 |  link:https://github.com/jenkinsci/teamconcert-plugin/pull/20[jenkinsci/teamconcert-plugin#20] (last activity/release early 2020)
 | 1640
