@@ -185,6 +185,9 @@ Add Debian Bullseye image to the outbound (ssh) agent images to replace Debian s
 See the link:https://blog.centos.org/2020/12/future-is-centos-stream/[CentOS blog post] that describes the change from CentOS as downstream from Red Hat Enterprise Linux to being upstream of Red Hat Enterprise Linux.
 If we want to retain a centos image, then we need to migrate from CentOS 8 to CentOS Stream 8 if an official Docker image is ever created for CentOS Stream 8.
 
+**Stop publishing `1809` tags for Windows** because Microsoft has ended mainstream support for the 1809 images.
+We will continue publishing the container images based on the Windows Long Term Support Channel ("LTSC").
+
 **Remove "lts" suffix in existing tags** when they are preceded by a version number.
 Replacements will be:
 
