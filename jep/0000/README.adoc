@@ -1,4 +1,4 @@
-= JEP-0000: Use Java 11 in Docker images
+= JEP-0000: Use Java 11 in Docker images by default
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -18,7 +18,7 @@ endif::[]
 | 0000
 
 | Title
-| Use Java 11 in Docker images
+| Use Java 11 in Docker images by default
 
 | Sponsor
 | link:https://github.com/MarkEWaite[Mark Waite]
