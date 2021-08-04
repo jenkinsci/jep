@@ -112,7 +112,7 @@ Change to JDK 11 in the link:https://hub.docker.com/r/jenkins/agent/[agent image
 * archlinux
 * latest
 * latest-archlinux
-* stretch - stop publishing updates to this image, replace with buster image
+* stretch - stop publishing updates to this image, replace with bullseye image
 
 Change to JDK 11 in the link:https://hub.docker.com/r/jenkins/inbound-agent[inbound agent images] that do not include an explicit JDK in their tag, like:
 
@@ -129,7 +129,7 @@ Change to JDK 11 in the link:https://hub.docker.com/r/jenkins/ssh-agent/[outboun
 * 3.0.0-alpine
 * alpine
 * latest
-* stretch - no change, retire the image
+* stretch - no change, retire the image, replace with bullseye image
 
 === Add new tags and images
 
@@ -166,18 +166,18 @@ Add JDK 8 tags to the link:https://hub.docker.com/r/jenkins/ssh-agent/[outbound 
 * 3.0.0-alpine-jdk8
 * alpine-jdk8
 * latest-jdk8
-* stretch no change, retire the image
+* stretch no change, retire the image, replace with bullseye image
 
 Some of the existing tags are for operating systems that have ended their standard support life.
 Add new operating system tags to use actively maintained operating systems.
 
-**Add Docker images for Debian 10 (buster)** in those images that include a link:https://www.debian.org/releases/stretch/[Debian 9 (stretch)] image.
+**Add Docker images for Debian 11 (bullseye)** in those images that include a link:https://www.debian.org/releases/stretch/[Debian 9 (stretch)] image.
 Debian 9 switched to link:https://wiki.debian.org/LTS[long term support] July 9, 2020.
 Debian 9 link:https://wiki.debian.org/LTS[long term support] will end June 30, 2022.
 
-Add Debian Buster image to the outbound (ssh) agent images to replace Debian stretch:
+Add Debian Bullseye image to the outbound (ssh) agent images to replace Debian stretch:
 
-* buster
+* bullseye
 
 === Stop publishing obsolete tags
 
