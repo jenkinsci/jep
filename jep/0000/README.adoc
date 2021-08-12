@@ -94,10 +94,10 @@ Change to JDK 11 in the link:https://hub.docker.com/r/jenkins/jenkins[weekly con
 
 Change to JDK 11 in the link:https://hub.docker.com/r/jenkins/jenkins[long term support controller images] that do not include an explicit JDK in their tag, like:
 
-* 2.302.1
-* 2.302.1-alpine
-* 2.302.1-centos7
-* 2.302.1-slim
+* 2.303.1
+* 2.303.1-alpine
+* 2.303.1-centos7
+* 2.303.1-slim
 * lts
 * lts-alpine
 * lts-centos7
@@ -193,10 +193,10 @@ We will continue publishing the container images based on the Windows Long Term 
 **Remove "lts" suffix in existing tags** when they are preceded by a version number.
 Replacements will be:
 
-* 2.302.1-lts to 2.302.1
-* 2.302.1-lts-alpine to 2.302.1-alpine
-* 2.302.1-lts-centos7 to 2.302.1-centos7
-* 2.302.1-lts-slim to 2.302.1-slim
+* 2.303.1-lts to 2.303.1
+* 2.303.1-lts-alpine to 2.303.1-alpine
+* 2.303.1-lts-centos7 to 2.303.1-centos7
+* 2.303.1-lts-slim to 2.303.1-slim
 
 === Image tagging convention
 
@@ -304,9 +304,9 @@ Communication of the changes and their implementation was done in the past throu
 == Milestones
 
 * Next LTS version (2.302) was selected in July 2021
-* Next LTS release candidate (2.302.1-rc) is August 11, 2021
+* Next LTS release candidate (2.303.1-rc) is August 11, 2021
 * First weekly release with the change is 2.307, August 17, 2021
-* Next LTS release (2.302.1) is August 25, 2021
+* Next LTS release (2.303.1) is August 25, 2021
 
 == Impact analysis
 
@@ -319,8 +319,8 @@ See the <<backwards-compatibility,backwards compatibility>> section for more det
 
 == Announcements and documentation
 
-* Describe the change in the 2.302.1 Upgrade Guide
-* Describe the change in the 2.302.1 changelog
+* Describe the change in the 2.303.1 Upgrade Guide
+* Describe the change in the 2.303.1 changelog
 * Describe the change in the 2.307 changelog
 * Describe the change in a blog post that coincides with the 2.307 weekly release.
   The blog post can be used as though it were an upgrade guide for the weekly release
