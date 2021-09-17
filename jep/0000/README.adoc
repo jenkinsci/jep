@@ -91,7 +91,7 @@ In mostly chronological order, though many tasks can be parallelized:
 
 Many security-conscious organizations using, or planning to use, Jenkins run off-the-shelf security scanners to look for known vulnerabilities.
 These commonly flag the extremely old Guava library as susceptible to a https://github.com/google/guava/wiki/CVE-2018-10237[serialization-related vulnerability] and recommend upgrading.
-While Jenkins uses https://github.com/jenkinsci/jep/tree/master/jep/200[JEP-200] to form an explicit list of allowed classes for deserialization, and the affected Guava classes are not and will never be added to the list, it is time-consuming for the https://www.jenkins.io/security/team/[security team] to respond to purported security reports and for users to justify exemptions from policy to use Jenkins anyway.
+While Jenkins uses https://github.com/jenkinsci/jep/tree/master/jep/200[JEP-200] to form an explicit list of allowed classes for deserialization, and the two Guava classes affected by CVE-2018-10237 are not and will never be added to the list, it is time-consuming for the https://www.jenkins.io/security/team/[security team] to respond to purported security reports and for users to justify exemptions from policy to use Jenkins anyway.
 
 === Technical debt
 
