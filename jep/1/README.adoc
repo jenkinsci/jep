@@ -918,15 +918,28 @@ revision with specific instructions.
 
 ==== Approve as Draft
 
-Once the JEP is ready for the repository, a JEP editor will:
+Once the JEP is ready for the repository, a JEP editor will assign a JEP number.
+This will almost always just the next available number,
+but may also be a special/joke number, like 666 or 3141.
+The submission PR may be merged as follows:
 
-. Assign a JEP number (almost always just the next available number, but
-  may also be a special/joke number, like 666 or 3141).
-. Update the folder number to match the JEP number
-. Update the JEP number in the document.
-. Update the JEP status using the `./set-jep-status <JEP number> draft` command (script is located in the root)
-. Commit all changes and push them to the branch in the PR
-. "Squash and merge" the PR into the `master` branch.
+```bash
+# Substitute according to details:
+NUMBER=232
+PR=375
+# Now in a checkout of this repo:
+git checkout master
+git pull
+git pull --no-commit --no-ff origin pull/$PR/head
+mkdir jep/$NUMBER
+git mv jep/0000/README.adoc jep/$NUMBER/README.adoc
+sed -i -e s/0000/$NUMBER/g jep/$NUMBER/README.adoc
+./jep/set-jep-status $NUMBER draft
+git add jep
+git diff MERGE_HEAD # sanity check
+git commit -m "Merged #$PR as JEP-$NUMBER"
+git push
+```
 
 ==== Permission group membership
 
