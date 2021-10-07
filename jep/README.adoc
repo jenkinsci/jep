@@ -242,6 +242,11 @@
 | link:https://github.com/olamy[Olivier{nbsp}Lamy], link:https://github.com/bitwiseman[Liam{nbsp}Newman]
 | _not{nbsp}delegated_
 
+| Draft{nbsp}:speech_balloon:
+| link:232/README.adoc[JEP-232: Use Java 11 in Docker images by default]
+| link:https://github.com/MarkEWaite[Mark{nbsp}Waite]
+| TBD
+
 | Accepted{nbsp}:ok_hand:
 | link:300/README.adoc[JEP-300: Jenkins Evergreen]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
