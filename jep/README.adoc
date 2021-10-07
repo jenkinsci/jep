@@ -247,6 +247,11 @@
 | link:https://github.com/MarkEWaite[Mark{nbsp}Waite]
 | TBD
 
+| Draft{nbsp}:speech_balloon:
+| link:233/README.adoc[JEP-233: Upgrade Guava from 11.0.1 to latest]
+| https://github.com/basil[Basil{nbsp}Crow]
+| TBD
+
 | Accepted{nbsp}:ok_hand:
 | link:300/README.adoc[JEP-300: Jenkins Evergreen]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
