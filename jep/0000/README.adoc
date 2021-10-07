@@ -1,0 +1,274 @@
+= JEP-0000: Upgrade Guava from 11.0.1 to latest
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 0000
+
+| Title
+| Upgrade Guava from 11.0.1 to latest
+
+| Sponsor
+| https://github.com/basil[Basil Crow]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| :bulb: Date (YYYY-MM-DD) :bulb:
+
+| BDFL-Delegate
+| TBD
+
+| Jira
+| https://issues.jenkins.io/browse/JENKINS-65988[JENKINS-65988]
+
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+The https://guava.dev/[Guava] library in core is upgraded from https://github.com/google/guava/releases/tag/v11.0.1[11.0.1] to the latest version.
+Occurrences of Guava types in the Jenkins API are minimized.
+Plugins are prepared to be compatible with both Guava 11.0.1 and the latest version of Guava.
+Where feasible, usages of Guava in core, supporting libraries (e.g., https://github.com/stapler/stapler[Stapler]), and plugins are replaced with Java Platform equivalents.
+
+== Specification
+
+* The https://guava.dev/[Guava] library in core is upgraded from https://github.com/google/guava/releases/tag/v11.0.1[11.0.1], which was released on January 9, 2012, to the latest version.
+** The latest version of Guava and its primary dependencies are shipped in the WAR.
+** Guava annotation library dependencies are excluded from the WAR.
+* The Guava dependency is removed from https://github.com/stapler/stapler[Stapler].
+** All usages of Guava in Stapler are replaced with Java Platform equivalents.
+* Occurrences of Guava types in the Jenkins API are minimized.
+** Guava types are removed from the Jenkins API wherever possible.
+** Signatures containing Guava types that cannot be removed from the Jenkins API without breaking compatibility are deprecated, with non-deprecated replacements added where necessary.
+* Usages of Guava in core are minimized in favor of Java Platform equivalents.
+** The https://github.com/google/guava/tree/master/guava-testlib[Guava test library] is removed from the core test suite.
+* Plugins are prepared to be compatible with both Guava 11.0.1 and the latest version of Guava.
+** Usages of APIs that have been removed in the latest version of Guava are replaced with Java Platform equivalents or compatible Guava or Apache Commons APIs.
+** Plugins that use the Guava https://guava.dev/releases/snapshot-jre/api/docs/com/google/common/cache/Cache.html[`Cache`] and https://guava.dev/releases/snapshot-jre/api/docs/com/google/common/collect/MapMaker.html[`MapMaker`] APIs are migrated to https://github.com/ben-manes/caffeine[Caffeine], and Caffeine is packaged as an https://plugins.jenkins.io/caffeine-api/[API plugin] for use by other plugins.
+** Where feasible, usages of Guava in plugins are replaced with Java Platform equivalents.
+
+=== Rollout plan
+
+In mostly chronological order, though many tasks can be parallelized:
+
+* Prepare, merge, and release patches to remove unnecessary usages of Guava from core.
+* Prepare, merge, and release patches to remove the Guava dependency from Stapler and upgrade the Stapler dependency in core to the new version.
+* Prepare the https://github.com/jenkinsci/jenkins/pull/5707[patch to upgrade Guava in core], verifying that it passes automated tests on both Java 8 and 11.
+* Interactively verify that core and all plugins mentioned in the setup wizard (even if not `suggested`) seem to work.
+* Run the https://github.com/jenkinsci/bom[plugin BOM] test suite against the patch to upgrade Guava in core.
+* Create a https://issues.jenkins.io/browse/JENKINS-65988[Jira epic] associated with this JEP tracking all known plugins that might be affected by this change and their current status.
+* Run the https://github.com/jenkins-infra/usage-in-plugins[tool to search for usages in Jenkins plugins], checking all plugins in the update center for usages of removed APIs and classifying all matches in the https://issues.jenkins.io/browse/JENKINS-65988[Jira epic].
+* Prepare patches to make plugins compatible with both Guava 11.0.1 and the latest version of Guava, and get them merged and released.
+* Define a Jira label for regressions suspected to be related to this migration for tracking purposes.
+* Warn users of the upcoming changes on the https://www.jenkins.io/mailing-lists/[users’ mailing list], via blog post, social media, etc.
+* Merge and release the patch to upgrade Guava in core, including a warning in the https://www.jenkins.io/changelog/[release notes] and https://www.jenkins.io/doc/upgrade-guide/[upgrade guide] about the risk.
+* For a reasonable period of time (months?), monitor Jira for reported regressions as well as the overall score given to Jenkins weekly releases.
+* Track the status of “long-tail” plugins, offering advice and assistance to maintainers.
+
+== Motivation
+
+=== False positives from scanners
+
+Many security-conscious organizations using, or planning to use, Jenkins run off-the-shelf security scanners to look for known vulnerabilities.
+These commonly flag the extremely old Guava library as susceptible to a https://github.com/google/guava/wiki/CVE-2018-10237[serialization-related vulnerability] and recommend upgrading.
+While Jenkins uses https://github.com/jenkinsci/jep/tree/master/jep/200[JEP-200] to form an explicit list of allowed classes for deserialization, and the two Guava classes affected by CVE-2018-10237 are not and will never be added to the list, it is time-consuming for the https://www.jenkins.io/security/team/[security team] to respond to purported security reports and for users to justify exemptions from policy to use Jenkins anyway.
+
+=== Technical debt
+
+The decade-old version of Guava has long been a maintenance burden for Jenkins developers.
+Plugin developers must go to great lengths to https://github.com/jenkinsci/timestamper-plugin/blob/dd1ca61ca113513a2c6452516de53b9655005941/pom.xml#L131-L136[avoid a direct or transitive dependency on a recent version of Guava], or to https://github.com/jenkinsci/artifact-manager-s3-plugin/blob/e5c8147dbd417776ff1f3ff6144665e3c22b53b9/pom.xml#L279-L286[use `Mask-Classes` to load their own copy of Guava rather than the ancient copy bundled in core].
+Furthermore, Jenkins developers are missing out on potentially useful improvements, such as https://guava.dev/releases/snapshot-jre/api/docs/com/google/common/collect/Streams.html[better compatibility with newer Java language features].
+
+== Reasoning
+
+=== Status quo
+
+Continuing to use Guava 11.0.1 indefinitely does not seem sustainable.
+https://issues.jenkins.io/browse/JENKINS-46620[JENKINS-46620] describes an illegal reflective access from Guice 4.0.
+Avoiding that illegal reflective access requires an upgrade to https://github.com/google/guice/wiki/Guice501[Guice 5.0.1], which in turn requires an upgrade to a newer version of Guava.
+
+=== Splitting Guava 11.0.1 to a detached plugin
+
+A https://github.com/jenkinsci/jenkins/pull/5059#issuecomment-732234483[possibility considered early during development] was to include a shaded new Guava in core (or simply rewrite the uses of Guava in core to use other idioms), then split Guava 11.0.1 to a detached plugin and deprecate it.
+Under this proposal, those plugins which currently refer to Guava types but have no particular reason to need one version or another would remain working as before, whereas those which actually wish to use a newer version of Guava (e.g., https://plugins.jenkins.io/artifact-manager-s3/[Artifact Manager on S3]) would bump their core dependency, decline to add a dependency on the split plugin, and bundle whatever newer version they like.
+Also under this proposal, we would go through all plugins using Guava and bump their core dependency, at which point we would remove the deprecated Guava 11.0.1 plugin from the detached list.
+
+Unfortunately, this approach did not prove feasible.
+Core depends on Guice, which depends on Guava.
+Yes, shading the Guava classes in core would keep the Guava classes accessible to core classes (albeit under relocated package names) and hide them from plugins (which would only have access to Guava classes via a Guava API plugin).
+But shading the Guava classes in core would also hide the Guava classes from Guice, which was compiled against the non-relocated package names.
+The dependency on Guice adds very little value to the extension loader system and introduces a lot of complexity, but removing it is a bigger project that is explicitly out of scope for this JEP.
+
+Furthermore, bundling an older version of Guava does not really remove the technical debt of consuming removed Guava APIs.
+It just shifts the debt around.
+This JEP removes the technical debt of consuming removed Guava APIs by patching plugins to avoid such APIs.
+
+=== Hiding core dependencies from plugins
+
+https://issues.jenkins.io/browse/JENKINS-30685[JENKINS-30685] covers hiding core dependencies from plugins, which would simplify core dependency management.
+Some supporting infrastructure to do this at runtime is already in place in core, facilitating a https://github.com/rsandell/jenkins/tree/mask-libraries[prototype implementation].
+The challenging part of this work, however, is to keep core dependencies out of the `compile` scope for plugins (e.g., by putting them in the `optional` scope), which is a bigger project that is explicitly out of scope for this JEP.
+
+=== Excluding Guava annotation library dependencies from the WAR
+
+The latest version of Guava introduces new `compile`-scoped dependencies on three annotation libraries: https://github.com/google/error-prone[Error Prone], https://github.com/google/j2objc[J2ObjC], and the https://checkerframework.org/[Checker Framework].
+Pending the resolution of https://issues.jenkins.io/browse/JENKINS-30685[JENKINS-30685], adding _any_ new dependency to core presents significant maintenance challenges.
+Since these annotation libraries are not needed at runtime, it is preferable to avoid these maintenance challenges by excluding such annotation libraries from the WAR.
+Plugins that wish to compile against these annotation libraries, e.g. to perform static analysis, may do so by including the annotation library as an optional dependency in their own POM, though they should ensure that such annotation library dependencies are not packaged in the resulting JPI.
+
+=== Minimizing occurrences of Guava types in the Jenkins API
+
+Exposing a Guava type in the Jenkins API is a liability.
+If the Guava type changes, the Jenkins API might also have to change, which could result in incompatibilities.
+Supporting such an API also implies that core must expose Guava to plugins, which precludes https://issues.jenkins.io/browse/JENKINS-30685[JENKINS-30685].
+Deprecating signatures containing Guava types that cannot be removed from the Jenkins API without breaking compatibility allows for a graceful transition period in the short term pending the removal of such signatures.
+Removing signatures containing Guava types from the Jenkins API eliminates the liability in the long term.
+
+=== Replacing usages of Guava with Java Platform equivalents
+
+Many Guava APIs represent functionality that did not exist in the Java Platform originally but was added to the Java Platform later.
+For example, https://guava.dev/releases/snapshot-jre/api/docs/com/google/common/base/Objects.html#equal(java.lang.Object,java.lang.Object)[`com.google.common.base.Objects#equal`] was added to the Java Platform as https://docs.oracle.com/javase/8/docs/api/java/util/Objects.html#equals-java.lang.Object-java.lang.Object-[`java.util.Objects#equals`] in Java 7.
+The Guava documentation explicitly recommends using the Java Platform equivalents in such cases.
+This eases maintenance by reducing the dependency on third-party software.
+It also improves readability through the use of a consistent programming paradigm.
+
+=== Migrating from the Guava `Cache` and `MapMaker` APIs to Caffeine
+
+Several of the Guava https://guava.dev/releases/snapshot-jre/api/docs/com/google/common/cache/Cache.html[`Cache`] and https://guava.dev/releases/snapshot-jre/api/docs/com/google/common/collect/MapMaker.html[`MapMaker`] APIs have been removed in the latest version of Guava.
+This poses a significant challenge to preparing plugins to be compatible with both Guava 11.0.1 and the latest version of Guava.
+In some cases, these usages can be rewritten using https://docs.oracle.com/javase/8/docs/api/java/util/WeakHashMap.html[`WeakHashMap`], https://docs.oracle.com/javase/8/docs/api/java/lang/ClassValue.html[`ClassValue`], etc.
+In others, the dependency on Guava can be traded for a dependency on https://github.com/ben-manes/caffeine[Caffeine].
+Caffeine generally supports the same feature set as the Guava `Cache` and `MapMaker` APIs.
+Its author has also indicated an https://github.com/ben-manes/caffeine/issues/543[intent to maintain compatibility in the next major release].
+Creating a new https://github.com/jenkinsci/caffeine-api-plugin[API plugin] for Caffeine allows plugins to implement https://en.wikipedia.org/wiki/Dynamic_linker[dynamic linking] by depending on a shared copy of Caffeine, expressed as a plugin-to-plugin dependency.
+
+=== Plugins using `Mask-Classes`
+
+Several plugins (e.g., https://plugins.jenkins.io/artifact-manager-s3/[Artifact Manager on S3]) ship a recent version of Guava in the JPI and include a `Mask-Classes: com.google.common` entry in `MANIFEST.MF`.
+This https://www.jenkins.io/doc/developer/plugin-development/dependencies-and-class-loading/#pluginfirstclassloader-and-its-discontents[blocks Guava packages from the parent loader].
+These plugins do not have access to the Guava classes provided by core and are therefore unaffected by this transition.
+Once these plugins are upgraded to a core baseline that includes the latest version of Guava, the `Mask-Classes` entry can be removed from `MANIFEST.MF`.
+
+== Backwards Compatibility
+
+A https://diff.revapi.org/?groupId=com.google.guava&artifactId=guava&old=11.0.1&new=30.1.1-jre[comparison of API differences between Guava 11.0.1 and latest] shows that a number of APIs present in Guava 11.0.1 have been removed in the latest version of Guava.
+Usages of these removed APIs must be rewritten.
+See the https://issues.jenkins.io/browse/JENKINS-65988[Jira epic] for current status.
+
+=== Searching for usages of removed Guava APIs in binaries
+
+Create `/tmp/additionalClasses`, `/tmp/additionalFields`, and `/tmp/additionalMethods` using the content from the https://groups.google.com/g/jenkinsci-dev/c/aYUJ4VuOuVc/m/tW0uAlBMAQAJ[mailing list post].
+
+Then use https://github.com/jenkins-infra/usage-in-plugins[`jenkins-infra/usage-in-plugins`] to look for usages in plugins, including those in CloudBees CI:
+
+[source,bash]
+----
+mvn process-classes exec:exec -Dexec.executable=java -Dexec.args='-classpath %classpath org.jenkinsci.deprecatedusage.Main --additionalClasses /tmp/additionalClasses --additionalFields /tmp/additionalFields --additionalMethods /tmp/additionalMethods --onlyIncludeSpecified --updateCenter https://jenkins-updates.cloudbees.com/update-center/envelope-core-oc/update-center.json?version=2.303.1.6,https://jenkins-updates.cloudbees.com/update-center/envelope-core-mm/update-center.json?version=2.303.1.6'
+----
+
+producing a long report with many false positives.
+
+(This pair of UCs is very nearly a superset of the default Jenkins UC.)
+
+Add the `--includePluginLibs` option to scan plugin libraries, producing an even longer report with even more false positives.
+
+=== Categories of false positives
+
+We encountered several categories of false positives when classifying results and filing Jira issues.
+The lists of classes, fields, and methods provided in the https://groups.google.com/g/jenkinsci-dev/c/aYUJ4VuOuVc/m/tW0uAlBMAQAJ[mailing list post] were derived from the https://diff.revapi.org/?groupId=com.google.guava&artifactId=guava&old=11.0.1&new=30.1.1-jre[Revapi comparison].
+However, not all entries in these lists represent true incompatibilities.
+Such false positives were ignored when classifying results and filing Jira issues.
+
+One category of false positives pertains to annotation changes.
+For example, consider the `com.google.common.base.Joiner#join` entry in the list of methods.
+The Revapi API comparison correctly notes that in the three-argument version of `com.google.common.base.Joiner#join`, the first two arguments have changed from https://guava.dev/releases/11.0.1/api/docs/com/google/common/base/Joiner.html[being annotated with `@Nullable` in Guava 11.0.1] to https://guava.dev/releases/snapshot-jre/api/docs/com/google/common/base/Joiner.html[being annotated with `@CheckForNull` in the latest version of Guava].
+Revapi classifies the fact that these arguments are no longer annotated with `@Nullable` as “potentially breaking”.
+However, this is a false positive, because there is no difference in runtime behavior regardless of which annotation is used.
+
+Another category of false positives comes from a limitation of `usage-in-plugins`: it can only do coarse-grained method searches by name rather than fine-grained searches by method signature.
+For example, consider the `com.google.common.util.concurrent.Futures#addCallback` entry in the list of methods.
+The Revapi API comparison correctly notes that the two-argument version of `com.google.common.util.concurrent.Futures#addCallback` is https://guava.dev/releases/11.0.1/api/docs/com/google/common/util/concurrent/Futures.html[present in Guava 11.0.1] but https://guava.dev/releases/snapshot-jre/api/docs/com/google/common/util/concurrent/Futures.html[removed in the latest version of Guava].
+This is a legitimate problem, and usages of the two-argument version must be patched.
+However, the three-argument version of `com.google.common.util.concurrent.Futures#addCallback` is present in both Guava versions.
+Usages of the three-argument version do not require patching, and any mentions of them represent false positives.
+
+Yet another category of false positives consists of plugins that ship their own copy of Guava and block the Guava classes from core with a `Mask-Classes` entry in `MANIFEST.MF`.
+These plugins naturally contain a plugin library (Guava itself!) that references classes, fields, and methods from the abovementioned lists.
+As described previously, these plugins do not have access to the Guava classes provided by core and are therefore unaffected by this transition.
+These plugins include, at the time of this writing:
+
+- https://plugins.jenkins.io/artifact-manager-s3/[Artifact Manager on S3]
+- https://plugins.jenkins.io/azure-commons/[Azure Commons]
+- https://plugins.jenkins.io/azure-vmss/[Azure Virtual Machine Scale Set]
+- https://plugins.jenkins.io/cloudcoreo-deploytime/[CloudCoreo DeployTime]
+- https://plugins.jenkins.io/gcp-secrets-manager-credentials-provider/[GCP Secrets Manager Credentials Provider]
+- https://plugins.jenkins.io/headspin/[HeadSpin]
+- https://plugins.jenkins.io/opentelemetry/[OpenTelemetry]
+- https://plugins.jenkins.io/remoting-opentelemetry/[Remoting monitoring with OpenTelemetry]
+- https://plugins.jenkins.io/xframium/[XFramium Builder]
+
+== Security
+
+There are no known security risks related to this proposal.
+Defenses introduced in https://github.com/jenkinsci/jep/tree/master/jep/200[JEP-200] are left intact, even though newer versions of Guava are not susceptible to https://github.com/google/guava/wiki/CVE-2018-10237[CVE-2018-10237].
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+Due to the high risk of regression, there is an extensive need for testing associated with this change.
+The https://github.com/jenkinsci/bom[plugin BOM] test suite will be run against the patch to upgrade Guava in core.
+The https://github.com/jenkinsci/acceptance-test-harness[acceptance test harness (ATH)] and https://github.com/jenkinsci/plugin-compat-tester[plugin compatibility tester (PCT)] are needed to verify that all https://docs.cloudbees.com/search?&type=ci-plugins&ci-plugins-tier=verified[“Tier 1”] and https://docs.cloudbees.com/search?&type=ci-plugins&ci-plugins-tier=compatible[“Tier 2”] plugins are compatible with the patch to upgrade Guava in core.
+
+== Prototype Implementation
+
+* https://github.com/jenkinsci/jenkins/pull/5707[jenkinsci/jenkins#5707] is the main patch.
+
+== References
+
+* Reference implementation
+** https://github.com/jenkinsci/jenkins/pull/5707[jenkinsci/jenkins#5707] (_Upgrade Guava from 11.0.1 to latest_ by https://github.com/basil[Basil Crow])
+* Tracking
+** https://issues.jenkins.io/browse/JENKINS-65988[JENKINS-65988] (high-level Jira epic)
+* Discussion
+** https://groups.google.com/g/jenkinsci-dev/c/aYUJ4VuOuVc/m/1JFUHJMlAQAJ[Plugins using removed Guava APIs] (`jenkinsci-dev` mailing list thread)
+* Exploratory work
+** https://github.com/jenkins-infra/usage-in-plugins/pull/20[jenkins-infra/usage-in-plugins#20] (option to scan plugin libraries by https://github.com/jtnord[James Nord])
+** https://diff.revapi.org/?groupId=com.google.guava&artifactId=guava&old=11.0.1&new=30.1.1-jre[Revapi API diff] (comparison of API differences between Guava 11.0.1 and latest)
+** https://groups.google.com/g/jenkinsci-dev/c/aYUJ4VuOuVc/m/Kqwu5Aw-AQAJ[JENKINS-65990] (list of potential incompatibilities by https://github.com/jtnord[James Nord])
+** https://github.com/ben-manes/caffeine/issues/543[ben-manes/caffeine#543] (discussion about Caffeine compatibility with https://github.com/ben-manes[Ben Manes])
+** https://plugins.jenkins.io/caffeine-api/[Caffeine API plugin] by https://github.com/jtnord[James Nord]
+** https://github.com/jenkinsci/jenkins/pull/5059[jenkinsci/jenkins#5059] (prototype of https://issues.jenkins.io/browse/JENKINS-36779[JENKINS-36779] by https://github.com/dbreheret[Dominique Breheret])
+** https://github.com/rsandell/jenkins/tree/mask-libraries[mask-libraries] (prototype of https://issues.jenkins.io/browse/JENKINS-30685[JENKINS-30685] by https://github.com/rsandell[Robert Sandell])
+* Issues of interest
+** https://issues.jenkins.io/browse/JENKINS-30685[JENKINS-30685] _Hide core dependencies in plugin classpath_
+** https://issues.jenkins.io/browse/JENKINS-36779[JENKINS-36779] _Upgrade Guava or properly isolate core Guava dependency from plugins_
+** https://issues.jenkins.io/browse/JENKINS-62776[JENKINS-62776] _NoClassDefFoundErrors after updating Artifact Manager on S3_
+* Miscellany
+** https://www.youtube.com/watch?v=qVV_h9kY8HI[Guava update] (video from Jenkins Contributor Summit on June 25, 2021)
+** https://github.com/google/guava/wiki/CVE-2018-10237[CVE-2018-10237] (serialization-related vulnerability affecting Guava 11.0.1)
+* API documentation
+** https://guava.dev/releases/11.0.1/api/docs/[Guava 11.0.1 API documentation]
+** https://guava.dev/releases/snapshot-jre/api/docs/[Guava snapshot API documentation]
