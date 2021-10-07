@@ -933,7 +933,7 @@ git pull
 git pull --no-commit --no-ff origin pull/$PR/head
 mkdir jep/$NUMBER
 git mv jep/0000/README.adoc jep/$NUMBER/README.adoc
-sed -i -e s/0000/$NUMBER/g jep/$NUMBER/README.adoc
+perl -p -i -e s/0000/$NUMBER/g jep/$NUMBER/README.adoc
 ./jep/set-jep-status $NUMBER draft
 git add jep
 git diff MERGE_HEAD # sanity check
