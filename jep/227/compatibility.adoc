@@ -70,6 +70,10 @@ should be simplified to check `hasPermission`.
 |Compatible
 |As of link:https://github.com/jenkinsci/branch-api-plugin/releases/tag/branch-api-2.6.0[2.6.0].
 
+|link:https://plugins.jenkins.io/build-publisher/[build-publisher]
+|Incompatible
+|link:https://issues.jenkins.io/browse/JENKINS-66942[JENKINS-66942]
+
 |link:https://plugins.jenkins.io/build-token-root/[build-token-root]
 |Compatible
 |Tests pass as of link:https://github.com/jenkinsci/build-token-root-plugin/releases/tag/build-token-root-1.7[1.7] if not earlier.
