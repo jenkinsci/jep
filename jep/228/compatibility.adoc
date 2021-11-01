@@ -78,8 +78,8 @@ should improve compatibility.
 |As of link:https://github.com/jenkinsci/email-ext-plugin/releases/tag/email-ext-2.78[2.78].
 
 |link:https://plugins.jenkins.io/envinject/[envinject]
-|Possibly incompatible
-|link:https://issues.jenkins.io/browse/JENKINS-64398[JENKINS-64398]
+|Incompatible, fixes prepared
+|Pending link:https://github.com/jenkinsci/envinject-lib/pull/19[envinject-lib #19] and integration into `envinject-api-plugin`.
 
 |link:https://plugins.jenkins.io/exam/[exam]
 |Mostly compatible
