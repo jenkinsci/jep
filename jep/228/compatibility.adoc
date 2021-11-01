@@ -77,6 +77,10 @@ should improve compatibility.
 |Compatible
 |As of link:https://github.com/jenkinsci/email-ext-plugin/releases/tag/email-ext-2.78[2.78].
 
+|link:https://plugins.jenkins.io/envinject/[envinject]
+|Incompatible, fixes prepared
+|Pending link:https://github.com/jenkinsci/envinject-lib/pull/19[envinject-lib #19] and integration into `envinject-api-plugin`.
+
 |link:https://plugins.jenkins.io/exam/[exam]
 |Mostly compatible
 |link:https://github.com/jenkinsci/exam-plugin/blob/ab1359277251db94cbc4f1472b6534a2c14cf4fa/src/main/java/jenkins/plugins/exam/ExamTool.java#L132-L145[This code]
