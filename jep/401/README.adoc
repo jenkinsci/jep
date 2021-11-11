@@ -1,0 +1,268 @@
+= JEP-401: Customizable Jenkins header
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 401
+
+| Title
+| Customizable Jenkins header
+
+| Sponsor
+| link:https://github.com/imonteroperez[Ildefonso Montero]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2021-11-28
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: link:https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+Jenkins does not provide a customization mechanism for header.
+
+Unique existing approach based on the https://plugins.jenkins.io/simple-theme-plugin/[simple-theme-plugin] has a limited capabilities (see Reasoning section for more details).
+
+It makes it difficult:
+
+* to provide branding capabilities to include custom logos, styles or other elements, and
+* to make feasible to rewrite some functionality or include additional one to some elements like the search bar.
+
+Sometimes, this limited customization capabilities implies a barrier on Jenkins adoption inside enterprises.
+
+Having the ability to customize the header (not only from the UI POV) will help to avoid that situation.
+
+This proposal provides a customization mechanism for a better integration that also reduces current tech debt.
+
+== Specification
+
+The main aspect of the change is the introduction of a new extension point `Header` as an interface (or an abstract class) that provides capabilities to render a specific header and a default implementation of that, named `JenkinsHeader` that is enabled by default always.
+
+All headers will provide a prioritization technique, via https://javadoc.jenkins.io/hudson/Extension.html[ordinal] though the `Extension` annotation, that will help to override, based on its value, which header will be rendered. Default one will provide a `Integer.MIN_VALUE` value.
+
+On `pageHeader.jelly` file we will perform a refactor to make it more modular providing different sections:
+
+* `preHeader.jelly`: that will provide the content of the elements that want to be provided/rendered before header div is rendered on the browser
+* `headerContent.jelly`: that will provide the content of the header div
+* `postHeader.jelly`: that will provide the content of the elements that want to be provided/rendered after the header div is rendered on the browser
+
+Thus, `pageHeader.jelly` should look like:
+
+```xml
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:i="jelly:fmt" xmlns:x="jelly:xml">
+	<j:invokeStatic var="header" className="jenkins.views.JenkinsHeader" method="get"/>
+	<st:include it="${header}" page="preHeader.jelly"/>
+	<st:include it="${header}" page="headerContent.jelly"/>
+	<st:include it="${header}" page="postHeader.jelly"/>
+</j:jelly>
+```
+
+The `get()` method is provided in the default implementation `jenkins.views.JenkinsHeader` and it will retrieve the available headers via `Extension` lookup that are enabled and for those obtained it will provide the one with max priority (ordinal value). In case two or more headers are provided via external plugins with the same priority (and max), then the default one will be provided and a warning message would be provided on the logs.
+
+In terms of simplicity, proposal aims to use only one extension to do a full replacement of the header. As a follow up, any given implementation of the extension can provide custom extension points for further or more granular customization capabilities.
+
+=== Extensibility
+
+Jenkins users will be able to interact with the `Header` extension as follows in case want to customize the header of their instances by creating a custom plugin. For that purpose, they need just to extend `Header` and provide an implementation of the priority method using the ordinal value to specify desired priority value.
+
+
+== Motivation
+
+Jenkins uses `pageHeader.jelly` file to specify the content of the header. Although it is valid, if a user wants to modify the header to perform some branding operation, Jenkins header branding capabilities are limited.
+
+There exist some plugins, like: https://plugins.jenkins.io/simple-theme-plugin/[simple-theme-plugin], that allow Jenkins users to customize some parts like CSS and/or Javascript. On the other hand, if a Jenkins user wants to customize/modify some additional business functionality on some menus and search bar, then there is no approach beyond updating/overriding `pageHeader.jelly` from the Jenkins core, which would be a problem on updating the instance due to conflicts. In addition, if the user wants to customize these behaviors it would be good to have those features as REST endpoints.
+
+Also, other alternatives has been evaluated as workaround like the https://github.com/stephenc/diffpatch-maven-plugin[diffpatch-maven-plugin] with no satisfactory results. See Reasoning section for futher details.
+
+So, this approach is about providing not only UI capabilities, it is also providing extra functionality and better integration.
+
+== Reasoning
+
+Let's consider the following dummy example to illustrate reasoning on why particular design decisions were made and also why current approaches were discarded.
+
+> A Jenkins user wants to modify its current Jenkins instance header to provide a configurable message (default: `Hello World!`) with the account username of the logged user, as well as two (why not?) search bars
+
+There exists some options to perform parts of the required actions mentioned above:
+
+* Update the `pageHeader.jelly` content of his Jenkins instance. Discarded in terms of looking for better mechanisms to customize the instance that does not require to override/update its original source code.
+* Use https://plugins.jenkins.io/simple-theme-plugin/[simple-theme-plugin]. It could help us to modify some CSS and Javascript elements, and could be used to reach our goals, but it would be so hacky and will not be able to retrieve programatically the configurable message to be included with the username of the logged user.
+* Use https://github.com/stephenc/diffpatch-maven-plugin[diffpatch-maven-plugin] to override the content of the header using patches. It would help us to have a repeated search box, but not to have the configurable message due to it only will help for static content.
+
+Given existing approaches does not fullfill this example, we will explore the alternative of a Jenkins user that wants to update the Jenkins header through an ad hoc Jenkins plugin that follows the principles provided on Specification section:
+
+=== Jenkins core
+
+* Let’s consider the following definition of the `Header` on: `core/src/main/java/jenkins/views/Header.java`
+
+```
+package jenkins.views;
+
+import hudson.ExtensionPoint;
+
+public interface Header extends ExtensionPoint {
+
+    /**
+     * Check if the header is enabled. By default it is if installed,
+     * but the logic is deferred in the plugins.
+     * @return
+     */
+    boolean isHeaderEnabled();
+
+}
+```
+
+* Let’s consider the following implementation of the Jenkins header on: `core/src/main/java/jenkins/views/JenkinsHeader.java`
+
+```
+package jenkins.views;
+
+import hudson.Extension;
+
+@Extension(ordinal = Integer.MIN_VALUE)
+public class JenkinsHeader extends Header {
+
+    @Override
+    public boolean isHeaderEnabled() {
+        return true;
+    }
+    [...]
+}
+```
+
+* As mentioned before, method `get()` from `JenkinsHeader` will retrieve the available headers via `Extension` lookup that are enabled and for those obtained it will provide the one with max priority (ordinal value)
+
+```
+[...]
+@Restricted(NoExternalUse.class)
+@CheckForNull
+public static Header get() {
+    List<Header> headers = ExtensionList.lookup(Header.class).stream()
+                .filter(header -> header.isHeaderEnabled())
+                .collect(Collectors.toList());
+    if (headers.size() > 0) {
+        if (headers.size() > 1) {
+            LOGGER.warning("More than one configured header. This should not happen. Serving the Jenkins default header and please review");
+        } else {
+            return headers.get(0);
+        }
+    }
+    return new JenkinsHeader();
+}
+```
+
+* Once we launch Jenkins with the proposed changes on the core, we will obtain the expected/current header working without any issue
+
+=== Custom UI plugin
+
+* Create a new plugin following the usual procedure
+* Provide an implementation of the custom Header (i.e: `src/main/java/org/jenkinsci/plugins/custom/header/CustomHeader.java`)
+
+```
+[...]
+@Extension(ordinal = 100)
+public class CustomHeader extends Header {
+
+    @Override
+    public boolean isHeaderEnabled() {
+        // Disable/enable the header based on an ENV var and/or system property
+        boolean isDisabled = System.getProperty(CustomHeader.class.getName() + ".disable") != null ?
+                "true".equalsIgnoreCase(System.getProperty(CustomHeader.class.getName() + ".disable")) :
+                "true".equalsIgnoreCase(System.getenv("CUSTOM_HEADER_DISABLE"));
+        return !isDisabled;
+    }
+}
+```
+
+* Provide a method in the custom header to retrieve the label which will be with the username. Current code is just an example, but the label could be obtained from the https://javadoc.jenkins.io/jenkins/model/GlobalConfiguration.html[GlobalConfiguration].
+
+```
+    public static String getHeaderLabel(){
+        // This label content could be retrieved programatically. Not coded in aims of simplicity.
+        return "Hello World!";
+    }
+```
+
+* Provide the jelly files to override the core ones: `headerContent`, `preHeader` and/or `postHeader`. For that purpose, use the common location convention. For the previous example: `src/main/resources/org/jenkinsci/plugins/custom/header/CustomHeader/`. Retrieve the customizable label to be rendered with the username on the `headerContent` file.
+
+```xml
+<j:invokeStatic var="label" className="org.jenkinsci.plugins.custom.header.CustomHeader" method="getHeaderLabel"/>
+<span class="hidden-xs hidden-sm">${label} - ${userName}</span>
+```
+
+* See the sample implementation provided in the Reference Implementation section.
+
+== Backwards Compatibility
+
+Existing headers will continue to work as expected
+
+== Security
+
+No specific security considerations
+
+== Infrastructure Requirements
+
+No impact on the Jenkins project infrastructure
+
+== Testing
+
+To write tests specific to the header (also using a patched core via https://github.com/stephenc/diffpatch-maven-plugin[diffpatch-maven-plugin] are currently difficult. Proposed solution will solve these issues: if a customized header is an extension in a plugin then having this plugin on your test classpath will suffice to let UI tests run in the expected way, regardless of core provenance.
+
+== Reference Implementation
+
+* Proposed changes on Jenkins core: https://github.com/jenkinsci/jenkins/pull/5909
+* Prototype of a https://github.com/imonteroperez/custom-header-plugin[Custom Header plugin]. This plugin is modifying the current Jenkins header including an extra search box (just for clarification purposes).
+
+== References
+
+Relevant data
+
+* jenkins-dev ML threads
+* JIRA tickets
