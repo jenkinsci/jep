@@ -1,4 +1,4 @@
-= JEP-401: Customizable Jenkins header
+= JEP-234: Customizable Jenkins header
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -13,7 +13,7 @@ endif::[]
 [cols="2"]
 |===
 | JEP
-| 401
+| 234
 
 | Title
 | Customizable Jenkins header
@@ -87,21 +87,14 @@ The main aspect of the change is the introduction of a new extension point `Head
 
 All headers will provide a prioritization technique, via https://javadoc.jenkins.io/hudson/Extension.html[ordinal] though the `Extension` annotation, that will help to override, based on its value, which header will be rendered. Default one will provide a `Integer.MIN_VALUE` value.
 
-On `pageHeader.jelly` file we will perform a refactor to make it more modular providing different sections:
-
-* `preHeader.jelly`: that will provide the content of the elements that want to be provided/rendered before header div is rendered on the browser
-* `headerContent.jelly`: that will provide the content of the header div
-* `postHeader.jelly`: that will provide the content of the elements that want to be provided/rendered after the header div is rendered on the browser
-
+On `pageHeader.jelly` file we will perform a refactor to make it more modular injecting the `headerContent.jelly` that will provide the content of the header.
 Thus, `pageHeader.jelly` should look like:
 
 ```xml
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:i="jelly:fmt" xmlns:x="jelly:xml">
 	<j:invokeStatic var="header" className="jenkins.views.JenkinsHeader" method="get"/>
-	<st:include it="${header}" page="preHeader.jelly"/>
 	<st:include it="${header}" page="headerContent.jelly"/>
-	<st:include it="${header}" page="postHeader.jelly"/>
 </j:jelly>
 ```
 
@@ -230,7 +223,7 @@ public class CustomHeader extends Header {
     }
 ```
 
-* Provide the jelly files to override the core ones: `headerContent`, `preHeader` and/or `postHeader`. For that purpose, use the common location convention. For the previous example: `src/main/resources/org/jenkinsci/plugins/custom/header/CustomHeader/`. Retrieve the customizable label to be rendered with the username on the `headerContent` file.
+* Provide the jelly file to override the `headerContent`. For that purpose, use the common location convention. For the previous example: `src/main/resources/org/jenkinsci/plugins/custom/header/CustomHeader/`. Retrieve the customizable label to be rendered with the username on the `headerContent` file.
 
 ```xml
 <j:invokeStatic var="label" className="org.jenkinsci.plugins.custom.header.CustomHeader" method="getHeaderLabel"/>
@@ -264,5 +257,5 @@ To write tests specific to the header (also using a patched core via https://git
 
 Relevant data
 
-* jenkins-dev ML threads
-* JIRA tickets
+* jenkins-dev: https://groups.google.com/g/jenkinsci-dev/c/1tDvSioCaF0
+* Jenkins UX SIG meeting Nov 24: https://docs.google.com/document/d/1QttPwdimNP_120JukigKsRuBvMr34KZhVfsbgq1HFLM/edit#
