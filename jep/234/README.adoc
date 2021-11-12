@@ -143,7 +143,8 @@ Given existing approaches do not fulfill this example, we will explore the alter
 
 * Let’s consider the following definition of the `Header` on: `core/src/main/java/jenkins/views/Header.java`
 
-```
+[source,java]
+----
 package jenkins.views;
 
 import hudson.ExtensionPoint;
@@ -158,7 +159,7 @@ public interface Header extends ExtensionPoint {
     boolean isHeaderEnabled();
 
 }
-```
+----
 
 * Let’s consider the following implementation of the Jenkins header on: `core/src/main/java/jenkins/views/JenkinsHeader.java`
 
