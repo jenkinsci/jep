@@ -88,11 +88,10 @@ The current behavior is moved into a default implementation named `JenkinsHeader
 
 All headers will provide a prioritization technique, via the usual link:https://javadoc.jenkins-ci.org/hudson/Extension.html#ordinal--[ordinal] field of the `Extension` annotation.
 The default one will use `Integer.MIN_VALUE` value.
-In other words, the default one will be the implementation with the least priority. 
+In other words, the default one will be the implementation with the least priority.
 
 
-On link:https://github.com/jenkinsci/jenkins/blob/09f0269e87625491d7d897ba0e878a1f7fa31de4/core/src/main/resources/lib/layout/pageHeader.jelly
-[`pageHeader.jelly`], we will make it more modular by injecting a (customizable) `headerContent.jelly` that will provide the content of the header.
+On https://github.com/jenkinsci/jenkins/blob/09f0269e87625491d7d897ba0e878a1f7fa31de4/core/src/main/resources/lib/layout/pageHeader.jelly[`pageHeader.jelly`], we will make it more modular by injecting a (customizable) `headerContent.jelly` that will provide the content of the header.
 
 Thus, `pageHeader.jelly` should look like:
 
@@ -117,8 +116,8 @@ Jenkins users will be able to interact with the `Header` extension as follows in
 
 Jenkins uses `pageHeader.jelly` file to specify the content of the header. Although it is valid, if a user wants to modify the header to perform some branding operation, Jenkins header branding capabilities are limited.
 
-Some plugins, like: https://plugins.jenkins.io/simple-theme-plugin/[simple-theme-plugin], allow Jenkins users to customize some parts like CSS and/or Javascript. 
-On the other hand, if a Jenkins user wants to customize/modify some additional business functionality on some menus and search bar, then there is no approach beyond updating/overriding `pageHeader.jelly` from the Jenkins core, which would be a problem on updating the instance due to conflicts. 
+Some plugins, like: https://plugins.jenkins.io/simple-theme-plugin/[simple-theme-plugin], allow Jenkins users to customize some parts like CSS and/or Javascript.
+On the other hand, if a Jenkins user wants to customize/modify some additional business functionality on some menus and search bar, then there is no approach beyond updating/overriding `pageHeader.jelly` from the Jenkins core, which would be a problem on updating the instance due to conflicts.
 In addition, if the user wants to customize these behaviors it would be good to have those features as REST endpoints.
 
 Also, other alternatives have been evaluated as workaround like the https://github.com/stephenc/diffpatch-maven-plugin[diffpatch-maven-plugin] with no satisfactory results. See the _Reasoning_ section for further details.
@@ -133,7 +132,7 @@ Let's consider the following dummy example to illustrate reasoning on why partic
 
 Some options exist to perform parts of the required actions mentioned above:
 
-* Update the `pageHeader.jelly` content of their Jenkins instance. 
+* Update the `pageHeader.jelly` content of their Jenkins instance.
   Discarded to not require overriding/updating original Jenkins core source code.
 * Use https://plugins.jenkins.io/simple-theme-plugin/[simple-theme-plugin]. It could help us to modify some CSS and Javascript elements, and could be used to reach our goals, but it would be so hacky and will not be able to retrieve programatically the configurable message to be included with the username of the logged user.
 * Use https://github.com/stephenc/diffpatch-maven-plugin[diffpatch-maven-plugin] to override the content of the header using patches. It would help us have a second search box, but not to have the configurable message because it will only help for static content.
