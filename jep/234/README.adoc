@@ -234,7 +234,12 @@ public class CustomHeader extends Header {
 
 == Backwards Compatibility
 
-Existing headers will continue to work as expected
+Given this proposal relies on replacement/injection of the `pageHeader` and `headerContent` and the content of that source relies also on UI elements (CSS identifiers, Javascript, etc.) backward compatibility cannot be guaranteed (as happens with themes - documented as https://www.jenkins.io/doc/book/managing/ui-themes/#themes-support-policy[no API compatibility]).
+
+To deal with these incompatibilities:
+
+* Consider to place all your required CSS and Javascript code inside your custom plugins if you are going to do a complete refactor of the header.
+* Consider to be up-to-date with the latest sources/updates on the `headerContent` in case you were doing minimal changes through your custom header plugin.
 
 == Security
 
