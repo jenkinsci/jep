@@ -105,7 +105,7 @@ Thus, `pageHeader.jelly` should look like:
 
 The `get()` method is provided in the default implementation `jenkins.views.JenkinsHeader` and it will retrieve the available headers via `Extension` lookup that are enabled and for those obtained it will provide the one with max priority (ordinal value). In case two or more headers are provided via external plugins with the same priority (and max), then the default one will be provided and a warning message would be provided on the logs.
 
-In terms of simplicity, proposal aims to use only one extension to do a full replacement of the header. As a follow up, any given implementation of the extension can provide custom extension points for further or more granular customization capabilities.
+In terms of simplicity, proposal aims to use only one extension to do a full replacement of the header.
 
 === Extensibility
 
