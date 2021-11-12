@@ -107,11 +107,6 @@ The `get()` method is provided in the default implementation `jenkins.views.Jenk
 
 In terms of simplicity, proposal aims to use only one extension to do a full replacement of the header.
 
-=== Extensibility
-
-Jenkins users will be able to interact with the `Header` extension as follows in case want to customize the header of their instances by creating a custom plugin. For that purpose, they need just to extend `Header` and provide an implementation of the priority method using the ordinal value to specify desired priority value.
-
-
 == Motivation
 
 Jenkins uses `pageHeader.jelly` file to specify the content of the header. Although it is valid, if a user wants to modify the header to perform some branding operation, Jenkins header branding capabilities are limited.
