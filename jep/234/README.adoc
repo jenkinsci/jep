@@ -163,7 +163,8 @@ public interface Header extends ExtensionPoint {
 
 * Let’s consider the following implementation of the Jenkins header on: `core/src/main/java/jenkins/views/JenkinsHeader.java`
 
-```
+[source,java]
+----
 package jenkins.views;
 
 import hudson.Extension;
@@ -177,11 +178,12 @@ public class JenkinsHeader extends Header {
     }
     [...]
 }
-```
+----
 
 * As mentioned before, method `get()` from `JenkinsHeader` will retrieve the available headers via `Extension` lookup that are enabled and for those obtained it will provide the one with max priority (ordinal value)
 
-```
+[source,java]
+----
 [...]
 @Restricted(NoExternalUse.class)
 @CheckForNull
@@ -198,7 +200,7 @@ public static Header get() {
     }
     return new JenkinsHeader();
 }
-```
+----
 
 * Once we launch Jenkins with the proposed changes on the core, we will obtain the expected/current header working without any issue
 
@@ -207,7 +209,8 @@ public static Header get() {
 * Create a new plugin following the usual procedure
 * Provide an implementation of the custom Header (i.e: `src/main/java/org/jenkinsci/plugins/custom/header/CustomHeader.java`)
 
-```
+[source,java]
+----
 [...]
 @Extension(ordinal = 100)
 public class CustomHeader extends Header {
@@ -221,16 +224,17 @@ public class CustomHeader extends Header {
         return !isDisabled;
     }
 }
-```
+----
 
 * Provide a method in the custom header to retrieve the label which will be with the username. Current code is just an example, but the label could be obtained from the https://javadoc.jenkins.io/jenkins/model/GlobalConfiguration.html[GlobalConfiguration].
 
-```
+[source,java]
+----
     public static String getHeaderLabel(){
         // This label content could be retrieved programatically. Not coded in aims of simplicity.
         return "Hello World!";
     }
-```
+----
 
 * Provide the jelly file to override the `headerContent`. For that purpose, use the common location convention. For the previous example: `src/main/resources/org/jenkinsci/plugins/custom/header/CustomHeader/`. Retrieve the customizable label to be rendered with the username on the `headerContent` file.
 
