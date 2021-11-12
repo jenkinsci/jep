@@ -207,7 +207,7 @@ public static Header get() {
 === Custom UI plugin
 
 * Create a new plugin following the usual procedure
-* Provide an implementation of the custom Header (i.e: `src/main/java/org/jenkinsci/plugins/custom/header/CustomHeader.java`)
+* Provide an implementation of the custom Header (e.g: `src/main/java/org/jenkinsci/plugins/custom/header/CustomHeader.java`)
 
 [source,java]
 ----
