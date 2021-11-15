@@ -1,4 +1,4 @@
-= JEP-234: Customizable Jenkins header
+= JEP-0000: Customizable Jenkins header
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -13,7 +13,7 @@ endif::[]
 [cols="2"]
 |===
 | JEP
-| 234
+| 0000
 
 | Title
 | Customizable Jenkins header
@@ -235,7 +235,7 @@ public class CustomHeader extends Header {
 
 ```xml
 <j:invokeStatic var="label" className="org.jenkinsci.plugins.custom.header.CustomHeader" method="getHeaderLabel"/>
-<span class="hidden-xs hidden-sm">${label} - ${userName}</span>
+<span class="hidden-xs hidden-sm">${label}—${userName}</span>
 ```
 
 * See the sample implementation provided in the Reference Implementation section.
