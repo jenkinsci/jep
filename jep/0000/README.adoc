@@ -133,7 +133,7 @@ Some options exist to perform parts of the required actions mentioned above:
 
 Given existing approaches do not fulfill this example, we will explore the alternative of a Jenkins user that wants to update the Jenkins header through an ad-hoc Jenkins plugin that follows the principles provided in the Specification section.
 
-The following source code is provided just for illustrative purposes on reasoning how the approach should looks like and may differ of the final implementation (please refer to Reference Implementation section to see the final proposed changes in source code)
+The following source code is provided just for illustrative purposes on reasoning why particular design decisions were made. It may differ from the final implementation (please go to Reference Implementation section to see the final proposed changes in source code)
 
 === Jenkins core
 
