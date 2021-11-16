@@ -131,7 +131,7 @@ Some options exist to perform parts of the required actions mentioned above:
 * Use https://plugins.jenkins.io/simple-theme-plugin/[simple-theme-plugin]. It could help us to modify some CSS and Javascript elements, and could be used to reach our goals, but it would be so hacky and will not be able to retrieve programatically the configurable message to be included with the username of the logged user.
 * Use https://github.com/stephenc/diffpatch-maven-plugin[diffpatch-maven-plugin] to override the content of the header using patches. It would help us have a second search box, but not to have the configurable message because it will only help for static content.
 
-Given existing approaches do not fulfill this example, we will explore the alternative of a Jenkins user that wants to update the Jenkins header through an ad-hoc Jenkins plugin that follows the principles provided in the Specification section:
+Given existing approaches do not fulfill this example, we will explore the alternative of a Jenkins user that wants to update the Jenkins header through an ad-hoc Jenkins plugin that follows the principles provided in the Specification section. The following source code is provided just for illustrative purposes on reasoning how the approach should looks like and may differ of the final implementation (please refer to Reference Implementation section to see the final proposed changes in source code)
 
 === Jenkins core
 
