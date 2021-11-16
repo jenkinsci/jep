@@ -87,8 +87,7 @@ The main change is the introduction of a new extension point `Header` that provi
 The current behavior is moved into a default implementation named `JenkinsHeader`.
 
 All headers will provide a prioritization technique, via the usual link:https://javadoc.jenkins-ci.org/hudson/Extension.html#ordinal--[ordinal] field of the `Extension` annotation.
-The default one will use `Integer.MIN_VALUE` value.
-In other words, the default one will be the implementation with the least priority.
+The default one will be the implementation with the least priority.
 
 
 On https://github.com/jenkinsci/jenkins/blob/09f0269e87625491d7d897ba0e878a1f7fa31de4/core/src/main/resources/lib/layout/pageHeader.jelly[`pageHeader.jelly`], we will make it more modular by injecting a (customizable) `headerContent.jelly` that will provide the content of the header.
@@ -175,9 +174,6 @@ public abstract class Header extends ExtensionPoint {
 ----
 package jenkins.views;
 
-import hudson.Extension;
-
-@Extension(ordinal = Integer.MIN_VALUE)
 public class JenkinsHeader extends Header {
 
     @Override
