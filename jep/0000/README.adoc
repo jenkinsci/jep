@@ -238,6 +238,10 @@ To deal with these incompatibilities:
 * Consider to place all your required CSS and Javascript code inside your custom plugins if you are going to do a complete refactor of the header.
 * Consider to be up-to-date with the latest sources/updates on the `headerContent` in case you were doing minimal changes through your custom header plugin.
 
+For this two scenarios, there are two specific headers, `FullHeader` which is going to be totally independent and will not rely on references to core resources such as images, CSS elements, etc. and `PartialHeader` which is used to perform minimal changes and relies on core resources references.
+
+Compatibility check for `PartialHeader` will be based on evaluating the field `compatibilityHeaderVersion`. When an incompatible change is made in the header (like the search form API), compatibility header version should be increased. See Reference Implementation for futher details.
+
 == Security
 
 No specific security considerations
