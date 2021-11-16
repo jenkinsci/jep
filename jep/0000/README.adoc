@@ -98,12 +98,12 @@ Thus, `pageHeader.jelly` should look like:
 ```xml
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:i="jelly:fmt" xmlns:x="jelly:xml">
-	<j:invokeStatic var="header" className="jenkins.views.JenkinsHeader" method="get"/>
+	<j:invokeStatic var="header" className="jenkins.views.Header" method="get"/>
 	<st:include it="${header}" page="headerContent.jelly"/>
 </j:jelly>
 ```
 
-The `get()` method is provided in the default implementation `jenkins.views.JenkinsHeader` and it will retrieve the available headers via `Extension` lookup that are enabled and for those obtained it will provide the one with max priority (ordinal value). In case two or more headers are provided via external plugins with the same priority (and max), then the default one will be provided and a warning message would be provided on the logs.
+The `get()` method is provided in the extension point `jenkins.views.Header` and it will retrieve the available headers via `Extension` lookup that are enabled and for those obtained it will provide the one with max priority (ordinal value).
 
 In terms of simplicity, proposal aims to use only one extension to do a full replacement of the header.
 
@@ -144,15 +144,16 @@ package jenkins.views;
 
 import hudson.ExtensionPoint;
 
-public interface Header extends ExtensionPoint {
+public abstract class Header extends ExtensionPoint {
 
     /**
      * Check if the header is enabled. By default it is if installed,
      * but the logic is deferred in the plugins.
      * @return
      */
-    boolean isHeaderEnabled();
+    boolean isEnabled();
 
+    [...]
 }
 ----
 
@@ -168,33 +169,23 @@ import hudson.Extension;
 public class JenkinsHeader extends Header {
 
     @Override
-    public boolean isHeaderEnabled() {
+    public boolean isEnabled() {
         return true;
     }
     [...]
 }
 ----
 
-* As mentioned before, method `get()` from `JenkinsHeader` will retrieve the available headers via `Extension` lookup that are enabled and for those obtained it will provide the one with max priority (ordinal value)
+* As mentioned before, method `get()` from `Header` will retrieve the available headers via `Extension` lookup that are enabled and for those obtained it will provide the one with max priority (ordinal value)
 
 [source,java]
 ----
-[...]
-@Restricted(NoExternalUse.class)
-@CheckForNull
-public static Header get() {
-    List<Header> headers = ExtensionList.lookup(Header.class).stream()
-                .filter(header -> header.isHeaderEnabled())
-                .collect(Collectors.toList());
-    if (headers.size() > 0) {
-        if (headers.size() > 1) {
-            LOGGER.warning("More than one configured header. This should not happen. Serving the Jenkins default header and please review");
-        } else {
-            return headers.get(0);
-        }
+    [...]
+    @Restricted(NoExternalUse.class)
+    public static Header get() {
+        Optional<Header> header = ExtensionList.lookup(Header.class).stream().filter(Header::isEnabled).findFirst();
+        return header.orElseGet(() -> new JenkinsHeader());
     }
-    return new JenkinsHeader();
-}
 ----
 
 * Once we launch Jenkins with the proposed changes on the core, we will obtain the expected/current header working without any issue
@@ -211,7 +202,7 @@ public static Header get() {
 public class CustomHeader extends Header {
 
     @Override
-    public boolean isHeaderEnabled() {
+    public boolean isEnabled() {
         // Disable/enable the header based on an ENV var and/or system property
         boolean isDisabled = System.getProperty(CustomHeader.class.getName() + ".disable") != null ?
                 "true".equalsIgnoreCase(System.getProperty(CustomHeader.class.getName() + ".disable")) :
