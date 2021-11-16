@@ -157,6 +157,18 @@ public abstract class Header extends ExtensionPoint {
 }
 ----
 
+* As mentioned before, method `get()` from `Header` will retrieve the available headers via `Extension` lookup that are enabled and for those obtained it will provide the one with max priority (ordinal value)
+
+[source,java]
+----
+    [...]
+    @Restricted(NoExternalUse.class)
+    public static Header get() {
+        Optional<Header> header = ExtensionList.lookup(Header.class).stream().filter(Header::isEnabled).findFirst();
+        return header.orElseGet(() -> new JenkinsHeader());
+    }
+----
+
 * Let’s consider the following implementation of the Jenkins header on: `core/src/main/java/jenkins/views/JenkinsHeader.java`
 
 [source,java]
@@ -174,18 +186,6 @@ public class JenkinsHeader extends Header {
     }
     [...]
 }
-----
-
-* As mentioned before, method `get()` from `Header` will retrieve the available headers via `Extension` lookup that are enabled and for those obtained it will provide the one with max priority (ordinal value)
-
-[source,java]
-----
-    [...]
-    @Restricted(NoExternalUse.class)
-    public static Header get() {
-        Optional<Header> header = ExtensionList.lookup(Header.class).stream().filter(Header::isEnabled).findFirst();
-        return header.orElseGet(() -> new JenkinsHeader());
-    }
 ----
 
 * Once we launch Jenkins with the proposed changes on the core, we will obtain the expected/current header working without any issue
