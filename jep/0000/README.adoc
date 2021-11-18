@@ -130,7 +130,7 @@ Role checks::
 Every `Callable` declares through its role check whether it's allowed to be sent from an agent to a controller.
 Legacy callables (built for Jenkins 1.565.3 or older, or Jenkins 1.586 or older) were rejected by default, but admins could allow their transmission from agents to the controller.
 File path filters::
-To continue supporting various methods on `FilePath` that transparently access files on the other side of a remoting channel, file path filters limit which files and directories can be accessed through them in what manner.
+To continue supporting various methods on `FilePath` that transparently access files on the other side of a remoting channel, file path filters limit which files and directories can be accessed.
 
 === Disabled class loading
 
