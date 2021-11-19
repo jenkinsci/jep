@@ -66,29 +66,13 @@ endif::[]
 
 == Abstract
 
-Jenkins does not provide a customization mechanism for the header.
-
-The unique existing approach based on the https://plugins.jenkins.io/simple-theme-plugin/[simple-theme-plugin] has limited capabilities (see Reasoning section for more details).
-
-It makes it difficult:
-
-* to provide branding capabilities to include custom logos, styles or other elements, and
-* to customize some functionality or include an additional one to some of the elements, like the search bar.
-
-Sometimes, these limited customization capabilities can be a barrier to Jenkins adoption inside enterprises.
-
-Having the ability to customize the header (not only from the User Interface point of view) will help avoid that situation.
-
-This proposal provides a customization mechanism for a better integration that also reduces current technical debt.
+Jenkins does not provide a customization mechanism for the header. This proposal provides a customization mechanism for a better integration that also reduces current technical debt.
 
 == Specification
 
 The main change is the introduction of a new extension point `Header` that provides capabilities to render a specific header.
-The current behavior is moved into a default implementation named `JenkinsHeader`.
 
 All headers will provide a prioritization technique, via the usual link:https://javadoc.jenkins-ci.org/hudson/Extension.html#ordinal--[ordinal] field of the `Extension` annotation.
-The default one will be the implementation with the least priority.
-
 
 On https://github.com/jenkinsci/jenkins/blob/09f0269e87625491d7d897ba0e878a1f7fa31de4/core/src/main/resources/lib/layout/pageHeader.jelly[`pageHeader.jelly`], we will make it more modular by injecting a (customizable) `headerContent.jelly` that will provide the content of the header.
 
@@ -108,6 +92,21 @@ In terms of simplicity, proposal aims to use only one extension to do a full rep
 
 == Motivation
 
+As mentioned before, Jenkins does not provide a customization mechanism for the header.
+
+The unique existing approach based on the https://plugins.jenkins.io/simple-theme-plugin/[simple-theme-plugin] has limited capabilities (see Reasoning section for more details).
+
+It makes it difficult:
+
+* to provide branding capabilities to include custom logos, styles or other elements, and
+* to customize some functionality or include an additional one to some of the elements, like the search bar.
+
+Sometimes, these limited customization capabilities can be a barrier to Jenkins adoption inside enterprises.
+
+Having the ability to customize the header (not only from the User Interface point of view) will help avoid that situation.
+
+== Reasoning
+
 Jenkins uses `pageHeader.jelly` file to specify the content of the header. Although it is valid, if a user wants to modify the header to perform some branding operation, Jenkins header branding capabilities are limited.
 
 Some plugins, like: https://plugins.jenkins.io/simple-theme-plugin/[simple-theme-plugin], allow Jenkins users to customize some parts like CSS and/or Javascript.
@@ -118,18 +117,16 @@ Also, other alternatives have been evaluated as workaround like the https://gith
 
 So, this approach is not only about providing UI capabilities but also about providing extra functionality and better integration.
 
-== Reasoning
-
 Let's consider the following dummy example to illustrate reasoning on why particular design decisions were made and also why current approaches were discarded.
 
 > A Jenkins user wants to modify its current Jenkins instance header to provide a configurable message (default: `Hello World!`) with the account username of the logged user, as well as two (why not?) search bars
 
 Some options exist to perform parts of the required actions mentioned above:
 
-* Update the `pageHeader.jelly` content of their Jenkins instance.
+* Update the `pageHeader.jelly` content of their forked Jenkins instance.
   Discarded to not require overriding/updating original Jenkins core source code.
 * Use https://plugins.jenkins.io/simple-theme-plugin/[simple-theme-plugin]. It could help us to modify some CSS and Javascript elements, and could be used to reach our goals, but it would be so hacky and will not be able to retrieve programatically the configurable message to be included with the username of the logged user.
-* Use https://github.com/stephenc/diffpatch-maven-plugin[diffpatch-maven-plugin] to override the content of the header using patches. It would help us have a second search box, but not to have the configurable message because it will only help for static content.
+* Use https://github.com/stephenc/diffpatch-maven-plugin[diffpatch-maven-plugin] to override the content of the header using patches. It would help us have a second search box, but not to have the configurable message because it will only help for static content. Also, when core resources change, you get a diff that does not apply, and it is hell to recreate.
 
 Given existing approaches do not fulfill this example, we will explore the alternative of a Jenkins user that wants to update the Jenkins header through an ad-hoc Jenkins plugin that follows the principles provided in the Specification section.
 
