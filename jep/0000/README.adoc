@@ -288,6 +288,7 @@ Removal of admin-customizable callable allowlist::
 This is expected to only matter for plugins that have not been updated in several years (more likely closed source), for which the need to customize the allowlist was tolerated.
 Removal of default and admin-customizable file path allowlist, and support of `FilePath` method invocations in agent-to-controller direction::
 Telemetry is expected to identify any such uses, so plugins can be adapted.
+Additionally, https://plugins.jenkins.io/remoting-security-workaround/[Remoting Security Workaround Plugin] essentially implements an equivalent change, so all functionality affected by this plugin will also be affected by this proposal.
 Removal of ability to load classes from agents (when disabling agent-to-controller security)::
 There is no known use case for this, and the author is not aware of any issues related to this restriction.
 Removal of various Java classes and associated resources implementing removed features::
@@ -307,3 +308,4 @@ Additionally, https://github.com/jenkinsci/jenkins/pull/5890[jenkinsci/jenkins#5
 * https://www.jenkins.io/doc/developer/security/remoting-callables/[Developer Documentation: Remoting Callables]
 * https://www.jenkins.io/security/advisory/2021-11-04/[Jenkins Security Advisory 2021-11-04]
 * https://www.jenkins.io/doc/upgrade-guide/2.303/#upgrading-to-jenkins-lts-2-303-3[Upgrading to Jenkins 2.303.3]
+* https://plugins.jenkins.io/remoting-security-workaround/[Remoting Security Workaround Plugin]
