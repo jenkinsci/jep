@@ -130,28 +130,27 @@ Role checks::
 Every `Callable` declares through its role check whether it's allowed to be sent from an agent to a controller.
 Legacy callables (built for Jenkins 1.565.3 or older, or Jenkins 1.586 or older) were rejected by default, but admins could allow their transmission from agents to the controller.
 File path filters::
-To continue supporting various methods on `FilePath` that transparently access files on the other side of a remoting channel, file path filters limit which files and directories can be accessed through them in what manner.
+To continue supporting various methods on `FilePath` that transparently access files on the other side of a remoting channel, file path filters limit which files and directories can be accessed.
 
 === Disabled class loading
 
-This is largely unchanged, except insofar as that there is no longer a UI option to disable it, just a Java system property escape hatch.
+This is largely unchanged, except insofar as there is no longer a UI option to disable it, just a Java system property escape hatch.
 
 === Role checks
 
 `Callable` implementations can be separated into the following categories:
 
-* Implementations that allow their transmission from an agent to the controller (`SlaveToMasterCallable` or equivalent): These continue to be able to do this.
+* Implementations that allow their transmission from an agent to the controller (`SlaveToMasterCallable` or equivalent): These continue to be able to do this, and must be carefully reviewed for potential misuse.
 * Implementations that prohibit their transmission from an agent to the controller (`MasterToSlaveCallable` or equivalent): Nothing changes, these always prohibited execution on the controller.
 * Implementations that do not perform a permission check (empty body of `#checkRoles(RoleChecker)`): https://www.jenkins.io/doc/upgrade-guide/2.303/#SECURITY-2458[A security hardening in Jenkins 2.319 and 2.303.3] prohibits this.
 * Implementations without a `RoleSensitive#checkRoles(RoleChecker)` implementation at all, in plugins built against Jenkins before 1.580.1 or 1.587:
   These have always been prohibited unless on the allowlist (built-in or custom).
 
 With this proposal, the allowlist is removed, so any `Callable` that needed allowlisting to work will break.
-Few plugins should be affected, see below.
+Few plugins should be affected; see below.
 
 In addition to `Callable`, `FileCallable` is an interface with equivalent role checks for use with `FilePath#act` (rather than `Channel#call`).
 The same four categories exist there.
-It should be noted that there is no need to allow their transmission in the agent-to-controller direction, this is just a convenient API for use with `FilePath#act`.
 
 Otherwise, no changes are implemented in this area.
 
@@ -283,7 +282,7 @@ This limitation is deemed acceptable, as the behavior changes specified by this 
 
 Removal of default callable allowlist::
 All plugins listed have been updated years ago, or are no longer distributed by the Jenkins project.
-It is unlikely this change will negatively impact users in ways not resolved by updating long outdated plugins.
+It is unlikely this change will harm users in ways not resolved by updating long outdated plugins.
 Removal of admin-customizable callable allowlist::
 This is expected to only matter for plugins that have not been updated in several years (more likely closed source), for which the need to customize the allowlist was tolerated.
 Removal of default and admin-customizable file path allowlist, and support of `FilePath` method invocations in agent-to-controller direction::
