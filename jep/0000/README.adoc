@@ -219,7 +219,8 @@ To discourage the creation of new (`File`)`Callable` in the agent-to-controller 
 
 == Backwards Compatibility
 
-https://github.com/jenkins-infra/usage-in-plugins[`usage-in-plugins`] is used to check access to any of the types removed or substantially altered:
+https://github.com/jenkins-infra/usage-in-plugins[`usage-in-plugins`] is used to check access to any of the types removed or substantially altered.
+The following can be used as an input file for its `-i -C` / `--onlyIncludeSpecified --additionalClasses` mode:
 
 ----
 # General
@@ -230,6 +231,7 @@ jenkins/security/s2m/MasterKillSwitchConfiguration
 jenkins/security/s2m/MasterKillSwitchWarning
 # FilePathFilter
 jenkins/security/s2m/AdminFilePathFilter
+jenkins/security/s2m/AdminFilePathFilter$ChannelConfiguratorImpl
 jenkins/security/s2m/DefaultFilePathFilter
 jenkins/security/s2m/FilePathRuleConfig
 jenkins/security/s2m/FilePathRule
@@ -244,6 +246,8 @@ jenkins/FilePathFilter
 jenkins/security/s2m/AdminCallableMonitor
 jenkins/security/s2m/AdminCallableWhitelist
 jenkins/security/s2m/CallableDirectionChecker
+jenkins/security/s2m/CallableDirectionChecker$ChannelConfiguratorImpl
+jenkins/security/s2m/CallableDirectionChecker$DefaultWhitelist
 jenkins/security/s2m/CallableRejectionConfig
 jenkins/security/s2m/CallableWhitelist
 jenkins/security/s2m/CallableWhitelistConfig
