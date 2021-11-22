@@ -249,7 +249,9 @@ No impact on the Jenkins project infrastructure
 
 == Testing
 
-To write tests specific to the header (also using a patched core via https://github.com/stephenc/diffpatch-maven-plugin[diffpatch-maven-plugin] are currently difficult. Proposed solution will solve these issues: if a customized header is an extension in a plugin then having this plugin on your test classpath will suffice to let UI tests run in the expected way, regardless of core provenance.
+To write tests specific to the header (also using a patched core via https://github.com/stephenc/diffpatch-maven-plugin[diffpatch-maven-plugin] are currently difficult.
+
+Proposed solution will solve these issues: if a customized header is an extension in a plugin then having this plugin on your test classpath will suffice to let UI tests run in the expected way, regardless of core provenance.
 
 == Reference Implementation
 
