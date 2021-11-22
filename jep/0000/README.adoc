@@ -256,7 +256,7 @@ Proposed solution will solve these issues: if a customized header is an extensio
 == Reference Implementation
 
 * Proposed changes on Jenkins core: https://github.com/jenkinsci/jenkins/pull/5909
-* Prototype of a https://github.com/imonteroperez/custom-header-plugin[Custom Header plugin]. This plugin is modifying the current Jenkins header including an extra search box (just for clarification purposes).
+* Prototype of a https://github.com/imonteroperez/custom-header-plugin[Custom Header plugin]. This plugin is replacing the current Jenkins header  including a customizable message and a redundant search box (just for clarification purposes) using `PartialHeader`.
 
 == References
 
