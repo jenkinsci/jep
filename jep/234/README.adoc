@@ -1,0 +1,266 @@
+= JEP-234: Customizable Jenkins header
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| JEP
+| 234
+
+| Title
+| Customizable Jenkins header
+
+| Sponsor
+| link:https://github.com/imonteroperez[Ildefonso Montero]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2021-11-28
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: link:https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if there will be a BDFL delegate for this JEP.
+//| BDFL-Delegate
+//| :bulb: Link to github user page :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+Jenkins does not provide a customization mechanism for the header. This proposal provides a customization mechanism for a better integration that also reduces current technical debt.
+
+== Specification
+
+The main change is the introduction of a new extension point `Header` that provides capabilities to render a specific header.
+
+All headers will provide a prioritization technique, via the usual link:https://javadoc.jenkins-ci.org/hudson/Extension.html#ordinal--[ordinal] field of the `Extension` annotation.
+
+On https://github.com/jenkinsci/jenkins/blob/09f0269e87625491d7d897ba0e878a1f7fa31de4/core/src/main/resources/lib/layout/pageHeader.jelly[`pageHeader.jelly`], we will make it more modular by injecting a (customizable) `headerContent.jelly` that will provide the content of the header.
+
+Thus, `pageHeader.jelly` should look like:
+
+```xml
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:i="jelly:fmt" xmlns:x="jelly:xml">
+	<j:invokeStatic var="header" className="jenkins.views.Header" method="get"/>
+	<st:include it="${header}" page="headerContent.jelly"/>
+</j:jelly>
+```
+
+The `get()` method is provided in the extension point `jenkins.views.Header` and it will retrieve the available headers via `Extension` lookup that are enabled and for those obtained it will provide the one with max priority (ordinal value).
+
+In terms of simplicity, proposal aims to use only one extension to do a full replacement of the header.
+
+== Motivation
+
+As mentioned before, Jenkins does not provide a customization mechanism for the header.
+
+The unique existing approach based on the https://plugins.jenkins.io/simple-theme-plugin/[simple-theme-plugin] has limited capabilities (see <<Reasoning>> section for more details).
+
+It makes it difficult:
+
+* to provide branding capabilities to include custom logos, styles or other elements, and
+* to customize some functionality or include an additional one to some of the elements, like the search bar.
+
+Sometimes, these limited customization capabilities can be a barrier to Jenkins adoption inside enterprises.
+
+Having the ability to customize the header (not only from the User Interface point of view) will help avoid that situation.
+
+== Reasoning
+
+Jenkins uses `pageHeader.jelly` file to specify the content of the header. Although it is valid, if a user wants to modify the header to perform some branding operation, Jenkins header branding capabilities are limited.
+
+Some plugins, like: https://plugins.jenkins.io/simple-theme-plugin/[simple-theme-plugin], allow Jenkins users to customize some parts like CSS and/or Javascript.
+On the other hand, if a Jenkins user wants to customize/modify some additional business functionality on some menus and search bar, then there is no approach beyond updating/overriding `pageHeader.jelly` from the Jenkins core, which would be a problem on updating the instance due to conflicts.
+In addition, if the user wants to customize these behaviors it would be good to have those features as REST endpoints.
+
+Also, other alternatives have been evaluated as workaround like the https://github.com/stephenc/diffpatch-maven-plugin[diffpatch-maven-plugin] with no satisfactory results.
+
+So, this approach is not only about providing UI capabilities but also about providing extra functionality and better integration.
+
+Let's consider the following dummy example to illustrate reasoning on why particular design decisions were made and also why current approaches were discarded.
+
+> A Jenkins user wants to modify its current Jenkins instance header to provide a configurable message (default: `Hello World!`) with the account username of the logged user, as well as two (why not?) search bars
+
+Some options exist to perform parts of the required actions mentioned above:
+
+* Update the `pageHeader.jelly` content of their forked Jenkins instance.
+  Discarded to not require overriding/updating original Jenkins core source code.
+* Use https://plugins.jenkins.io/simple-theme-plugin/[simple-theme-plugin]. It could help us to modify some CSS and Javascript elements, and could be used to reach our goals, but it would be so hacky and will not be able to retrieve programatically the configurable message to be included with the username of the logged user.
+* Use https://github.com/stephenc/diffpatch-maven-plugin[diffpatch-maven-plugin] to override the content of the header using patches. It would help us have a second search box, but not to have the configurable message because it will only help for static content. Also, when core resources change, you get a diff that does not apply, and it is hell to recreate.
+
+Given existing approaches do not fulfill this example, we will explore the alternative of a Jenkins user that wants to update the Jenkins header through an ad-hoc Jenkins plugin that follows the principles provided in the <<Specification>> section.
+
+The following source code is provided just for illustrative purposes on reasoning why particular design decisions were made. It may differ from the final implementation (please go to <<Reference Implementation>> section to see the final proposed changes in source code)
+
+=== Jenkins core
+
+* Let’s consider the following definition of the `Header` on: `core/src/main/java/jenkins/views/Header.java`
+
+[source,java]
+----
+package jenkins.views;
+
+import hudson.ExtensionPoint;
+
+public abstract class Header extends ExtensionPoint {
+
+    /**
+     * Check if the header is enabled. By default it is if installed,
+     * but the logic is deferred in the plugins.
+     * @return
+     */
+    boolean isEnabled();
+
+    [...]
+}
+----
+
+* As mentioned before, method `get()` from `Header` will retrieve the available headers via `Extension` lookup that are enabled and for those obtained it will provide the one with max priority (ordinal value)
+
+[source,java]
+----
+    [...]
+    @Restricted(NoExternalUse.class)
+    public static Header get() {
+        Optional<Header> header = ExtensionList.lookup(Header.class).stream().filter(Header::isEnabled).findFirst();
+        return header.orElseGet(() -> new JenkinsHeader());
+    }
+----
+
+* Let’s consider the following implementation of the Jenkins header on: `core/src/main/java/jenkins/views/JenkinsHeader.java`
+
+[source,java]
+----
+package jenkins.views;
+
+public class JenkinsHeader extends Header {
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+    [...]
+}
+----
+
+* Once we launch Jenkins with the proposed changes on the core, we will obtain the expected/current header working without any issue
+
+=== Custom UI plugin
+
+* Create a new plugin following the usual procedure
+* Provide an implementation of the custom Header (e.g: `src/main/java/org/jenkinsci/plugins/custom/header/CustomHeader.java`)
+
+[source,java]
+----
+[...]
+@Extension(ordinal = 100)
+public class CustomHeader extends Header {
+
+    @Override
+    public boolean isEnabled() {
+        // Disable/enable the header based on an ENV var and/or system property
+        boolean isDisabled = System.getProperty(CustomHeader.class.getName() + ".disable") != null ?
+                "true".equalsIgnoreCase(System.getProperty(CustomHeader.class.getName() + ".disable")) :
+                "true".equalsIgnoreCase(System.getenv("CUSTOM_HEADER_DISABLE"));
+        return !isDisabled;
+    }
+}
+----
+
+* Provide a method in the custom header to retrieve the label which will be with the username. Current code is just an example, but the label could be obtained from the https://javadoc.jenkins.io/jenkins/model/GlobalConfiguration.html[GlobalConfiguration].
+
+[source,java]
+----
+    public static String getHeaderLabel(){
+        // This label content could be retrieved programatically. Not coded in aims of simplicity.
+        return "Hello World!";
+    }
+----
+
+* Provide the jelly file to override the `headerContent`. For that purpose, use the common location convention. For the previous example: `src/main/resources/org/jenkinsci/plugins/custom/header/CustomHeader/`. Retrieve the customizable label to be rendered with the username on the `headerContent` file.
+
+```xml
+<j:invokeStatic var="label" className="org.jenkinsci.plugins.custom.header.CustomHeader" method="getHeaderLabel"/>
+<span class="hidden-xs hidden-sm">${label}—${userName}</span>
+```
+
+* See the sample implementation provided in the <<Reference Implementation>> section.
+
+== Backwards Compatibility
+
+Given this proposal relies on replacement/injection of the `pageHeader` and `headerContent` and the content of that source relies also on UI elements (CSS identifiers, Javascript, etc.) backward compatibility cannot be guaranteed (as happens with themes - documented as https://www.jenkins.io/doc/book/managing/ui-themes/#themes-support-policy[no API compatibility]).
+
+To deal with these incompatibilities:
+
+* Consider to place all your required CSS and Javascript code inside your custom plugins if you are going to do a complete refactor of the header.
+* Consider to be up-to-date with the latest sources/updates on the `headerContent` in case you were doing minimal changes through your custom header plugin.
+
+For this two scenarios, there are two specific headers, `FullHeader` which is going to be totally independent and will not rely on references to core resources such as images, CSS elements, etc. and `PartialHeader` which is used to perform minimal changes and relies on core resources references.
+
+Compatibility check for `PartialHeader` will be based on evaluating the field `compatibilityHeaderVersion`. When an incompatible change is made in the header (like the search form API), compatibility header version should be increased. See <<Reference Implementation>> for futher details.
+
+== Security
+
+No specific security considerations
+
+== Infrastructure Requirements
+
+No impact on the Jenkins project infrastructure
+
+== Testing
+
+To write tests specific to the header (also using a patched core via https://github.com/stephenc/diffpatch-maven-plugin[diffpatch-maven-plugin] are currently difficult.
+
+Proposed solution will solve these issues: if a customized header is an extension in a plugin then having this plugin on your test classpath will suffice to let UI tests run in the expected way, regardless of core provenance.
+
+== Reference Implementation
+
+* Proposed changes on Jenkins core: https://github.com/jenkinsci/jenkins/pull/5909
+* Prototype of a https://github.com/imonteroperez/custom-header-plugin[Custom Header plugin]. This plugin is replacing the current Jenkins header  including a customizable message and a redundant search box (just for clarification purposes) using `PartialHeader`.
+
+== References
+
+Relevant data
+
+* jenkins-dev: https://groups.google.com/g/jenkinsci-dev/c/1tDvSioCaF0
+* Jenkins UX SIG meeting Nov 24: https://docs.google.com/document/d/1QttPwdimNP_120JukigKsRuBvMr34KZhVfsbgq1HFLM/edit#

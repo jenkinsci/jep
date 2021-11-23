@@ -252,6 +252,11 @@
 | https://github.com/basil[Basil{nbsp}Crow]
 | TBD
 
+| Draft{nbsp}:speech_balloon:
+| link:234/README.adoc[JEP-234: Customizable Jenkins header]
+| link:https://github.com/imonteroperez[Ildefonso{nbsp}Montero]
+| TBD
+
 | Accepted{nbsp}:ok_hand:
 | link:300/README.adoc[JEP-300: Jenkins Evergreen]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
