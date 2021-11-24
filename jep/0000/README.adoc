@@ -259,7 +259,7 @@ All methods used there are retained, but no longer have an effect beyond produci
 
 // CloudBees has some operations-center-* stuff using other types.
 
-https://github.com/jenkinsci/jenkins/pull/5890[jenkinsci/jenkins#5890] adds telemetry to identify any (expected to be rare) uses of `FilePath` methods from agents to access files on the controller.
+https://github.com/jenkinsci/jenkins/pull/5890[jenkinsci/jenkins#5890] adds telemetry from Jenkins 2.322 until 2022-03-01 to identify any (expected to be rare) uses of `FilePath` methods from agents to access files on the controller.
 Issues will be filed and popular plugins, where possible, will be adapted.
 
 
