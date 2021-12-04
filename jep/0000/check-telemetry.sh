@@ -3,6 +3,7 @@
 # The arrays 'TESTS' and 'RESULTS' need to be kept in sync
 TESTS=(
     'hudson[.]plugins[.]cobertura[.]renderers[.]SourceCodePainter[.]paintSourceCode'
+    'io[.]jenkins[.]plugins[.]coverage[.]source[.]DefaultSourceFileResolver[$]SourceFilePainter[.]paintSourceCode'
     'com[.]microfocus[.]application[.]automation[.]tools[.]octane[.]tests[.]junit[.]JUnitExtension[$]GetJUnitTestResults[.]invoke'
     'jenkins[.]plugins[.]itemstorage[.]local[.]LocalObjectPath[$]IsNotThereOrOlderVisitor[.]visit'
     'hudson[.]plugins[.]logparser[.]LogParserStatusComputer[.]computeStatusMatches'
@@ -15,6 +16,7 @@ TESTS=(
 )
 RESULTS=(
     'cobertura'
+    'code-coverage-api'
     'hp-application-automation-tools-plugin'
     'jobcacher'
     'log-parser'
