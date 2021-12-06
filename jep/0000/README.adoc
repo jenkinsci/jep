@@ -310,10 +310,20 @@ The following plugins have been identified as incompatible with this proposal:
 | TBD
 | n/a (https://issues.jenkins.io/browse/JENKINS-67255[JENKINS-67255])
 
+| https://plugins.jenkins.io/analysis-core/[Static Analysis Plugins]
+| TBD
+| TBD
+| Deprecated plugin, migrate to https://plugins.jenkins.io/warnings-ng/[Warnings Next Generation]
+
 | https://plugins.jenkins.io/violations/[Violations]
 | TBD
 | TBD
 | n/a (https://issues.jenkins.io/browse/JENKINS-67254[JENKINS-67254])
+
+| https://plugins.jenkins.io/xunit/[XUnit] (2.0.2 or older)
+| TBD
+| TBD
+| Expected to be resolved by updating to version 2.0.3 (June 2018) or newer
 
 |====
 

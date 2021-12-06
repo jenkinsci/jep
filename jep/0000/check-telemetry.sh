@@ -2,6 +2,7 @@
 
 # The arrays 'TESTS' and 'RESULTS' need to be kept in sync
 TESTS=(
+    'hudson[.]plugins[.]analysis[.]util[.]Files[.]copyFilesWithAnnotationsToBuildFolder'
     'hudson[.]plugins[.]cobertura[.]renderers[.]SourceCodePainter[.]paintSourceCode'
     'io[.]jenkins[.]plugins[.]coverage[.]source[.]DefaultSourceFileResolver[$]SourceFilePainter[.]paintSourceCode'
     'com[.]microfocus[.]application[.]automation[.]tools[.]octane[.]tests[.]junit[.]JUnitExtension[$]GetJUnitTestResults[.]invoke'
@@ -13,8 +14,10 @@ TESTS=(
     'Script1[.]groovy:1' # Trying to filter only the pre-2.322 test submission
     'hudson[.]plugins[.]selenium[.]callables[.]SeleniumCallable[.]invoke'
     'hudson[.]plugins[.]violations[.]generate[.]ExecuteFilePath[.]execute'
+    'org[.]jenkinsci[.]plugins[.]xunit[.]service[.]XUnitTransformer[.]invoke' # until 2.0.2, superseded June 2018
 )
 RESULTS=(
+    'analysis-core'
     'cobertura'
     'code-coverage-api'
     'hp-application-automation-tools-plugin'
@@ -26,6 +29,7 @@ RESULTS=(
     'ScriptConsole'
     'selenium'
     'violations'
+    'xunit-2.0.2'
 )
 
 function print_error_and_exit {
