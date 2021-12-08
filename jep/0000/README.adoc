@@ -320,6 +320,11 @@ The following plugins have been identified as incompatible with this proposal:
 | TBD
 | n/a (https://issues.jenkins.io/browse/JENKINS-67254[JENKINS-67254])
 
+| https://plugins.jenkins.io/warnings-ng/[Warnings Next Generation] (5.1.0 or older)
+| TBD
+| TBD
+| Resolved by updating to version 5.2.0 (June 2019) or newer
+
 | https://plugins.jenkins.io/xunit/[XUnit] (2.0.2 or older)
 | TBD
 | TBD

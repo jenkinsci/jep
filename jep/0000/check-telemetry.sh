@@ -14,6 +14,7 @@ TESTS=(
     'Script1[.]groovy:1' # Trying to filter only the pre-2.322 test submission
     'hudson[.]plugins[.]selenium[.]callables[.]SeleniumCallable[.]invoke'
     'hudson[.]plugins[.]violations[.]generate[.]ExecuteFilePath[.]execute'
+    'io[.]jenkins[.]plugins[.]analysis[.]core[.]steps[.]IssuesScanner[$]ReportPostProcessor[.]copyAffectedFiles' # until 5.1.0 / before d597cbdb, superseded June 2019
     'org[.]jenkinsci[.]plugins[.]xunit[.]service[.]XUnitTransformer[.]invoke' # until 2.0.2, superseded June 2018
 )
 RESULTS=(
@@ -29,6 +30,7 @@ RESULTS=(
     'ScriptConsole'
     'selenium'
     'violations'
+    'warnings-ng-5.1.0'
     'xunit-2.0.2'
 )
 
