@@ -280,6 +280,11 @@ The following plugins have been identified as incompatible with this proposal:
 | Do not use the feature
 | Update Code Coverage API Plugin to 2.0.4
 
+| https://plugins.jenkins.io/genexus/[Genexus]
+| TBD
+| TBD
+| https://issues.jenkins.io/browse/JENKINS-67337[JENKINS-67337]
+
 | https://plugins.jenkins.io/jobcacher/[Job Cacher]
 | TBD
 | TBD
