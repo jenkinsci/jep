@@ -283,7 +283,7 @@ The following plugins have been identified as incompatible with this proposal:
 | https://plugins.jenkins.io/genexus/[Genexus]
 | TBD
 | TBD
-| https://issues.jenkins.io/browse/JENKINS-67337[JENKINS-67337]
+| n/a (https://issues.jenkins.io/browse/JENKINS-67337[JENKINS-67337])
 
 | https://plugins.jenkins.io/jobcacher/[Job Cacher]
 | TBD
