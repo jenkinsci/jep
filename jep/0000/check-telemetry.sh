@@ -10,6 +10,7 @@ TESTS=(
     'jenkins[.]plugins[.]itemstorage[.]local[.]LocalObjectPath[$]IsNotThereOrOlderVisitor[.]visit'
     'hudson[.]plugins[.]logparser[.]LogParserStatusComputer[.]computeStatusMatches'
     'hudson[.]maven[.]MavenBuildProxy2[$]Filter[.](start|end)'
+    'hudson[.]maven[.]reporters[.]AbstractMavenJavadocArchiver[.]postExecute'
     'hudson[.]maven[.]reporters[.]MavenSiteArchiver[.]postExecute'
     'jenkins[.]plugins[.]publish_over_ssh[.]BapSshKeyInfo[.]getEffectiveKey'
     'Script1[.]groovy:1' # Trying to filter only the pre-2.322 test submission
@@ -27,6 +28,7 @@ RESULTS=(
     'jobcacher'
     'log-parser'
     'maven-plugin$MavenBuildProxy2'
+    'maven-plugin$AbstractMavenJavadocArchiver'
     'maven-plugin$MavenSiteArchiver'
     'publish-over-ssh'
     'ScriptConsole'
