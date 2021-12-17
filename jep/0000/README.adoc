@@ -306,8 +306,8 @@ The following plugins have been identified as incompatible with this proposal:
 | n/a (https://issues.jenkins.io/browse/JENKINS-67232[JENKINS-67232])
 
 | https://plugins.jenkins.io/publish-over-ssh/[Publish Over SSH]
-| TBD
-| TBD
+| Reading SSH key files from controller file system fails
+| Specify SSH keys inline
 | n/a (https://issues.jenkins.io/browse/JENKINS-67236[JENKINS-67236])
 
 | https://plugins.jenkins.io/selenium/[Selenium]
