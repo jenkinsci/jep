@@ -293,7 +293,7 @@ The following plugins have been identified as incompatible with this proposal:
 | https://plugins.jenkins.io/log-parser/[Log Parser]
 | Log parsing fails
 | n/a
-| https://github.com/jenkinsci/log-parser-plugin/pull/32[log-parser-plugin#32]
+| Update Log Parser Plugin to 2.2
 
 | https://plugins.jenkins.io/maven-plugin/[Maven Integration]
 | Archiving Maven sites and Javadoc fails
