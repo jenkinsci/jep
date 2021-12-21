@@ -69,7 +69,7 @@ endif::[]
 
 == Abstract
 
-Due to its negative impact on core maintenance, distribution of the unmaintained
+Distribution of the unmaintained
 link:https://github.com/jenkinsci/ruby-runtime-plugin[Ruby Runtime plugin] and
 link:https://github.com/jenkinsci/jenkins.py[Jenkins Python SDK] will be suspended.
 Distribution of plugins depending on them will be suspended until their dependency is removed.
@@ -77,12 +77,12 @@ Distribution of plugins depending on them will be suspended until their dependen
 
 == Specification
 
-Ruby runtime and Python SDK will be added to the `artifact-ignores` file of the update center generator, so it is no longer available for download on update sites.
-A warning will be added to the update center so that all users of the plugins receive a warning in advance.
-Plugins depending on the either the Ruby runtime or the Python SDK will be also marked for adoption so that users can step up and take over maintenance (by switching to the regular Java runtime) without a 2 weeks waiting delay.
+Ruby runtime and Python SDK will be added to the `artifact-ignores` file of the update center generator, so they are no longer available for download on update sites. Plugins with a mandatory dependency on the runtimes will be added to the same file, as they will not be installable without the respective runtimes being available.
 
-Plugins with a mandatory dependency on the runtimes will be added to the same file, as they will not be installable without the respective runtimes being available.
-The multiple Git repositories holding the `ruby-runtime` and Python SDK source code will be archived on GitHub.
+A warning will be added to the update center so that all users of the plugins receive a warning in advance.
+Plugins depending on either the Ruby runtime or the Python SDK will be also marked for adoption so that users can step up and take over maintenance (by switching to the regular Java runtime) without a 2 weeks waiting delay.
+
+The Git repositories holding the `ruby-runtime` and Python SDK source code will be archived on GitHub.
 
 Support for Ruby Runtime in the Jenkins core may be removed in future Jenkins versions.
 This includes but not limited to:
@@ -98,20 +98,17 @@ Bug reports to core and related components about their impact on `ruby-runtime` 
 
 === Rollout plan
 
-At least 1 month before removal::
+At least 2 weeks before removal::
 
 * Announcement blogpost on jenkins.io with the user-focused overview of the change and the delivery plan
 * Plugins are marked for adoption
 * Plugins will be deprecated in the Update site immediately after the announcement.
   The deprecation notice will reference the announcement blogpost as justification.
-* Plugin users will have 1 month to bring up their concerns, if any.
-  They will have an option to step up and contribute to the plugins so that they are migrated to the standard Jenkins plugin runtime.
 
 Removal date::
 
 * Plugins are removed from official Jenkins update centers.
   Users of both weekly and LTS release baselines will no longer be able to install or update the plugins.
-* Maybe: Additional announcement is published on jenkins.io to advice deletion of the plugins
 * If there are any unpublished security issues related to the depublished plugins,
   a security advisory is released for them shortly after depublishing.
 * Ruby and Python plugin runtime codebases are archived on GitHub.
