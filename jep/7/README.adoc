@@ -123,7 +123,7 @@ with undefined behavior and likely Jenkins startup failure as a result.
 This needs to be explicitly referenced in the changelog.
 
 Jenkins LTS users will be able to continue using the deprecated/depublished plugins until a new LTS baseline picks up the change.
-ETA for it - the September 2021 LTS release.
+ETA for it - the March 2022 LTS release.
 After this release new Jenkins LTS versions will not be able to run the plugins as well.
 This change will be documented in the LTS upgrade guidelines.
 
