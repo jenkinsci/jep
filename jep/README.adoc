@@ -255,6 +255,11 @@
 | Draft{nbsp}:speech_balloon:
 | link:234/README.adoc[JEP-234: Customizable Jenkins header]
 | link:https://github.com/imonteroperez[Ildefonso{nbsp}Montero]
+| _not{nbsp}delegated_
+
+| Draft{nbsp}:speech_balloon:
+| link:235/README.adoc[JEP-235: Agent-To-Controller Security Simplification]
+| link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
 | TBD
 
 | Accepted{nbsp}:ok_hand:

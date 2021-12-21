@@ -1,0 +1,390 @@
+= JEP-235: Agent-To-Controller Security Simplification
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 235
+
+| Title
+| Agent-To-Controller Security Simplification
+
+| Sponsor
+| link:https://github.com/daniel-beck[Daniel Beck]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2021-11-18
+
+| BDFL-Delegate
+| TBD
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+| JIRA
+| https://issues.jenkins.io/browse/JENKINS-67173[JENKINS-67173]
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| Link to where discussion and final status announcement will occur
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| JEP-NUMBER, JEP-NUMBER...
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| JEP-NUMBER
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| Link to relevant post in the jenkinsci-dev@ mailing list archives
+
+|===
+
+== Abstract
+
+The agent-to-controller security subsystem is greatly simplified: it is always enabled and exceptions defined in 2014 for backwards compatibility with plugins are gone.
+
+== Specification
+
+=== Overview
+
+The agent-to-controller security subsystem is greatly simplified:
+
+* It is always enabled.
+* All UI related to this feature is removed.
+* The file-based configuration for both callables and file paths is removed.
+* The built-in allowlists for both callables and file paths are removed.
+* Class loading from agents is always disabled.
+* `SlaveToMasterFileCallable` is deprecated and any implementations supporting methods of `FilePath` are changed to `MasterToSlaveFileCallable`.
+* All supporting types are removed, with the exception of `AdminWhitelistRule`, which now only prints log messages when the kill switch is set.
+
+=== Details
+
+* Deletions/removals:
+    - `jenkins.FilePathFilter` is deleted.
+    - `jenkins.FilePathFilterAggregator` is deleted.
+    - `jenkins.ReflectiveFilePathFilter` is deleted.
+    - `jenkins.SoloFilePathFilter` is deleted.
+    - `jenkins.security.s2m.AdminCallableMonitor` (symbol `slaveToMasterAccessControl`) is deleted, including its resources.
+    - `jenkins.security.s2m.AdminCallableWhitelist` (symbol `admin`) is deleted.
+    - `jenkins.security.s2m.AdminFilePathFilter` is deleted.
+    - `jenkins.security.s2m.CallableRejectionConfig` is deleted.
+    - `jenkins.security.s2m.CallableWhitelist` is deleted.
+    - `jenkins.security.s2m.CallableWhitelistConfig` is deleted.
+    - `jenkins.security.s2m.ConfigDirectory` is deleted.
+    - `jenkins.security.s2m.ConfigFile` is deleted.
+    - `jenkins.security.s2m.DefaultFilePathFilter` is deleted.
+    - `jenkins.security.s2m.FilePathRule` is deleted.
+    - `jenkins.security.s2m.FilePathRuleConfig` is deleted.
+    - `jenkins.security.s2m.MasterKillSwitchConfiguration` is deleted, including its resources.
+    - `jenkins.security.s2m.MasterKillSwitchWarning` is deleted, including its resources.
+    - `jenkins.security.s2m.OpMatcher` is deleted.
+    - `jenkins.security.s2m.RejectedCallable` is deleted.
+    - `jenkins.security.s2m.RunningBuildFilePathFilter` is deleted.
+    - `resources/jenkins/security/s2m/callable.conf` is deleted.
+    - `resources/jenkins/security/s2m/filepath-filter.conf` is deleted.
+* `AdminWhitelistRule` is deprecated, its resources deleted, and all functionality removed:
+    - The methods `#setMasterKillSwitch(boolean)` and `#getMasterKillSwitch()` are changed so they only log messages informing about its new lack of functionality.
+    - Everything else is removed.
+* `FilePath` is updated to no longer use any `FilePathFilter` functionality:
+    - The private `SecureFileCallable` (the marker interface for `SlaveToMasterFileCallable` using `FilePathFilter`) is removed and every `FileCallable` in `FilePath` now extends `MasterToSlaveFileCallable` instead.
+    - All private static functions like `#reading(File)` that perform access checks are removed, as well as `#filterNonNull()` which supported them.
+* `jenkins.security.s2m.CallableDirectionChecker` is simplified and now always enforces role checks and disables class loading from agents.
+* `SetupWizard` no longer sets the `AdminWhitelistRule` kill switch, as protections are now always effective.
+* The `jenkins.security.s2m.CallableDirectionChecker.allow` system property escape hatch is retained:
+    - It allows classloading from agents to the controller (as before).
+    - It allows executing any callable regardless of its role check (as before).
+    - All `FileCallable` implementations, including those in `FilePath`, are allowed to act on any path.
+
+== Motivation
+
+The agent-to-controller security subsystem was added in 2014 to restrict the actions that agent processes can perform on the Jenkins controller as part of https://www.jenkins.io/security/advisory/2014-10-30/[the SECURITY-144 security fix].
+This protection was comprised of three major, complementary parts:
+
+Disabled class loading::
+Controllers do not load classes from agents, which means all code on a controller must already be part of that environment.
+No new code can be injected from agents.
+Role checks::
+Every `Callable` declares through its role check whether it's allowed to be sent from an agent to a controller.
+Legacy callables (built for Jenkins 1.565.3 or older, or Jenkins 1.586 or older) were rejected by default, but admins could allow their transmission from agents to the controller.
+File path filters::
+To continue supporting various methods on `FilePath` that transparently access files on the other side of a remoting channel, file path filters limit which files and directories can be accessed.
+
+=== Disabled class loading
+
+This is largely unchanged, except insofar as there is no longer a UI option to disable it, just a Java system property escape hatch.
+
+=== Role checks
+
+`Callable` implementations can be separated into the following categories:
+
+* Implementations that allow their transmission from an agent to the controller (`SlaveToMasterCallable` or equivalent): These continue to be able to do this, and must be carefully reviewed for potential misuse.
+* Implementations that prohibit their transmission from an agent to the controller (`MasterToSlaveCallable` or equivalent): Nothing changes, these always prohibited execution on the controller.
+* Implementations that do not perform a permission check (empty body of `#checkRoles(RoleChecker)`): https://www.jenkins.io/doc/upgrade-guide/2.303/#SECURITY-2458[A security hardening in Jenkins 2.319 and 2.303.3] prohibits this.
+* Implementations without a `RoleSensitive#checkRoles(RoleChecker)` implementation at all, in plugins built against Jenkins before 1.580.1 or 1.587:
+  These have always been prohibited unless on the allowlist (built-in or custom).
+
+With this proposal, the allowlist is removed, so any `Callable` that needed allowlisting to work will break.
+Few plugins should be affected; see below.
+
+In addition to `Callable`, `FileCallable` is an interface with equivalent role checks for use with `FilePath#act` (rather than `Channel#call`).
+The same four categories exist there.
+
+Otherwise, no changes are implemented in this area.
+
+=== File path filters
+
+While some code may legitimately require being implementing in a `SlaveToMasterCallable`, only very few plugins require the ability to access files on the controller from agents.
+
+File path filters (`FilePathFilter` etc.) exist to support the transparent use of `FilePath` methods in the agent-to-controller direction (i.e., allowing agents to operate on files on the controller file system).
+This has been shown to be error-prone to implement, and rarely used.
+To make it easier to reason about the impact of code sent through remoting channels on security, this feature is completely removed.
+Going forward, all methods of `FilePath` will only work locally (on controller or agent) or in the controller-to-agent direction.
+
+
+== Reasoning
+
+=== Removal of built-in `Callable` allowlist
+
+All plugins in the https://github.com/jenkinsci/jenkins/blob/master/core/src/main/resources/jenkins/security/s2m/callable.conf[default allowlist] have long since been updated to not need these entries.
+
+`hudson.maven.MavenBuildProxy$Filter$AsyncInvoker`::
+https://github.com/jenkinsci/maven-plugin/commit/3a4b06f1fd8e317af2926bab6be137feb19e7895[Fix] released Oct 2014 in https://github.com/jenkinsci/maven-plugin/releases/tag/maven-plugin-2.7.1[2.7.1].
+
+`com.cloudbees.plugins.deployer.engines.Engine$FingerprintDecorator`::
+https://github.com/jenkins-infra/update-center2/blob/953eae236debefb7f9ed0777e935c6cb12f0d632/resources/artifact-ignores.properties#L28[The plugin is no longer being distributed by the Jenkins project].
+
+`hudson.scm.SubversionWorkspaceSelector$1`::
+https://github.com/jenkinsci/subversion-plugin/commit/1a2d547100d3fc391c152dad54c4235a86838552[Fix] released June 2016 in https://github.com/jenkinsci/subversion-plugin/releases/tag/2.6.0[2.6.0].
+
+`org.jenkinsci.plugins.gitclient.CliGitAPIImpl$GetPrivateKeys`::
+https://github.com/jenkinsci/git-client-plugin/pull/147[Fix] released Oct 2014 in https://github.com/jenkinsci/git-client-plugin/releases/tag/git-client-1.11.0[1.11.0].
+
+`com.cloudbees.jenkins.plugins.sshcredentials.SSHAuthenticator$1`::
+https://github.com/jenkinsci/ssh-credentials-plugin/commit/45e1d5e3a9103a4d48d47407aedabd82b198667a[Fix] released May 2016 in https://github.com/jenkinsci/ssh-credentials-plugin/releases/tag/ssh-credentials-1.12[1.12].
+
+`com.synopsys.arc.jenkinsci.plugins.cygwinprocesskiller.CygwinProcessKiller$KillerRemoteCall`::
+https://github.com/jenkinsci/cygwin-process-killer-plugin/commit/1851e8092e0f1e971e252bf5d08db4588d16e2ab[Fix] released Jan 2018 in https://github.com/jenkinsci/cygwin-process-killer-plugin/releases/tag/cygwin-process-killer-0.2[0.2].
+
+`hudson.plugins.selenium.JenkinsCapabilityMatcher$LabelMatcherCallable`::
+https://github.com/jenkinsci/selenium-plugin/commit/0b77252fc88ba9ac3ab2a7faf7b5a3a4da61bbc1[Fix] released April 2016 in https://github.com/jenkinsci/selenium-plugin/releases/tag/selenium-2.53.0[2.53.0], and the plugin has an unresolved high severity security vulnerability published https://www.jenkins.io/security/advisory/2020-06-03/#SECURITY-1766[in June 2020] anyway.
+
+=== Removal of customizable `Callable` allowlist
+
+All plugins built for Jenkins 1.587 or newer, LTS 1.580.1 or newer (released 2014) need to implement `RoleSensitive`.
+Since 2.319 and LTS 2.303.3, Callables need to perform an actual role check.
+Only plugins targeting releases older than that would need to be added to a custom allowlist.
+Since 2016, the agent-to-controller security subsystem has been enabled by default, so any plugins requiring an exception should have been updated long ago, as all new installations would need to be configured to allow those plugins to bypass this protection mechanism.
+
+
+=== Removal of agent-to-controller support for `FilePath`
+
+`FilePath` transparently supporting agent-to-controller file access through its public methods has several problems:
+
+- The implementation of the allowlist using `FilePathFilter` and configuration files is error-prone (see https://www.jenkins.io/security/advisory/2021-11-04/#SECURITY-2455[SECURITY-2455] and https://www.jenkins.io/doc/upgrade-guide/2.303/#SECURITY-2455[the related 2.303.3 upgrade guide entry]) and not flexible enough (see https://www.jenkins.io/doc/upgrade-guide/2.303/#SECURITY-2428[SECURITY-2428] and https://www.jenkins.io/doc/upgrade-guide/2.303/#SECURITY-2428[the related 2.303.3 upgrade guide entry]).
+- This behavior is transparent to plugin developers, not making it clear what goes on behind the scenes.
+
+While allowing selective access to files on the controller may have been a good solution in 2014 for compatibility with then-existing plugins, few plugins seem to need this exception today.
+
+Plugins should be restructured to not have agent-to-controller access where possible, or implement a `SlaveToMasterCallable` with explicit input validation as described in https://www.jenkins.io/doc/developer/security/remoting-callables/[the developer documentation] instead of relying on `FilePath`.
+
+
+=== Deprecation of `SlaveToMasterFileCallable`
+
+While `SlaveToMasterCallable` is needed for some use cases, `SlaveToMasterFileCallable` exists for convenience only (as an argument to `FilePath#act`), and relies on the nontrivial custom (de)serialization of `FilePath`.
+To discourage the creation of new (`File`)`Callable` in the agent-to-controller direction, and make it easier to reason about security of any (`File`)`Callable` sent through a remoting channel, this type is deprecated, and warnings are logged whenever it is deserialized on a controller.
+
+
+== Backwards Compatibility
+
+https://github.com/jenkins-infra/usage-in-plugins[`usage-in-plugins`] is used to check access to any of the types removed or substantially altered.
+The following can be used as an input file for its `-i -C` / `--onlyIncludeSpecified --additionalClasses` mode:
+
+----
+# General
+jenkins/security/s2m/AdminWhitelistRule
+jenkins/security/s2m/ConfigDirectory
+jenkins/security/s2m/ConfigFile
+jenkins/security/s2m/MasterKillSwitchConfiguration
+jenkins/security/s2m/MasterKillSwitchWarning
+# FilePathFilter
+jenkins/security/s2m/AdminFilePathFilter
+jenkins/security/s2m/AdminFilePathFilter$ChannelConfiguratorImpl
+jenkins/security/s2m/DefaultFilePathFilter
+jenkins/security/s2m/FilePathRuleConfig
+jenkins/security/s2m/FilePathRule
+jenkins/security/s2m/OpMatcher
+jenkins/security/s2m/RunningBuildFilePathFilter
+jenkins/ReflectiveFilePathFilter
+jenkins/SoloFilePathFilter
+jenkins/ReflectiveFilePathFilter
+jenkins/FilePathFilterAggregator
+jenkins/FilePathFilter
+# Callables
+jenkins/security/s2m/AdminCallableMonitor
+jenkins/security/s2m/AdminCallableWhitelist
+jenkins/security/s2m/CallableDirectionChecker
+jenkins/security/s2m/CallableDirectionChecker$ChannelConfiguratorImpl
+jenkins/security/s2m/CallableDirectionChecker$DefaultWhitelist
+jenkins/security/s2m/CallableRejectionConfig
+jenkins/security/s2m/CallableWhitelist
+jenkins/security/s2m/CallableWhitelistConfig
+jenkins/security/s2m/RejectedCallable
+----
+
+The only plugin distributed by the Jenkins project that is using any of these types is https://plugins.jenkins.io/configuration-as-code/[Configuration as Code], which uses `AdminWhitelistRule` in https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/plugin/src/main/java/io/jenkins/plugins/casc/core/AdminWhitelistRuleConfigurator.java[`AdminWhitelistRuleConfigurator`].
+All methods used there are retained, but no longer have an effect beyond producing log messages.
+
+// CloudBees has some operations-center-* stuff using other types.
+
+=== Incompatible Plugins
+
+https://github.com/jenkinsci/jenkins/pull/5890[jenkinsci/jenkins#5890] adds telemetry from Jenkins 2.322 and LTS 2.319.1 until 2022-03-01 to identify any (expected to be rare) uses of `FilePath` methods from agents to access files on the controller.
+Issues will be filed and popular plugins, where possible, will be adapted.
+
+The following plugins have been identified as incompatible with this proposal:
+
+
+|====
+| Plugin | Affected Feature | Workaround | Fix
+
+| https://plugins.jenkins.io/cobertura/[Cobertura]
+| "Publish Cobertura Coverage Report" post-build step fails
+| n/a
+| Update Cobertura Plugin to 1.17
+
+| https://plugins.jenkins.io/code-coverage-api/[Code Coverage API]
+| Saving of source files (optional feature) in post-build step fails
+| Do not use the feature
+| Update Code Coverage API Plugin to 2.0.4
+
+| https://plugins.jenkins.io/genexus/[Genexus]
+| TBD
+| TBD
+| n/a (https://issues.jenkins.io/browse/JENKINS-67337[JENKINS-67337])
+
+| https://plugins.jenkins.io/jobcacher/[Job Cacher]
+| TBD
+| TBD
+| n/a (https://issues.jenkins.io/browse/JENKINS-67298[JENKINS-67298])
+
+| https://plugins.jenkins.io/log-parser/[Log Parser]
+| Log parsing fails
+| n/a
+| Update Log Parser Plugin to 2.2
+
+| https://plugins.jenkins.io/maven-plugin/[Maven Integration]
+| Archiving Maven sites and Javadoc fails
+| Do not archive Maven sites or Javadoc
+| Update Maven Plugin to 3.15.1 or install one of the backports 3.12.1, 3.10.1, 3.8.1, 3.7.1, 3.6.1
+
+| https://plugins.jenkins.io/hp-application-automation-tools-plugin/[Micro Focus Application Automation Tools]
+| TBD
+| TBD
+| n/a (https://issues.jenkins.io/browse/JENKINS-67232[JENKINS-67232])
+
+| https://plugins.jenkins.io/publish-over-ssh/[Publish Over SSH]
+| Reading SSH key files from controller file system fails
+| Specify SSH keys inline
+| n/a (https://issues.jenkins.io/browse/JENKINS-67236[JENKINS-67236])
+
+| https://plugins.jenkins.io/selenium/[Selenium]
+| TBD
+| TBD
+| n/a (https://issues.jenkins.io/browse/JENKINS-67255[JENKINS-67255])
+
+| https://plugins.jenkins.io/analysis-core/[Static Analysis Plugins]
+| TBD
+| TBD
+| Deprecated plugin, migrate to https://plugins.jenkins.io/warnings-ng/[Warnings Next Generation]
+
+| https://plugins.jenkins.io/violations/[Violations]
+| TBD
+| TBD
+| n/a (https://issues.jenkins.io/browse/JENKINS-67254[JENKINS-67254])
+
+| https://plugins.jenkins.io/warnings-ng/[Warnings Next Generation] (5.1.0 or older)
+| TBD
+| TBD
+| Resolved by updating to version 5.2.0 (June 2019) or newer
+
+| https://plugins.jenkins.io/xunit/[XUnit] (2.0.2 or older)
+| TBD
+| TBD
+| Expected to be resolved by updating to version 2.0.3 (June 2018) or newer
+
+|====
+
+
+
+== Security
+
+There are no security risks related to this proposal beyond those applying to most changes of core Jenkins code.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Testing
+
+=== Core
+
+Automated tests for the new enabled-by-default protections are added to Jenkins.
+
+=== Plugins
+
+The Jenkins test harness does not by default enable agent-to-controller security, so automated test coverage for agent-to-controller security is currently fairly low.
+It is not straightforward to adapt `JenkinsRule` for use with https://github.com/jenkinsci/plugin-compat-tester[PCT], as changes to the default setup (e.g., disabling built-in node executors and adding a mock agent or cloud) would break numerous unrelated test assertions.
+
+This limitation is deemed acceptable, as the behavior changes specified by this proposal are validated in other ways, and their associated risks are fairly minor:
+
+Removal of default callable allowlist::
+All plugins listed have been updated years ago, or are no longer distributed by the Jenkins project.
+It is unlikely this change will harm users in ways not resolved by updating long outdated plugins.
+Removal of admin-customizable callable allowlist::
+This is expected to only matter for plugins that have not been updated in several years (more likely closed source), for which the need to customize the allowlist was tolerated.
+Removal of default and admin-customizable file path allowlist, and support of `FilePath` method invocations in agent-to-controller direction::
+Telemetry is expected to identify any such uses, so plugins can be adapted.
+Additionally, https://plugins.jenkins.io/remoting-security-workaround/[Remoting Security Workaround Plugin] essentially implements an equivalent change, so https://github.com/jenkinsci/remoting-security-workaround-plugin#affected-functionality[all functionality affected by this plugin] will also be affected by this proposal.
+Removal of ability to load classes from agents (when disabling agent-to-controller security)::
+There is no known use case for this, and the author is not aware of any issues related to this restriction.
+Removal of various Java classes and associated resources implementing removed features::
+`usage-in-plugins` found no uses except one in `configuration-as-code`, for which compatibility is retained.
+
+
+== Prototype Implementation
+
+* https://github.com/jenkinsci/jenkins/pull/5884[jenkinsci/jenkins#5884: Deprecate `SlaveToMasterFileCallable`, log warning]
+* https://github.com/jenkinsci/jenkins/pull/5885[jenkinsci/jenkins#5885: Remove `Callable` allowlist and `FilePath` agent-to-controller support]
+
+Additionally, https://github.com/jenkinsci/jenkins/pull/5890[jenkinsci/jenkins#5890] adds telemetry identifying instances of `FilePath` use in the agent-to-controller direction.
+
+
+== References
+
+* https://www.jenkins.io/doc/developer/security/remoting-callables/[Developer Documentation: Remoting Callables]
+* https://www.jenkins.io/security/advisory/2021-11-04/[Jenkins Security Advisory 2021-11-04]
+* https://www.jenkins.io/doc/upgrade-guide/2.303/#upgrading-to-jenkins-lts-2-303-3[Upgrading to Jenkins 2.303.3]
+* https://plugins.jenkins.io/remoting-security-workaround/[Remoting Security Workaround Plugin]
