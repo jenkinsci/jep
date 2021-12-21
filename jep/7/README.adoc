@@ -130,7 +130,7 @@ This change will be documented in the LTS upgrade guidelines.
 Plugins may be restored in the update centers once
 there are contributors who take ownership of a plugin and migrate it to the standard Java plugin runtime.
 It may be done in a compatible or incompatible way.
-=======
+
 
 == Motivation
 
