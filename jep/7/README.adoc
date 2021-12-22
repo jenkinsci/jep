@@ -1,4 +1,4 @@
-= JEP-7: Deprecation of ruby-runtime
+= JEP-7: Deprecation of Ruby and Python plugin runtimes
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -16,10 +16,12 @@ endif::[]
 | 7
 
 | Title
-| Deprecation of ruby-runtime
+| Deprecation of Ruby and Python plugin runtimes
 
 | Sponsor
-| link:https://github.com/daniel-beck/[Daniel Beck]
+| link:https://github.com/daniel-beck/[Daniel Beck],
+  link:https://github.com/halkeye/[Gavin Mogan],
+  link:https://github.com/oleg-nenashev/[Oleg Nenashev]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
@@ -67,23 +69,68 @@ endif::[]
 
 == Abstract
 
-Due to its negative impact on core maintenance, distribution of the unmaintained `ruby-runtime` plugin will be suspended.
-Distribution of plugins depending on it will be suspended until their dependency is removed.
+Distribution of the unmaintained
+link:https://github.com/jenkinsci/ruby-runtime-plugin[Ruby Runtime plugin] and
+link:https://github.com/jenkinsci/jenkins.py[Jenkins Python SDK] will be suspended.
+Distribution of plugins depending on them will be suspended until their dependency is removed.
 
 
 == Specification
 
-`ruby-runtime` will be added to the `artifact-ignores` file of the update center generator so it is no longer available for download on update sites.
-// Perhaps: Add security warning?
+Ruby runtime and Python SDK will be added to the `artifact-ignores` file of the update center generator, so they are no longer available for download on update sites. Plugins with a mandatory dependency on the runtimes will be added to the same file, as they will not be installable without the respective runtimes being available.
 
-Plugins with a mandatory dependency on `ruby-runtime` will be added to the same file, as they will not be installable without `ruby-runtime` being available.
+A warning will be added to the update center so that all users of the plugins receive a warning in advance.
+Plugins depending on either the Ruby runtime or the Python SDK will be also marked for adoption so that users can step up and take over maintenance (by switching to the regular Java runtime) without a 2 weeks waiting delay.
 
-The multiple Git repositories holding the `ruby-runtime` source code will be archived on GitHub.
+The Git repositories holding the `ruby-runtime` and Python SDK source code will be archived on GitHub.
 
-Workarounds in Jenkins core implemented specifically to enable `ruby-runtime` will be reviewed and considered for reversal.
-No future core development will consider the impact on `ruby-runtime` and plugins based on it, and bug reports to core and related components about their impact on `ruby-runtime` and plugins based on it will be closed as *Won't Fix*.
+Support for Ruby Runtime in the Jenkins core may be removed in future Jenkins versions.
+This includes but not limited to:
+
+* link:https://github.com/stapler/stapler/tree/master/jruby[Stapler JRuby library] bundled in the Jenkins core
+* Permit lists for link:/jep/200[JEP-200: Switch Remoting/XStream denylist to a permitlist]
+* XStream converters for JRuby components
 
 The `jruby` module will be removed from Stapler.
+
+No future core development will consider the impact on Ruby/Python runtimes and plugins based on them.
+Bug reports to core and related components about their impact on `ruby-runtime` and plugins based on it will be closed as *Won't Fix*.
+
+=== Rollout plan
+
+At least 2 weeks before removal::
+
+* Announcement blogpost on jenkins.io with the user-focused overview of the change and the delivery plan
+* Plugins are marked for adoption
+* Plugins will be deprecated in the Update site immediately after the announcement.
+  The deprecation notice will reference the announcement blogpost as justification.
+
+Removal date::
+
+* Plugins are removed from official Jenkins update centers.
+  Users of both weekly and LTS release baselines will no longer be able to install or update the plugins.
+* If there are any unpublished security issues related to the depublished plugins,
+  a security advisory is released for them shortly after depublishing.
+* Ruby and Python plugin runtime codebases are archived on GitHub.
+
+After the removal::
+
+A pull request may be submitted to the Jenkins core at some point, with a cleanup of the code and functionality slated for deletion.
+Stapler JRuby library might be also deleted from the Stapler codebase.
+This is a breaking change.
+Once the pull request is merged, the next weekly release will no longer be able to run the Ruby/Python runtime based plugins properly,
+with undefined behavior and likely Jenkins startup failure as a result.
+This needs to be explicitly referenced in the changelog.
+
+Jenkins LTS users will be able to continue using the deprecated/depublished plugins until a new LTS baseline picks up the change.
+ETA for it - the March 2022 LTS release.
+After this release new Jenkins LTS versions will not be able to run the plugins as well.
+This change will be documented in the LTS upgrade guidelines.
+
+Plugins may be restored in the update centers once
+there are contributors who take ownership of a plugin and migrate it to the standard Java plugin runtime.
+It may be done in a compatible or incompatible way.
+
 
 == Motivation
 
@@ -92,7 +139,8 @@ Development of ruby-runtime stopped around 2013.
 There are currently two Git repositories holding different states of its source code: jenkinsci/ruby-runtime-plugin and jenkinsci/jenkins.rb.
 It is unmaintained and the changelog mentions a version 0.13 that has never actually been released.
 
-Over the past year, multiple changes to core negatively impacted ruby-runtime based plugins, and core maintainers had to implement workarounds to address these problems.
+Over the past years, multiple changes to core negatively impacted ruby-runtime based plugins, and core maintainers had to implement workarounds to address these problems.
+Example: link:/jep/200[JEP-200: Switch Remoting/XStream denylist to a permitlist].
 Due to its design, it is not always possible to apply corresponding changes to ruby-runtime itself.
 Instead, every dependent plugin may need to be adapted individually, if a change to core results in problems to ruby-runtime.
 
@@ -101,6 +149,10 @@ In a Jenkins developers mailing list thread proposing the deprecation of `ruby-r
 
 Therefore this JEP proposed the deprecation of ruby-runtime, and to suspend its distribution via Jenkins project update sites.
 
+The same concerns apply to the Jenkins Python SDK.
+Although we have not experienced issues with that due to the low adoption, potentially it may lead to the core maintenance overhead.
+Low adoption and lack of interest in Jenkins plugin development for Python suggests that we can just remove the support as a part of this JEP.
+This SDK is used just for one plugin at the moment.
 
 == Reasoning
 
@@ -133,11 +185,106 @@ Workarounds for this include downloading affected plugins from Artifactory, and 
 
 If previous core compatibility fixes are reverted, or future core changes break ruby-runtime, users of those plugins will be impacted.
 
+=== Affected plugins, Ruby runtime
+
+Below you can find a list of the affected plugins which are/were being hosted in the main Jenkins update center.
+There might be other 3rd-party plugins affected.
+
+Gitlab Hook::
+Last released **5 years ago**. +
+Contains multiple security vulnerabilties. +
+Suggestion: Use the https://github.com/jenkinsci/gitlab-plugin[GitLab] plugin or the https://github.com/jenkinsci/gitlab-branch-source-plugin[GitLab Branch Source] plugin.
+
+Cucumber::
+Last released **8 years ago**. +
+Suggestion: Use `sh` or `bat` to run `cucumber` from the command line.
+
+pyenv::
+Last released **7 years ago**. +
+Suggestion: Use `sh` or `bat` to run `pyenv` from the command line.
+
+Rvm::
+Last released **5 years ago**. +
+Suggestion: Use `sh` or `bat` to run `rvm` from the command line.
+
+Capitomcat::
+Last released **6 years ago**. +
+Suggestion: Install Ruby and Capistrano and use `sh` or `bat` to invoke them from the command line.
+
+Commit Message Trigger::
+Last released **7 years ago**. +
+Suggestion: Use `sh`, `bat`, or other scripts to read git commit messages and conditionally execute Pipeline steps.
+
+Git notes::
+Last released **9 years ago**. +
+Suggestion: Use `sh`, `bat`, or other scripts to run `git` to annotate commits.
+
+rbenv::
+Last released **5 years ago**. +
+Suggestion: Use `sh` or `bat` to run `rbenv` from the command line.
+
+Chef::
+Last released **6 years ago**. +
+Suggestion: Use `sh` or `bat` to run `chef` from the command line.
+
+CI Skip::
+Last released **7 years ago**. +
+Suggestion: Use the https://github.com/jenkinsci/github-scm-trait-commit-skip-plugin[GitHub Commit Skip SCM Behaviour], https://github.com/jenkinsci/bitbucket-scm-trait-commit-skip-plugin[Bitbucket Commit Skip SCM Behaviour], or https://github.com/jenkinsci/scmskip-plugin[SCM Skip] to skip builds based on the content of commit messages.
+Alternately, use `sh`, `bat`, or other scripts to read git commit messages and conditionally execute Pipeline steps.
+
+MySQL Job Databases::
+Last released **7 years ago**. +
+Suggestion: Use link:https://github.com/jbox-web/job-database-manager-mysql[Jenkins Job Database Manager Plugin for MySQL].
+
+Pathignore::
+Last released **9 years ago**. +
+Suggestion: Use the path ignore features of various plugins or use `sh`, `bat`, or other scripts to read git commit messages and conditionally execute Pipeline steps.
+
+Perl::
+Last released **8 years ago**. +
+Suggestion: Use `sh` or `bat` to run `perl` from the command line.
+
+pry::
+Last released **9 years ago**. +
+Suggestion: Use the Jenkins groovy console and its interface from the Jenkins command line interface.
+
+Single Use Slave::
+Last released **6 years ago**. +
+Suggestion: Use cloud agents (https://github.com/jenkinsci/amazon-ecs-plugin[Fargate], https://github.com/jenkinsci/azure-container-agents-plugin[Azure Container Instances], https://github.com/jenkinsci/docker-workflow-plugin[Docker], etc.) to allocate agents for a single use and then release them.
+
+Travis YML::
+Last released **4 years ago**. +
+Suggestion: Rewrite the travis.yml file as a Jenkinsfile, a link:https://jenkins.io/blog/2019/05/09/templating-engine/[Jenkins Templating Engine file], a https://github.com/jenkinsci/pipeline-as-yam-pluginl[Pipeline as YAML], or a link:https://jenkins.io/blog/2019/01/08/mpl-modular-pipeline-library/[Jenkins Modular Pipeline Library].
+
+Yammer::
+Last released **8 years ago**. +
+Suggestion: Use the link:https://developer.yammer.com/docs/rest-api-rate-limits[Yammer REST API] to post messages.
+
+DevStack::
+Last released **9 years ago**.
+
+Ikachan::
+Last released **9 years ago**.
+
+Jenkinspider::
+Last released **6 years ago**.
+
+Perl Smoke Test::
+Last released **7 years ago**.
+
+buddycloud::
+Last released **7 years ago**.
+
+=== Affected plugins, Python runtime
+
+InstallShield::
+Last released **7 years ago**.
 
 == Security
 
 There are no security risks related to this proposal.
-
+If there are known issues for the removed/deprecated plugins,
+the security advisory will be released after depublishing of the plugins.
 
 == Infrastructure Requirements
 
@@ -158,5 +305,12 @@ n/a
 
 == References
 
-https://groups.google.com/d/msg/jenkinsci-dev/Ve0fqAud3Mk/MTIxw6ZyBwAJ
+* https://groups.google.com/d/msg/jenkinsci-dev/Ve0fqAud3Mk/MTIxw6ZyBwAJ
+* https://github.com/jenkinsci/ruby-runtime-plugin[Ruby Runtime Plugin]
+* https://github.com/jenkins-infra/jenkins.io/pull/4256[Announcement Draft]
+* https://github.com/jenkins-infra/jenkins.io/pull/4256[Announcement blogpost]
 
+== Change history
+
+* December 2021 - Extend the scope to include the Python plugin runtime,
+  clarify the scope and the rollout plan based on the dev list discussion.
