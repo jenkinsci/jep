@@ -76,7 +76,7 @@ For a user who is interested in adopting a plugin:
 
 For a maintainer who is interested in giving up maintainership of a plugin:
 
-1. The maintainer should edit the plugin's GitHub repo page and add the *adopt-this-plugin* label.
+* The maintainer should edit the plugin's GitHub repo page and add the *adopt-this-plugin* label.
 
 
 === Proposed modification to plugin adoption process: using JIRA
