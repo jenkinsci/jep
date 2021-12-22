@@ -312,5 +312,5 @@ n/a
 
 == Change history
 
-* April 2021 - Extend the scope to include the Python plugin runtime,
+* December 2021 - Extend the scope to include the Python plugin runtime,
   clarify the scope and the rollout plan based on the dev list discussion.
