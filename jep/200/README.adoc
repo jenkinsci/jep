@@ -1,4 +1,4 @@
-= JEP-200: Switch Remoting/XStream denylist to a allowlist
+= JEP-200: Switch Remoting/XStream denylist to an allowlist
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
