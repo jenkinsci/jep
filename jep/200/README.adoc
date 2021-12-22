@@ -429,8 +429,3 @@ BDFL confirms that the current test coverage is good enough to accept this Jenki
 * link:https://docs.google.com/document/d/1uQcyaaLvGFwFDe0mQ27JHeG2icdX0XfCHILbHGOtAmA/edit[JEP-200 Testing Notes (BDFL Review)]
 * link:https://github.com/jenkins-infra/jenkins.io/pull/1293[Announcement Blog Post Draft]
 * link:https://wiki.jenkins.io/display/JENKINS/Plugins+affected+by+fix+for+JEP-200[Wiki Page: Plugins affected by JEP-200]
-
-== Revision history
-
-* April 26, 2021 - Update the terminology in the JEP.
-  No other changes in the document.
