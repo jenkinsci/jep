@@ -35,7 +35,7 @@ endif::[]
 | TBD
 
 | Pull requests
-|
+a|
 
 - link:https://github.com/jenkinsci/jenkins/pull/6083[PR 6083] - Drop Java 8 from Jenkins core
 - link:https://github.com/jenkinsci/jenkins/pull/6086[PR 6086] - Switch Jenkins acceptance test harness in core to Java 11
