@@ -1,4 +1,4 @@
-g= JEP-0000: End Java 8 support in Jenkins
+= JEP-0000: End Java 8 support in Jenkins
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -36,10 +36,10 @@ endif::[]
 
 | Pull requests
 |
-link:https://github.com/jenkinsci/jenkins/pull/6083[PR 6083] - Drop Java 8 from Jenkins core
-link:https://github.com/jenkinsci/jenkins/pull/6086[PR 6086] - Switch Jenkins acceptance test harness in core to Java 11
-link:https://github.com/jenkinsci/jenkins/pull/6092[PR 6092] - Add administrative monitor to remind of upcoming end of Java 8 support
-link:https://github.com/jenkinsci/acceptance-test-harness/pull/726[PR 726] - Drop Java 8 from acceptance test harness
+- link:https://github.com/jenkinsci/jenkins/pull/6083[PR 6083] - Drop Java 8 from Jenkins core
+- link:https://github.com/jenkinsci/jenkins/pull/6086[PR 6086] - Switch Jenkins acceptance test harness in core to Java 11
+- link:https://github.com/jenkinsci/jenkins/pull/6092[PR 6092] - Add administrative monitor to remind of upcoming end of Java 8 support
+- link:https://github.com/jenkinsci/acceptance-test-harness/pull/726[PR 726] - Drop Java 8 from acceptance test harness
 
 | Discussions-To
 | link:https://groups.google.com/g/jenkinsci-dev[Jenkins Developer Mailing List]
@@ -299,7 +299,7 @@ The following backward compatibility requirements are defined:
 
 * Jenkins core and updated plugins should fully support Java 11
 * Jenkins plugins may continue to compile with Java 8 so long as the plugins run successfully with Java 11
-* Jenknis plugins that require a Jenkins version that does not support Java 8 will be expected to compile with Java 11
+* Jenkins plugins that require a Jenkins version that does not support Java 8 will be expected to compile with Java 11
 
 == Security
 
