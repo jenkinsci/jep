@@ -67,7 +67,6 @@ a|
 Java 11 was released on September 25, 2018.
 It is an LTS version with a long support timeline.
 Java 8 was released in March 2014.
-The link:https://www.oracle.com/java/technologies/java-se-support-roadmap.html[Oracle Java SE Support Roadmap] states that premier support for Java 8 ends in March 2022.
 Java 8 enhancements have stopped as effort focuses on Java 11, Java 17, and beyond.
 
 This Jenkins Enhancement Proposal describes actions required
