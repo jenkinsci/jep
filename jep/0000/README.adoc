@@ -42,7 +42,7 @@ link:https://github.com/jenkinsci/jenkins/pull/6092[PR 6092] - Add administrativ
 link:https://github.com/jenkinsci/acceptance-test-harness/pull/726[PR 726] - Drop Java 8 from acceptance test harness
 
 | Discussions-To
-| link:https://groups.google.com/forum/#!forum/jenkins-platform-sig[Jenkins Platform SIG]
+| link:https://groups.google.com/g/jenkinsci-dev[Jenkins Developer Mailing List]
 
 //
 // Uncomment if this JEP depends on one or more other JEPs.
