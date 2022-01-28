@@ -88,11 +88,10 @@ If the tickets are not linked in the description, they can be found there.
 Goals:
 
 * Jenkins core development requires Java 11 or newer
+* Jenkins plugin development requires Java 11 or newer when the plugin updates its minimum Java version to a Jenkins core version that does not support Java 8
 
 Non-goals:
 
-* Jenkins plugin development requires Java 11 or newer
-** Jenkins plugins are not required to support Java 8 if they require a Jenkins version that does not support Java 8
 * Building all components with Java 11
 * Jenkins replace older API calls with Java 11 API calls
 ** Jakarta EE upgrade is not required as part of this JEP
