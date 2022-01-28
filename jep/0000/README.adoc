@@ -177,7 +177,6 @@ Tool specific agent containers will no longer include Java 8:
 * https://hub.docker.com/r/jenkins/jnlp-agent-maven[Maven agent]
 * https://hub.docker.com/r/jenkins/jnlp-agent-node[NodeJS agent]
 * https://hub.docker.com/r/jenkins/jnlp-agent-powershell[Powershell agent]
-* https://hub.docker.com/r/jenkins/jnlp-agent-python2[Python2 agent]
 * https://hub.docker.com/r/jenkins/jnlp-agent-python3[Python3 agent]
 * https://hub.docker.com/r/jenkins/jnlp-agent-python[Python agent]
 * https://hub.docker.com/r/jenkins/jnlp-agent-ruby[Ruby agent]
