@@ -221,7 +221,7 @@ The rollout procedure should be coordinated within the link:https://jenkins.io/s
 
 * Announce Java 8 end of support for weekly in blogpost
 ** Describe Java 11 upgrade process for users of war, deb, rpm, and msi installations
-* Add higher visibilty warning on Java 8 end of support in Jenkins weekly
+* Add higher visibilty warning on Java 8 end of support in Jenkins weekly (an idea that is not yet fully formed)
 * Remove Java 8 from weekly core release, weekly Docker controller images
 * Announce Java 8 end of support for LTS in blogpost
 * Remove Java 8 from LTS core release, include in changelog and upgrade guide
@@ -333,16 +333,14 @@ Testers are welcome to report their results there.
 
 Tests to be performed:
 
-* ATH is updated as needed to run on Java 11
-* ATH is performed successfully on Java 11
-* PCT is updated as needed to run on Java 11
-* PCT is performed successfully on Java 11
+* ATH is updated and successful on Java 11 (**done** in link:https://github.com/jenkinsci/acceptance-test-harness/pull/726[ATH PR 726])
+* PCT is updated and successful on Java 11
+* Plugin bill of materials is updated and successful on Java 11
 * Packaging tests are performed successfully on Java 11
 * Exploratory tests are performed successfully to check for inadvertent use of Java 8
 
 == Prototype Implementation
 
-Prototype implementations have been created by pull requests.
 Additional prototypes may be evaluated using pull requests or forks of Jenkins core.
 These prototypes include Jenkins core, Docker updates and downstream demo patches.
 
