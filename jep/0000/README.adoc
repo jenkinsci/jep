@@ -217,20 +217,15 @@ This policy may require patches in parent POMs:
 
 The rollout procedure should be coordinated within the link:https://jenkins.io/sigs/platform/[Platform SIG].
 
-==== Timeline
+==== Timeline (TBD)
 
-* Experimental Java 11 Support is available in Jenkins 2.127+
-** Announced in link:https://jenkins.io/blog/2018/06/17/running-jenkins-with-java10-11/[this blogpost]
-** We have started integrating some patches starting from 2.127 when the “--enable-future-java” flag was introduced
-** There is no official preview announcement for weekly releases at this stage
-* link:https://issues.jenkins-ci.org/browse/JENKINS-52012[JENKINS-52012] - Preview in weekly releases
-* link:https://issues.jenkins-ci.org/browse/JENKINS-51805[JENKINS-51805] - GA in weekly releases
-* link:https://issues.jenkins-ci.org/browse/JENKINS-52284[JENKINS-52284] - GA in LTS
-** Java 11 support will be available in LTS once the LTS baseline updates to the Weekly release
-** No special timeline set, optimistic ETA is February 2018
-* link:https://issues.jenkins-ci.org/browse/JENKINS-40689[JENKINS-40689] - other non-blocker issues
-
-The referenced EPICs contain the detailed plan for what is included into the each milestone.
+* Announce Java 8 end of support for weekly in blogpost
+** Describe Java 11 upgrade process for users of war, deb, rpm, and msi installations
+* Add higher visibilty warning on Java 8 end of support in Jenkins weekly
+* Remove Java 8 from weekly core release, weekly Docker controller images
+* Announce Java 8 end of support for LTS in blogpost
+* Remove Java 8 from LTS core release, include in changelog and upgrade guide
+* Remove Java 8 from Docker agent images
 
 ==== Website
 
