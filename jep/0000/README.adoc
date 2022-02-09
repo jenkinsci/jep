@@ -87,16 +87,16 @@ If the tickets are not linked in the description, they can be found there.
 Goals:
 
 * Jenkins core development requires Java 11 or newer
-* Jenkins plugin development requires Java 11 or newer when the plugin updates its minimum Java version to a Jenkins core version that does not support Java 8
+* Jenkins plugin development requires Java 11 or newer when the plugin updates its minimum Jenkins core version to one that does not support Java 8
 
 Non-goals:
 
 * Building all components with Java 11
-* Jenkins replace older API calls with Java 11 API calls
+* Jenkins replacing older API calls with Java 11 API calls
 ** Jakarta EE upgrade is not required as part of this JEP
 * All plugins are operational with Java 11
 ** Some Jenkins components may be updated to support features offered in Java 11 and beyond, but there is no plan to update all tools
-* Multi-release jar support in development tools
+* Multi-release JAR support in development tools
 * Cleanup of removed or deprecated features
 
 === Scope of changes
@@ -112,8 +112,7 @@ Non-goals:
     infra.ci.jenkins.io,
     trusted.ci.jenkins.io,
     link:https://www.jenkins.io/security/#team[Security team]'s instance
-* Maven build flow (
-    link:https://github.com/jenkinsci/maven-hpi-plugin[Maven HPI Plugin],
+* Maven build flow (link:https://github.com/jenkinsci/maven-hpi-plugin[Maven HPI Plugin],
     link:https://github.com/jenkinsci/plugin-pom[Plugin POM],
     link:https://github.com/jenkinsci/pom[Jenkins POM],
     link:https://github.com/jenkinsci/bom[Jenkins plugin bill of materials POM],
@@ -138,6 +137,7 @@ Work to be considered is defined in link:https://issues.jenkins.io/browse/JENKIN
 
 * The link:https://issues.jenkins.io/browse/JENKINS-67688[JENKINS-67688 epic] will include library updates as needed.
 * Some updates may require downstream plugin updates.
+* JavaWS support to be removed from remoting - link:https://github.com/jenkinsci/remoting/pull/507#issuecomment-1030629619[jenkinsci/remoting#507]
 
 ==== Core patches
 
@@ -298,7 +298,7 @@ The following backward compatibility requirements are defined:
 
 === Process
 
-Only Java 11 with the latest security fixes will be supported at the moment of the public release.
+Only Java 11 with the latest security fixes will be supported at the moment of the first LTS release requiring Java 11.
 
 Jenkins security issues on the release that ends support of Java 8 will be processed according to the
 standard link:https://jenkins.io/security/[Jenkins Security Process].
