@@ -38,8 +38,8 @@
 | link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
 
 | Draft{nbsp}:speech_balloon:
-| link:7/README.adoc[JEP-7: Deprecation of ruby-runtime]
-| link:https://github.com/daniel-beck/[Daniel{nbsp}Beck]
+| link:7/README.adoc[JEP-7: Deprecation of Ruby and Python plugin runtimes]
+| link:https://github.com/daniel-beck/[Daniel{nbsp}Beck],
 | _not{nbsp}delegated_
 
 | Draft{nbsp}:speech_balloon:
@@ -192,7 +192,7 @@
 | https://github.com/jvz[Matt{nbsp}Sicker]
 | link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
 
-| Draft{nbsp}:speech_balloon:
+| Withdrawn{nbsp}:hand:
 | link:221/README.adoc[JEP-221: Continuous Delivery of Jenkins Plugins]
 | link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
 | TBD
@@ -227,7 +227,7 @@
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | TBD
 
-| Draft{nbsp}:speech_balloon:
+| Accepted{nbsp}:ok_hand:
 | link:229/README.adoc[JEP-229: Continuous Delivery of Jenkins Components and Plugins]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | TBD
