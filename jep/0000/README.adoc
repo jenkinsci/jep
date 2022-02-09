@@ -1,4 +1,4 @@
-= JEP-0000: End Java 8 support in Jenkins
+= JEP-0000: Require Java 11 or newer
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -16,7 +16,7 @@ endif::[]
 | 0000
 
 | Title
-| End Java 8 support in Jenkins
+| Require Java 11 or newer
 
 | Sponsor
 | link:https://github.com/MarkEWaite[Mark Waite]
