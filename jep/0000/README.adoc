@@ -354,4 +354,4 @@ These prototypes include Jenkins core, Docker updates and downstream demo patche
 
 * link:https://www.oracle.com/java/technologies/java-se-support-roadmap.html[Oracle Java SE Support Roadmap]
 * link:https://jenkins.io/doc/administration/requirements/java/[Java requirements] in Jenkins
-* link:[Java 8 end of support testing status document]
+* link:https://docs.google.com/document/d/13ttjJ7HaUkYMy3L5P8D7w7TddqrUr-1IojtZCukFBQ8/edit?usp=sharing[Require Java 11 or newer testing status document]
