@@ -202,18 +202,34 @@ The following policy is suggested:
 
 * Jenkins core components will be compiled with Java 11 and will require Java 11 or later at runtime
 * Jenkins plugins that depend on a Jenkins core that requires Java 11 must be compiled with Java 11
-** In order to support releases that only run with Java 11, the plugins must use the plugin POM that adds support for `java.level` 11
+** In order to support releases that only run with Java 11, the plugins must use the Maven build flow components that support `java.level` 11
 
-This policy may require patches in parent POMs:
+This policy will require changes in the Maven build flow, including:
 
-* Parent POMs will be updated as needed, including
-  link:https://github.com/jenkinsci/plugin-pom[Plugin POM],
-  link:https://github.com/jenkinsci/pom[Jenkins POM], and
-  link:https://github.com/jenkinsci/bom[Jenkins plugin bill of materials POM],
+* link:https://github.com/jenkinsci/maven-hpi-plugin[Maven HPI Plugin]
+* link:https://github.com/jenkinsci/plugin-pom[Plugin POM]
+* link:https://github.com/jenkinsci/pom[Jenkins POM]
+* link:https://github.com/jenkinsci/bom[Jenkins plugin bill of materials POM]
 
 === Rollout plan
 
-The rollout procedure should be coordinated within the link:https://jenkins.io/sigs/platform/[Platform SIG].
+The rollout procedure will be coordinated in the link:https://jenkins.io/sigs/platform/[Platform SIG].
+Announcements will be sent to multiple Jenkins communication forums, including:
+
+* link:https://www.jenkins.io/node/[Jenkins community blog] - primary announcement and reference
+* link:https://twitter.com/jenkinsci[Jenkins twitter]
+* link:https://www.linkedin.com/company/jenkins-project[Jenkins LinkedIn]
+* link:https://community.jenkins.io[community.jenkins.io]
+* link:https://groups.google.com/g/jenkinsci-users[Jenkins users mailing list]
+* link:https://groups.google.com/g/jenkinsci-dev[Jenkins developers mailing list]
+* link:https://gitter.im/jenkinsci/jenkins[Jenkins gitter chat channel]
+* link:https://www.reddit.com/r/jenkinsci/[Jenkins reddit channel]
+
+==== Issue review
+
+Review link:https://issues.jenkins.io/issues/?jql=resolution%20%3D%20Unresolved%20and%20labels%20in%20(java11%2C%20java11-compatibility%2C%20java11-devtools-compatibility)[open Java 11 compatibility issues] looking for serious unresolved problems.
+
+We will track those issues in the link:https://issues.jenkins.io/browse/JENKINS-67688[JENKINS-67688 epic].
 
 ==== Timeline (TBD)
 
