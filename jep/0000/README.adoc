@@ -80,8 +80,6 @@ All stories in this JEP have tickets created in Jira or pull requests in GitHub.
 Jira tickets are aggregated in
 link:https://issues.jenkins.io/browse/JENKINS-67688[JENKINS-67688].
 
-If the tickets are not linked in the description, they can be found there.
-
 === Goals and non-goals
 
 Goals:
