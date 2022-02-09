@@ -188,7 +188,7 @@ The Java 8 dedicated agent image will no longer be updated:
 ==== BlueOcean Docker Image
 
 The https://hub.docker.com/r/jenkinsci/blueocean[Blue Ocean] docker image is no longer used by Jenkins documentation or tutorials.
-The Docker containers are already using Java 11.
+The BlueOcean containers are already using Java 11.
 
 === Plugins
 
@@ -219,7 +219,7 @@ The rollout procedure should be coordinated within the link:https://jenkins.io/s
 
 * Announce Java 8 end of support for weekly in blogpost
 ** Describe Java 11 upgrade process for users of war, deb, rpm, and msi installations
-* Add higher visibilty warning on Java 8 end of support in Jenkins weekly (an idea that is not yet fully formed)
+* Add higher visibility warning on Java 8 end of support in Jenkins weekly (an idea that is not yet fully formed)
 * Remove Java 8 from weekly core release, weekly Docker controller images
 * Announce Java 8 end of support for LTS in blogpost
 * Remove Java 8 from LTS core release, include in changelog and upgrade guide
@@ -340,7 +340,7 @@ Tests to be performed:
 == Prototype Implementation
 
 Additional prototypes may be evaluated using pull requests or forks of Jenkins core.
-These prototypes include Jenkins core, Docker updates and downstream demo patches.
+Here are links to some of the prototypes include Jenkins core, Docker updates and downstream demo patches.
 
 * link:https://github.com/jenkinsci/jenkins/pull/6092[Announce forthcoming Java 8 EOL]
 * link:https://github.com/jenkinsci/jenkins/pull/6083[Drop core support for Java 8]
