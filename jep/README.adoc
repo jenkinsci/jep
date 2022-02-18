@@ -262,6 +262,11 @@
 | link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
 | TBD
 
+| Draft{nbsp}:speech_balloon:
+| link:236/README.adoc[JEP-236: Require Java 11 or newer]
+| link:https://github.com/MarkEWaite[Mark{nbsp}Waite]
+| TBD
+
 | Accepted{nbsp}:ok_hand:
 | link:300/README.adoc[JEP-300: Jenkins Evergreen]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]

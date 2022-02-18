@@ -1,0 +1,371 @@
+= JEP-236: Require Java 11 or newer
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 236
+
+| Title
+| Require Java 11 or newer
+
+| Sponsor
+| link:https://github.com/MarkEWaite[Mark Waite]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Process
+
+| Created
+| 2022-01-28
+
+| BDFL-Delegate
+| TBD
+
+| Pull requests
+a|
+
+- link:https://github.com/jenkinsci/jenkins/pull/6083[PR 6083] - Drop Java 8 from Jenkins core
+- link:https://github.com/jenkinsci/jenkins/pull/6086[PR 6086] - Switch Jenkins acceptance test harness in core to Java 11
+- link:https://github.com/jenkinsci/jenkins/pull/6092[PR 6092] - Add administrative monitor to remind of upcoming end of Java 8 support
+- link:https://github.com/jenkinsci/acceptance-test-harness/pull/726[PR 726] - Drop Java 8 from acceptance test harness
+
+| Discussions-To
+| link:https://groups.google.com/g/jenkinsci-dev[Jenkins Developer Mailing List]
+
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+Java 11 was released on September 25, 2018.
+It is an LTS version with a long support timeline.
+Java 8 was released in March 2014.
+Java 8 enhancements have stopped as effort focuses on Java 11, Java 17, and beyond.
+
+This Jenkins Enhancement Proposal describes actions required
+to make Jenkins end its support of Java 8 and require Java 11 or newer.
+
+== Specification
+
+The specification has been created as a result of a link:https://groups.google.com/g/jenkinsci-dev/c/YghQ0YP4m78/m/LO9AFa_GAgAJ[Jenkins developers mailing list discussion].
+
+All stories in this JEP have tickets created in Jira or pull requests in GitHub.
+Jira tickets are aggregated in
+link:https://issues.jenkins.io/browse/JENKINS-67688[JENKINS-67688].
+
+=== Goals and non-goals
+
+Goals:
+
+* Jenkins core development requires Java 11 or newer
+* Jenkins plugin development requires Java 11 or newer when the plugin updates its minimum Jenkins core version to one that does not support Java 8
+
+Non-goals:
+
+* Building all components with Java 11
+* Jenkins replacing older API calls with Java 11 API calls
+** Jakarta EE upgrade is not required as part of this JEP
+* All plugins are operational with Java 11
+** Some Jenkins components may be updated to support features offered in Java 11 and beyond, but there is no plan to update all tools
+* Multi-release JAR support in development tools
+* Cleanup of removed or deprecated features
+
+=== Scope of changes
+
+* Jenkins core
+* Jenkins remoting
+* Jenkins configuration as code
+* Docker packaging
+* Plugins
+* Jenkins website: www.jenkins.io
+* Jenkins CI instances:
+    link:https://ci.jenkins.io/[ci.jenkins.io],
+    infra.ci.jenkins.io,
+    trusted.ci.jenkins.io,
+    link:https://www.jenkins.io/security/#team[Security team]'s instance
+* Maven build flow (link:https://github.com/jenkinsci/maven-hpi-plugin[Maven HPI Plugin],
+    link:https://github.com/jenkinsci/plugin-pom[Plugin POM],
+    link:https://github.com/jenkinsci/pom[Jenkins POM],
+    link:https://github.com/jenkinsci/bom[Jenkins plugin bill of materials POM],
+    etc.)
+* Test tools:
+    link:https://github.com/jenkinsci/jenkins-test-harness[Jenkins Test Harness (JTH)],
+    link:https://github.com/jenkinsci/acceptance-test-harness[Acceptance Test Harness (ATH)],
+    link:https://github.com/jenkinsci/plugin-compat-tester[Plugin Compatibility Tester (PCT)]
+* User and Developer Documentation
+
+Out of the scope for this JEP:
+
+* Packaging in subprojects (unless specifically noted): Jenkins Operator, Jenkins Evergreen, Jenkinsfile Runner, etc.
+  They will be handled in follow-up JEPs if needed.
+* Gradle build flow
+
+=== Jenkins core patches
+
+Work to be considered is defined in link:https://issues.jenkins.io/browse/JENKINS-67688[JENKINS-67688].
+
+==== Library updates
+
+* The link:https://issues.jenkins.io/browse/JENKINS-67688[JENKINS-67688 epic] will include library updates as needed.
+* Some updates may require downstream plugin updates.
+* JavaWS support to be removed from remoting - link:https://github.com/jenkinsci/remoting/pull/507#issuecomment-1030629619[jenkinsci/remoting#507]
+
+==== Core patches
+
+* link:https://github.com/jenkinsci/jenkins/pull/6083[PR 6083] - Drop Java 8 from Jenkins core
+* link:https://github.com/jenkinsci/jenkins/pull/6086[PR 6086] - Switch Jenkins acceptance test harness in core to Java 11
+* link:https://github.com/jenkinsci/jenkins/pull/6092[PR 6092] - Add administrative monitor to remind of upcoming end of Java 8 support
+
+==== Build flow updates
+
+* Jenkinsfile is updated to stop running tests with Java 8
+** It includes Unit tests, JTH and ATH smoke tests
+* It is possible to build Jenkins Core with the release profile on Java 8
+
+=== Jenkins Docker packaging
+
+The containers tagged for Java 8, like `latest-jdk8` and `centos7-jdk8` will no longer be updated.
+The upgrade guide and the announcement blogpost will note that users must switch to other images.
+Labels will not be removed for existing containers, but those labels will not be provided for new builds.
+
+Java 8 images will no longer be provided for the controller containers:
+
+* https://hub.docker.com/r/jenkins/jenkins[Controller]
+
+==== Jenkins Agent Images
+
+Java 8 images will no longer be provided for the general purpose agent containers:
+
+* https://hub.docker.com/r/jenkins/agent[Agent]
+* https://hub.docker.com/r/jenkins/inbound-agent[Inbound agent]
+* https://hub.docker.com/r/jenkins/ssh-agent[Outbound (ssh) agent]
+
+Tool specific agent containers will no longer include Java 8:
+
+* https://hub.docker.com/r/jenkins/jnlp-agent-docker[Docker agent]
+* https://hub.docker.com/r/jenkins/jnlp-agent-golang[Golang agent]
+* https://hub.docker.com/r/jenkins/jnlp-agent-maven[Maven agent]
+* https://hub.docker.com/r/jenkins/jnlp-agent-node[NodeJS agent]
+* https://hub.docker.com/r/jenkins/jnlp-agent-powershell[Powershell agent]
+* https://hub.docker.com/r/jenkins/jnlp-agent-python3[Python3 agent]
+* https://hub.docker.com/r/jenkins/jnlp-agent-python[Python agent]
+* https://hub.docker.com/r/jenkins/jnlp-agent-ruby[Ruby agent]
+* https://hub.docker.com/r/jenkins/jnlp-agent-terraform[Terraform agent]
+
+The Java 8 dedicated agent image will no longer be updated:
+
+* https://hub.docker.com/r/jenkins/jnlp-agent-jdk8[JDK 8 agent]
+
+==== BlueOcean Docker Image
+
+The https://hub.docker.com/r/jenkinsci/blueocean[Blue Ocean] docker image is no longer used by Jenkins documentation or tutorials.
+The BlueOcean containers are already using Java 11.
+
+=== Plugins
+
+No updates are expected to be required in plugins for this JEP.
+Plugins compiled with Java 8 are expected to continue running with Jenkins core compiled with Java 11.
+Incompatibilities will be reported and tracked as plugin issue reports.
+
+=== New policy: Jenkins core with Java 11
+
+The following policy is suggested:
+
+* Jenkins core components will be compiled with Java 11 and will require Java 11 or later at runtime
+* Jenkins plugins that depend on a Jenkins core that requires Java 11 must be compiled with Java 11
+** In order to support releases that only run with Java 11, the plugins must use the Maven build flow components that support `java.level` 11
+
+This policy will require changes in the Maven build flow, including:
+
+* link:https://github.com/jenkinsci/maven-hpi-plugin[Maven HPI Plugin]
+* link:https://github.com/jenkinsci/plugin-pom[Plugin POM]
+* link:https://github.com/jenkinsci/pom[Jenkins POM]
+* link:https://github.com/jenkinsci/bom[Jenkins plugin bill of materials POM]
+
+=== Rollout plan
+
+The rollout procedure will be coordinated in the link:https://jenkins.io/sigs/platform/[Platform SIG].
+Announcements will be sent to multiple Jenkins communication forums, including:
+
+* link:https://www.jenkins.io/node/[Jenkins community blog] - primary announcement and reference
+* link:https://twitter.com/jenkinsci[Jenkins twitter]
+* link:https://www.linkedin.com/company/jenkins-project[Jenkins LinkedIn]
+* link:https://community.jenkins.io[community.jenkins.io]
+* link:https://groups.google.com/g/jenkinsci-users[Jenkins users mailing list]
+* link:https://groups.google.com/g/jenkinsci-dev[Jenkins developers mailing list]
+* link:https://gitter.im/jenkinsci/jenkins[Jenkins gitter chat channel]
+* link:https://www.reddit.com/r/jenkinsci/[Jenkins reddit channel]
+
+==== Issue review
+
+Review link:https://issues.jenkins.io/issues/?jql=resolution%20%3D%20Unresolved%20and%20labels%20in%20(java11%2C%20java11-compatibility%2C%20java11-devtools-compatibility)[open Java 11 compatibility issues] looking for serious unresolved problems.
+
+We will track those issues in the link:https://issues.jenkins.io/browse/JENKINS-67688[JENKINS-67688 epic].
+
+==== Timeline (TBD)
+
+* Announce Java 8 end of support for weekly in blogpost
+** Describe Java 11 upgrade process for users of war, deb, rpm, and msi installations
+* Add higher visibility warning on Java 8 end of support in Jenkins weekly (an idea that is not yet fully formed)
+* Remove Java 8 from weekly core release, weekly Docker controller images
+* Announce Java 8 end of support for LTS in blogpost
+* Remove Java 8 from LTS core release, include in changelog and upgrade guide
+* Remove Java 8 from Docker agent images
+
+==== Website
+
+* link:https://jenkins.io/doc/administration/requirements/java/[Java Support Page] is updated to state the weekly version of Jenkins core and the LTS version of Jenkins core that last support Java 8
+* A blogpost is provided that announces the change in weekly releases and outlines the steps administrators must take to make the change
+** War file installations
+** Docker installations
+** MSI installations on Windows
+** RPM and DEB installations on Linux
+* A blogpost is provided that announces the change in an LTS release and outlines the steps administrators must take to make the change
+* The LTS changelog and upgrade guide describes the steps administrators must take to make the change
+* A webinar is presented that outlines the changes and outlines the steps administrators must take to make the change
+
+==== Issue tracking
+
+* Issues related to Java 8 end of support are tracked as Jenkins issues
+** link:https://issues.jenkins.io/browse/JENKINS-67688[JENKINS-67688] is the Jira epic that tracks issues in Jira
+** Plugins that use GitHub issues will place a link to their GitHub issue into the Jira epic
+
+==== Post-release support
+
+After the end of Java 8 support in the weekly releases, there may be a number of issues reported by early adopters.
+Core maintainers will respond to issue reports as they did for configuration form modernization ("table to div").
+A Jira label `java8-end-of-support` will be assigned to issue reports related to Java 8 end of support.
+
+==== LTS Backporting
+
+All backporting will be done according to the link:https://jenkins.io/download/lts/#backporting-process[LTS Backporting Process].
+
+There is no plan to backport changes for the end of Java 8 support to previous LTS baselines.
+
+== Motivation
+
+Java 11 was released on September 25, 2018.
+It is an LTS version with a long support timeline.
+Java 8 was released in March 2014.
+The link:https://www.oracle.com/java/technologies/java-se-support-roadmap.html[Oracle Java SE Support Roadmap] states that premier support for Java 8 ends in March 2022.
+Java 8 enhancements have stopped as effort focuses on Java 11, Java 17, and beyond.
+
+Removing support for Java 8 simplifies the supported configurations and allows further modernization of Jenkins core.
+Ending support for Java 8 allows Jenkins core and Jenkins plugins to use libraries that support Java 11 but do not support Java 8.
+
+== Reasoning
+
+“Goals and non-goals” section in the specification lists design decisions taken
+to ensure it can be delivered by a small team.
+Non-goals in the specification are defined to limit the scope of work.
+The main objective is to move Jenkins core development to Java 11.
+There will be follow-up tasks for further improvements and to adopt new features.
+
+=== Support of Java 17
+
+This JEP intentionally limits its scope by not including Java 17 support.
+It does not prevent work on Java 17, but that work is outside the scope of this JEP.
+
+=== Docker image labeling
+
+Docker image labels were updated in August 2021 to use link:https://www.jenkins.io/blog/2021/08/17/docker-images-use-jdk-11-by-default/[Java 11 by default].
+The image labels that do not explicitly mention a Java version (like `latest`, `lts`, `slim`, `alpine`) are already delivering Java 11.
+
+Image labels that explicitly mention `jdk8` will not be updated after Jenkins core ends support for Java 8.
+
+== Backwards Compatibility
+
+The following backward compatibility requirements are defined:
+
+* Jenkins core and updated plugins should fully support Java 11
+* Jenkins plugins may continue to compile with Java 8 so long as the plugins run successfully with Java 11
+* Jenkins plugins that require a Jenkins version that does not support Java 8 will be expected to compile with Java 11
+
+== Security
+
+=== Process
+
+Only Java 11 with the latest security fixes will be supported at the moment of the first LTS release requiring Java 11.
+
+Jenkins security issues on the release that ends support of Java 8 will be processed according to the
+standard link:https://jenkins.io/security/[Jenkins Security Process].
+
+=== Security risks
+
+* No additional security risks are expected due to Jenkins ending support for Java 8
+
+== Infrastructure Requirements
+
+=== ci.jenkins.io
+
+* Tool Infrastructure should continue to offer the latest version of Java 11
+
+=== Jenkins Pipeline Library
+
+* `buildPlugin()`, `runATH()`, and `runPCT()` will run tests with JDK 11
+
+=== DockerHub
+
+* Dockerhub will continue to host container images for Java 11
+
+== Testing
+
+Ending Java 8 support in Jenkins requires significant testing.
+Community contributors will be encouraged to test environments and configurations to assure that Jenkins core no longer requires Java 8.
+
+A link:https://docs.google.com/document/d/13ttjJ7HaUkYMy3L5P8D7w7TddqrUr-1IojtZCukFBQ8/edit?usp=sharing[status reporting document] is ready to track the testing effort.
+Testers are welcome to report their results there.
+
+Tests to be performed:
+
+* ATH is updated and successful on Java 11 (**done** in link:https://github.com/jenkinsci/acceptance-test-harness/pull/726[ATH PR 726])
+* PCT is updated and successful on Java 11
+* Plugin bill of materials is updated and successful on Java 11
+* Packaging tests are performed successfully on Java 11
+* Exploratory tests are performed successfully to check for inadvertent use of Java 8
+
+== Prototype Implementation
+
+Additional prototypes may be evaluated using pull requests or forks of Jenkins core.
+Here are links to some of the prototypes include Jenkins core, Docker updates and downstream demo patches.
+
+* link:https://github.com/jenkinsci/jenkins/pull/6092[Announce forthcoming Java 8 EOL]
+* link:https://github.com/jenkinsci/jenkins/pull/6083[Drop core support for Java 8]
+* link:https://github.com/jenkins-infra/helpdesk/issues/2758#issuecomment-1018670240[Update infrastructure JDK versions]
+* link:https://github.com/jenkinsci/docker/blob/master/.github/dependabot.yml[Dependabot updates for controller images]
+* link:https://github.com/jenkinsci/docker-agent/blob/master/.github/dependabot.yml[Dependabot updates for agent images]
+* link:https://github.com/jenkinsci/docker-inbound-agent/blob/master/.github/dependabot.yml[Dependabot updates for inbound agent images]
+* link:https://github.com/jenkinsci/docker-ssh-agent/blob/master/.github/dependabot.yml[Dependabot updates for outbound (ssh) agent images]
+
+== References
+
+* link:https://www.oracle.com/java/technologies/java-se-support-roadmap.html[Oracle Java SE Support Roadmap]
+* link:https://jenkins.io/doc/administration/requirements/java/[Java requirements] in Jenkins
+* link:https://docs.google.com/document/d/13ttjJ7HaUkYMy3L5P8D7w7TddqrUr-1IojtZCukFBQ8/edit?usp=sharing[Require Java 11 or newer testing status document]
