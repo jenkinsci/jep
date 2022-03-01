@@ -7,6 +7,7 @@ TESTS=(
     'io[.]jenkins[.]plugins[.]coverage[.]source[.]DefaultSourceFileResolver[$]SourceFilePainter[.]paintSourceCode'
     'org[.]jenkinsci[.]plugins[.]genexus[.]server[.]CreateLogTask[.]invoke'
     'com[.]microfocus[.]application[.]automation[.]tools[.]octane[.]tests[.]junit[.]JUnitExtension[$]GetJUnitTestResults[.]invoke'
+    'com[.]hpe[.]application[.]automation[.]tools[.]octane[.]tests[.]junit[.]JUnitExtension[$]GetJUnitTestResults[.]invoke'
     'jenkins[.]plugins[.]itemstorage[.]local[.]LocalObjectPath[$]IsNotThereOrOlderVisitor[.]visit'
     'hudson[.]plugins[.]logparser[.]LogParserStatusComputer[.]computeStatusMatches'
     'hudson[.]maven[.]MavenBuildProxy2[$]Filter[.](start|end)'
@@ -17,6 +18,8 @@ TESTS=(
     'hudson[.]plugins[.]selenium[.]callables[.]SeleniumCallable[.]invoke'
     'hudson[.]plugins[.]violations[.]generate[.]ExecuteFilePath[.]execute'
     'io[.]jenkins[.]plugins[.]analysis[.]core[.]steps[.]IssuesScanner[$]ReportPostProcessor[.]copyAffectedFiles' # until 5.1.0 / before d597cbdb, superseded June 2019
+    'hudson[.]plugins[.]webconlogparser[.]LogParserStatusComputer[.]computeStatusMatches' # Private plugin forked from logparser?
+    'org[.]jenkinsci[.]plugins[.]wildfly[.]WildflyBuilder[$]GrabWARFile[.]invoke'
     'org[.]jenkinsci[.]plugins[.]xunit[.]service[.]XUnitTransformer[.]invoke' # until 2.0.2, superseded June 2018
 )
 RESULTS=(
@@ -25,6 +28,7 @@ RESULTS=(
     'code-coverage-api'
     'genexus'
     'hp-application-automation-tools-plugin'
+    'hp-application-automation-tools-plugin-5.3'
     'jobcacher'
     'log-parser'
     'maven-plugin$MavenBuildProxy2'
@@ -35,6 +39,8 @@ RESULTS=(
     'selenium'
     'violations'
     'warnings-ng-5.1.0'
+    'webconlogparser'
+    'wildfly'
     'xunit-2.0.2'
 )
 
