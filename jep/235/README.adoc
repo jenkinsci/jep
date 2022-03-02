@@ -281,9 +281,9 @@ The following plugins have been identified as incompatible with this proposal:
 | Update Code Coverage API Plugin to 2.0.4
 
 | https://plugins.jenkins.io/genexus/[Genexus]
-| TBD
-| TBD
-| n/a (https://issues.jenkins.io/browse/JENKINS-67337[JENKINS-67337])
+| Saving to Change Log
+| n/a
+| Update GeneXus Plugin to 296.v7ea4debe37c9
 
 | https://plugins.jenkins.io/jobcacher/[Job Cacher]
 | TBD
