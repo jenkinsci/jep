@@ -330,6 +330,13 @@ The following plugins have been identified as incompatible with this proposal:
 | TBD
 | Resolved by updating to version 5.2.0 (June 2019) or newer
 
+// weconlogparser is not a public plugin
+
+| https://plugins.jenkins.io/wildfly-deployer/[Wildfly Deployer]
+| TBD
+| TBD
+| n/a (Already broken by https://www.jenkins.io/doc/upgrade-guide/2.303/#SECURITY-2458[security hardening in 2.319 and LTS 2.303.3])
+
 | https://plugins.jenkins.io/xunit/[XUnit] (2.0.2 or older)
 | TBD
 | TBD
