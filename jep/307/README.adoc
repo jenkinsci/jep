@@ -358,7 +358,7 @@ core:
   # The URL referenced doesn't need to be sourced through a CDN, Artifactory is
   # suitable. Future versions of the Evergreen backend will need to point to a
   # CDN automatically anyways.
-  urL: 'http://mirrors.jenkins.io/war/latest/jenkins.war'
+  urL: 'https://get.jenkins.io/war/latest/jenkins.war'
   # The checksum is important for the Evergreen backend services, and client,
   # to verify the artifact but also to distinguish effectively between two
   # files which might be referenced in multiple ingest manifests which are in
