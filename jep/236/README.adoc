@@ -234,7 +234,7 @@ We will track those issues in the link:https://issues.jenkins.io/browse/JENKINS-
 * 2022-05 Announce Java 8 end of support for weekly in blogpost
 ** Describe Java 11 upgrade process for users of war, deb, rpm, and msi installations - link:https://www.jenkins.io/doc/administration/requirements/upgrade-java-guidelines/#upgrading-jenkins[Completed]
 * 2022-05-17 Add higher visibility warning on Java 8 end of support in Jenkins weekly
-* 2022-06-14 Remove Java 8 from weekly core release, weekly Docker controller images
+* 2022-05-31 Remove Java 8 from weekly core release, weekly Docker controller images
 * 2022-09 Announce Java 8 end of support for LTS in blogpost
 * 2022-09 Remove Java 8 from LTS core release, include in changelog and upgrade guide
 
