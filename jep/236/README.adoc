@@ -135,7 +135,7 @@ Work to be considered is defined in link:https://issues.jenkins.io/browse/JENKIN
 
 * The link:https://issues.jenkins.io/browse/JENKINS-67688[JENKINS-67688 epic] will include library updates as needed.
 * Some updates may require downstream plugin updates.
-* JavaWS support to be removed from remoting - link:https://github.com/jenkinsci/remoting/pull/507#issuecomment-1030629619[jenkinsci/remoting#507]
+* Java Web Start support to be removed from Remoting: https://github.com/jenkinsci/jenkins/pull/6543[jenkins #6543]
 
 ==== Core patches
 
