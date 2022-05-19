@@ -197,6 +197,7 @@ Various scenarios involving affected code need to be tested either manually or i
 * link:https://github.com/jenkinsci/jenkins/pull/5304[jenkins #5304] (aborted attempt to convert `instance-identity`)
 * link:https://github.com/jenkinsci/jenkins/pull/6543[jenkins #6543] (removed Java Web Start support including `slave-installer` and implementations)
 * link:https://github.com/jenkinsci/jenkins/pull/6570[jenkins #6570] (continued attempt to convert `instance-identity`)
+* link:https://github.com/jenkinsci/jenkins/pull/6585[jenkins #6585] (`instance-identity made into a plugin)
 * link:https://github.com/jenkinsci/instance-identity-module/pull/17[instance-identity-module #17] (converted to plugin)
 * link:https://github.com/jenkinsci/ssh-cli-auth-module/pull/9[ssh-cli-auth-module #9] (aborted conversion to plugin)
 * link:https://github.com/jenkinsci/sshd-module/pull/29[sshd-module #29] (aborted conversion to plugin)
