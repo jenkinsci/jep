@@ -232,7 +232,7 @@
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | TBD
 
-| Draft{nbsp}:speech_balloon:
+| Accepted{nbsp}:ok_hand:
 | link:230/README.adoc[JEP-230: Convert modules to plugins]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | TBD
