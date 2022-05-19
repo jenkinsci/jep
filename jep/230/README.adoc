@@ -76,6 +76,8 @@ It is updated to Apache SSH 2.x.
 `ssh-cli-auth` is inlined into the same plugin.
 Popular plugins (notable `git-server`) can again be given a regular plugin dependency on `sshd`.
 
+Both new plugins are added to the plugin BOM and removed from the core BOM.
+
 === Cleanup options
 
 As another cleanup step, `workflow-cps-global-lib` can be given a dependency on `git-server` and thus `sshd` for its original Git-based design,
@@ -102,6 +104,8 @@ and the versions must be aligned with that of Jenkins core.
 Like anything else packaged in `jenkins.war`,
 modules cannot be updated except part of the relatively slow Jenkins core weekly/LTS cycle.
 This makes it more difficult to keep up with libraries such as Apache SSH.
+
+FIPS compliance for `instance-identity` is made more difficult by not using the `bouncycastle-api` plugin.
 
 == Reasoning
 
@@ -183,26 +187,24 @@ There are no new infrastructure requirements related to this proposal.
 
 == Testing
 
-Various scenarios involving affected code need to be tested either manually or in acceptance tests;
-`JenkinsRule` tests are inadequate since the nature of the changes involves class loading,
-which `JenkinsRule` bypasses.
+Various scenarios involving affected code need to be tested either manually or in acceptance tests.
+`RealJenkinsRule`-based tests may need to be introduced since the changes involve class loading.
 
 == Prototype Implementation
 
-* link:https://github.com/jenkinsci/jenkins/pull/3988[jenkins #3988]
-* link:https://github.com/jenkinsci/jenkins/pull/5049[jenkins #5049]
-* link:https://github.com/jenkinsci/instance-identity-module/pull/17[instance-identity-module #17]
-* link:https://github.com/jenkinsci/ssh-cli-auth-module/pull/9[ssh-cli-auth-module #9]
-* link:https://github.com/jenkinsci/sshd-module/pull/29[sshd-module #29]
-* link:https://github.com/jenkinsci/sshd-module/pull/38[sshd-module #38]
-
-As of this writing, the preceding pull requests need to be reworked to reflect design changes:
-* Simplifying the core patch to reflect changes already incorporated separately.
-* Coalescing some plugins.
-* Switching to Apache SSH 2.
+* link:https://github.com/jenkinsci/jenkins/pull/3988[jenkins #3988] (initial attempt)
+* link:https://github.com/jenkinsci/jenkins/pull/5049[jenkins #5049] (`sshd` made into a plugin)
+* link:https://github.com/jenkinsci/jenkins/pull/5304[jenkins #5304] (aborted attempt to convert `instance-identity`)
+* link:https://github.com/jenkinsci/jenkins/pull/6543[jenkins #6543] (removed Java Web Start support including `slave-installer` and implementations)
+* link:https://github.com/jenkinsci/jenkins/pull/6570[jenkins #6570] (continued attempt to convert `instance-identity`)
+* link:https://github.com/jenkinsci/instance-identity-module/pull/17[instance-identity-module #17] (converted to plugin)
+* link:https://github.com/jenkinsci/ssh-cli-auth-module/pull/9[ssh-cli-auth-module #9] (aborted conversion to plugin)
+* link:https://github.com/jenkinsci/sshd-module/pull/29[sshd-module #29] (aborted conversion to plugin)
+* link:https://github.com/jenkinsci/sshd-module/pull/38[sshd-module #38] (converted to plugin)
 
 == References
 
 * link:https://github.com/jenkinsci/jenkins/pull/2875[jenkins #2875]: _Detach JNLP protocol management logic to a plugin_
 * link:https://stackoverflow.com/a/39344081/12916[BouncyCastle needed to generate self-signed certificates]
 * link:https://github.com/jenkinsci/jenkins/pull/2480[jenkins #2480]: _Allow accessing instance identity from core_ (and matching link:https://github.com/jenkinsci/instance-identity-module/pull/8[instance-identity-module #8])
+* link:https://github.com/jenkinsci/jenkins/pull/2749[jenkins #2749]: _Check for null return values from `InstanceIdentityProvider` methods_
