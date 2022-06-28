@@ -232,7 +232,7 @@
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | TBD
 
-| Accepted{nbsp}:ok_hand:
+| Final{nbsp}:lock:
 | link:230/README.adoc[JEP-230: Convert modules to plugins]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | TBD
