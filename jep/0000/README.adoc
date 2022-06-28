@@ -81,7 +81,7 @@ Migration steps are tracked in the link:https://docs.google.com/document/d/1urTC
 
 1. Newly opened issues are labelled with `needs-triage`.
 2. Support requests are redirected to the community forum via automation or saved replies.
-3. Bugs are reproduced and prioritized based on the impact.
+3. Bugs are reproduced and prioritized based on the impact. Prioritization is done by adding a label `priority/<low/medium/high/blocker>`.
 4. If an issue needs more information the label `triage/needs-information` is added and a comment explaining what is needed is added.
 5. After an issue has been triaged the `triage/accepted` label is added and a `sig/?` label is added if there's an appropriate sig to direct it to.
 6. SIG's are automatically notified of newly labelled issues by an link:https://github.com/jenkins-infra/helpdesk/blob/main/.github/workflows/autonotifier.yaml[autonotifier].
