@@ -285,7 +285,7 @@ There are no backwards compatibility concerns related to this proposal.
 
 There are no security risks related to this proposal.
 
-Security process will continue as-is.
+Security process will continue as-is with the `SECURITY` project in Jira.
 
 == Infrastructure Requirements
 
