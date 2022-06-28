@@ -109,13 +109,13 @@ Contributing guides in Jenkins core and jenkins.io document that Jenkins core co
 
 Jira is too disconnected from the code of Jenkins and the other core components.
 
-Historically most large open source projects used tools like bugzilla and Jira. Now there are many that use GitHub:
+Historically most large open source projects used tools like Bugzilla and Jira. Now there are many that use GitHub:
 - https://github.com/apple/swift
 - https://github.com/kubernetes
 - https://github.com/golang/go
 - https://github.com/rust-lang/rust
 
-The swift organization migrated in https://forums.swift.org/t/swift-bugs-are-moving-to-github-issues-and-we-need-your-help/56125
+The Swift organization migrated in https://forums.swift.org/t/swift-bugs-are-moving-to-github-issues-and-we-need-your-help/56125
 
 The key reasons to migrate away are:
 
@@ -147,7 +147,7 @@ Jira cloud has link:https://support.atlassian.com/jira-cloud-administration/docs
 
 Jira's mobile support is very poor, commenting doesn't work on mobile web and some fields are hidden and you can't get to all the information. There is a mobile app which works reasonably well but you have to log in almost every time you open it which is not a good experience.
 
-GitHub's issue on mobile  work really well.
+GitHub's issue on mobile work really well.
 
 === Integration with other tooling
 
@@ -160,7 +160,7 @@ See the Node.js link:https://github.com/nodejs/node/contribute[contributing page
 
 Also see the blog post on this: link:https://github.blog/2020-01-22-browse-good-first-issues-to-start-contributing-to-open-source/[Browse good first issues to start contributing to open source].
 
-==== hacktoberfest
+==== Hacktoberfest
 
 Issues labelled `hacktoberfest` are labelled by the Hacktoberfest project and will help new contributors find issues that they will like to work on.
 
@@ -285,7 +285,7 @@ There are no backwards compatibility concerns related to this proposal.
 
 There are no security risks related to this proposal.
 
-Security process will continue as-is.
+Security process will continue as-is with the `SECURITY` project in Jira.
 
 == Infrastructure Requirements
 
