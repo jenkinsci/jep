@@ -350,7 +350,7 @@ It is also common to have a bot that comments on an issue when it has been relea
 
 e.g. "This has been released in 2.355".
 
-The benefit of that is it will give a notification to subscribed users that it has been released.
+The benefit of this is it will give a notification to subscribed users that it has been released.
 
 == Backwards Compatibility
 
