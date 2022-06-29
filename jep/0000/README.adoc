@@ -333,7 +333,12 @@ Example searches:
 Jira has project level configuration on what fields a project has.
 GitHub has the same feature with it's Project feature.
 
-Below is the view from an issue:
+Below is the view from an issue with a custom status field:
+
+image:custom-status-field.png[Image showing custom status fields in the project view]
+
+
+Below is the view from an issue with a custom released as field:
 
 image:custom-fields-issue-view.png[Image showing custom project fields in the issue view]
 
