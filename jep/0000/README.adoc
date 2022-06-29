@@ -101,6 +101,10 @@ There will be reviewed during the LTS backporting window and the release lead wi
 
 After a backport pull request is created the `lts-candidate` label will be removed, unless it was rejected but still eligible in a future backport.
 
+Issues may be labelled as `lts-candidate` to signify it's a bug that should be backported into an LTS version but it hasn't been fixed yet.
+
+link:https://github.com/jenkins-infra/backend-commit-history-parser/tree/master/bin[LTS tooling] uses GitHub queries instead of Jira queries.
+
 === Documentation
 
 Contributing guides in Jenkins core and jenkins.io document that Jenkins core components use GitHub issues.
@@ -132,6 +136,9 @@ A developer is already in GitHub and doesn't have to load another system. Jira i
 - links to work
 - released in
 The data quality in Jira is lower than in GitHub due to it not getting as updated as often as GitHub.
+
+Using GitHub means there is no relying on Jenkins project infrastructure like the account app.
+People are more likely to already have a GitHub account and if not GitHub has a better sign-up flow and account recovery solutions that don't rely on our volunteers.
 
 === Jira server end of life February 2024
 
@@ -252,6 +259,36 @@ If that project doesn't use GitHub issues then either:
 - A tracking issue can be created that links to a Jira epic or query
 - A repo is created for tracking individual issues and those issues link to an issue in the plugins issue tracker
 
+It is expected that all repositories will transition from Jira to GitHub before Jira is likely decommissioned in 2024 due to end of life of the Jira server product.
+This will alleviate the temporary issues as all issues will now be in one place.
+
+The runbook and experience developed in the core components migration will ease future migrations. The migration scripts are based off of the successful INFRA project migration and have been greatly enhanced since then.
+
+==== Anyone can triage issues in Jira
+
+Jira permissions are very open and anyone with an account is able to update any issue including labelling.
+With GitHub by default users need the `triage` permission to label and open / close issues.
+
+For Jenkins core issues we make use of ChatOps to allow people without privileges to do some triage themselves.
+
+A person can add labels with:
+
+[source,shell]
+----
+/label bug
+----
+
+Removing labels can be done with:
+[source,shell]
+----
+/remove-label bug
+----
+
+See below for the implementation details:
+- link:https://github.com/timja/jenkins-gh-issues-poc/blob/master/.github/workflows/slash-commands.yml[slash-commands.yml]
+- link:https://github.com/timja/jenkins-gh-issues-poc/blob/master/.github/workflows/label-command.yml[label-command.yml]
+- link:https://github.com/timja/jenkins-gh-issues-poc/blob/master/.github/workflows/remove-label-command.yml[remove-label-command.yml]
+
 === Missing matching capability from Jira
 
 ==== Can't move issues without write access on both sides
@@ -276,6 +313,39 @@ The Kubernetes link:https://www.kubernetes.dev/docs/guide/issue-triage/#abandone
 
 Jira allows explicit relationships to be set on links.
 GitHub requires you to type 'Caused by' and 'Depends on' yourself.
+
+==== Cannot search by caused by or depending on another GitHub issue
+
+Jira maintains by-directional links between issues when a relationship is created and you can see all issues caused by a bug.
+
+In GitHub there are three different ways to achieve this:
+
+1. Look at the any issue references that show in the issue view
+2. Use a GitHub search e.g. `state:open is:issue Caused by "https://github.com/timja/jenkins-gh-issues-poc/issues/1994"`. This will allow searching across repositories.
+3. Use a GitHub issue filter in the repository. `is:issue is:open Caused by "https://github.com/timja/jenkins-gh-issues-poc/issues/1994"`
+
+Example searches:
+- link:https://github.com/search?q=state%3Aopen+is%3Aissue+Caused+by+%22https%3A%2F%2Fgithub.com%2Ftimja%2Fjenkins-gh-issues-poc%2Fissues%2F1994%22[GitHub search]
+- link:https://github.com/timja/jenkins-gh-issues-poc/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+Caused+by%3A+https%3A%2F%2Fgithub.com%2Ftimja%2Fjenkins-gh-issues-poc%2Fissues%2F1994+[GitHub repository filter]
+
+===== Custom fields and statuses
+
+Jira has project level configuration on what fields a project has.
+GitHub has the same feature with it's Project feature.
+
+Below is the view from an issue:
+
+image:custom-fields-issue-view.png[Image showing custom project fields in the issue view]
+
+Below is the view from a project and shows search for issues released in a specific version:
+
+image:custom-fields-project-view.png[Image showing custom project fields in the project view]
+
+It is also common to have a bot that comments on an issue when it has been released in a version.
+
+e.g. "This has been released in 2.355".
+
+The benefit of that is it will give a notification to subscribed users that it has been released.
 
 == Backwards Compatibility
 
