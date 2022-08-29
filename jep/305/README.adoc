@@ -362,21 +362,8 @@ Thus if you rename one method in Jenkins core and wish to make a plugin commit m
 you must first upload around 95Mb of artifacts (perhaps from Starbucks),
 then download the same 95Mb before you can compile again.
 
-In a multimodule reactor, Maven will pick a different timestamp for each module
-(link:https://issues.apache.org/jira/browse/MNG-6274[MNG-6274]),
-forcing downstream POMs to use a cumbersome idiom like
-
-[source,xml]
-----
-<jenkins.version>2.107.2</jenkins.version>
-<jenkins-core.version>${jenkins.version}</jenkins-core.version>
-<jenkins-war.version>${jenkins.version}</jenkins-war.version>
-----
-
-to allow each module’s version to be overridden separately.
-You must also scroll back into the `deploy` log to even find the selected timestamps
-so that they can be copied and pasted into the downstream POM;
-in a large reactor build there could be several to find.
+You must also scroll back into the `deploy` log to even find the selected timestamp
+so that it can be copied and pasted into the downstream POM.
 
 Java IDEs generally have solid support for plain snapshot dependencies
 (since this is so critical for incremental development of cross-module changes),
