@@ -55,6 +55,14 @@ Realign the missions and goals of repo.jenkins-ci.org (JFrog SaaS-Hosted's Artif
 
 == Specification
 
+=== TL;DR;
+
+- Enable authentication on the repo.jenkins-ci.org mirrored repositories to limit who is able to download through our mirros
+- Keep hosted repositories unauthenticated to keep a low contributing initial entry bar when building the Jenkins projects
+- Add caching for our infrastructure build with full authenticated process
+
+=== Proposal
+
 [TIP]
 ====
 Provide a detailed specification of what is being proposed.
@@ -75,15 +83,33 @@ It's the opportunity to challenge and realign the missions of this service given
 
 == Reasoning
 
-[TIP]
-====
-Explain why particular design decisions were made.
-Describe alternate designs that were considered and related work. For example, how the feature is supported in other systems.
-Provide evidence of consensus within the community and discuss important objections or concerns raised during discussion.
+=== Initial Missions
 
-* Use sub-headings to organize this section for ease of readability.
-* Do not talk about history or why this needs to be done - that is part of Motivation section.
+The missions of repo.jenkins-ci.org, as per the 2022 summer were:
+
+- to host the artifacts produced by the Jenkins project from Open Source code (Core, plugins, sub projects), both
+  - Public artifacts to be distributed for free
+  - Private artifacts for link:https://www.jenkins.io/security/[Jenkins Security]
+- to mirror upstream artifact repositories to ensure:
+  - reproducibility of the Jenkins project builds
+  - a good Quality of Service (QoS) when building Jenkins projects (as in "avoid slowing developers with unreliable external repositories")
+- to aggregate mirrors and hosted repositories in a user friendly way for both Jenkins users ("public" repository for instance) and contributors ("incremental" repository for instance)
+
+[IMPORTANT]
 ====
+Authentication is required to read and write private repositories, and to write on public repositories.
+It uses the Jenkins central LDAP authentication system.
+
+It means that public artifacts can be downloaded anonymously.
+====
+
+=== Problem Statement
+
+- The bandwidth usage of ~ 50 Tb / month looks really high, even for the Jenkins project.
+- JFrog stated that the most probable cause for this usage is related to our (unauthenticated) mirror system which mirrors external repositories. It makes impossible to block any abusive or unfair downloads.
+They recommend to only target the hosting Jenkins projects artifacts, or enable authenticated access to "know" who is consuming bandwidth.
+- The ability to control and scan dependencies used by the Jenkins projects is a step forward in the supply chain security. Mirroring dependencies is a safety measure in this area.
+- Quality of service when downloading dependencies had always been a concern, at least for ci.jenkins.io and Jenkins releases. Artifactory provides a really good service, but caching could help.
 
 == Backwards Compatibility
 
