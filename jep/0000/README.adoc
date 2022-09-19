@@ -1,0 +1,168 @@
+= JEP-0000: :bulb: Usage of JFrog Sponsored Repository :bulb:
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.**JEP Template**
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 0000
+
+| Title
+| Usage of JFrog Sponsored Repository
+
+| Sponsor
+| link:https://github.com/dduportal
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Process
+
+| Created
+| 2022-09-19
+
+| GitHub
+| https://github.com/jenkins-infra/helpdesk/issues/2322
+
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+Realign the missions and goals of repo.jenkins-ci.org (JFrog SaaS-Hosted's Artifactory) to ensure its sustainability.
+
+== Specification
+
+[TIP]
+====
+Provide a detailed specification of what is being proposed.
+Be as technical and detailed as needed to allow new or existing Jenkins developers
+to reasonably understand the scope/impact of an implementation.
+
+* Use present tense - describe what the proposal "does" (as if it were already done), not what it will do.
+* Do not discuss alternative designs that were rejected - those belong in the Reasoning section.
+* Avoid in-depth discussion or justification of design choices - that belongs in the Reasoning section.
+====
+
+== Motivation
+
+Context: during the summer of 2022, the bandwidth usage of the JFrog Sponsored Artifactory SaaS instance (repo.jenkins-ci.org) is around 50 Tb per month.
+JFrog ask the Jenkins project to decreased under 10 Tb per month (as per their Open Source programs) otherwise the project will be billed.
+
+It's the opportunity to challenge and realign the missions of this service given its importance in the Jenkins project releases, security and infrastructure.
+
+== Reasoning
+
+[TIP]
+====
+Explain why particular design decisions were made.
+Describe alternate designs that were considered and related work. For example, how the feature is supported in other systems.
+Provide evidence of consensus within the community and discuss important objections or concerns raised during discussion.
+
+* Use sub-headings to organize this section for ease of readability.
+* Do not talk about history or why this needs to be done - that is part of Motivation section.
+====
+
+== Backwards Compatibility
+
+[TIP]
+====
+Describe any incompatibilities and their severity.
+Describe how the JEP proposes to deal with these incompatibilities.
+
+If there are no backwards compatibility concerns, this section may simply say:
+There are no backwards compatibility concerns related to this proposal.
+====
+
+== Security
+
+[TIP]
+====
+Describe the security impact of this proposal.
+Outline what was done to identify and evaluate security issues,
+discuss potential security issues and how they are mitigated or prevented,
+and detail how the JEP interacts with existing elements in Jenkins, such as permissions, authentication, authorization, etc.
+
+If this proposal will have no impact on security, this section may simply say:
+There are no security risks related to this proposal.
+====
+
+== Infrastructure Requirements
+
+[TIP]
+====
+Describe any impact on the Jenkins project infrastructure.
+
+Include any additions or changes, interactions with existing components,
+potential instabilities, service-level agreements,
+and responsibilities for continuing maintenance.
+Explain the scope of infrastructure changes with sufficient detail
+to allow initial and on-going cost (in both time and money) to be estimated.
+
+If this proposal will have no impact on infrastructure, this section may simply say:
+There are no new infrastructure requirements related to this proposal.
+====
+
+== Testing
+
+[TIP]
+====
+If the JEP involves any kind of behavioral change to code
+(whether in a Jenkins product or backend infrastructure),
+give a summary of how its correctness (and, if applicable, compatibility, security, etc.) can be tested.
+
+In the preferred case that automated tests can be developed to cover all significant changes, simply give a short summary of the nature of these tests.
+
+If some or all of the changes will require human interaction to verify them, explain why automated tests are considered impractical.
+Then, summarize what kinds of test cases might be required: user scenarios with action steps and expected outcomes.
+Detail whether behavior might be different based on the platform (operating system, servlet container, web browser, etc.)?
+Are there foreseeable interactions between different permissible versions of components (Jenkins core, plugins, etc.)?
+Does this change require that any special tools, proprietary software, or online service accounts to exercise a related code path (e.g., Active Directory server, GitHub login, etc.)?
+When will you complete testing relative to merging code changes, and might retesting be required if other changes are made to this area in the future?
+
+If this proposal requires no testing, this section may simply say:
+There are no testing issues related to this proposal.
+====
+
+== Prototype Implementation
+
+[TIP]
+====
+Link to any open source reference implementation of code changes for this proposal.
+The implementation need not be completed before the JEP is
+link:https://github.com/jenkinsci/jep/tree/master/jep/1#accepted[accepted],
+but must be completed before any JEP is given
+"link:https://github.com/jenkinsci/jep/tree/master/jep/1#final[Final]" status.
+
+JEPs which will not include code changes may omit this section.
+====
+
+== References
+
+[TIP]
+====
+Provide links to any related documents.
+This will include links to discussions on the mailing list, pull requests, and meeting notes.
+====
