@@ -312,7 +312,7 @@
 | link:https://github.com/batmat[Baptiste{nbsp}Mathus]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Accepted{nbsp}:ok_hand:
+| Withdrawn{nbsp}:hand:
 | link:309/README.adoc[JEP-309: Bill of Materials]
 | link:https://github.com/carlossg[Carlos{nbsp}Sanchez], link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
