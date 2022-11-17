@@ -135,7 +135,7 @@ By default OpenJDK 11 just prints a warning once on the startup, there is no sho
 
 Out of the scope for this JEP:
 
-* Packaging in subprojects: Jenkins X, Jenkins Evergreen, Jenkinsfile Runner, etc.
+* Packaging in subprojects: Jenkins X, Jenkinsfile Runner, etc.
   They will be handled in follow-up JEPs if needed.
 * Gradle build flow, as well as other
 * Windows Installers

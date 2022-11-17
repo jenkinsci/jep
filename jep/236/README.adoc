@@ -123,7 +123,7 @@ Non-goals:
 
 Out of the scope for this JEP:
 
-* Packaging in subprojects (unless specifically noted): Jenkins Operator, Jenkins Evergreen, Jenkinsfile Runner, etc.
+* Packaging in subprojects (unless specifically noted): Jenkins Operator, Jenkinsfile Runner, etc.
   They will be handled in follow-up JEPs if needed.
 * Gradle build flow
 
