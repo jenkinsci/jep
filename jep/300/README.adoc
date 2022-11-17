@@ -22,7 +22,7 @@ endif::[]
 | link:https://github.com/rtyler[R. Tyler Croy]
 
 | Status
-| Accepted :ok_hand:
+| Withdrawn :hand:
 
 | Type
 | Standards

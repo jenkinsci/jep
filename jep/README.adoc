@@ -267,27 +267,27 @@
 | link:https://github.com/MarkEWaite[Mark{nbsp}Waite]
 | TBD
 
-| Accepted{nbsp}:ok_hand:
+| Withdrawn{nbsp}:hand:
 | link:300/README.adoc[JEP-300: Jenkins Evergreen]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 | _not{nbsp}delegated_
 
-| Draft{nbsp}:speech_balloon:
+| Withdrawn{nbsp}:hand:
 | link:301/README.adoc[JEP-301: Evergreen packaging]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Draft{nbsp}:speech_balloon:
+| Withdrawn{nbsp}:hand:
 | link:302/README.adoc[JEP-302: Evergreen snapshotting data safety system]
 | link:https://github.com/batmat[Baptiste{nbsp}Mathus]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Accepted{nbsp}:ok_hand:
+| Withdrawn{nbsp}:hand:
 | link:303/README.adoc[JEP-303: Evergreen Client Registration and Authentication]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Draft{nbsp}:speech_balloon:
+| Withdrawn{nbsp}:hand:
 | link:304/README.adoc[JEP-304: Evergreen Client Error Telemetry Logging]
 | link:https://github.com/batmat[Baptiste{nbsp}Mathus]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
@@ -297,17 +297,17 @@
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Draft{nbsp}:speech_balloon:
+| Withdrawn{nbsp}:hand:
 | link:306/README.adoc[JEP-306: Evergreen Instance Client Health Checking]
 | link:https://github.com/batmat[Baptiste{nbsp}Mathus]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Draft{nbsp}:speech_balloon:
+| Withdrawn{nbsp}:hand:
 | link:307/README.adoc[JEP-307: Evergreen Update Client/Server Lifecycle]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Draft{nbsp}:speech_balloon:
+| Withdrawn{nbsp}:hand:
 | link:308/README.adoc[JEP-308: Evergreen Error Telemetry API]
 | link:https://github.com/batmat[Baptiste{nbsp}Mathus]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
@@ -317,7 +317,7 @@
 | link:https://github.com/carlossg[Carlos{nbsp}Sanchez], link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Draft{nbsp}:speech_balloon:
+| Withdrawn{nbsp}:hand:
 | link:310/README.adoc[JEP-310: Evergreen AWS auto-configuration]
 | https://github.com/batmat[Baptiste{nbsp}Mathus]
 | https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
