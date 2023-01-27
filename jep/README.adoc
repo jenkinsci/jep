@@ -262,7 +262,7 @@
 | link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
 | TBD
 
-| Draft{nbsp}:speech_balloon:
+| Accepted{nbsp}:ok_hand:
 | link:236/README.adoc[JEP-236: Require Java 11 or newer]
 | link:https://github.com/MarkEWaite[Mark{nbsp}Waite]
 | TBD
