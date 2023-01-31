@@ -23,7 +23,7 @@ endif::[]
 
 // Use the script `set-jep-status <jep-number> <status>` to update the status.
 | Status
-| Draft :speech_balloon:
+| Final :lock:
 
 | Type
 | Process
@@ -57,8 +57,8 @@ a|
 //
 //
 // Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
-//| Resolution
-//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+| Resolution
+| :bulb: link:https://www.jenkins.io/blog/2022/06/28/require-java-11/#conclusion[Java 11 required for core (blog post)], link:https://www.jenkins.io/blog/2022/12/14/require-java-11/[Java 11 required for plugin development (blog post)], link:https://www.jenkins.io/doc/upgrade-guide/2.361/#jenkins-requires-java-11-or-newer:[2.361.1 upgrade guide], link:https://www.jenkins.io/changelog-stable/#v2.361.1[2.361.1 changelog], and link:https://www.jenkins.io/changelog-old/#v2.357[2.357 changelog] :bulb:
 
 |===
 
