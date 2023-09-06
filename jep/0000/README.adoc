@@ -94,7 +94,7 @@ As of the time of writing the validated Java implementations are only FIPS-140-2
 
 It is out of scope to support previous configuration, as it would not be possible to migrate non FIPS-140 compliant data to FIPS-140 compliant data within a FIPS-140 compliant environment.  As such there is no backwards compatibility with previous versions.
 
-It may but is not a recquirement of this JEP be possible to switch from a FIPS-140 compliant environment to a non FIPS-140 compliant environment.
+It may but is not a requirement of this JEP be possible to switch from a FIPS-140 compliant environment to a non FIPS-140 compliant environment.
 
 Code changes will however be backwards compatible; if the system is running in a non FIPS-140 compliant environment then it will continue to run and operate the same after any changes due to this JEP.
 
