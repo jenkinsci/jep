@@ -86,7 +86,10 @@ Examples would be during setup where the install wizard creates a first admin us
 
 == Reasoning
 
-In order to be FIPS-140 compliant the encryption algorithms used need to be validated, this requires complex configuration of the host, the JVM as well as the changes to Jenkins and plugin code as well as checking of any plugin code that would be installed.  As such it is not considered that the Jenkins community supports, or contains instructions on how to run Jenkins in a compliant manner, but merely contains only an overview to say it may be possible with various configuration of the JVM, Servlet environment, limitations of plugins and finally instructing Jenkins to prefer a FIPS-140 mode of operation.
+To be FIPS-140 compliant, Jenkins must use validated, FIPS-140 compliant encryption algorithms. 
+This requires complex configuration of the host, the Java Virtual Machine (JVM), the servlet environment, and the Jenkins controller. 
+Changes may be required in both Jenkins core and plugins.
+As such it is not considered that the Jenkins community supports or provides instructions on how to run Jenkins in a compliant manner, but merely states that FIPS-140 compliant operation may be  possible with appropriate configuration of the JVM, Servlet environment, limited set of plugins, and finally instructing Jenkins to prefer a FIPS-140 mode of operation.
 
 As of the time of writing the validated Java implementations are only FIPS-140-2 compliant even though FIPS-140-3 has superseded it.  As such the initial implementations will be targeting the older FIPS-140-2 standard.
 
