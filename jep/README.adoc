@@ -267,6 +267,11 @@
 | link:https://github.com/MarkEWaite[Mark{nbsp}Waite]
 | TBD
 
+| Draft{nbsp}:speech_balloon:
+| link:237/README.adoc[JEP-237: FIPS-140 support]
+| link:https://github.com/jtnord[James{nbsp}Nord]
+| TBD
+
 | Withdrawn{nbsp}:hand:
 | link:300/README.adoc[JEP-300: Jenkins Evergreen]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
