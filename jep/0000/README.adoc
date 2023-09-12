@@ -82,7 +82,7 @@ Configuration of the JVM, platform etc. is out-of-scope, as is making every feat
 Currently it is not possible to run Jenkins in a link:https://csrc.nist.gov/pubs/fips/140-2/upd2/final[FIPS-140-2] compliant way.  Many users needing Jenkins are required (e.g. for US government projects) to have any solution be compliant with FIPS-140 and today it is not possible for them to do this. 
 
 Both Jenkins core and plugins use cryptography that is not allowed and/or are not from an approved implementation, and this prevents adoption of Jenkins by these end users.
-Examples would be during setup where the install wizard creates a first admin user using the internal security realm which uses ``bcrypt`` which would fall fowl of the standard due to its use of ``blowfish`` which is not an approved algorithm.
+Examples would be during setup where the install wizard creates a first admin user using the internal security realm which uses ``bcrypt`` which would fall foul of the standard due to its use of ``blowfish`` which is not an approved algorithm.
 
 == Reasoning
 
@@ -100,7 +100,7 @@ Code changes will however be backwards compatible; if the system is running in a
 
 == Security
 
-Some of the cryptography supported in FIPS 140 (especially FIPS 140-2) is considered less secure than some modern alternatives.  There is no alternative in cases like these where FIPS-140 compliance is required.
+Some of the cryptography supported in FIPS 140 (especially FIPS 140-2) is considered less secure than some modern alternatives.  FIPS 140-2 cryptography will be used when Jenkins is running in FIPS-140 mode even if that cryptography is considered less secure than other alternatives.
 
 == Infrastructure Requirements
 
@@ -108,9 +108,9 @@ There are no new infrastructure requirements related to this proposal.
 
 == Testing
 
-New code that changes behaviour when it detects the desire to run in FIPS-140 mode would be covered by unit tests like any other code change.  There would be no new testing introduced in a FIPS-140 compliant environment due to the complexity and code of maintaining this setup.
+New code that changes behaviour when it detects the desire to run in FIPS-140 mode would be covered by unit tests like any other code change.  There would be no new testing introduced in a FIPS-140 compliant environment due to the complexity of maintaining this setup.
 
-It is possible that regressions could be made due to the lack of automation to catch issues, however automation can only catch pre-known issues, and could not detected for example the introduction of a new encryption routine from a previously unknown library.
+Test automation is not expected to detect code in Jenkins core or in Jenkins plugins that is not FIPS-140 compliant.
 
 == Prototype Implementation
 
