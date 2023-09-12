@@ -136,6 +136,8 @@ and editorial aspects of the JEP workflow (e.g. assigning JEP numbers and
 changing their status). See <<editor-responsibilities, JEP Editor Responsibilities & Workflow>> for
 details. The current editors are:
 
+* link:https://github.com/timja[Tim Jacomb]
+* link:https://github.com/markewaite[Mark Waite]
 * link:https://github.com/rtyler[R. Tyler Croy]
 * link:https://github.com/oleg-nenashev[Oleg Nenashev]
 * link:https://github.com/bitwiseman[Liam Newman]
