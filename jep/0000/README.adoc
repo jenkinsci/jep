@@ -1,0 +1,228 @@
+= JEP-0000: 2+2+2 Java Support Plan
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 0000
+
+| Title
+| :bulb: 2+2+2 Java Support Plan :bulb:
+
+| Sponsor
+| :bulb: link:https://github.com/MarkEWaite[Mark Waite] :bulb:
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| :bulb: Process :bulb:
+
+| Created
+| :bulb: Date (2023-10-13) :bulb:
+
+// No delegate sought, none expected to be assigned by Kohsuke
+// | BDFL-Delegate
+// | TBD
+
+//
+//
+// S issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+| Discussions-To
+| :bulb: link:https://groups.google.com/g/jenkinsci-dev/c/RaAloTTM9CQ/m/kag1KJSVAwAJ[Developers mailing list] and link:https://groups.google.com/g/jenkinsci-users/c/NGDRrNsaDYY/m/zj5RpSNSAQAJ[users mailing list]
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+== Abstract
+
+Java releases are link:https://blogs.oracle.com/java/post/moving-the-jdk-to-a-two-year-lts-cadence[delivered every 6 months] with a long term support release (LTS) link:https://blogs.oracle.com/javamagazine/post/java-long-term-support-lts[every two years].
+link:https://adoptium.net/support/[Eclipse Temurin] and link:https://access.redhat.com/articles/1299013[OpenJDK from Red Hat] both support their Java long term support releases with security patches for six years.
+
+This JEP describes a 2+2+2 support plan where Jenkins supports a new Java LTS in the first two years after its release, then requires that Java LTS as its minimum Java version in the next two years of its support, then drops support of that Java LTS in the last two years.
+The 2+2+2 support plan reduces maintenance effort on older Java releases and is more likely to attract developers.
+
+The Jenkins project will be better able to plan releases, welcome new users, and support existing users with the 2+2+2 Java support plan.
+
+// See the link:https://medium.com/@javachampions/java-is-still-free-3-0-0-ocrt-2021-bca75c88d23b[Java is still free 3.0.0 (Oct 2021) blog post] for details of Java licensing and OpenJDK distributions.
+
+== Specification
+
+The two year Java release cadence with a six year support life means that three Java LTS releases are officially supported at any point in time by Eclipse Temurin and OpenJDK.
+Jenkins developers want to support two Java LTS releases rather than three in order to improve and simplify Jenkins with the latest Java capabilities and to reduce maintenance overhead associated with older Java releases.
+
+=== Support cadence
+
+In order to limit Java support to two LTS releases, the Jenkins project uses a 2+2+2 Java support plan.
+
+A new Java LTS release is supported by Jenkins for the first two years after its release, while the previous Java LTS release is the minimum version required by Jenkins.
+Two years after the Java LTS release, Jenkins requires that Java LTS release as its new minimum Java version.
+Four years after the Java LTS release, Jenkins stops supporting that Java LTS release because the next Java LTS release is the new minimum Java version.
+
+Java support in Jenkins long term support releases changes on the initial (".1") release of an LTS line.
+Java support in Jenkins weekly releases changes on or before the weekly release that is the baseline for the ".1" release.
+Java support in Jenkins does not change in subsequent minor releases of the same Jenkins LTS baseline.
+
+For example, Jenkins LTS 2.361.1 upgraded the minimum Java version from Java 8 to Java 11.
+Jenkins weekly 2.357 upgraded the minimum Java version from Java 8 to Java 11.
+
+=== Transition period
+
+There is a transition period from our current Java support plan to the 2+2+2 Java support plan.
+The details of the transition period are described below.
+The transition period has three phases:
+
+* <<Phase 1: Java 11>>
+* <<Phase 2: Java 17>>
+* <<Phase 3: Java 21>>
+
+=== Phase 1: Java 11
+
+Jenkins support for Java 11 continues until the last minor release of the Jenkins LTS ("2.xxx.3") prior to the **31 Oct 2024** end of Java 11 support.
+The Jenkins LTS baseline ("2.xxx.1") that precedes the 31 Oct 2024 end of Java 11 support requires Java 17 as its minimum Java version.
+A weekly release prior to that Jenkins LTS baseline requires Java 17 as its minimum Java version.
+
+.Estimated Java 11 support calendar
+[%header,cols="1,1,1"]
+|====
+| Date            | Release         | Minimum Java Version
+
+| Aug  7, 2024    | 2.462.1 (LTS)   | Java 11
+| Sep  4, 2024    | 2.462.2 (LTS)   | Java 11
+| Sep 18, 2024    | 2.474 (weekly)  | **Java 17**
+| Oct  2, 2024    | 2.462.3 (LTS)   | Java 11
+| Oct 30, 2024    | 2.474.1 (LTS)   | **Java 17**
+| Nov 27, 2024    | 2.474.2 (LTS)   | **Java 17**
+|====
+
+=== Phase 2: Java 17
+
+Jenkins support for Java 17 continues until the last minor release of the Jenkins LTS ("2.xxx.3") prior to **31 Oct 2025**.
+The 31 Oct 2025 date is two years prior to the end of Java 17 support by Eclipse Temurin and OpenJDK.
+The Jenkins LTS baseline ("2.xxx.1") that precedes the 31 Oct 2025 end of Jenkins support of Java 17 requires Java 21 as its minimum Java version.
+A weekly release prior to that Jenkins LTS baseline requires Java 21 as its minimum Java version.
+
+.Estimated Java 17 support calendar
+[%header,cols="1,1,1"]
+|====
+| Date            | Release         | Minimum Java Version
+
+| Jul 23, 2025    | 2.510.1 (LTS)   | Java 17
+| Aug 20, 2025    | 2.510.2 (LTS)   | Java 17
+| Sep  3, 2025    | 2.522 (weekly)  | **Java 21**
+| Sep 17, 2025    | 2.510.3 (LTS)   | Java 17
+| Oct 15, 2025    | 2.522.1 (LTS)   | **Java 21**
+| Nov 12, 2025    | 2.522.2 (LTS)   | **Java 21**
+|====
+
+=== Phase 3: Java 21
+
+Jenkins support for Java 21 continues until the last minor release of the Jenkins LTS ("2.xxx.3") prior to **31 Oct 2027**.
+The 31 Oct 2027 date is two years prior to the end of Java 21 support by Eclipse Temurin and OpenJDK.
+The Jenkins LTS baseline ("2.xxx.1") that precedes the 31 Oct 2027 end of Jenkins support of Java 21 requires Java 25 as its minimum Java version.
+A weekly release prior to that Jenkins LTS baseline requires Java 21 as its minimum Java version.
+
+.Estimated Java 21 support calendar
+[%header,cols="1,1,1"]
+|====
+| Date            | Release         | Minimum Java Version
+
+| Jun 23, 2027    | 2.606.1 (LTS)   | Java 21
+| Jul 21, 2027    | 2.606.2 (LTS)   | Java 21
+| Aug  3, 2027    | 2.618 (weekly)  | **Java 25**
+| Aug 18, 2027    | 2.606.3 (LTS)   | Java 21
+| Sep 15, 2027    | 2.618.1 (LTS)   | **Java 25**
+| Oct 13, 2027    | 2.618.2 (LTS)   | **Java 25**
+|====
+
+=== User experience
+
+A warning administrative monitor is displayed to the user 18 months prior to the end of support of the current Java version they are running.
+A "danger" administrative monitor is displayed to the user 9 months prior to the end of support of the current Java version they are running.
+
+Container images that do not include a Java version in the container label are upgraded approximately 18 months prior to the end of support of the current Java version they are running
+
+One or more blog posts are provided to announce the end of support for a Java version and the support of a new Java version
+
+Changelogs, upgrade guides, and other user documentation are provided to describe the upgrade to the next Java version.
+
+== Motivation
+
+The 2+2+2 Java support plan balances the needs of large scale Jenkins users for predictability and stability, the needs of Jenkins developers to improve and simplify Jenkins with the latest Java capabilities, and the needs of Jenkins developers to reduce maintenance overhead associated with older Java releases.
+
+== Reasoning
+
+The transition period is defined to allow enough time for enterprise users of Jenkins and commerical users of products based on Jenkins to transtion to Java 17.
+
+The immediate support of new Java releases motivates Jenkins developers to remain current with Java releases.
+
+== Backwards Compatibility
+
+There are no backwards compatibility concerns related to this proposal.
+
+== Security
+
+There are no security risks related to this proposal.
+
+== Infrastructure Requirements
+
+Jenkins infrastructure provides early access Java versions 2 months before the release of a Java version.
+Jenkins infrastructure provides Java versions from the beginning of support until 1 month after the end of Jenkins support of a Java version.
+
+== Testing
+
+Testing of new Java releases is performed with automated tests of Jenkins core, libraries, and plugins.
+Tests are run with the Jenkins acceptance test harness and the Jenkins plugin bill of materials.
+
+== Prototype Implementation
+
+No prototype implemented, though Java 11, Java 17, and Java 21 support are each examples of the type of changes needed to support a new Java release.
+
+== References
+
+Refer to the draft documents and project descriptions for the evolution of this Jenkins enhancement proposal.
+Those documents include:
+
+* link:https://docs.google.com/document/d/1y3RVlniNmz-5Nd3LI-w58LDf760Ai7FqssP4zHuTv8U/edit?usp=sharing[Java 11, 17, and 21 in Jenkins] - original document outlining the idea
+* link:https://docs.google.com/spreadsheets/d/1Gc-0yuYOD5u674qnxbPOWhCU5t9viCJukVj_9b-kwAw/edit?usp=sharing[Visualizing Java versions for Jenkins] - worksheet diagram of the idea
+* link:https://groups.google.com/g/jenkinsci-dev/c/RaAloTTM9CQ/m/kag1KJSVAwAJ[Jenkins developer mailing list discussion]
+* link:https://groups.google.com/g/jenkinsci-users/c/NGDRrNsaDYY/m/zj5RpSNSAQAJ[Jenkins user mailing list discussion]
+
+=== Governance meeting discussion of the plan
+
+// Video for non GitHub
+ifndef::env-github[]
+video::KKzfWJtkv04[youtube,start=862]
+endif::[]
+
+ifdef::env-github[]
+image:http://i3.ytimg.com/vi/KKzfWJtkv04/hqdefault.jpg[link=https://youtu.be/KKzfWJtkv04?t=862,width="75%"]
+endif::[]
