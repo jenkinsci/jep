@@ -180,7 +180,7 @@ The 2+2+2 Java support plan balances the needs of large scale Jenkins users for 
 
 == Reasoning
 
-The transition period is defined to allow enough time for enterprise users of Jenkins and commerical users of products based on Jenkins to transtion to Java 17.
+The transition period is defined to allow enough time for enterprise users of Jenkins and commercial users of products based on Jenkins to transition to Java 17.
 
 The immediate support of new Java releases motivates Jenkins developers to remain current with Java releases.
 
