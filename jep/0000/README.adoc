@@ -126,10 +126,7 @@ That is much less than the five years that Java 8 was the minimum Java version f
 | Nov 27, 2024    | 2.474.2 (LTS)   | **Java 17**
 |====
 
-[Note]
-====
 The calendar is provided as an estimate.  Release dates and version numbers are subject to change.
-====
 
 === Phase 2: Java 17
 
@@ -154,10 +151,7 @@ That reduced time is needed as part of the transition to the 2+2+2 Java support 
 | Nov 12, 2025    | 2.522.2 (LTS)   | **Java 21**
 |====
 
-[Note]
-====
 The calendar is provided as an estimate.  Release dates and version numbers are subject to change.
-====
 
 === Phase 3: Java 21
 
@@ -181,10 +175,7 @@ Jenkins uses Java 21 as its minimum Java version for approximately **two years**
 | Oct 13, 2027    | 2.618.2 (LTS)   | **Java 25**
 |====
 
-[Note]
-====
 The calendar is provided as an estimate.  Release dates and version numbers are subject to change.
-====
 
 === User experience
 
