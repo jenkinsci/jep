@@ -110,6 +110,9 @@ Jenkins support for Java 11 continues until the last minor release of the Jenkin
 The Jenkins LTS baseline ("2.xxx.1") that precedes the 31 Oct 2024 end of Java 11 support requires Java 17 as its minimum Java version.
 A weekly release prior to that Jenkins LTS baseline requires Java 17 as its minimum Java version.
 
+Jenkins uses Java 11 as its minimum Java version for a little over **two years**.
+That is much less than the five years that Java 8 was the minimum Java version for Jenkins, but is well aligned with the two years from the 2+2+ Java Support Plan.
+
 .Estimated Java 11 support calendar
 [%header,cols="1,1,1"]
 |====
@@ -123,7 +126,10 @@ A weekly release prior to that Jenkins LTS baseline requires Java 17 as its mini
 | Nov 27, 2024    | 2.474.2 (LTS)   | **Java 17**
 |====
 
-Note: The calendar is provided as an estimate.  Release dates and version numbers are subject to change.
+[Note]
+====
+The calendar is provided as an estimate.  Release dates and version numbers are subject to change.
+====
 
 === Phase 2: Java 17
 
@@ -131,6 +137,9 @@ Jenkins support for Java 17 continues until the last minor release of the Jenkin
 The 31 Oct 2025 date is two years prior to the end of Java 17 support by Eclipse Temurin and OpenJDK.
 The Jenkins LTS baseline ("2.xxx.1") that precedes the 31 Oct 2025 end of Jenkins support of Java 17 requires Java 21 as its minimum Java version.
 A weekly release prior to that Jenkins LTS baseline requires Java 21 as its minimum Java version.
+
+Jenkins uses Java 17 as its minimum Java version for approximately **one year**.
+That reduced time is needed as part of the transition to the 2+2+2 Java support plan.
 
 .Estimated Java 17 support calendar
 [%header,cols="1,1,1"]
@@ -145,7 +154,10 @@ A weekly release prior to that Jenkins LTS baseline requires Java 21 as its mini
 | Nov 12, 2025    | 2.522.2 (LTS)   | **Java 21**
 |====
 
-Note: The calendar is provided as an estimate.  Release dates and version numbers are subject to change.
+[Note]
+====
+The calendar is provided as an estimate.  Release dates and version numbers are subject to change.
+====
 
 === Phase 3: Java 21
 
@@ -153,6 +165,8 @@ Jenkins support for Java 21 continues until the last minor release of the Jenkin
 The 31 Oct 2027 date is two years prior to the end of Java 21 support by Eclipse Temurin and OpenJDK.
 The Jenkins LTS baseline ("2.xxx.1") that precedes the 31 Oct 2027 end of Jenkins support of Java 21 requires Java 25 as its minimum Java version.
 A weekly release prior to that Jenkins LTS baseline requires Java 21 as its minimum Java version.
+
+Jenkins uses Java 21 as its minimum Java version for approximately **two years**.
 
 .Estimated Java 21 support calendar
 [%header,cols="1,1,1"]
@@ -167,7 +181,10 @@ A weekly release prior to that Jenkins LTS baseline requires Java 21 as its mini
 | Oct 13, 2027    | 2.618.2 (LTS)   | **Java 25**
 |====
 
-Note: The calendar is provided as an estimate.  Release dates and version numbers are subject to change.
+[Note]
+====
+The calendar is provided as an estimate.  Release dates and version numbers are subject to change.
+====
 
 === User experience
 
