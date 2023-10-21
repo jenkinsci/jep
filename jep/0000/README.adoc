@@ -117,7 +117,7 @@ A weekly release prior to that Jenkins LTS baseline requires Java 17 as its mini
 
 | Aug  7, 2024    | 2.462.1 (LTS)   | Java 11
 | Sep  4, 2024    | 2.462.2 (LTS)   | Java 11
-| Sep 18, 2024    | 2.474 (weekly)  | **Java 17**
+| Sep 17, 2024    | 2.474 (weekly)  | **Java 17**
 | Oct  2, 2024    | 2.462.3 (LTS)   | Java 11
 | Oct 30, 2024    | 2.474.1 (LTS)   | **Java 17**
 | Nov 27, 2024    | 2.474.2 (LTS)   | **Java 17**
@@ -137,7 +137,7 @@ A weekly release prior to that Jenkins LTS baseline requires Java 21 as its mini
 
 | Jul 23, 2025    | 2.510.1 (LTS)   | Java 17
 | Aug 20, 2025    | 2.510.2 (LTS)   | Java 17
-| Sep  3, 2025    | 2.522 (weekly)  | **Java 21**
+| Sep  2, 2025    | 2.522 (weekly)  | **Java 21**
 | Sep 17, 2025    | 2.510.3 (LTS)   | Java 17
 | Oct 15, 2025    | 2.522.1 (LTS)   | **Java 21**
 | Nov 12, 2025    | 2.522.2 (LTS)   | **Java 21**
