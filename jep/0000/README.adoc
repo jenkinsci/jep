@@ -123,6 +123,8 @@ A weekly release prior to that Jenkins LTS baseline requires Java 17 as its mini
 | Nov 27, 2024    | 2.474.2 (LTS)   | **Java 17**
 |====
 
+Note: The calendar is provided as an estimate.  Release dates and version numbers are subject to change.
+
 === Phase 2: Java 17
 
 Jenkins support for Java 17 continues until the last minor release of the Jenkins LTS ("2.xxx.3") prior to **31 Oct 2025**.
@@ -143,6 +145,8 @@ A weekly release prior to that Jenkins LTS baseline requires Java 21 as its mini
 | Nov 12, 2025    | 2.522.2 (LTS)   | **Java 21**
 |====
 
+Note: The calendar is provided as an estimate.  Release dates and version numbers are subject to change.
+
 === Phase 3: Java 21
 
 Jenkins support for Java 21 continues until the last minor release of the Jenkins LTS ("2.xxx.3") prior to **31 Oct 2027**.
@@ -162,6 +166,8 @@ A weekly release prior to that Jenkins LTS baseline requires Java 21 as its mini
 | Sep 15, 2027    | 2.618.1 (LTS)   | **Java 25**
 | Oct 13, 2027    | 2.618.2 (LTS)   | **Java 25**
 |====
+
+Note: The calendar is provided as an estimate.  Release dates and version numbers are subject to change.
 
 === User experience
 
