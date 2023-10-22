@@ -111,7 +111,7 @@ The Jenkins LTS baseline ("2.xxx.1") that precedes the 31 Oct 2024 end of Java 1
 A weekly release prior to that Jenkins LTS baseline requires Java 17 as its minimum Java version.
 
 Jenkins uses Java 11 as its minimum Java version for a little over **two years**.
-That is much less than the five years that Java 8 was the minimum Java version for Jenkins, but is well aligned with the two years from the 2+2+ Java Support Plan.
+That is much less than the five years that Java 8 was the minimum Java version for Jenkins, but is well aligned with the two years from the 2+2+2 Java Support Plan.
 
 .Estimated Java 11 support calendar
 [%header,cols="1,1,1"]
