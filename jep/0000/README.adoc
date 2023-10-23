@@ -94,6 +94,27 @@ Java support in Jenkins does not change in subsequent minor releases of the same
 For example, Jenkins LTS 2.361.1 upgraded the minimum Java version from Java 8 to Java 11.
 Jenkins weekly 2.357 upgraded the minimum Java version from Java 8 to Java 11.
 
+An idealized support cadence diagram is provided for Java 25 as an example.
+The diagram shows the six year support life of Java 25 from OpenJDK.
+Jenkins supports Java 25 during the first two years but does not require it as a minimum Java version.
+Jenkins requires Java 25 as a minimum Java version during the next two years.
+Jenkins does not run on Java 25 during the last two years of the OpenJDK support life of Java 25.
+
+```mermaid
+gantt
+    dateFormat  YYYY-MM-DD
+    title       Java 25 Support in Jenkins (example)
+
+    section Java 25
+    Java 25 Released              :milestone, des25-rel, 2025-09-20,      0d
+    Java 25 end of life (OpenJDK) :milestone, des25-eol, 2031-09-20,      0d
+    Java 25 Supported             :active,    des25-sup, 2025-10-15,      2029-09-30
+    Java 25 Required              :crit,      des25-req, 2027-09-30,      2029-09-30
+    Alert 1                       :           des25-one, 2028-03-30,      2028-12-31
+    Alert 2                       :           des25-two, after des25-one, 2029-09-30
+```
+
+
 === Transition period
 
 There is a transition period from our current Java support plan to the 2+2+2 Java support plan.
@@ -104,7 +125,7 @@ The transition period has three phases:
 * <<Phase 2: Java 17>>
 * <<Phase 3: Java 21>>
 
-A diagram that illustrates some aspects of the support cadence is provide below:
+A diagram that illustrates the support cadence is provided below, using approximate dates in the diagram rather than attempting to match exact release dates:
 
 ```mermaid
 gantt
