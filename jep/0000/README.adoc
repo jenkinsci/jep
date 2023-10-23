@@ -125,6 +125,10 @@ The transition period has three phases:
 * <<Phase 2: Java 17>>
 * <<Phase 3: Java 21>>
 
+The transition period is complete for Java 25 and beyond.
+
+* <<Phase 4: Java 25>>
+
 A diagram that illustrates the support cadence is provided below, using approximate dates in the diagram rather than attempting to match exact release dates:
 
 ```mermaid
