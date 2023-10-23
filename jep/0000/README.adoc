@@ -104,6 +104,38 @@ The transition period has three phases:
 * <<Phase 2: Java 17>>
 * <<Phase 3: Java 21>>
 
+A diagram that illustrates some aspects of the support cadence is provide below:
+
+```mermaid
+gantt
+    dateFormat  YYYY-MM-DD
+    title       Jenkins 2+2+2 Java Support Plan
+
+    section Java 11
+    Java 11 Supported :active,  des11-sup, 2019-03-13,      2024-10-31
+    Java 11 Required  :crit,    des11-req, 2022-09-07,      2024-10-31
+    Alert 1           :active,  des11-one, 2023-10-15,      2024-01-31
+    Alert 2           :         des11-two, after des11-one, 2024-10-31
+
+    section Java 17
+    Java 17 Supported :active, des17-sup, 2022-06-22,      2026-03-31
+    Java 17 Required  :crit,   des17-req, after des11-req, 2026-03-31
+    Alert 1           :        des17-one, 2024-10-31,      2025-06-30
+    Alert 2           :        des17-two, after des17-one, 2026-03-31
+
+    section Java 21
+    Java 21 Supported :active,  des21-sup, 2023-10-15,      2027-09-30
+    Java 21 Required  :crit,    des21-req, after des17-req, 2027-09-30
+    Alert 1           :         des21-one, 2026-03-30,      2026-12-31
+    Alert 2           :         des21-two, after des21-one, 2027-09-30
+
+    section Java 25
+    Java 25 Supported :active,  des25-sup, 2025-10-15,      2029-09-30
+    Java 25 Required  :crit,    des25-req, after des21-req, 2029-09-30
+    Alert 1           :         des25-one, 2028-03-30,      2028-12-31
+    Alert 2           :         des25-two, after des25-one, 2029-09-30
+```
+
 === Phase 1: Java 11
 
 Jenkins support for Java 11 continues until the last minor release of the Jenkins LTS ("2.xxx.3") prior to the **31 Oct 2024** end of Java 11 support.
