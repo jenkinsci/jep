@@ -246,12 +246,12 @@ Jenkins uses Java 25 as its minimum Java version for approximately **two years**
 
 === User experience
 
-A warning administrative monitor is displayed to the user 18 months prior to the end of support of the current Java version they are running.
-A "danger" administrative monitor is displayed to the user 9 months prior to the end of support of the current Java version they are running.
+A warning administrative monitor is displayed to the user 12 months prior to the end of support of the current Java version they are running.
+A danger administrative monitor is displayed to the user 3 months prior to the end of support of the current Java version they are running.
 
 Container images without a Java version specified in the label can be updated as soon as the new combination is deemed stable, typically occurring no later than 18 months before the current Java version they are using reaches the end of its support.
 
-One or more blog posts are provided to announce the end of support for a Java version and the support of a new Java version
+One or more blog posts are provided to announce the end of support for a Java version and the support of a new Java version.
 
 Changelogs, upgrade guides, and other user documentation are provided to describe the upgrade to the next Java version.
 
