@@ -94,19 +94,6 @@ Give a short (200 word) description of the technical issue addressed.
 * Do not talk about history or why this needs to be done. Instead, add the history to the Motivation section.
 ====
 
-== Specification
-
-[TIP]
-====
-Provide a detailed specification of what is being proposed.
-Be as technical and detailed as needed to allow new or existing Jenkins developers
-to reasonably understand the scope/impact of an implementation.
-
-* Use present tense - describe what the proposal "does" (as if it were already done), not what it will do.
-* Do not discuss alternative designs that were rejected - those belong in the Reasoning section.
-* Avoid in-depth discussion or justification of design choices - that belongs in the Reasoning section.
-====
-
 == Motivation
 
 [TIP]
@@ -114,6 +101,9 @@ to reasonably understand the scope/impact of an implementation.
 Explain why the existing code base or process is inadequate to address the problem that the JEP solves.
 This section may also contain any historical context such as how things were done before this proposal.
 
+* Provide a clear description of the high-level problem you are trying to solve.
+* The problem statement should be written in terms of a specific symptom that affects users, contributors, or the project as a whole.
+* The problem statement should not be written in terms of the solution.
 * Do not discuss design choices or alternative designs that were rejected - those belong in the Reasoning section.
 ====
 
@@ -126,7 +116,24 @@ Describe alternate designs that were considered and related work. For example, h
 Provide evidence of consensus within the community and discuss important objections or concerns raised during discussion.
 
 * Use sub-headings to organize this section for ease of readability.
+* Provide a clear description of the cause of the problem.
+* Provide a clear description of the high-level solution you have chosen and how it addresses the cause of the problem.
+* If there were other possible solutions that you considered and rejected, mention those along with the corresponding reasoning.
+* Do not describe implementation details; these should go into the Specification section instead.
 * Do not talk about history or why this needs to be done - that is part of Motivation section.
+====
+
+== Specification
+
+[TIP]
+====
+Provide a detailed specification of what is being proposed.
+Be as technical and detailed as needed to allow new or existing Jenkins developers
+to reasonably understand the scope/impact of an implementation.
+
+* Use present tense - describe what the proposal "does" (as if it were already done), not what it will do.
+* Do not discuss alternative designs that were rejected - those belong in the Reasoning section.
+* Avoid in-depth discussion or justification of design choices - that belongs in the Reasoning section.
 ====
 
 == Backwards Compatibility
@@ -175,9 +182,9 @@ There are no new infrastructure requirements related to this proposal.
 ====
 If the JEP involves any kind of behavioral change to code
 (whether in a Jenkins product or backend infrastructure),
-give a summary of how its correctness (and, if applicable, compatibility, security, etc.) can be tested.
+give a summary of how its correctness (and, if applicable, compatibility, security, etc.) will be tested.
 
-In the preferred case that automated tests can be developed to cover all significant changes, simply give a short summary of the nature of these tests.
+In the preferred case that automated tests will be developed to cover all significant changes, simply give a short summary of the nature of these tests.
 
 If some or all of the changes will require human interaction to verify them, explain why automated tests are considered impractical.
 Then, summarize what kinds of test cases might be required: user scenarios with action steps and expected outcomes.
