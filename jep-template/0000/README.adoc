@@ -147,6 +147,43 @@ If there are no backwards compatibility concerns, this section may simply say:
 There are no backwards compatibility concerns related to this proposal.
 ====
 
+== Migration
+
+[TIP]
+====
+Describe the work that needs to be done, if any, to adapt consumers to the proposed change.
+
+Conventional wisdom is that at least three consumers should exist to validate the design of an API;
+with only one consumer the API probably won't support another consumer,
+and with two consumers the API will probably only support more consumers with difficulty
+(see "The Rule of Threes" in Will Tracz's _Confessions of a Used Program Salesman,_ Addison-Wesley, 1995).
+
+Completing this section of the JEP involves quantifying
+the number of consumers that need to be adapted (the cost)
+and the expected value after adapting these consumers (the benefit).
+Since the Jenkins project has thousands of individual components,
+attempting to adapt too many consumers tends to reach a point of diminishing returns.
+On the other hand, adapting too few consumers risks not only violating the Rule of Threes
+but also introducing technical debt to the project in the form of incomplete migrations.
+These incomplete migrations can in turn significantly delay the delivery of future JEPs.
+
+In describing the work that needs to be done to adapt consumers,
+this section should include a cost-benefit analysis and describe a rational approach to the migration
+that balances short-term deliverability against long-term maintainability.
+
+Typically, migrations should cover a large portion of the top 200 plugins and/or the plugins in the Bill of Materials (BOM),
+as the overall health of the Jenkins project is contingent on the health of these popular plugins to a large degree.
+When in doubt, begin the cost-benefit analysis with this general example
+and then determine if the calculus needs to be adjusted for the particular case in question.
+
+While not all consumers need to be fully migrated,
+the scope of the migration does need to be fully quantified
+in order for the design to stand on its own.
+
+If consumers do not need to be adapted to this change, this section may simply say:
+There are no migration concerns related to this proposal.
+====
+
 == Security
 
 [TIP]
