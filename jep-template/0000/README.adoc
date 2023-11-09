@@ -264,6 +264,8 @@ Finally, describe the nature of the work in relation to time:
 can these tasks be picked up in parallel by any interested volunteers,
 or do they need to be done in some specific order?
 Do any tasks depend on other tasks in a way that would serialize the implementation of the project?
+
+JEPs that do not include a prototype implementation may omit this section.
 ====
 
 == References
