@@ -65,7 +65,8 @@ endif::[]
 
 == Abstract
 
-This proposal makes it possible to run Jenkins in such a way that it would be link:https://csrc.nist.gov/pubs/fips/140-2/upd2/final[FIPS-140] compliant.  Not all features may be possible to use in this mode of operation, and plugins may need to change their behaviour at runtime.
+This proposal makes it possible to run Jenkins in such a way that it would be link:https://csrc.nist.gov/pubs/fips/140-2/upd2/final[FIPS-140] compliant.
+Not all features may be possible to use in this mode of operation, and plugins may need to change their behaviour at runtime.
 Configuration of the JVM, platform etc. is out-of-scope, as is making every feature/plugin compliant.
 
 
@@ -73,29 +74,32 @@ Configuration of the JVM, platform etc. is out-of-scope, as is making every feat
 
 * A new API will be introduced that code can use to check if FIPS-140 compliance is preferred.
 * Code in Jenkins core (where necessary) switches behaviour between more secure yet non compliant cryptography to FIPS-140 compliant cryptography.
-* Non compliant and less secure crytpography has been replaced by a secure and compliant option.
+* Non compliant and less secure cryptography has been replaced by a secure and compliant option.
 * General guidelines exist to help developers write FIPS-140 compliant code and/or understand incompatibilities with the standard.
 * User facing documentation provides a mere overview of the FIPS flag and what it does (and does not do).
 
 == Motivation
 
-Currently it is not possible to run Jenkins in a link:https://csrc.nist.gov/pubs/fips/140-2/upd2/final[FIPS-140-2] compliant way.  Many users needing Jenkins are required (e.g. for US government projects) to have any solution be compliant with FIPS-140 and today it is not possible for them to do this. 
+Currently it is not possible to run Jenkins in a link:https://csrc.nist.gov/pubs/fips/140-2/upd2/final[FIPS-140-2] compliant way.
+Many users needing Jenkins are required (e.g. for US government projects) to have any solution be compliant with FIPS-140 and today it is not possible for them to do this.
 
 Both Jenkins core and plugins use cryptography that is not allowed and/or are not from an approved implementation, and this prevents adoption of Jenkins by these end users.
 Examples would be during setup where the install wizard creates a first admin user using the internal security realm which uses ``bcrypt`` which would fall foul of the standard due to its use of ``blowfish`` which is not an approved algorithm.
 
 == Reasoning
 
-To be FIPS-140 compliant, Jenkins must use validated, FIPS-140 compliant encryption algorithms. 
-This requires complex configuration of the host, the Java Virtual Machine (JVM), the servlet environment, and the Jenkins controller. 
+To be FIPS-140 compliant, Jenkins must only use FIPS-140 compliant encryption algorithms from a validated implementation.
+This requires complex configuration of the host, the Java Virtual Machine (JVM), the servlet environment, and the Jenkins controller.
 Changes may be required in both Jenkins core and plugins.
-As such it is not considered that the Jenkins community supports or provides instructions on how to run Jenkins in a compliant manner, but merely states that FIPS-140 compliant operation may be  possible with appropriate configuration of the JVM, Servlet environment, limited set of plugins, and finally instructing Jenkins to prefer a FIPS-140 mode of operation.
+As such it is not considered that the Jenkins community supports or provides instructions on how to run Jenkins in a compliant manner, but merely states that FIPS-140 compliant operation may be possible with appropriate configuration of the JVM, Servlet environment, limited set of plugins, and finally instructing Jenkins to prefer a FIPS-140 mode of operation.
 
-As of the time of writing the validated Java implementations are only FIPS-140-2 compliant even though FIPS-140-3 has superseded it.  As such the initial implementations will be targeting the older FIPS-140-2 standard.
+As of the time of writing the validated Java implementations are only FIPS-140-2 compliant even though FIPS-140-3 has superseded it.
+As such the initial implementations will be targeting the older FIPS-140-2 standard.
 
 == Backwards Compatibility
 
-It is out of scope to support previous configuration, as it would not be possible to migrate non FIPS-140 compliant data to FIPS-140 compliant data within a FIPS-140 compliant environment.  As such there is no backwards compatibility with previous versions.
+It is out of scope to support previous configuration, as it would not be possible to migrate non FIPS-140 compliant data to FIPS-140 compliant data within a FIPS-140 compliant environment.
+As such there is no backwards compatibility with previous versions.
 
 It may but is not a requirement of this JEP be possible to switch from a FIPS-140 compliant environment to a non FIPS-140 compliant environment.
 
@@ -103,7 +107,8 @@ Code changes will however be backwards compatible; if the system is running in a
 
 == Security
 
-Some of the cryptography supported in FIPS 140 (especially FIPS 140-2) is considered less secure than some modern alternatives.  FIPS 140-2 cryptography will be used when Jenkins is running in FIPS-140 mode even if that cryptography is considered less secure than other alternatives.
+Some of the cryptography supported in FIPS-140 (especially FIPS 140-2) is considered less secure than some modern alternatives.
+FIPS 140-2 cryptography will be used when Jenkins is running in FIPS-140 mode even if that cryptography is considered less secure than other alternatives.
 
 == Infrastructure Requirements
 
@@ -111,9 +116,62 @@ There are no new infrastructure requirements related to this proposal.
 
 == Testing
 
-New code that changes behaviour when it detects the desire to run in FIPS-140 mode would be covered by unit tests like any other code change.  There would be no new testing introduced in a FIPS-140 compliant environment due to the complexity of maintaining this setup.
+New code that changes behaviour when it detects the desire to run in FIPS-140 mode would be covered by unit tests like any other code change.
 
-Test automation is not expected to detect code in Jenkins core or in Jenkins plugins that is not FIPS-140 compliant.
+Checking that Jenkins and/or plugins are compliant would fall into one of several categories outlined in the following sections.
+
+=== Code Level
+
+At this level the (byte or source) code would be scanned for compliance issues.
+Whilst this could find some form of issues, it can only find known issues.
+Additionally the use of some algorithms whilst not approved can be used when not for security purposes.
+
+There are commercial tools available, but they are prohibitively expensive and do not understand the nuances of the Jenkins plugin ecosystem with optional plugins.
+Creating an internal tool to be able to do this checking and effectively be able to ignore false positives, would be an engineering effort that would still only find the known issues.
+
+Finding known issues is generally not the time consuming part, as it can be a simple grep or `usage-in-plugins`, rather effort is spend in analyzing code for unknowns.
+An example of an unknown could be the encryption algorithms in `trilead-api` or the configuration of the mail server in Jenkins with support for various authentication methods that are themselves un-approved.
+In the case of the mail server configuration whilst the authentication method is unapproved, if it is protected by an outer layer of approved encryption (TLS) then the nature of the authentication method is no longer relevant.
+
+For these reasons it is not currently intended to add any automated code level checks into the ecosystem.
+
+=== Unit Tests
+
+As mentioned earlier it would be possible to unit test some behavioral differences.
+
+Using Unit tests to discover FIPS compliance issues would need several things:
+
+* The JVM would need to be appropriately configured for FIPS.
+* All test code and test dependencies would also need to be FIPS-140 compliant to prevent test infrastructure failures impacting the test.
+* Tests for code that is disabled when runung in FIP-140 would need to be disabled for these tests to not provide false positive issues
+
+The `maven-surefire` plugin used for Unit tests uses a flat classpath for unit tests, and is unaware of Jenkins' hierachical classloader and ability to have optional dependencies, or the ability to insert libraries into the classpath at runtime (which is used by the https://github.com/jenkinsci/bouncycastle-api-plugin/blob/2.30.1.77-225.v26ea_c9455fd9/src/main/java/jenkins/bouncycastle/api/BouncyCastlePlugin.java#L36-L67[`bouncycastle-api`] plugin).
+The assumption of the classpath would cause many regular unit tests to pass when they may be expected to fail.
+
+In addition to the above requirements and limitation, the unit tests would only be able to detect some concrete violations.
+They for example would not be able to fail if a plugin implemented its own encryption routines, or used custom implementations from another library (e.g. `bcrypt`)
+
+For these reasons it is not currently intended to add unit test level checks into the ecosystem.
+
+=== Acceptance Tests
+
+The https://github.com/jenkinsci/acceptance-test-harness[`acceptance test harness`] would appear to be a suitable place for tests to detect FIPS regressions and issues.
+
+As the ATH generally interacts with "external" systems (usually by way of a container) to check for regressions the environment should be a FIPS enabled environment, that includes the docker host as well as the system running Jenkins.
+This system can be independent of the host running the test (junit) code.
+The regression/test suite would need to be tagged with which plugins to test (or not test) and any agents launched for builds as part of the test would also need to be FIPS enabled.
+
+As with the other automated checks this can detect issues and regressions in features, but can not validate that the code is FIPS-140 compliant.
+These tests are generally the most expensive to run and coverage of plugins/features is variable.
+Whilst the value of finding regressions is certainly important, the ATH should be checking features, and if the feature works outside of FIPS (in a run of the current ATH) then the unit testing of the switched can provide this check, so this leaves the value at checking the JVM configuration is not causing regressions.
+As the JVM configuration is out of scope of the Jenkins project as outlined above, testing this configuration is of little value.
+
+=== Manual Verification
+
+Manual verification of code and dependent libraries is expensive to perform for the initial scan, whilst subsequent checks can be cheaper due to checking a diff of changed code/libraries, being a manual process it is still relatively expensive.
+Whilst manual verification can be error prone, it is currently the only method that can find all issues.
+
+Initial developer https://www.jenkins.io/doc/developer/FIPS-140/#fips-140-for-developers[documentation] exists and can be expanded over time.
 
 == Prototype Implementation
 
