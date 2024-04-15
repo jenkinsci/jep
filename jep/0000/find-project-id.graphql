@@ -1,0 +1,7 @@
+query {
+    user(login: "timja"){
+        projectNext(number: 4) {
+            id
+        }
+    }
+}
