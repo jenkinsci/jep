@@ -204,8 +204,8 @@ That reduced time is needed as part of the transition to the 2+2+2 Java support 
 | Date            | Release         | Minimum Java Version
 
 | Jan 21, 2026    | 2.534.1 (LTS)   | Java 17
+| Feb  3, 2026    | 2.542 (weekly)  | **Java 21**
 | Feb 18, 2026    | 2.534.2 (LTS)   | Java 17
-| Mar  3, 2026    | 2.546 (weekly)  | **Java 21**
 | Mar 18, 2026    | 2.534.3 (LTS)   | Java 17
 | Apr 15, 2026    | 2.546.1 (LTS)   | **Java 21**
 | May 13, 2026    | 2.546.2 (LTS)   | **Java 21**
@@ -229,8 +229,8 @@ That reduced time is needed as part of the transition to the 2+2+2 Java support 
 | Date            | Release         | Minimum Java Version
 
 | Jun 23, 2027    | 2.606.1 (LTS)   | Java 21
+| Jul  6, 2027    | 2.614 (weekly)  | **Java 25**
 | Jul 21, 2027    | 2.606.2 (LTS)   | Java 21
-| Aug  3, 2027    | 2.618 (weekly)  | **Java 25**
 | Aug 18, 2027    | 2.606.3 (LTS)   | Java 21
 | Sep 15, 2027    | 2.618.1 (LTS)   | **Java 25**
 | Oct 13, 2027    | 2.618.2 (LTS)   | **Java 25**
