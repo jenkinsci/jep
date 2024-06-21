@@ -170,14 +170,17 @@ A weekly release prior to that Jenkins LTS baseline requires Java 17 as its mini
 Jenkins uses Java 11 as its minimum Java version for a little over **two years**.
 That is much less than the five years that Java 8 was the minimum Java version for Jenkins, but is well aligned with the two years from the 2+2+2 Java Support Plan.
 
-.Estimated Java 11 support calendar
+The weekly release to require Java 17 was link:https://groups.google.com/g/jenkinsci-dev/c/gsXAqOQQEPc/m/4fn4Un1iAwAJ[intentionally accelerated] due to the ammount of work in the Spring Security 6.x upgrade.
+The original link:https://groups.google.com/g/jenkinsci-dev/c/gsXAqOQQEPc/m/VT9IBYdmAQAJ[Spring Security 6.x Upgrade timeline] did not provide enough time.
+
+.Java 11 support calendar
 [%header,cols="1,1,1"]
 |====
 | Date            | Release         | Minimum Java Version
 
+| Jun 18, 2024    | 2.463 (weekly)  | **Java 17**
 | Aug  7, 2024    | 2.462.1 (LTS)   | Java 11
 | Sep  4, 2024    | 2.462.2 (LTS)   | Java 11
-| Sep 17, 2024    | 2.474 (weekly)  | **Java 17**
 | Oct  2, 2024    | 2.462.3 (LTS)   | Java 11
 | Oct 30, 2024    | 2.474.1 (LTS)   | **Java 17**
 | Nov 27, 2024    | 2.474.2 (LTS)   | **Java 17**
