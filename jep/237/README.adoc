@@ -110,6 +110,8 @@ Code changes will however be backwards compatible; if the system is running in a
 Some of the cryptography supported in FIPS-140 (especially FIPS 140-2) is considered less secure than some modern alternatives.
 FIPS 140-2 cryptography will be used when Jenkins is running in FIPS-140 mode even if that cryptography is considered less secure than other alternatives.
 
+As the TLS endpoint exposing the Jenkins web interface will need to only support FIPS compliant TLS options which are discoverable during the TLS handshake, the FIPS nature of Jenkins is not deemed sensitive information, as it would be unlikely that you run a non FIPS compliant Jenkins instance either behind a FIPS-140 compliant load-balancer or in a FIPS-140 compliant app server.
+
 == Infrastructure Requirements
 
 There are no new infrastructure requirements related to this proposal.
