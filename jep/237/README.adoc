@@ -155,8 +155,8 @@ They for example would not be able to fail if a plugin implemented its own encry
 
 For these reasons it is not currently intended to add unit test level checks into the ecosystem.
 
-To facilitate Test of some specific FIPS parts, a library has been created to use with `jenkins-test-harness`.
-This library can be find here https://github.com/jenkinsci/lib-fips-bundle-test
+To facilitate testing of specific FIPS parts, a library [fips-bundle-test](https://github.com/jenkinsci/lib-fips-bundle-test) has been created to use with `jenkins-test-harness`.
+
 
 === Acceptance Tests
 
