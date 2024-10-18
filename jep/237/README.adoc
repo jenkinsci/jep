@@ -145,7 +145,7 @@ Using Unit tests to discover FIPS compliance issues would need several things:
 
 * The JVM would need to be appropriately configured for FIPS.
 * All test code and test dependencies would also need to be FIPS-140 compliant to prevent test infrastructure failures impacting the test.
-* Tests for code that is disabled when runung in FIP-140 would need to be disabled for these tests to not provide false positive issues
+* Tests for code that is disabled when running in FIP-140 would need to be disabled for these tests to not provide false positive issues
 
 The `maven-surefire` plugin used for Unit tests uses a flat classpath for unit tests, and is unaware of Jenkins' hierachical classloader and ability to have optional dependencies, or the ability to insert libraries into the classpath at runtime (which is used by the https://github.com/jenkinsci/bouncycastle-api-plugin/blob/2.30.1.77-225.v26ea_c9455fd9/src/main/java/jenkins/bouncycastle/api/BouncyCastlePlugin.java#L36-L67[`bouncycastle-api`] plugin).
 The assumption of the classpath would cause many regular unit tests to pass when they may be expected to fail.
@@ -154,6 +154,9 @@ In addition to the above requirements and limitation, the unit tests would only 
 They for example would not be able to fail if a plugin implemented its own encryption routines, or used custom implementations from another library (e.g. `bcrypt`)
 
 For these reasons it is not currently intended to add unit test level checks into the ecosystem.
+
+To facilitate Test of some specific FIPS parts, a library has been created to use with `jenkins-test-harness`.
+This library can be find here https://github.com/jenkinsci/lib-fips-bundle-test
 
 === Acceptance Tests
 
