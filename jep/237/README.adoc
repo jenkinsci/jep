@@ -110,6 +110,8 @@ Code changes will however be backwards compatible; if the system is running in a
 Some of the cryptography supported in FIPS-140 (especially FIPS 140-2) is considered less secure than some modern alternatives.
 FIPS 140-2 cryptography will be used when Jenkins is running in FIPS-140 mode even if that cryptography is considered less secure than other alternatives.
 
+As the TLS endpoint exposing the Jenkins web interface will need to only support FIPS compliant TLS options which are discoverable during the TLS handshake, the FIPS nature of Jenkins is not deemed sensitive information, as it would be unlikely that you run a non FIPS compliant Jenkins instance either behind a FIPS-140 compliant load-balancer or in a FIPS-140 compliant app server.
+
 == Infrastructure Requirements
 
 There are no new infrastructure requirements related to this proposal.
@@ -143,7 +145,7 @@ Using Unit tests to discover FIPS compliance issues would need several things:
 
 * The JVM would need to be appropriately configured for FIPS.
 * All test code and test dependencies would also need to be FIPS-140 compliant to prevent test infrastructure failures impacting the test.
-* Tests for code that is disabled when runung in FIP-140 would need to be disabled for these tests to not provide false positive issues
+* Tests for code that is disabled when running in FIP-140 would need to be disabled for these tests to not provide false positive issues
 
 The `maven-surefire` plugin used for Unit tests uses a flat classpath for unit tests, and is unaware of Jenkins' hierachical classloader and ability to have optional dependencies, or the ability to insert libraries into the classpath at runtime (which is used by the https://github.com/jenkinsci/bouncycastle-api-plugin/blob/2.30.1.77-225.v26ea_c9455fd9/src/main/java/jenkins/bouncycastle/api/BouncyCastlePlugin.java#L36-L67[`bouncycastle-api`] plugin).
 The assumption of the classpath would cause many regular unit tests to pass when they may be expected to fail.
@@ -152,6 +154,9 @@ In addition to the above requirements and limitation, the unit tests would only 
 They for example would not be able to fail if a plugin implemented its own encryption routines, or used custom implementations from another library (e.g. `bcrypt`)
 
 For these reasons it is not currently intended to add unit test level checks into the ecosystem.
+
+To facilitate testing of specific FIPS parts, a library [fips-bundle-test](https://github.com/jenkinsci/lib-fips-bundle-test) has been created to use with `jenkins-test-harness`.
+
 
 === Acceptance Tests
 
