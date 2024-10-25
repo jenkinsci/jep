@@ -182,8 +182,8 @@ The original link:https://groups.google.com/g/jenkinsci-dev/c/gsXAqOQQEPc/m/VT9I
 | Aug  7, 2024    | 2.462.1 (LTS)   | Java 11
 | Sep  4, 2024    | 2.462.2 (LTS)   | Java 11
 | Oct  2, 2024    | 2.462.3 (LTS)   | Java 11
-| Oct 30, 2024    | 2.474.1 (LTS)   | **Java 17**
-| Nov 27, 2024    | 2.474.2 (LTS)   | **Java 17**
+| Oct 30, 2024    | 2.479.1 (LTS)   | **Java 17**
+| Nov 27, 2024    | 2.479.2 (LTS)   | **Java 17**
 |====
 
 The calendar is provided as an estimate.  Release dates and version numbers are subject to change.
