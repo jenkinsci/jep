@@ -25,7 +25,7 @@ for f in $(ls $JEP_DIR | sort -n); do
         description=$(head -n 1 $JEP_README | sed 's/^=\ //')
         # grep -A doesn't work on osx grep, use sed instead
         #jep_status=$(grep -x -m 1 -A 1 -e "| Status" $JEP_README | tail -n 1)
-        jep_status=$(sed -n '/| Status/,/|/p' $JEP_README | head -n 2 | tail -n 1 | sed 's/\ :/{nbsp}:/')
+        jep_status=$(sed -n '/| Status/,/|/p' $JEP_README | head -n 2 | tail -n 1 | sed 's/| \(.*\) :\(.*\):/| :\2:{nbsp}\1/')
 
         if [ $? -ne 0 ]; then
             jep_status="Unknown"

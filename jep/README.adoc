@@ -7,327 +7,327 @@
 .^| Sponsor(s)
 .^| BDFL Delegate
 
-| Active{nbsp}:smile:
+| :smile:{nbsp}Active
 | link:1/README.adoc[JEP-1: Jenkins Enhancement Proposal Format]
 | link:https://github.com/rtyler[R{nbsp}Tyler{nbsp}Croy], link:https://github.com/bitwiseman[Liam{nbsp}Newman]
 | _not{nbsp}delegated_
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:2/README.adoc[JEP-2: Criteria for selecting "Suggested Plugins"]
 | link:https://github.com/daniel-beck[Daniel{nbsp}Beck], link:https://github.com/rtyler[R{nbsp}Tyler{nbsp}Croy]
 | _not{nbsp}delegated_
 
-| Accepted{nbsp}:ok_hand:
+| :ok_hand:{nbsp}Accepted
 | link:3/README.adoc[JEP-3: Adding the "Released As" field and "Ready for Release" status to Jenkins JIRA]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | _not{nbsp}delegated_
 
-| Active{nbsp}:smile:
+| :smile:{nbsp}Active
 | link:4/README.adoc[JEP-4: Special Interest Groups]
 | link:https://github.com/rtyler[R{nbsp}Tyler{nbsp}Croy]
 | _not{nbsp}delegated_
 
-| Accepted{nbsp}:ok_hand:
+| :ok_hand:{nbsp}Accepted
 | link:5/README.adoc[JEP-5: Jenkins Ambassador Program]
 | link:https://github.com/alyssat[Alyssa{nbsp}Tong], link:https://github.com/bitwiseman[Liam{nbsp}Newman]
 | _not{nbsp}delegated_
 
-| Accepted{nbsp}:ok_hand:
+| :ok_hand:{nbsp}Accepted
 | link:6/README.adoc[JEP-6: Jenkins CVE Numbering Authority]
 | link:https://github.com/daniel-beck/[Daniel{nbsp}Beck]
 | link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:7/README.adoc[JEP-7: Deprecation of Ruby and Python plugin runtimes]
 | link:https://github.com/daniel-beck/[Daniel{nbsp}Beck],
 | _not{nbsp}delegated_
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:8/README.adoc[JEP-8: Google Summer of Code Budgeting and Expenses]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:9/README.adoc[JEP-9: How BDFL Delegates]
 | link:https://github.com/kohsuke[Kohsuke{nbsp}Kawaguchi]
 | _not{nbsp}delegated_
 
-| Active{nbsp}:smile:
+| :smile:{nbsp}Active
 | link:10/README.adoc[JEP-10: Jenkins Twitter Policy for Contributors]
 | link:https://github.com/tracymiranda[Tracy{nbsp}Miranda]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:11/README.adoc[JEP-11: Process improvements for adopting a Jenkins plugin]
 | link:https://github.com/rodrigc[Craig{nbsp}Rodrigues]
 | TBD
 
-| Active{nbsp}:smile:
+| :smile:{nbsp}Active
 | link:12/README.adoc[JEP-12: Travel Grant Program]
 | link:https://github.com/tracymiranda[Tracy{nbsp}Miranda]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Active{nbsp}:smile:
+| :smile:{nbsp}Active
 | link:13/README.adoc[JEP-13: Jenkins YouTube Channel Policy for Contributors]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/bitwiseman[Liam{nbsp}Newman]
 
-| Active{nbsp}:smile:
+| :smile:{nbsp}Active
 | link:14/README.adoc[JEP-14: Public roadmap for major initiatives in the Jenkins project]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/slide[Alex{nbsp}Earl]
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:15/README.adoc[JEP-15: Jenkins funding on LFX Crowdfunding]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | TBD
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:16/README.adoc[JEP-16: Inclusive terminology guidelines and continuous updates]
 | link:https://github.com/aHenryJard[Angélique{nbsp}Jard] +
 | TBD
 
-| Final{nbsp}:lock:
+| :lock:{nbsp}Final
 | link:200/README.adoc[JEP-200: Switch Remoting/XStream denylist to an allowlist]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 
-| Accepted{nbsp}:ok_hand:
+| :ok_hand:{nbsp}Accepted
 | link:201/README.adoc[JEP-201: Jenkins Configuration as Code]
 | link:https://github.com/ewelinawilkosz[Ewelina{nbsp}Wilkosz] from{nbsp}link:https://github.com/praqma[Praqma]
 | _not{nbsp}delegated_
 
-| Final{nbsp}:lock:
+| :lock:{nbsp}Final
 | link:202/README.adoc[JEP-202: External Artifact Storage]
 | link:https://github.com/carlossg[Carlos{nbsp}Sanchez]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 
-| Deferred{nbsp}:hourglass:
+| :hourglass:{nbsp}Deferred
 | link:203/README.adoc[JEP-203: BlueOcean Extensibility]
 | link:http://github.com/imeredith[Ivan{nbsp}Meredith]
 | _not{nbsp}delegated_
 
-| Deferred{nbsp}:hourglass:
+| :hourglass:{nbsp}Deferred
 | link:204/README.adoc[JEP-204: BlueOcean Extensibility API]
 | link:http://github.com/imeredith[Ivan{nbsp}Meredith]
 | _not{nbsp}delegated_
 
-| Withdrawn{nbsp}:hand:
+| :hand:{nbsp}Withdrawn
 | link:205/README.adoc[JEP-205: Declarative Data Binding]
 | link:https://github.com/ndeloof[ndeloof]
 | _not{nbsp}delegated_
 
-| Final{nbsp}:lock:
+| :lock:{nbsp}Final
 | link:206/README.adoc[JEP-206: Use UTF-8 for Pipeline build logs]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | TBD
 
-| Deferred{nbsp}:hourglass:
+| :hourglass:{nbsp}Deferred
 | link:207/README.adoc[JEP-207: External Build Logging support in the Jenkins Core]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:208/README.adoc[JEP-208: Configuration as Code Tooling]
 | link:https://github.com/ewelinawilkosz[Ewelina{nbsp}Wilkosz] from{nbsp}link:https://github.com/praqma[Praqma]
 | _not{nbsp}delegated_
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:209/README.adoc[JEP-209: Configuration as Code YAML Schema]
 | https://github.com/ewelinawilkosz2[Ewelina{nbsp}Wilkosz] from{nbsp}https://github.com/praqma[Praqma]
 | _not{nbsp}delegated_
 
-| Accepted{nbsp}:ok_hand:
+| :ok_hand:{nbsp}Accepted
 | link:210/README.adoc[JEP-210: External log storage for Pipeline]
 | link:http://github.com/jglick[Jesse{nbsp}Glick]
 | link:https://github.com/carlossg[Carlos{nbsp}Sanchez]
 
-| Accepted{nbsp}:ok_hand:
+| :ok_hand:{nbsp}Accepted
 | link:211/README.adoc[JEP-211: Java 11 support in Jenkins]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 
-| Deferred{nbsp}:hourglass:
+| :hourglass:{nbsp}Deferred
 | link:212/README.adoc[JEP-212: External Logging API plugin]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/carlossg[Carlos{nbsp}Sanchez]
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:213/README.adoc[JEP-213: Configuration Storage API in the Jenkins Core]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | TBD
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:214/README.adoc[JEP-214: Jenkins Telemetry]
 | link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
 | link:https://github.com/rtyler[R{nbsp}Tyler{nbsp}Croy]
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:215/README.adoc[JEP-215: Modular Components]
 | https://github.com/sophistifunk
 | TBD
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:216/README.adoc[JEP-216: Localization Plugin]
 | link:https://github.com/LinuxSuRen[Zhao{nbsp}Xiaojie]
 | TBD
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:217/README.adoc[JEP-217: Experimental Jenkins organization on DockerHub]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:218/README.adoc[JEP-218: Stapler Request Dispatcher Filtering]
 | link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
 | link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:219/README.adoc[JEP-219: Jenkins Kubernetes Operator]
 | link:https://github.com/tomaszsek[Tomasz{nbsp}Sęk] from{nbsp}link:https://virtuslab.com/[VirtusLab]
 | TBD
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:220/README.adoc[JEP-220: Dispatchable Views and View Fragments in Stapler]
 | https://github.com/jvz[Matt{nbsp}Sicker]
 | link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
 
-| Withdrawn{nbsp}:hand:
+| :hand:{nbsp}Withdrawn
 | link:221/README.adoc[JEP-221: Continuous Delivery of Jenkins Plugins]
 | link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
 | TBD
 
-| Final{nbsp}:lock:
+| :lock:{nbsp}Final
 | link:222/README.adoc[JEP-222: WebSocket Support for Jenkins Remoting and CLI]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | TBD
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:223/README.adoc[JEP-223: "Manage" permission for managing non-security aspects of a Jenkins instance]
 | link:https://github.com/mikecirioli[Mike{nbsp}Cirioli], link:https://github.com/aHenryJard[Angélique{nbsp}Jard], link:https://github.com/EstherAF[Esther{nbsp}Álvarez{nbsp}Feijoo] 
 | TBD
 
-| Final{nbsp}:lock:
+| :lock:{nbsp}Final
 | link:224/README.adoc[JEP-224: Readonly system configuration]
 | link:https://github.com/timja[Tim{nbsp}Jacomb]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:226/README.adoc[JEP-226: External Fingerprint Storage]
 | link:https://github.com/stellargo[Sumit{nbsp}Sarin]
 | -
 
-| Accepted{nbsp}:ok_hand:
+| :ok_hand:{nbsp}Accepted
 | link:227/README.adoc[JEP-227: Replace Acegi Security with Spring Security & upgrade Spring Framework]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | TBD
 
-| Accepted{nbsp}:ok_hand:
+| :ok_hand:{nbsp}Accepted
 | link:228/README.adoc[JEP-228: Unforking XStream]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | TBD
 
-| Accepted{nbsp}:ok_hand:
+| :ok_hand:{nbsp}Accepted
 | link:229/README.adoc[JEP-229: Continuous Delivery of Jenkins Components and Plugins]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | TBD
 
-| Final{nbsp}:lock:
+| :lock:{nbsp}Final
 | link:230/README.adoc[JEP-230: Convert modules to plugins]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | TBD
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:231/README.adoc[JEP-231: Remove commons-digester dependency from Jenkins Core]
 | link:https://github.com/olamy[Olivier{nbsp}Lamy], link:https://github.com/bitwiseman[Liam{nbsp}Newman]
 | _not{nbsp}delegated_
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:232/README.adoc[JEP-232: Use Java 11 in Docker images by default]
 | link:https://github.com/MarkEWaite[Mark{nbsp}Waite]
 | TBD
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:233/README.adoc[JEP-233: Upgrade Guava from 11.0.1 to latest]
 | https://github.com/basil[Basil{nbsp}Crow]
 | TBD
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:234/README.adoc[JEP-234: Customizable Jenkins header]
 | link:https://github.com/imonteroperez[Ildefonso{nbsp}Montero]
 | _not{nbsp}delegated_
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:235/README.adoc[JEP-235: Agent-To-Controller Security Simplification]
 | link:https://github.com/daniel-beck[Daniel{nbsp}Beck]
 | TBD
 
-| Final{nbsp}:lock:
+| :lock:{nbsp}Final
 | link:236/README.adoc[JEP-236: Require Java 11 or newer]
 | link:https://github.com/MarkEWaite[Mark{nbsp}Waite]
 | TBD
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:237/README.adoc[JEP-237: FIPS-140 support]
 | link:https://github.com/jtnord[James{nbsp}Nord]
 | TBD
 
-| Withdrawn{nbsp}:hand:
+| :hand:{nbsp}Withdrawn
 | link:300/README.adoc[JEP-300: Jenkins Evergreen]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 | _not{nbsp}delegated_
 
-| Withdrawn{nbsp}:hand:
+| :hand:{nbsp}Withdrawn
 | link:301/README.adoc[JEP-301: Evergreen packaging]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Withdrawn{nbsp}:hand:
+| :hand:{nbsp}Withdrawn
 | link:302/README.adoc[JEP-302: Evergreen snapshotting data safety system]
 | link:https://github.com/batmat[Baptiste{nbsp}Mathus]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Withdrawn{nbsp}:hand:
+| :hand:{nbsp}Withdrawn
 | link:303/README.adoc[JEP-303: Evergreen Client Registration and Authentication]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Withdrawn{nbsp}:hand:
+| :hand:{nbsp}Withdrawn
 | link:304/README.adoc[JEP-304: Evergreen Client Error Telemetry Logging]
 | link:https://github.com/batmat[Baptiste{nbsp}Mathus]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Final{nbsp}:lock:
+| :lock:{nbsp}Final
 | link:305/README.adoc[JEP-305: Publishing incremental commits as Maven releases]
 | link:https://github.com/jglick[Jesse{nbsp}Glick]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Withdrawn{nbsp}:hand:
+| :hand:{nbsp}Withdrawn
 | link:306/README.adoc[JEP-306: Evergreen Instance Client Health Checking]
 | link:https://github.com/batmat[Baptiste{nbsp}Mathus]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Withdrawn{nbsp}:hand:
+| :hand:{nbsp}Withdrawn
 | link:307/README.adoc[JEP-307: Evergreen Update Client/Server Lifecycle]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Withdrawn{nbsp}:hand:
+| :hand:{nbsp}Withdrawn
 | link:308/README.adoc[JEP-308: Evergreen Error Telemetry API]
 | link:https://github.com/batmat[Baptiste{nbsp}Mathus]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Withdrawn{nbsp}:hand:
+| :hand:{nbsp}Withdrawn
 | link:309/README.adoc[JEP-309: Bill of Materials]
 | link:https://github.com/carlossg[Carlos{nbsp}Sanchez], link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Withdrawn{nbsp}:hand:
+| :hand:{nbsp}Withdrawn
 | link:310/README.adoc[JEP-310: Evergreen AWS auto-configuration]
 | https://github.com/batmat[Baptiste{nbsp}Mathus]
 | https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
 
-| Draft{nbsp}:speech_balloon:
+| :speech_balloon:{nbsp}Draft
 | link:400/README.adoc[JEP-400: Jenkins X: Jenkins for Kubernetes CD]
 | link:https://github.com/jstrachan[James{nbsp}Strachan]
 | _not{nbsp}delegated_
