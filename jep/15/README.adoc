@@ -59,9 +59,9 @@ endif::[]
 
 == Abstract
 
-This JEP documents the policy for donations received through the LFX Crowdfunding Funding portal.
+This JEP documents the policy for donations received through the LFX Crowdfunding portal, formerly known as LFX CommunityBridge.
 This JEP replaces original funding through SPI and ffis.de documented on link:https://www.jenkins.io/donate/p[jenkins.io/donate].
-Jenkins profile on CommunityBridge is available link:https://crowdfunding.lfx.linuxfoundation.org/projects/jenkins[here].
+Jenkins profile on LFX Crowdfunding is available link:https://crowdfunding.lfx.linuxfoundation.org/projects/jenkins[here].
 
 == Motivation
 
@@ -86,7 +86,7 @@ This proposal suggests using the link:https://crowdfunding.lfx.linuxfoundation.o
 === Profile setup
 
 Jenkins project will have a single profile link:https://crowdfunding.lfx.linuxfoundation.org/projects/jenkins[here].
-Sub-projects and plugin teams may introduce their own profiles on CommunityBridge or elsewhere,
+Sub-projects and plugin teams may introduce their own profiles on LFX Crowdfunding or elsewhere,
 but it is not within scope of this JEP.
 The profile page will have a project description and a reference to this process JEP.
 
@@ -96,7 +96,7 @@ image::funding_top.png[LFX Crowdfunding Profile]
 
 ==== Enabled donation destinations
 
-The following donation destinations will be enabled on the CommunityBridge profile:
+The following donation destinations will be enabled on the LFX Crowdfunding profile:
 
 * _Bug Bounty_ - link:https://www.jenkins.io/security/gift/[Gifts for Security Vulnerability reports]
 * _Development_
@@ -106,7 +106,7 @@ The following donation destinations will be enabled on the CommunityBridge profi
 ** Facilitating documentation initiatives within the link:https://www.jenkins.io/project/roadmap/[Jenkins Roadmap] (e.g. online hackfests, mentorship projects)
 ** Covering documentation-related infrastructure costs.
 * _Marketing_ -  sponsoring marketing outreach programs (e.g. swag to contributors)
-* _Mentorship_ - sponsoring link:https://www.jenkins.io/sigs/advocacy-and-outreach/outreach-programs/[outreach programs] like Outreachy or CommunityBridge Mentorship
+* _Mentorship_ - sponsoring link:https://www.jenkins.io/sigs/advocacy-and-outreach/outreach-programs/[outreach programs] like Outreachy or LFX Mentorship
 * _Meetups_ - sponsoring link:https://www.jenkins.io/events/online-meetup/[Jenkins Online Meetups] 
                and link:https://www.jenkins.io/projects/jam/[local meetups] (swag, promotion materials)
 * _Travel_ - funding the Jenkins Travel Grant Program (see link:../12/README.adoc[JEP-12])
@@ -115,7 +115,7 @@ Donations will **NOT** be used for paying personnel.
 
 ==== Donations to infrastructure
 
-At the moment CommunityBridge does not support _Infrastructure_ as a donation destination.
+At the moment LFX Crowdfunding does not support _Infrastructure_ as a donation destination.
 There is a request for enhancement submitted for it, but there is no confirmed delivery date for that.
 Although the majority of the Jenkins infrastructure costs are covered by sponsorships,
 we still spend some money.
@@ -157,13 +157,15 @@ In no case Jenkins project will commit to deliver a feature or on a timeline bas
 
 * _Supporter_ - An individual or an organization donating money to the Jenkins project.
 * _Expense Requester_ - An individual or a company contributor requesting reimbursement.
-* _CommunityBridge Administrator_ - a Jenkins board member with administrative access to the CommunityBridge profile
+* _LFX Crowdfunding Administrator_ - a Jenkins board member with administrative access to the LFX Crowdfunding profile and the Expensify account connected to it.
+** Right now the LFX system supports only one administrator (currently Oleg Nenashev), others can be added to Expensify upon request.
 ** Similar to the former SPI reimbursement process,
-Jenkins governance board is responsible for approving all expenses submitted through CommunityBridge.
+   Jenkins governance board is responsible for approving all expenses submitted through the system.
+   The approval process is documented below.
 
 ==== Use of donations
 
-As stated in the link:https://docs.linuxfoundation.org/lfx/crowdfunding[CommunityBridge documentation],
+As stated in the link:https://docs.linuxfoundation.org/lfx/crowdfunding[LFX Crowdfunding documentation],
 _the project maintainers can adjust fund allocations and may not use the funds per requested allocation_.
 In the Jenkins project we intend to respect the targeted allocations,
 and to follow the requested allocation when possible.
@@ -177,7 +179,7 @@ the Governance meeting will be doing a formal approval/rejection based on the co
 
 ==== Donations Process
 
-Donations should be submitted through the CommunityBridge Funding system which supports donations by individuals and by organizations.
+Donations should be submitted through the LFX Crowdfunding system which supports donations by individuals and by organizations.
 It is possible to do a donation for "all project needs" or a targeted donation to any destination listed above.
 The process is documented link:https://docs.linuxfoundation.org/lfx/crowdfunding[here].
 
@@ -190,16 +192,16 @@ For the Jenkins project all payment options are enabled:
 
 * Expenses should be pre-approved through the Jenkins developer mailing list and
 the link:https://www.jenkins.io/project/governance-meeting/[Governance meeting] **BEFORE** the expense happens.
-* The requester is registered on the CommunityBridge portal as a beneficiary.
-* After the expense happens, the requester should submit an expense report through the CommunityBridge Expensify portal.
-* Expense reports should be approved by a CommunityBridge Administrator.
+* The requester is registered on the LFX Crowdfunding portal as a beneficiary.
+* After the expense happens, the requester should submit the expense report through the LFX Crowdfunding's Expensify portal.
+* Expense reports should be approved by a LFX Crowdfunding Administrator.
 
 === Implementation
 
-==== CommunityBridge Portal
+==== LFX Crowdfunding Portal
 
-* CommunityBridge configuration should be updated according to this JEP
-* At least 3 Jenkins Governance Board members should be added as CommunityBridge Administrators
+* LFX Crowdfunding configuration should be updated according to this JEP
+* At least 3 Jenkins Governance Board members should be added to the Expensify backend
 
 ==== jenkins.io
 
@@ -249,11 +251,11 @@ but it is out of the scope of this JEP.
 There are indeed multiple funding and donations services available for open-source projects.
 Notable ones are Open Collective, GitHub Sponsors, Patreon and so on.
 These services provide comparable functionality and services.
-CommunityBridge is a new service link:https://www.linuxfoundation.org/press-release/2019/03/the-linux-foundation-launches-new-communitybridge-platform-to-help-sustain-open-source-communities/[launched in Mar 2019],
+LFX Crowdfunding is a service link:https://www.linuxfoundation.org/press-release/2019/03/the-linux-foundation-launches-new-communitybridge-platform-to-help-sustain-open-source-communities/[launched in Mar 2019],
 and it might be less popular than other services.
 
-CommunityBridge is chosen based on a fact that it is provided by the Linux Foundation.
-Jenkins project is migrating to Continuous Delivery Foundation which is a part of the Linux Foundation. 
+LFX Crowdfunding is chosen based on a fact that it is provided by the Linux Foundation.
+Jenkins project is a part Continuous Delivery Foundation which is a part of the Linux Foundation. 
 So the suggested decision is to use a service provided by the project's foundation.
 
 There are some advantages which justify this choice:
@@ -264,7 +266,7 @@ There are some advantages which justify this choice:
 * Support provided by the Linux Foundation which is not a 3rd party for the project.
 * Expensify as a backend for expense reports management.
   It simplifies managing expenses by contributors, with the Linux Foundation providing support for payment logistics.
-* Integration with the link:https://lfx.linuxfoundation.org/tools/mentorship[LFX Mentorship service] which allows running mentorship programs and funding them through community Bridge.
+* Integration with the link:https://lfx.linuxfoundation.org/tools/mentorship[LFX Mentorship service] which allows running mentorship programs and funding them through LFX Crowdfunding.
 
 == Backwards Compatibility
 

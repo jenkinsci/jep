@@ -94,6 +94,35 @@ Give a short (200 word) description of the technical issue addressed.
 * Do not talk about history or why this needs to be done. Instead, add the history to the Motivation section.
 ====
 
+== Motivation
+
+[TIP]
+====
+Explain why the existing code base or process is inadequate to address the problem that the JEP solves.
+This section may also contain any historical context such as how things were done before this proposal.
+
+* Provide a clear description of the high-level problem you are trying to solve.
+* The problem statement should be written in terms of a specific symptom that affects users, contributors, or the project as a whole.
+* The problem statement should not be written in terms of the solution.
+* Do not discuss design choices or alternative designs that were rejected - those belong in the Reasoning section.
+====
+
+== Reasoning
+
+[TIP]
+====
+Explain why particular design decisions were made.
+Describe alternate designs that were considered and related work. For example, how the feature is supported in other systems.
+Provide evidence of consensus within the community and discuss important objections or concerns raised during discussion.
+
+* Use sub-headings to organize this section for ease of readability.
+* Provide a clear description of the cause of the problem.
+* Provide a clear description of the high-level solution you have chosen and how it addresses the cause of the problem.
+* If there were other possible solutions that you considered and rejected, mention those along with the corresponding reasoning.
+* Do not describe implementation details; these should go into the Specification section instead.
+* Do not talk about history or why this needs to be done - that is part of Motivation section.
+====
+
 == Specification
 
 [TIP]
@@ -107,28 +136,6 @@ to reasonably understand the scope/impact of an implementation.
 * Avoid in-depth discussion or justification of design choices - that belongs in the Reasoning section.
 ====
 
-== Motivation
-
-[TIP]
-====
-Explain why the existing code base or process is inadequate to address the problem that the JEP solves.
-This section may also contain any historical context such as how things were done before this proposal.
-
-* Do not discuss design choices or alternative designs that were rejected - those belong in the Reasoning section.
-====
-
-== Reasoning
-
-[TIP]
-====
-Explain why particular design decisions were made.
-Describe alternate designs that were considered and related work. For example, how the feature is supported in other systems.
-Provide evidence of consensus within the community and discuss important objections or concerns raised during discussion.
-
-* Use sub-headings to organize this section for ease of readability.
-* Do not talk about history or why this needs to be done - that is part of Motivation section.
-====
-
 == Backwards Compatibility
 
 [TIP]
@@ -138,6 +145,43 @@ Describe how the JEP proposes to deal with these incompatibilities.
 
 If there are no backwards compatibility concerns, this section may simply say:
 There are no backwards compatibility concerns related to this proposal.
+====
+
+== Migration
+
+[TIP]
+====
+Describe the work that needs to be done, if any, to adapt consumers to the proposed change.
+
+Conventional wisdom is that at least three consumers should exist to validate the design of an API;
+with only one consumer the API probably won't support another consumer,
+and with two consumers the API will probably only support more consumers with difficulty
+(see "The Rule of Threes" in Will Tracz's _Confessions of a Used Program Salesman,_ Addison-Wesley, 1995).
+
+Completing this section of the JEP involves quantifying
+the number of consumers that need to be adapted (the cost)
+and the expected value after adapting these consumers (the benefit).
+Since the Jenkins project has thousands of individual components,
+attempting to adapt too many consumers tends to reach a point of diminishing returns.
+On the other hand, adapting too few consumers risks not only violating the Rule of Threes
+but also introducing technical debt to the project in the form of incomplete migrations.
+These incomplete migrations can in turn significantly delay the delivery of future JEPs.
+
+In describing the work that needs to be done to adapt consumers,
+this section should include a cost-benefit analysis and describe a rational approach to the migration
+that balances short-term deliverability against long-term maintainability.
+
+Typically, migrations should cover a large portion of the top 200 plugins and/or the plugins in the Bill of Materials (BOM),
+as the overall health of the Jenkins project is contingent on the health of these popular plugins to a large degree.
+When in doubt, begin the cost-benefit analysis with this general example
+and then determine if the calculus needs to be adjusted for the particular case in question.
+
+While not all consumers need to be fully migrated,
+the scope of the migration does need to be fully quantified
+in order for the design to stand on its own.
+
+If consumers do not need to be adapted to this change, this section may simply say:
+There are no migration concerns related to this proposal.
 ====
 
 == Security
@@ -175,9 +219,9 @@ There are no new infrastructure requirements related to this proposal.
 ====
 If the JEP involves any kind of behavioral change to code
 (whether in a Jenkins product or backend infrastructure),
-give a summary of how its correctness (and, if applicable, compatibility, security, etc.) can be tested.
+give a summary of how its correctness (and, if applicable, compatibility, security, etc.) will be tested.
 
-In the preferred case that automated tests can be developed to cover all significant changes, simply give a short summary of the nature of these tests.
+In the preferred case that automated tests will be developed to cover all significant changes, simply give a short summary of the nature of these tests.
 
 If some or all of the changes will require human interaction to verify them, explain why automated tests are considered impractical.
 Then, summarize what kinds of test cases might be required: user scenarios with action steps and expected outcomes.
@@ -201,6 +245,27 @@ but must be completed before any JEP is given
 "link:https://github.com/jenkinsci/jep/tree/master/jep/1#final[Final]" status.
 
 JEPs which will not include code changes may omit this section.
+====
+
+== Work Estimates
+
+[TIP]
+====
+Provide a clear description of the high-level tasks needed to productize the prototype implementation.
+Ideally these tasks would be turned into work items in an issue tracking system (ITS) like Jira or GitHub Issues.
+As a general rule, it should be possible to complete each task within 1-3 days;
+if a task takes a week or longer, it has not been broken down with enough granularity.
+If these tasks are not obvious, then the prototype is not complete enough.
+Also describe the general roles needed to perform these tasks.
+For example, is the task well-suited to a new contributor,
+or does the task require advanced experience in the Jenkins project that demands a seasoned expert?
+Perhaps the task is well-suited to contributors with an affinity for e.g. frontend development, security, or DevOps.
+Finally, describe the nature of the work in relation to time:
+can these tasks be picked up in parallel by any interested volunteers,
+or do they need to be done in some specific order?
+Do any tasks depend on other tasks in a way that would serialize the implementation of the project?
+
+JEPs that do not include a prototype implementation may omit this section.
 ====
 
 == References

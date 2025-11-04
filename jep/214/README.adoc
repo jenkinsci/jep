@@ -97,13 +97,6 @@ While we have _some_ tooling (mostly related to Java API use across components),
 
 == Reasoning
 
-=== Combination with Evergreen telemetry (JEP-308)
-
-Evergreen telemetry and this proposal have multiple key differences:
-
-* Evergreen focuses on monitoring Jenkins from the outside, observing output such as log messages, while the proposed telemetry would be internal to Jenkins.
-* Evergreen stores data for a large period of time, while the proposed telemetry is gathered for a specific purpose and intended to be collected for a defined, short period of time.
-
 === Reuse of existing anonymous usage statistics
 
 While there are anonymous usage statistics, the data provided is fairly limited (mostly basic master/agent setup, job types and count, and installed plugins).

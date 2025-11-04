@@ -75,7 +75,7 @@ help new contributors join areas of effort which align with their interests.
 == Specification
 
 Much of this specification is modeled after the Kubernetes project's "SIG"
-model. footnoteref:[sig-governance, https://github.com/kubernetes/community/blob/master/sig-governance.md]
+model. footnoteref:[sig-governance, https://github.com/kubernetes/community/blob/master/committee-steering/governance/sig-governance.md]
 
 
 In order to standardize Special Interest Group efforts, create maximum
