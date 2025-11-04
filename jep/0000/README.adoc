@@ -271,7 +271,7 @@ If that project doesn't use GitHub issues then either:
 - A tracking issue can be created that links to a Jira epic or query
 - A repo is created for tracking individual issues and those issues link to an issue in the plugins issue tracker
 
-It is expected that all repositories will transition from Jira to GitHub before Jira is likely decommissioned in 2024 due to end of life of the Jira server product.
+It is expected that all repositories will transition from Jira to GitHub issues after the core components migration.
 This will alleviate the temporary issues as all issues will now be in one place.
 
 The runbook and experience developed in the core components migration will ease future migrations. The migration scripts are based off of the successful INFRA project migration and have been greatly enhanced since then.
