@@ -70,7 +70,7 @@ All Jenkins core components use GitHub issues for tracking bugs and feature requ
 
 This covers every repository where the team 'Core' is the maintainer:
 
-- link:https://cs.github.com/?scopeName=All+repos&scope=&q=repo%3Ajenkins-infra%2Frepository-permissions-updater+%40core[GitHub code search in repository-permissions-updater] (requires access to beta search)
+- link:https://github.com/search?q=repo%3Ajenkins-infra%2Frepository-permissions-updater%20%40core&type=code[GitHub code search in repository-permissions-updater]
 - link:https://github.com/orgs/jenkinsci/teams/core/repositories[Core team repositories in GitHub] (requires jenkinsci GitHub org membership)
 
 === Migration
@@ -113,6 +113,23 @@ Contributing guides in Jenkins core and jenkins.io document that Jenkins core co
 
 Jira is too disconnected from the code of Jenkins and the other core components.
 
+GitHub is the home of just about every open source project, many developers can be reasonably expected to have GitHub credentials.
+As a result it has become untenable today to expect developers to maintain a separate login for the issue tracker of every open source project they depend on or want to report an issue against.
+
+Then there are the benefits of co-locating source code and issues.
+Autolinked references across issues, pull requests, source code and commits, within a single project and across all projects on GitHub.
+The ability to mention and notify any GitHub user.
+All of those are very powerful benefits that are simply not possible with siloed issue tracking.
+I doubt anyone wants to go back to the days when open source projects were hosted in different places. The same is true for issue tracking.
+
+There is no question that Markdown is easier for code related comments.
+It requires less typing and it just works when it comes to formatting code because it's simpler and does not clash with symbols that commonly appear in code.
+
+Jenkins users and maintainers are already well used to GitHub issues. 600 plugins and most core components are already using them.
+It is not uncommon to hear how do I report an issue to Jenkins or people not bothering due to account issues.
+Whereas with GitHub issue reporting the barrier is far lower.
+The Jenkins Infrastructure project migrated to GitHub in January 2022 and has had a far higher engagement with users since migrating to GitHub.
+
 Historically most large open source projects used tools like Bugzilla and Jira. Now there are many that use GitHub:
 - https://github.com/apple/swift
 - https://github.com/kubernetes
@@ -140,19 +157,10 @@ The data quality in Jira is lower than in GitHub due to it not getting as update
 Using GitHub means there is no relying on Jenkins project infrastructure like the account app.
 People are more likely to already have a GitHub account and if not GitHub has a better sign-up flow and account recovery solutions that don't rely on our volunteers.
 
-=== Jira server end of life February 2024
-
-Atlassian announced the link:https://www.atlassian.com/migration/assess/journey-to-cloud[end of life of Jira server] in February of 2021.
-Open source projects may continue being sponsored by creating a link:https://www.atlassian.com/software/views/open-source-license-request[Jira cloud request].
-
-Jira cloud has link:https://support.atlassian.com/jira-cloud-administration/docs/explore-jira-cloud-plans/[limitations] that would affect us around:
-
-- user limits
-- authentication
-
 === Mobile support
 
-Jira's mobile support is very poor, commenting doesn't work on mobile web and some fields are hidden and you can't get to all the information. There is a mobile app which works reasonably well but you have to log in almost every time you open it which is not a good experience.
+Jira's mobile support is very poor, commenting doesn't work on mobile web and some fields are hidden and you can't get to all the information.
+There is a mobile app which works reasonably well but you have to log in almost every time you open it which is not a good experience.
 
 GitHub's issue on mobile work really well.
 
@@ -228,7 +236,7 @@ On GitHub we will use link:https://github.com/actions-cool/issues-similarity-ana
 ==== Dashboards
  
 A number of Jira dashboards are setup.
-GitHub projects (Beta) can be used to achieve a similar capability.
+GitHub projects can be used to achieve a similar capability.
 
 - link:https://github.com/users/timja/projects/4[Core maintainers attention]
 - link:https://github.com/users/timja/projects/3[User experience project]
@@ -308,25 +316,6 @@ If we do wish to maintain the ability to move issues for anyone or at least org 
 A simpler approach could be a GitHub action in the jenkinsci/core repository but this would mean it would only work in that repository and not others.
 
 The Kubernetes link:https://www.kubernetes.dev/docs/guide/issue-triage/#abandoned-or-wrongly-placed-issues[closes misfiled issues].
-
-==== Cannot mark one GitHub issue as caused by or depending on another GitHub issue
-
-Jira allows explicit relationships to be set on links.
-GitHub requires you to type 'Caused by' and 'Depends on' yourself.
-
-==== Cannot search by caused by or depending on another GitHub issue
-
-Jira maintains by-directional links between issues when a relationship is created and you can see all issues caused by a bug.
-
-In GitHub there are three different ways to achieve this:
-
-1. Look at the any issue references that show in the issue view
-2. Use a GitHub search e.g. `state:open is:issue Caused by "https://github.com/timja/jenkins-gh-issues-poc/issues/1994"`. This will allow searching across repositories.
-3. Use a GitHub issue filter in the repository. `is:issue is:open Caused by "https://github.com/timja/jenkins-gh-issues-poc/issues/1994"`
-
-Example searches:
-- link:https://github.com/search?q=state%3Aopen+is%3Aissue+Caused+by+%22https%3A%2F%2Fgithub.com%2Ftimja%2Fjenkins-gh-issues-poc%2Fissues%2F1994%22[GitHub search]
-- link:https://github.com/timja/jenkins-gh-issues-poc/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+Caused+by%3A+https%3A%2F%2Fgithub.com%2Ftimja%2Fjenkins-gh-issues-poc%2Fissues%2F1994+[GitHub repository filter]
 
 ===== Custom fields and statuses
 
