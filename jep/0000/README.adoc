@@ -260,7 +260,7 @@ There are a couple of workarounds:
 Previously Jira was used to track any bigger projects such as Guava upgrade and Java 11.
 This was complicated by some plugins using GitHub and some Jira to track issues.
 
-As of June 2022 515 repositories have GitHub issues, (21% of repositories). 46325 issues have been file in GitHub.
+As of November 2025 750 repositories have GitHub issues, (27% of repositories). >100,000 issues have been filed in GitHub.
 
 GitHub projects can be used to group issues that are across components.
 If that project doesn't use GitHub issues then either:
