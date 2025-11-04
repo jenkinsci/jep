@@ -274,7 +274,7 @@
 
 | :speech_balloon:{nbsp}Draft
 | link:238/README.adoc[JEP-238: GitHub issues for core components]
-| link:https://github.com/timja[timja]
+| link:https://github.com/timja[Tim{nbsp}Jacomb]
 | _not{nbsp}delegated_
 
 | :hand:{nbsp}Withdrawn
