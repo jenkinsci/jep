@@ -272,6 +272,11 @@
 | link:https://github.com/jtnord[James{nbsp}Nord]
 | TBD
 
+| :speech_balloon:{nbsp}Draft
+| link:238/README.adoc[JEP-238: GitHub issues for core components]
+| link:https://github.com/timja[timja]
+| _not{nbsp}delegated_
+
 | :hand:{nbsp}Withdrawn
 | link:300/README.adoc[JEP-300: Jenkins Evergreen]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]
