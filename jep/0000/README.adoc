@@ -103,7 +103,7 @@ After a backport pull request is created the `lts-candidate` label will be remov
 
 Issues may be labelled as `lts-candidate` to signify it's a bug that should be backported into an LTS version but it hasn't been fixed yet.
 
-link:https://github.com/jenkins-infra/backend-commit-history-parser/tree/master/bin[LTS tooling] uses GitHub queries instead of Jira queries.
+link:https://github.com/jenkins-infra/release/tree/master/tools[LTS tooling] uses GitHub queries instead of Jira queries.
 
 === Documentation
 
@@ -113,17 +113,18 @@ Contributing guides in Jenkins core and jenkins.io document that Jenkins core co
 
 Jira is too disconnected from the code of Jenkins and the other core components.
 
-GitHub is the home of just about every open source project, many developers can be reasonably expected to have GitHub credentials.
-As a result it has become untenable today to expect developers to maintain a separate login for the issue tracker of every open source project they depend on or want to report an issue against.
-
-Then there are the benefits of co-locating source code and issues.
-Autolinked references across issues, pull requests, source code and commits, within a single project and across all projects on GitHub.
-The ability to mention and notify any GitHub user.
-All of those are very powerful benefits that are simply not possible with siloed issue tracking.
-I doubt anyone wants to go back to the days when open source projects were hosted in different places. The same is true for issue tracking.
-
-There is no question that Markdown is easier for code related comments.
-It requires less typing and it just works when it comes to formatting code because it's simpler and does not clash with symbols that commonly appear in code.
+Nice write-up from https://spring.io/blog/2019/01/15/spring-framework-s-migration-from-jira-to-github-issues/#background:
+> GitHub is the home of just about every open source project, many developers can be reasonably expected to have GitHub credentials.
+> As a result it has become untenable today to expect developers to maintain a separate login for the issue tracker of every open source project they depend on or want to report an issue against.
+>
+> Then there are the benefits of co-locating source code and issues.
+> Autolinked references across issues, pull requests, source code and commits, within a single project and across all projects on GitHub.
+> The ability to mention and notify any GitHub user.
+> All of those are very powerful benefits that are simply not possible with siloed issue tracking.
+> I doubt anyone wants to go back to the days when open source projects were hosted in different places. The same is true for issue tracking.
+>
+> There is no question that Markdown is easier for code related comments.
+> It requires less typing and it just works when it comes to formatting code because it's simpler and does not clash with symbols that commonly appear in code.
 
 Jenkins users and maintainers are already well used to GitHub issues. 600 plugins and most core components are already using them.
 It is not uncommon to hear how do I report an issue to Jenkins or people not bothering due to account issues.
@@ -135,8 +136,11 @@ Historically most large open source projects used tools like Bugzilla and Jira. 
 - https://github.com/kubernetes
 - https://github.com/golang/go
 - https://github.com/rust-lang/rust
+- https://github.com/apache/maven
 
-The Swift organization migrated in https://forums.swift.org/t/swift-bugs-are-moving-to-github-issues-and-we-need-your-help/56125
+The Swift organization migrated in 2019: https://forums.swift.org/t/swift-bugs-are-moving-to-github-issues-and-we-need-your-help/56125
+
+And Maven in 2025: https://cwiki.apache.org/confluence/display/MAVEN/JIRA+to+GitHub+Issues+switching
 
 The key reasons to migrate away are:
 
