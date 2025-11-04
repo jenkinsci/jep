@@ -377,3 +377,5 @@ Validation will be done as part of the import checking that the total number of 
 - link:https://github.com/lemeurherve/jira-issues-importer/pull/3[Script used to import issues]
 - link:https://github.com/google/triage-party[Triage party app for GitHub issues]
 - link:https://www.kubernetes.dev/docs/guide/issue-triage/[Kubernetes issue triage guide]
+- link:https://spring.io/blog/2019/01/15/spring-framework-s-migration-from-jira-to-github-issues#background[Spring migration blog]
+- link:https://open-elements.com/posts/2025/08/08/jira-issue-to-github-issue-migration-in-apache-maven/[Apache Maven migration blog]
