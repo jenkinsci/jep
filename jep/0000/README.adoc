@@ -281,7 +281,7 @@ The runbook and experience developed in the core components migration will ease 
 Jira permissions are very open and anyone with an account is able to update any issue including labelling.
 With GitHub by default users need the `triage` permission to label and open / close issues.
 
-For Jenkins core issues we make use of ChatOps to allow people without privileges to do some triage themselves.
+For Jenkins core issues we make use of CommentOps to allow people without privileges to do some triage themselves.
 
 A person can add labels with:
 
