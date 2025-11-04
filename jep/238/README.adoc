@@ -113,7 +113,8 @@ Contributing guides in Jenkins core and jenkins.io document that Jenkins core co
 
 Jira is too disconnected from the code of Jenkins and the other core components.
 
-Nice write-up from https://spring.io/blog/2019/01/15/spring-framework-s-migration-from-jira-to-github-issues/#background:
+For similar reasons to Spring https://spring.io/blog/2019/01/15/spring-framework-s-migration-from-jira-to-github-issues/#background:
+
 > GitHub is the home of just about every open source project, many developers can be reasonably expected to have GitHub credentials.
 > As a result it has become untenable today to expect developers to maintain a separate login for the issue tracker of every open source project they depend on or want to report an issue against.
 >
