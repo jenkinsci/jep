@@ -366,9 +366,9 @@ Validation will be done as part of the import checking that the total number of 
 
 == Prototype Implementation
 
-- https://github.com/timja/jenkins-gh-issues-poc/issue
-- https://github.com/timja/jenkins-gh-issues-poc-06-18/issue <- second import
-- https://github.com/lemeurherve/jira-issues-importer
+- link:https://github.com/timja/jenkins-gh-issues-poc-06-18/issues[Import #1 2022/06/18]
+- link:https://github.com/timja-org/jenkins-gh-issues-poc-11-04/issues[Import #2 2025/11/04]
+- link:https://github.com/lemeurherve/jira-issues-importer[Migration tool]
 
 == References
 
