@@ -370,6 +370,34 @@ Validation will be done as part of the import checking that the total number of 
 - link:https://github.com/timja-org/jenkins-gh-issues-poc-11-04/issues[Import #2 2025/11/04]
 - link:https://github.com/lemeurherve/jira-issues-importer[Migration tool]
 
+== FAQ
+
+=== How do I find issues I've reported on Jira?
+
+In the GitHub issues search bar add `reported by: <your-jira-username>`.
+
+E.g. https://github.com/timja-org/jenkins-gh-issues-poc-11-06/issues?q=is%3Aissue%20%20reported%20by%3A%20kohsuke
+
+=== I watch quite a few issues in Jira, how can I quickly map Jira issues to GitHub issues?
+
+There's a report that will be produced as part of the migration that maps Jira issue keys to GitHub issue numbers.
+
+The format is:
+
+[source:json]
+----
+[
+  {
+    "jira": "JENKINS-76266",
+    "github": 1343
+  },
+  {
+    "jira": "JENKINS-76263",
+    "github": 1342
+  }
+]
+----
+
 == References
 
 - link:https://groups.google.com/g/jenkinsci-dev/c/GUFCfBM1j_4/m/T-AuPH8xAAAJ[Mailing list discussion]
