@@ -398,6 +398,20 @@ The format is:
 ]
 ----
 
+=== What is happening with issue attachments on Jira?
+
+GitHub doesn't support automatically uploading files to issues for security reasons.
+
+As part of the migration the issue attachments will be added as links which use the original Jira attachment URL.
+Images will render in the issue but other file types will be links.
+
+This means that there is a dependency on Jira remaining available for the attachments to be accessible.
+
+If we are looking to decommission the Jira instance then we will need to look at either:
+
+* Maintaining the existing links via a static site hosting the attachments
+* Migrating the attachments to a new location and updating the links in GitHub issues
+
 === The description doesn't render well in some cases, what gives?
 
 Jira uses a different markup language to GitHub.
