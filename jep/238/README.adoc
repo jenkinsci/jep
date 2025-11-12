@@ -412,6 +412,16 @@ If we are looking to decommission the Jira instance then we will need to look at
 * Maintaining the existing links via a static site hosting the attachments
 * Migrating the attachments to a new location and updating the links in GitHub issues
 
+=== The description doesn't render well in some cases, what gives?
+
+Jira uses a different markup language to GitHub.
+We're using an HTML export from Jira which does a pretty good job.
+We've also tried Jira markup to Markdown conversion but that had issues as well.
+
+The majority of issues render fine, the ones that don't look good are generally when there's HTML in the Jira issue description, e.g. XML content copied directly in the issue.
+
+We've accepted that some issues will need manually fixing up as they are reviewed.
+
 == References
 
 - link:https://groups.google.com/g/jenkinsci-dev/c/GUFCfBM1j_4/m/T-AuPH8xAAAJ[Mailing list discussion]
