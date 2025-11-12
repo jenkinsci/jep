@@ -398,6 +398,16 @@ The format is:
 ]
 ----
 
+=== The description doesn't render well in some cases, what gives?
+
+Jira uses a different markup language to GitHub.
+We're using an HTML export from Jira which does a pretty good job.
+We've also tried Jira markup to Markdown conversion but that had issues as well.
+
+The majority of issues render fine, the ones that mostly fail are when there's HTML in the Jira issue description, e.g. wrapped around a `noformat` or code block.
+
+We've accepted that some issues will need manually fixing up as they are reviewed.
+
 == References
 
 - link:https://groups.google.com/g/jenkinsci-dev/c/GUFCfBM1j_4/m/T-AuPH8xAAAJ[Mailing list discussion]
