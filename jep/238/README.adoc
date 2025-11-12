@@ -406,7 +406,8 @@ As part of the migration the issue attachments will be added as links which use 
 Images will render in the issue but other file types will be links.
 
 This means that there is a dependency on Jira remaining available for the attachments to be accessible.
-If we are looking to decommission the Jenkins instance then we will need to look at either:
+
+If we are looking to decommission the Jira instance then we will need to look at either:
 
 * Maintaining the existing links via a static site hosting the attachments
 * Migrating the attachments to a new location and updating the links in GitHub issues
