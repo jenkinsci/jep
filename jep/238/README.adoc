@@ -372,11 +372,28 @@ Validation will be done as part of the import checking that the total number of 
 
 == FAQ
 
-=== How do I find issues I've reported on Jira?
+=== How do I find issues I've reported or commented in on Jira?
 
-In the GitHub issues search bar add `reported by: <your-jira-username>`.
+In the GitHub issues search bar add `reporter=danielbeck`.
 
-E.g. https://github.com/timja-org/jenkins-gh-issues-poc-11-06/issues?q=is%3Aissue%20%20reported%20by%3A%20kohsuke
+E.g. https://github.com/timja-org/jenkins-gh-issues-poc-11-13/issues?q=is%3Aissue%20reporter%3Ddanielbeck
+
+We've added metadata hidden in the issue body and comments to aid searching:
+
+Issue description:
+
+* jira_issue_key
+* reporter
+* assignee
+* author
+
+Comments:
+* comment_author
+* jira_comment_id
+
+To find issues you've commented on: `comment_author=danielbeck`
+
+e.g. https://github.com/timja-org/jenkins-gh-issues-poc-11-13/issues?q=is%3Aissue%20comment_author%3Ddanielbeck
 
 === I watch quite a few issues in Jira, how can I quickly map Jira issues to GitHub issues?
 
