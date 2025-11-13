@@ -422,6 +422,14 @@ The majority of issues render fine, the ones that don't look good are generally 
 
 We've accepted that some issues will need manually fixing up as they are reviewed.
 
+=== Will a monorepo for all issues be used, e.g. jenkinsci/issues?
+
+No, each repository will have its own issue tracker. Searches and projects can be used to group issues across repositories.
+
+e.g:
+* `core` component to jenkinsci/jenkins
+* `packaging` component to jenkinsci/packaging
+
 == References
 
 - link:https://groups.google.com/g/jenkinsci-dev/c/GUFCfBM1j_4/m/T-AuPH8xAAAJ[Mailing list discussion]
