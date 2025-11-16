@@ -450,7 +450,7 @@ e.g:
 
 === How will issues with multiple components be handled?
 
-Any issues with the `core` component will go to jenkinsci/jenkins and they will be labelled with the other components.
+Any issues with the `core` or `cli` component will go to jenkinsci/jenkins and they will be labelled with the other components.
 
 Going forward issues should be filed in the most appropriate repository.
 
