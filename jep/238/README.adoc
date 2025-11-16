@@ -445,7 +445,23 @@ No, each repository will have its own issue tracker. Searches and projects can b
 
 e.g:
 * `core` component to jenkinsci/jenkins
+* `cli` component to jenkinsci/jenkins - label to associate with CLI
 * `packaging` component to jenkinsci/packaging
+
+=== How will issues with multiple components be handled?
+
+Any issues with the `core` component will go to jenkinsci/jenkins and they will be labelled with the other components.
+
+Going forward issues should be filed in the most appropriate repository.
+
+If it's an issue in a plugin then it should be filed there first.
+
+If an issue is created but needs fixes in another repository then:
+
+* A targeted issue can be filed and a reference to the original issue in a comment or the description - I think the majority
+* The issue can be moved
+  * This should only be done if it was misfiled, e.g. if the issue keeps being hit by people using a plugin but its caused by another plugin then it may be worth keeping it in the plugin that people hit it with so the issue is the most discoverable.
+
 
 == References
 
