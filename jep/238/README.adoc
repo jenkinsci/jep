@@ -386,8 +386,11 @@ Issue description:
 * reporter
 * assignee
 * author
+* jira_component
+* jira_label
 
 Comments:
+
 * comment_author
 * jira_comment_id
 
