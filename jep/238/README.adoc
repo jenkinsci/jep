@@ -438,6 +438,8 @@ We've also tried Jira markup to Markdown conversion but that had issues as well.
 
 The majority of issues render fine, the ones that don't look good are generally when there's HTML in the Jira issue description, e.g. XML content copied directly in the issue.
 
+To compensate for these issues, the raw content is stored in the body of the imported issues and comments themselves, behind a details block.
+
 We've accepted that some issues will need manually fixing up as they are reviewed.
 
 === Will a monorepo for all issues be used, e.g. jenkinsci/issues?
