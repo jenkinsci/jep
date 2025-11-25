@@ -384,6 +384,7 @@ We've added metadata hidden in the issue body and comments to aid searching:
 Issue description:
 
 * jira_issue_key
+* jira_issue_type
 * reporter
 * assignee
 * author
