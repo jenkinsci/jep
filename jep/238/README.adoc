@@ -368,6 +368,7 @@ Validation will be done as part of the import checking that the total number of 
 
 - link:https://github.com/timja/jenkins-gh-issues-poc-06-18/issues[Import #1 2022/06/18]
 - link:https://github.com/timja-org/jenkins-gh-issues-poc-11-04/issues[Import #2 2025/11/04]
+- link:https://github.com/timja-org/jenkins-gh-issues-poc-11-23/issues[Import #3 2025/11/23]
 - link:https://github.com/lemeurherve/jira-issues-importer[Migration tool]
 
 == FAQ
@@ -383,6 +384,7 @@ We've added metadata hidden in the issue body and comments to aid searching:
 Issue description:
 
 * jira_issue_key
+* jira_issue_type
 * reporter
 * assignee
 * author
@@ -396,7 +398,7 @@ Comments:
 
 To find issues you've commented on: `comment_author=danielbeck`
 
-e.g. https://github.com/timja-org/jenkins-gh-issues-poc-11-13/issues?q=is%3Aissue%20comment_author%3Ddanielbeck
+e.g. https://github.com/timja-org/jenkins-gh-issues-poc-11-23/issues?q=is%3Aissue%20comment_author%3Ddanielbeck
 
 === I watch quite a few issues in Jira, how can I quickly map Jira issues to GitHub issues?
 
@@ -422,15 +424,11 @@ The format is:
 
 GitHub doesn't support automatically uploading files to issues for security reasons.
 
-As part of the migration the issue attachments will be added as links which use the original Jira attachment URL.
-Images will render in the issue but other file types will be links.
+As part of the migration Jira attachments have been uploaded to https://github.com/jenkinsci/attachments-from-jira-issues-core-cli for `core` and `cli` component issues (1.39Go), and their original link replaced by those mappings in imported issues and comments.
 
-This means that there is a dependency on Jira remaining available for the attachments to be accessible.
+A mapping to these attachments file can be found at https://github.com/jenkinsci/artifacts-from-jira-issues/blob/main/mappings/jira_attachments_repo_id_filename.txt.
 
-If we are looking to decommission the Jira instance then we will need to look at either:
-
-* Maintaining the existing links via a static site hosting the attachments
-* Migrating the attachments to a new location and updating the links in GitHub issues
+Attachments from other components won't be stored in the same repository as GitHub has a maximum size of 2Go per repository.
 
 === The description doesn't render well in some cases, what gives?
 
@@ -439,6 +437,8 @@ We're using an HTML export from Jira which does a pretty good job.
 We've also tried Jira markup to Markdown conversion but that had issues as well.
 
 The majority of issues render fine, the ones that don't look good are generally when there's HTML in the Jira issue description, e.g. XML content copied directly in the issue.
+
+To compensate for these issues, the raw content is stored in the body of the imported issues and comments themselves, behind a details block.
 
 We've accepted that some issues will need manually fixing up as they are reviewed.
 
