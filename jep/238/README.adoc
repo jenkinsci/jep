@@ -465,6 +465,16 @@ If an issue is created but needs fixes in another repository then:
 * The issue can be moved
   * This should only be done if it was misfiled, e.g. if the issue keeps being hit by people using a plugin but its caused by another plugin then it may be worth keeping it in the plugin that people hit it with so the issue is the most discoverable.
 
+=== How can I get to a GitHub issue from a Jira issue key?
+
+There is a service available that redirects from a Jira issue key to the corresponding GitHub issue.
+
+https://issue-redirect.jenkins.io/issue/1
+
+Will redirect to the GitHub issue corresponding to JENKINS-1.
+
+Alternatively a comment is added to each comment on Jira with a link.
+The issue-redirect service is used throughout jenkins.io documentation.
 
 == References
 
