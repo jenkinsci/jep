@@ -473,7 +473,7 @@ https://issue-redirect.jenkins.io/issue/1
 
 Will redirect to the GitHub issue corresponding to JENKINS-1.
 
-Alternatively a comment is added to each comment on Jira with a link.
+Alternatively a comment is added to each issue on Jira with a link.
 The issue-redirect service is used throughout jenkins.io documentation.
 
 == References
