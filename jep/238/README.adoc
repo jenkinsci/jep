@@ -133,6 +133,7 @@ Whereas with GitHub issue reporting the barrier is far lower.
 The Jenkins Infrastructure project migrated to GitHub in January 2022 and has had a far higher engagement with users since migrating to GitHub.
 
 Historically most large open source projects used tools like Bugzilla and Jira. Now there are many that use GitHub:
+
 - https://github.com/apple/swift
 - https://github.com/kubernetes
 - https://github.com/golang/go
@@ -154,9 +155,11 @@ On clicking a commit you can see all the releases it appears on.
 When a PR is merged in GitHub it can automatically close an issue.
 
 A developer is already in GitHub and doesn't have to load another system. Jira is manually maintained in respect of:
+
 - status
 - links to work
 - released in
+
 The data quality in Jira is lower than in GitHub due to it not getting as updated as often as GitHub.
 
 Using GitHub means there is no relying on Jenkins project infrastructure like the account app.
@@ -202,6 +205,7 @@ It would enable issue bounty systems that integrate with GitHub as requested in 
 With GitHub actions we can easily integrate additional automated features into our workflow.
 
 Here are some ideas for features that we can add that we don't have in Jira:
+
 - Newcomer bot
 - Saved replies (aka canned responses)
 - Automatic labelling based on criteria
@@ -227,6 +231,7 @@ While linux foundation runs Jira for us there is still some cost involved to the
 link:https://github.com/google/triage-party[Triage party] is available to us to improve our issue triage and management of issues.
 
 Bringing features like:
+
 - Highlighting latency by project members (responded: +15d)
 - Comment popularity (comments-per-month: >0.9)
 - 'Multi-player triage' have multiple people triaging together splitting the issues
@@ -256,6 +261,7 @@ Users in Jira were able to configure notifications based off of a saved query, w
 GitHub's built-in feature only allows you to subscribe to all issues or subscribe individually as you see an issue.
 
 There are a couple of workarounds:
+
 - link:https://github.com/orgs/github-community/discussions/16645[Subscribe to labels in GitHub]
 - link:https://github.com/bytecodealliance/subscribe-to-label-action[]
 - link:https://github.com/rseanhall/issue-label-watcher[]
@@ -269,6 +275,7 @@ As of November 2025 750 repositories have GitHub issues, (27% of repositories). 
 
 GitHub projects can be used to group issues that are across components.
 If that project doesn't use GitHub issues then either:
+
 - A tracking issue can be created that links to a Jira epic or query
 - A repo is created for tracking individual issues and those issues link to an issue in the plugins issue tracker
 
