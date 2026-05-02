@@ -77,7 +77,7 @@
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | link:https://github.com/slide[Alex{nbsp}Earl]
 
-| :speech_balloon:{nbsp}Draft
+| :lock:{nbsp}Final
 | link:15/README.adoc[JEP-15: Jenkins funding on LFX Crowdfunding]
 | link:https://github.com/oleg-nenashev[Oleg{nbsp}Nenashev]
 | TBD
