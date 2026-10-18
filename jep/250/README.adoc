@@ -96,7 +96,7 @@ A backend is written from this section.
 
 === Files
 
-* *`+XmlFile+`* routes `+read+`, `+unmarshal+`, `+write+`, `+exists+`, `+delete+`, and the raw methods (`+readRaw+`, `+readRawBytes+`, `+asString+`, `+writeRaw+`) to the store when `+StoreRouting+` routes its file. `+TextFile+` routes the same way.
+* *`+XmlFile+`* routes `+read+`, `+unmarshal+`, `+write+`, `+exists+`, `+delete+`, and the raw methods (`+readRaw+`, `+readRawBytes+`, `+asString+`, `+writeRaw+`) to the store when `+StoreRouting+` routes its file. `+TextFile+` is not routed: no file core's routing shares, nor any a `+SharedFiles+` declares today, is read or written through it.
 * *Versions seen.* Core keeps, per key, the version this controller last loaded or wrote. Every `+XmlFile+` for the key shares it, and a write expects it. A write to a key this controller has never read is create-only (`+ABSENT+`), so it cannot overwrite something it never saw.
 * *Raw reads* (REST `+config.xml+`, snapshots for `+getFile()+`) only look: they do not change the version seen.
 * *Errors.* A store that cannot be reached is an error, never an absence: `+exists()+` throws `+UncheckedIOException+`, and callers that would treat a missing file as deleted do not run.
@@ -107,6 +107,7 @@ A backend is written from this section.
 
 * A save whose compare-and-set fails has changed something another controller changed since this one loaded it.
 * *Default: refuse and reload.* The save fails with `+ConflictException+`, and the object is reloaded from the stored version. A web request sees the refusal as a conflict: a form shows it and a `+config.xml+` upload gets an error, so the user reloads and redoes the change. A background save is logged. A save never overwrites a change made elsewhere, and a key deleted elsewhere since it was loaded is not created again by a save here.
+* *Refused while starting.* A controller still starting (configuration as code being applied, say) does not fail because another controller saved the same file first: the save is refused and the object reloaded as for any refused save, the refusal is logged as a warning, and an administrative monitor lists the files not saved, so that an administrator sees that another controller's version stands.
 * *`+StoredConfigReconciler+`* (extension point) can do better. Reconcilers are consulted in ordinal order.
 ** `+merge(key, base, mine, theirs)+` returns content to write over `+theirs+`, or null to refuse. It is called only when a base (what this controller last loaded) is known. The merged content is written as a compare-and-set against `+theirs+`, and the object is reloaded from it.
 ** `+reload(file, object, entry)+` brings a live object up to date with stored content, or returns false to leave it to the default.
@@ -120,8 +121,9 @@ A backend is written from this section.
 ** global configuration, descriptors, users and nodes are reloaded (`+StaticStateApplier+`); descriptors needed before plugins start are read from the store at startup (`+EarlyDescriptors+`)
 ** an event at or below the version this controller already has is ignored
 ** a key with a segment that names no file (empty, `+.+` or `+..+`) is ignored, and never turned into a path
-** a change that fails to apply, for example because the store cannot be reached for a moment, is retried with backoff
-* *Reloading an object* happens under the object's own lock, and not while a save of it is pending here. The default is the semantics of `+updateByXml+`: `+XmlFile.unmarshalNullingOut+` followed by `+onLoad+`, so a field absent from the stored form is reset. For the `+Jenkins+` object, the subset `+Jenkins.reloadGlobalConfig+` handles is reloaded, not the whole object. Core's setters on `+Jenkins+` assign under the object's lock, as `+save()+` does.
+** a change that fails to apply, for example because the store cannot be reached for a moment, is retried with backoff, up to every five minutes, until it applies or a newer change of its key does
+** every 15 minutes (`+-Djenkins.persistence.ItemChangeApplier.catchUpMinutes+`), one run at a time, the stored versions are compared with those this controller holds, with one listing per item group (and of users and nodes) and one read per item and per other key held; a difference is applied as the change that would have made it, so that a change whose event was lost, or which could not be applied, does not stay missing until its key changes again
+* *Reloading an object* happens under the object's own lock, and not while a save of it is pending here. The default is the semantics of `+updateByXml+`: `+XmlFile.unmarshalNullingOut+` followed by `+onLoad+`, so a field absent from the stored form is reset. As in `+updateByXml+`, `+onLoad+` runs once the object's lock is released: it takes other locks (a job's builds lock), which a build being created holds while it asks for the job's lock. For the `+Jenkins+` object, the subset `+Jenkins.reloadGlobalConfig+` handles is reloaded, not the whole object. Core's setters on `+Jenkins+` assign under the object's lock, as `+save()+` does.
 * *Writes made while applying* are not written back to the store. `+PersistenceStores.isApplyingRemoteChange()+` tells listeners (`+ItemListener+`, `+SaveableListener+`) that what they see happened elsewhere, so a plugin that cleans up external data on deletion does not do it again.
 * *`+RemoteChangeHandler+`* (extension point) receives every changed key that core does not route, the reserved `+_+` keys included.
 * *`+RemoteItemGroup+`* is implemented by item groups (folders) that can take an item another controller created in them without reloading the whole group with its children's builds, triggers and computations.
@@ -131,7 +133,7 @@ A backend is written from this section.
 * *Enumeration.* An item may exist only in the store (created elsewhere, or on a controller with a fresh home). `+Jenkins+` and `+ItemGroupMixIn+` load the union of local directories and stored items. `+PersistenceStores.storedItemNames(dir)+` lists the stored ones, for item groups in plugins (cloudbees-folder).
 * *Create* writes the new configuration create-only, so two controllers creating the same name do not both succeed.
 * *Rename and move* are one `+PersistenceStore.move+` of the item's routed keys (its configuration and its descendants'), with three preconditions checked by the store in the same step: the item's `+config.xml+` at the version this controller holds; the destination parent's `+config.xml+` `+PRESENT+` (unless it is the root); and nothing at the destination (`+ABSENT+`). A failure is reported as the existing rename and move errors. Two overlapping moves (A into B while B moves into A) are serialised by the store: the second finds a precondition broken. If the local file system move then fails, the store move is reversed with the same checks. Only configuration moves, so a move costs one store operation, whatever the item's history.
-* *Delete* deletes the item's routed keys through the store.
+* *Delete* deletes the item's routed keys through the store. Deleting an item which this controller holds at a version but which is no longer stored (renamed, moved or deleted elsewhere, not applied here yet) is a conflict: nothing is deleted, here or in the store, and listeners that delete the item's builds are not called. A save of an item deleted here (a build completing, say), or of a child of a folder while the folder is moved, is refused rather than storing the item again at its old key.
 
 === Item identity
 
@@ -154,7 +156,7 @@ A backend is written from this section.
 
 === Without a provider
 
-Nothing changes. Every path above is gated on `+PersistenceStores.get()+` returning a store, at these seams: `+XmlFile+` and `+TextFile+` routing; item enumeration, creation, rename, move and deletion; `+Nodes+`, `+User+` and `+Jenkins+` loading; the confidential store; the applier, which is never started. Without a store, no `+itemUuid+` is written, no file is created or saved that was not before, and core registers no extension that replaces a default one.
+Nothing changes. Every path above is gated on `+PersistenceStores.get()+` returning a store, at these seams: `+XmlFile+` routing; item enumeration, creation, rename, move and deletion; `+Nodes+`, `+User+` and `+Jenkins+` loading; the confidential store; the applier, which is never started. Without a store, no `+itemUuid+` is written, no file is created or saved that was not before, and core registers no extension that replaces a default one.
 
 == Motivation
 
@@ -198,7 +200,7 @@ There are no new infrastructure requirements for Jenkins core. The reference bac
 
 == Open questions
 
-* *Periodic reconciliation.* The store's contract makes lost events a backend bug, and a change that fails to apply is retried. Whether core should also compare stored versions with those it last applied, now and then, to repair a controller after a backend bug, is not decided.
+None.
 
 == Testing
 
