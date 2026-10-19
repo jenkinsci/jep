@@ -34,7 +34,7 @@ endif::[]
 | TBD
 
 | Requires
-| JEP-250, JEP-255a
+| JEP-250, JEP-255
 |===
 
 == Abstract
@@ -75,8 +75,8 @@ Why a new extension point: `+RunMap+` is final and has no hook for where builds 
 ==== Records and snapshots
 
 * *Publishing.* When a build is finalized, its controller publishes:
-** a snapshot of the build directory to blob storage (`+items/<uuid>/builds/<N>/files.tgz+`, JEP-255a), first
-** then the record to the store (`+_items/<uuid>/builds/<N>/build.xml+`), fenced by the build's lease (`+writeIfHeld+`, JEP-255a), so a controller that lost the build cannot publish over the new owner
+** a snapshot of the build directory to blob storage (`+items/<uuid>/builds/<N>/files.tgz+`, JEP-255), first
+** then the record to the store (`+_items/<uuid>/builds/<N>/build.xml+`), fenced by the build's lease (`+writeIfHeld+`, JEP-255), so a controller that lost the build cannot publish over the new owner
 * *What the snapshot leaves out:* the record itself, the log (shipped separately, below), `+archive/**+` (an artifact manager keeps artifacts, JEP-252), temporary files, and state only needed while a build runs, which for Pipelines is `+program.dat+`, `+workflow/**+` and `+stashes/**+` (save points carry it, JEP-252). Plugins can exclude more through an extension point of the cluster plugin. None of this is named in core.
 * *The index.* A job's builds are the union of its local build directories and the store's records (`+BuildRecordSource.numbers+`). A build only in the store is materialised into the home (record and snapshot) when first loaded (`+retrieve+`).
 * *Changes from elsewhere* arrive through core's `+RemoteChangeHandler+` (JEP-250) as changes to `+_items/<uuid>/…+` keys:
@@ -92,7 +92,7 @@ Why a new extension point: `+RunMap+` is final and has no hook for where builds 
 * *Builds nothing can resume* (their controller died, and they are not resumable Pipelines) are closed with an ABORTED record whose console has what the build had printed, then why it ended (JEP-252).
 * *Failed publication.* A build whose publication fails (the store was unreachable) stays running for the cluster, and publication is retried until it succeeds.
 * *Renames and moves* change nothing here: records, snapshots and logs are under the job's identity.
-* *Deletion.* Deleting a job deletes everything under its identity, records and blobs, on the controller where it was deleted (JEP-255a). Deleting a build deletes its record and its blobs.
+* *Deletion.* Deleting a job deletes everything under its identity, records and blobs, on the controller where it was deleted (JEP-255). Deleting a build deletes its record and its blobs.
 
 ==== Build numbers
 
@@ -109,7 +109,7 @@ Pipeline logs use the external log storage API (JEP-210, `+LogStorageFactory+`),
 * *Durable at save points* (MUST). Everything written before a Pipeline save point MUST be stored before the save point is (JEP-252). A controller resuming from it then continues the log where the save point left off, with no lines missing or repeated. An implementation that buffers asynchronously (CloudWatch batches) MUST flush there.
 * *Fenced by the log store* (MUST). An append states the length its writer knows the log to have, and the store MUST refuse it unless the log is exactly that length. The refusal MUST be decided by the store as part of the write, not from a controller's cache of where the log ends or a listing followed by a write: a controller that was paused and lost the build's lease could otherwise append at an offset the new owner has already used. Two appends at the same offset MUST NOT both succeed. A controller that may have lost the build's lease also stops writing (JEP-252), but that is the second line of defence.
 
-*The cluster plugin's log storage* (`+BlobLogStorage+`, over the blob store's `+LogBlobs+`, JEP-255a):
+*The cluster plugin's log storage* (`+BlobLogStorage+`, over the blob store's `+LogBlobs+`, JEP-255):
 
 * The build writes its local `+log+` and `+log-index+`. A shipper appends what is new to the stored log: when 32 KiB is pending, 3 s after the last shipment, before each save point and at the end of the build. It pauses while this controller's membership may have lapsed. A new owner continues where the stored log ends.
 * *How a log is stored is up to the blob store plugin:*

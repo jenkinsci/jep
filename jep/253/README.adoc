@@ -34,7 +34,7 @@ endif::[]
 | TBD
 
 | Requires
-| JEP-250, JEP-252, JEP-255a
+| JEP-250, JEP-252, JEP-255
 |===
 
 == Abstract
@@ -70,8 +70,8 @@ The words MUST, MUST NOT, SHOULD and MAY are used as in RFC 2119. Core API is `+
 
 ==== Triggers
 
-* *Claims.* Before running a tick, a controller claims `+(item, trigger, tick)+` in the store (JEP-255a), and only the first claim runs it. A tick is never run twice.
-* *Affinity.* Each item's triggers belong to one controller, by hash over the *ready* members (JEP-255a): a controller that has just started and has no triggers yet is not given ticks. A controller leaving moves its items to the others.
+* *Claims.* Before running a tick, a controller claims `+(item, trigger, tick)+` in the store (JEP-255), and only the first claim runs it. A tick is never run twice.
+* *Affinity.* Each item's triggers belong to one controller, by hash over the *ready* members (JEP-255): a controller that has just started and has no triggers yet is not given ticks. A controller leaving moves its items to the others.
 * *Catching up.* A tick missed because the controller that owned it was down, or not ready, is run by another. When an owner is found gone, the controller that now owns an item runs each of its triggers whose tick was due and has not been claimed since, once however many ticks were missed (coalesced), if the tick is within a bounded window (15 minutes by default). A nightly job whose owner was being restarted at its time still runs once. The claim still prevents a second run.
 * *What can still be missed:* a tick while the store is unreachable (it cannot be claimed, and is not caught up), a tick while controllers disagree about its owner, and a tick older than the window. So a trigger runs *at most once per tick*, and in the common failures exactly once.
 * *Folder computations* (a multibranch project's branch indexing, an organization folder's scan) are not jobs and may be requested of any controller (a webhook, a user). They run on one controller at a time per folder, through a lease in the store: scans running at once would each find a new branch before any recorded its revision, and each would schedule its first build. While the store is unreachable the lease cannot be taken and scans may overlap. A scan schedules a branch's first build before it records the revision built; A standalone branch-api change makes a scan that finds no recorded revision take the revision of the branch's last build started by indexing or an event, so a scan interrupted in between does not build that revision again.
@@ -83,20 +83,20 @@ The words MUST, MUST NOT, SHOULD and MAY are used as in RFC 2119. Core API is `+
 
 ==== Shared queue
 
-* *Records.* Each item is a record in the store (`+ClusterQueue+`, JEP-255a), identified by the item's identity, with its name for display only.
+* *Records.* Each item is a record in the store (`+ClusterQueue+`, JEP-255), identified by the item's identity, with its name for display only.
 * *Ids.* Queue item ids come from a cluster sequence (`+QueueIdStrategy+`), so an item has the same id everywhere. While the store is unreachable, an id from a disjoint local range is used; such an item is not shared, folded or cancellable elsewhere, waits until the store answers before it starts, and is lost with its controller.
 * *Mirroring.* An item entering a controller's queue is published as WAITING and mirrored into every controller's queue (`+scheduleShared+`), so `+queue/item/<id>+` and cancel work anywhere, from the local copy.
 * *Folding.* Duplicate requests fold across controllers, as on one controller (`+onFolded+`, `+updateShared+`).
-* *Claiming.* A buildable item is started by the controller that claims it, with a compare-and-set (JEP-255a); the others get `+handOff+`:
+* *Claiming.* A buildable item is started by the controller that claims it, with a compare-and-set (JEP-255); the others get `+handOff+`:
 ** the requesting controller goes first, for a grace period (10 s), since it may hold the agents the build needs
 ** a label-bound item goes where an agent with the label is; an agent being provisioned is reserved for its item (JEP-257)
 ** after that, any controller that can run it may claim it (`+QueueStartGate+`)
 ** an item is pinned to its origin only where the waiting step must watch it start (pipeline-build-step's `+waitForStart+`, asked through `+BuildTriggerRelay.pinsToOrigin+`, JEP-252), or when it carries a file parameter, whose file is only on that controller; a pin to a controller that is gone lapses
 * *Recording starts.* A start is recorded only while this controller still has the item claimed, as a compare-and-set. If another controller reclaimed the item meanwhile (this one was paused), the build that started here is stopped before it does any work.
 * *An item that makes no build* (its task returns none, or throws) has its record cancelled, and lets go of its job's exclusive lease.
-* *Reclaim.* Items claimed by a controller that is gone go back to WAITING on the next maintenance pass (every 15 s), at once when a controller is seen leaving, and never right after a store outage (JEP-255a).
+* *Reclaim.* Items claimed by a controller that is gone go back to WAITING on the next maintenance pass (every 15 s), at once when a controller is seen leaving, and never right after a store outage (JEP-255).
 * *Blocking.*
-** A job that does not allow concurrent builds runs one build at a time across the cluster, through an exclusive lease on the job (`+BuildLeases+`, JEP-255a). It is taken when an item of the job is claimed and when a build of it is adopted, and released when no build or claimed item of the job is left on the controller. Another controller's items of the job stay in the queue, blocked, while the lease is held. A controller holding the lease MUST check it with `+holds()+` before it claims the next item of the job.
+** A job that does not allow concurrent builds runs one build at a time across the cluster, through an exclusive lease on the job (`+BuildLeases+`, JEP-255). It is taken when an item of the job is claimed and when a build of it is adopted, and released when no build or claimed item of the job is left on the controller. Another controller's items of the job stay in the queue, blocked, while the lease is held. A controller holding the lease MUST check it with `+holds()+` before it claims the next item of the job.
 ** Blocking on upstream and downstream builds running on other controllers uses `+ExternalBuilds+` (JEP-252).
 * *Deleting or renaming a job* cancels its started records; renaming changes nothing else, since records are keyed by identity.
 
@@ -139,7 +139,7 @@ Queue items keep their authentication (`+QueueItemAuthenticator+`), which is ser
 
 == Infrastructure Requirements
 
-The stores of JEP-250 and JEP-255a. Nothing else is new.
+The stores of JEP-250 and JEP-255. Nothing else is new.
 
 == Testing
 

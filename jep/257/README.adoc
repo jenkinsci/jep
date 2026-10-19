@@ -34,7 +34,7 @@ endif::[]
 | TBD
 
 | Requires
-| JEP-253, JEP-255a
+| JEP-253, JEP-255
 |===
 
 == Abstract
@@ -52,7 +52,7 @@ Core's part is one method of JEP-253's `+QueueStartGate+`. The kubernetes plugin
 
 * *Demand counted once.* `+NodeProvisioner+` counts a queue item's demand only where `+QueueStartGate.countsForProvisioning(item)+` (core, JEP-253) allows it; without a gate, everywhere, as now. The cluster plugin's gate allows it on the controller that will start the item: the one that requested it, or that claimed it in the shared queue. Mirrored items elsewhere do not provision. While the store cannot be reached, the gate allows it, so clouds other than kubernetes may over-provision then.
 * *Reservations.* An agent provisioned for a queue item reserves the item (`+queue/reserved/<id>+`). Other controllers wait for it instead of starting the item on an agent they would provision too.
-* *Caps* across the cluster, through counters in the store (`+Counters+`, JEP-255a): each controller's share of a cloud's and template's cap. The kubernetes plugin gains *`+ClusterProvisioningLimits+`* (extension point, `+@Restricted(Beta.class)+` in the plugin; no core dependency): when one is installed, a new agent is admitted only if it fits both the local counts and the implementation's. It is asked outside the plugin's lock, so a slow store does not stall other registrations, and a refusal or an exception releases the local reservation (provisioning fails closed). Counts are keyed by cloud name and template *name* (a template's id is random per controller unless set). The cluster plugin implements it. Agents a controller still has after a restart with its home are counted again under its new origin when it starts. A dead controller's share lapses with its membership, and its counter rows are deleted. A counter back at zero is deleted too, so Pipelines declaring their own `+podTemplate+` (a template per build) leave no rows behind; an hourly pass prunes any left.
+* *Caps* across the cluster, through counters in the store (`+Counters+`, JEP-255): each controller's share of a cloud's and template's cap. The kubernetes plugin gains *`+ClusterProvisioningLimits+`* (extension point, `+@Restricted(Beta.class)+` in the plugin; no core dependency): when one is installed, a new agent is admitted only if it fits both the local counts and the implementation's. It is asked outside the plugin's lock, so a slow store does not stall other registrations, and a refusal or an exception releases the local reservation (provisioning fails closed). Counts are keyed by cloud name and template *name* (a template's id is random per controller unless set). The cluster plugin implements it. Agents a controller still has after a restart with its home are counted again under its new origin when it starts. A dead controller's share lapses with its membership, and its counter rows are deleted. A counter back at zero is deleted too, so Pipelines declaring their own `+podTemplate+` (a template per build) leave no rows behind; an hourly pass prunes any left.
 * *Cloud agents are local.* Nodes that are `+AbstractCloudSlave+`s are not shared through the store (JEP-250 routing). Each controller manages and cleans up only its own. A cloud whose nodes are not `+AbstractCloudSlave+`s has them shared like static nodes, and needs to change for a cluster. Static nodes are shared; an outbound static node is connected by one controller, through a launch lease (JEP-254).
 * *Placement.* A Pipeline whose `+node+` label only another controller can serve is handed over to it (JEP-252). While an outbound static node's holder is live and has idle capacity for a label, other controllers do not provision cloud agents for it (JEP-254).
 * *Workspaces on pods.* An agent pod belongs to the controller that started it and goes with it. A build adopted after its controller died gets a new pod with an empty workspace, so files a later stage needs are carried with `+stash+`/`+unstash+` through an artifact manager keeping them in shared storage (JEP-202; the chart configures azure-artifact-manager).
@@ -78,7 +78,7 @@ Unchanged: clouds use their configured credentials on each controller. Counters 
 
 == Infrastructure Requirements
 
-The infrastructure of JEP-255b. The acceptance script runs the Helm chart on a Kubernetes cluster (kind).
+The infrastructure of JEP-255. The acceptance script runs the Helm chart on a Kubernetes cluster (kind).
 
 == Testing
 

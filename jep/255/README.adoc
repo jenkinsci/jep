@@ -1,4 +1,4 @@
-= JEP-255a: Cluster coordination: membership, leases and the cluster store
+= JEP-255: Cluster coordination: membership, leases and the cluster store
 :toc: preamble
 :toclevels: 3
 ifdef::env-github[]
@@ -13,7 +13,7 @@ endif::[]
 [cols="1h,1"]
 |===
 | JEP
-| 255a
+| 255
 
 | Title
 | Cluster coordination: membership, leases and the cluster store
@@ -48,7 +48,7 @@ Several controllers sharing one JEP-250 store need more than a key-value store: 
 * the *layout*: where the plugin keeps what, keyed by item identity (JEP-250)
 * *how a controller joins and leaves*, and how the cluster behaves when the store is unreachable
 
-None of this is in Jenkins core. Core provides the key-value SPI (JEP-250) and the extension points of JEP-251 to JEP-257; this JEP is the contract between the `+cluster+` plugin and its backends (`+cluster-postgresql+`, `+cluster-azure-blob+`, `+cluster-s3+`). How to install and operate a cluster is in JEP-255b.
+None of this is in Jenkins core. Core provides the key-value SPI (JEP-250) and the extension points of JEP-251 to JEP-257; this JEP is the contract between the `+cluster+` plugin and its backends (`+cluster-postgresql+`, `+cluster-azure-blob+`, `+cluster-s3+`). How to install and operate a cluster is not specified here: the operations guide lives with the cluster plugin (link:https://github.com/timja/cluster-plugin/blob/main/docs/operating-a-cluster.md[docs/operating-a-cluster.md] in timja/cluster-plugin).
 
 == Specification
 
@@ -130,11 +130,11 @@ Schema changes must not stop a running cluster, and old and new controllers run 
 
 * *Expand*, at startup, in the schema transaction: only changes that take no time, such as nullable columns. Indexes are built concurrently, outside the transaction, so writes go on.
 * *Backfill*, in the background: batches of rows, each in a transaction that also records a cursor. One controller does it at a time, and another takes over from the cursor if that one leaves. New code writes the new form itself, so the backfill only covers rows written before.
-* *Contract*, once the backfill is done and no live controller speaks an older protocol than the migration needs: in one transaction, it first converts the rows older controllers wrote in the old form after the backfill passed them, then enforces the new constraints. From then on that protocol is the cluster's floor. What this means for rolling back is in JEP-255b.
+* *Contract*, once the backfill is done and no live controller speaks an older protocol than the migration needs: in one transaction, it first converts the rows older controllers wrote in the old form after the backfill passed them, then enforces the new constraints. From then on that protocol is the cluster's floor. What this means for rolling back is described in the cluster plugin's operations guide.
 
 === Joining and leaving
 
-There is no join step: no token, UI, CLI or API to add a controller. A controller is a member because it is configured for the cluster's stores, and it stops being one when it stops heartbeating. What a controller needs (the stores, the cluster's key material, a name and an internal URL, a compatible version) is listed in JEP-255b.
+There is no join step: no token, UI, CLI or API to add a controller. A controller is a member because it is configured for the cluster's stores, and it stops being one when it stops heartbeating. What a controller needs (the stores, the cluster's key material, a name and an internal URL, a compatible version) is listed in the cluster plugin's operations guide.
 
 On start, a controller:
 
@@ -218,11 +218,12 @@ Liveness uses the store's clock only, so skew between controllers cannot cause o
 
 == Infrastructure Requirements
 
-The plugins (`+cluster+`, `+cluster-postgresql+`, `+cluster-azure-blob+`, `+cluster-s3+`) need repositories in the Jenkins organisation, and Docker in their CI: their tests run PostgreSQL, Azurite and an S3-compatible store in containers (Testcontainers). Where they will live is not decided (JEP-255b).
+The plugins (`+cluster+`, `+cluster-postgresql+`, `+cluster-azure-blob+`, `+cluster-s3+`) need repositories in the Jenkins organisation, and Docker in their CI: their tests run PostgreSQL, Azurite and an S3-compatible store in containers (Testcontainers). Where they will live is not decided. The Helm chart needs a home too (jenkinsci/helm-charts, or next to the plugins), and the acceptance scripts need a Kubernetes cluster (kind) and a decision on who runs them after acceptance and where they live (for example ATH, or a repository of their own).
 
 == Open questions
 
 * *Duplicate names.* Bound-object ids and forwarding (JEP-254) use a controller's name. Should a controller refuse to start while a live member has its name, or should ids carry the origin instead?
+* *When to contract.* Should Contract of a migration be started by an operator, or wait for a grace period after a roll, so that rolling back by image stays possible for a time?
 * *Coordination without Postgres.* The facets are written so that another backend (etcd, a log-backed store) can implement them; none exists yet.
 
 == Testing
@@ -237,9 +238,10 @@ The plugins (`+cluster+`, `+cluster-postgresql+`, `+cluster-azure-blob+`, `+clus
 
 * *Cluster plugins* (link:https://github.com/timja/cluster-plugin[timja/cluster-plugin]): the SPI in `+io.jenkins.plugins.cluster.spi+` (`+ClusterStore+`, `+BuildLeases+`, `+LaunchLeases+`, `+ClusterQueue+`, `+ClusterBlobStore+`, `+Keys+`), `+PostgresPersistenceStore+`, `+AzureBlobStore+`, `+S3BlobStore+`, `+PeerVersionCheck+`, `+KeyCheck+`, `+SchemaMigrations+`, `+MemberStatus+`.
 * *Core:* none beyond JEP-250.
+* *configuration-as-code:* prototype branch `+cnj/t15-keep-undeclared-nodes+` (`+keepUndeclaredNodes+`): every controller applies JCasC as it starts, through the shared store, so one controller applying its YAML must not delete the nodes the others hold.
 * *Evidence:* the acceptance scripts named under Testing print the measurements quoted in this JEP. The prototype's write-ups of those runs are available on request.
 
 == References
 
 * The set of JEPs this one belongs to is listed in link:../250/README.adoc[JEP-250].
-* How to install, upgrade, back up and restore a cluster: link:../255b/README.adoc[JEP-255b].
+* How to install, upgrade, back up and restore a cluster is not a JEP: the operations guide lives with the cluster plugin (link:https://github.com/timja/cluster-plugin/blob/main/docs/operating-a-cluster.md[docs/operating-a-cluster.md] in timja/cluster-plugin).

@@ -34,7 +34,7 @@ endif::[]
 | TBD
 
 | Requires
-| JEP-250, JEP-255a
+| JEP-250, JEP-255
 |===
 
 == Abstract
@@ -69,7 +69,7 @@ Core gains two small hooks, both useful on their own: `+PluginArchiveListener+`,
 
 === Through a load balancer
 
-* *The progress page.* Update-center jobs are in the memory of the controller running them, so requests for the install progress (`+pluginManager/updates/…+`, `+updateCenter/{body,installStatus,incompleteInstallStatus,api}+`) are forwarded to that controller (JEP-254): the one named by a cookie set when the install was requested, otherwise the member reporting installs in progress with its heartbeat (JEP-255a).
+* *The progress page.* Update-center jobs are in the memory of the controller running them, so requests for the install progress (`+pluginManager/updates/…+`, `+updateCenter/{body,installStatus,incompleteInstallStatus,api}+`) are forwarded to that controller (JEP-254): the one named by a cookie set when the install was requested, otherwise the member reporting installs in progress with its heartbeat (JEP-255).
 * *A notice on the plugin manager's pages.* Core's *`+jenkins.plugins.PluginManagerNotice+`* (extension point, `+@Restricted(Beta.class)+`) has `+isVisible()+` and a `+notice.jelly+` view, included on the plugin manager's pages (installed, available, updates, advanced, download progress) for each visible notice. The `+cluster+` plugin's says that changes apply to every controller, with each controller's status, refreshed every 5 s.
 
 === Apply
@@ -112,8 +112,8 @@ Found by hand on a cluster: a plugin installed from the Plugins page went to one
 
 * Without a store, nothing changes.
 * With one, the Plugins page works as on one controller, apart from the refusals above.
-* *Mixed versions during a roll: limitation.* While controllers are being restarted one at a time, some run the old version of a plugin and some the new. Compatibility is guaranteed only for the store protocol and schema, not for the serialised shape of a plugin's data: an old controller that saves an object drops fields it does not know, and the new controller reloads it without them; renamed elements make both sides' saves look like changes. Configuration changes should not be made during a roll. The details are in JEP-255b.
-* *Rollback.* A plugin downgrade is refused, and the overlay never installs an older version over a newer one, so a plugin upgrade cannot be undone through the plugin manager. An administrator can uninstall or disable the plugin, which is itself a rolling change. Returning to the earlier version means restoring the store from a backup taken before the upgrade and starting an image with the earlier plugin set (JEP-255b, Rolling back), since data may already have been saved in the newer shape.
+* *Mixed versions during a roll: limitation.* While controllers are being restarted one at a time, some run the old version of a plugin and some the new. Compatibility is guaranteed only for the store protocol and schema, not for the serialised shape of a plugin's data: an old controller that saves an object drops fields it does not know, and the new controller reloads it without them; renamed elements make both sides' saves look like changes. Configuration changes should not be made during a roll. The cluster plugin's operations guide describes this for operators.
+* *Rollback.* A plugin downgrade is refused, and the overlay never installs an older version over a newer one, so a plugin upgrade cannot be undone through the plugin manager. An administrator can uninstall or disable the plugin, which is itself a rolling change. Returning to the earlier version means restoring the store from a backup taken before the upgrade and starting an image with the earlier plugin set (the cluster plugin's operations guide, Rolling back), since data may already have been saved in the newer shape.
 
 == Security
 
@@ -123,7 +123,7 @@ The overlay and the archives are in the store and blob storage, which every cont
 
 == Infrastructure Requirements
 
-The infrastructure of JEP-255b (the stores, the plugin and chart repositories, Docker in CI). The acceptance scripts (ET13, ET19, ET21) also need a Kubernetes cluster (kind) and, for ET21, a browser (Playwright).
+The infrastructure of JEP-255 (the stores, the plugin and chart repositories, Docker in CI). The acceptance scripts (ET13, ET19, ET21) also need a Kubernetes cluster (kind) and, for ET21, a browser (Playwright).
 
 == Testing
 

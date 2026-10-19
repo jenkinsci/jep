@@ -34,7 +34,7 @@ endif::[]
 | TBD
 
 | Requires
-| JEP-250, JEP-252, JEP-255a
+| JEP-250, JEP-252, JEP-255
 |===
 
 == Abstract
@@ -75,7 +75,7 @@ Core gains one hook, `+LoginRevocation+`, so that signing out ends a sign-in eve
 ** *agent URLs* (`+/computer/<name>/…+`) for a static agent connected to another controller, located through the channel table. A cloud agent belongs to one controller and is not known to the others (JEP-257), so its pages answer only there
 ** *a job's SCM polling log* (`+/job/…/scmPollLog/…+`), to the controller that last polled it (from the trigger claims, JEP-253)
 ** *plugin install progress* (`+pluginManager/updates/…+`, `+updateCenter/{body,installStatus,…}+`), to the controller running the install (JEP-256)
-* *How forwarding works.* It uses the target's internal URL from the membership table (JEP-255a), waits at most 20 s for the response headers, and streams the body (live consoles). The owner's response headers replace any the forwarding controller had set. If the owner cannot be connected to, the request is served locally. A request whose answer does not come in time is served locally only if it is a GET or HEAD; any other gets 504 (Gateway Timeout), since the owner may have acted on it (a replay or an `+input+` answer run twice).
+* *How forwarding works.* It uses the target's internal URL from the membership table (JEP-255), waits at most 20 s for the response headers, and streams the body (live consoles). The owner's response headers replace any the forwarding controller had set. If the owner cannot be connected to, the request is served locally. A request whose answer does not come in time is served locally only if it is a GET or HEAD; any other gets 504 (Gateway Timeout), since the owner may have acted on it (a replay or an `+input+` answer run twice).
 * *WebSockets.* A WebSocket upgrade addressed to another controller's object is relayed: the forwarding controller accepts it, opens a WebSocket to the owner (with the client's credentials), and copies frames both ways until either side closes. Agents' WebSocket connections are not relayed; an agent connects to whichever controller answers it.
 * *`+input+`, stop and replay* of a running build therefore work from any controller. After an adoption (JEP-252), they reach the new owner.
 * *The CLI.* `+console -f+` and `+build -s+`/`+-f+`/`+-v+` follow a build running on, or started by, another controller through `+ExternalBuild.writeLogTo+` and the queue item's future (JEP-252, JEP-253), then report its result.
@@ -85,14 +85,14 @@ Core gains one hook, `+LoginRevocation+`, so that signing out ends a sign-in eve
 
 === Agent channels
 
-* Each controller publishes which agents it holds a channel to (JEP-255a).
+* Each controller publishes which agents it holds a channel to (JEP-255).
 * Inbound agents connect to whichever controller answers them, and reconnect to a failover URL (the load balancer) when their controller dies, resuming within about 40 s, as measured in the acceptance tests. This requires the agent to be configured with the load balancer's URL, not a controller's.
 
 === Outbound agents: the launch lease
 
 Static nodes are shared (JEP-250), so every controller has a `+Computer+` for each of them. For an outbound launcher (SSH), each would start its own Remoting JVM in the same remote root. So exactly one controller connects each such node:
 
-* *The lease.* A launch lease per node (`+_nodes/<name>/launch+`, JEP-255a), acquired create-only, or taken over when its holder is not a live member. It is released when the agent goes offline here and when the node is deleted. It is not renewed; liveness is the holder's membership.
+* *The lease.* A launch lease per node (`+_nodes/<name>/launch+`, JEP-255), acquired create-only, or taken over when its holder is not a live member. It is released when the agent goes offline here and when the node is deleted. It is not renewed; liveness is the holder's membership.
 * *The gate, with no core change.* The cluster plugin's `+ComputerListener.preLaunch+` applies to nodes that are not cloud agents and whose launcher is not inbound. While another live member holds the lease, it refuses the launch ("Connected on <controller>"), and the computer stays offline here. The node's retention strategy retries about every minute, and each retry checks the lease again: when the holder dies, its membership times out and the next retry anywhere acquires the lease and connects.
 * *Builds.* Controllers that do not hold the lease have no executors on the node, so a queue item for its label can only be claimed by the holder. While the holder is live and has idle capacity for those labels, other controllers' demand for them does not provision cloud agents (`+QueueStartGate.countsForProvisioning+`).
 * *Pages.* `+/computer/<name>/+` on another controller is forwarded to the holder, through the channel table (above). The node's configuration stays shared; an edit applies on the holder at its next connection, as on one controller.
@@ -135,7 +135,7 @@ See JEP-252: the job page, the build history and the job's icon show them (`+Ext
 
 == Infrastructure Requirements
 
-A load balancer in front of the controllers, with no stickiness required, and the stores of JEP-255a.
+A load balancer in front of the controllers, with no stickiness required, and the stores of JEP-255.
 
 == Testing
 

@@ -34,7 +34,7 @@ endif::[]
 | TBD
 
 | Requires
-| JEP-251, JEP-255a
+| JEP-251, JEP-255
 |===
 
 == Abstract
@@ -78,8 +78,8 @@ Without an implementation, nothing changes: no field is added to the REST API, a
 
 ==== Placeholders and leases
 
-* *Placeholders.* When a build starts, a placeholder `+_items/<uuid>/running/<N>.xml+` (JEP-255a) records its owner's origin and name, the start time, the lease epoch, and properties such as the latest save point. It is removed after the build's record is published (JEP-251). Other controllers read placeholders for `+ExternalBuilds+`.
-* *Leases* are the cluster plugin's `+BuildLeases+` (JEP-255a), keyed `+_items/<uuid>/running/<N>+`. They follow the job's identity, so renaming or moving a job while it builds changes nothing about who owns the build.
+* *Placeholders.* When a build starts, a placeholder `+_items/<uuid>/running/<N>.xml+` (JEP-255) records its owner's origin and name, the start time, the lease epoch, and properties such as the latest save point. It is removed after the build's record is published (JEP-251). Other controllers read placeholders for `+ExternalBuilds+`.
+* *Leases* are the cluster plugin's `+BuildLeases+` (JEP-255), keyed `+_items/<uuid>/running/<N>+`. They follow the job's identity, so renaming or moving a job while it builds changes nothing about who owns the build.
 * *Updates merge and are serialised per build.* An update adds its properties to those already recorded (a save point's commit keeps the result, and the other way round), and one build's updates are made one at a time, so the owner never mistakes its own write for an adoption.
 * *A finished build records its result in the placeholder* before its record is published. If its controller dies in between, the sweep closes the build with that result, not as ABORTED.
 * *Publication is fenced:* the record is written with `+writeIfHeld+`, so a controller that lost the build cannot write it over the new owner's.
@@ -100,14 +100,14 @@ Without an implementation, nothing changes: no field is added to the REST API, a
 
 ==== Adoption
 
-* *A sweep looks for placeholders whose owner is not a live member.* It runs every 30 s, and at once when a controller is seen leaving (JEP-255a).
+* *A sweep looks for placeholders whose owner is not a live member.* It runs every 30 s, and at once when a controller is seen leaving (JEP-255).
 ** It acquires the lease (only one controller wins).
 ** It asks the plugin's adopters to prepare an adoption. The Pipeline adopter stages the save point and the log into the home, and resumes the build as owner with the new epoch.
 ** A build of which a copy is still running here, or which was started here and never ran, is not taken for another's: the adoption is retried later.
 * *What else carries over:* a stop request made while the owner was gone is honoured; `+input+` steps, `+lock+`, `+milestone+` and the build's place in the shared queue carry over (JEP-253); messages that arrived while the build had no owner are consumed by the adopter (below).
 * *Workspaces.* A workspace is on the agent, so an adopted build finds what earlier stages left there as long as the agent survives: a static or inbound agent connects to whichever controller answers it (JEP-254), and the build is handed over to that controller, or its `+node+` step waits. A Kubernetes pod agent belongs to the controller that started it and goes with it; the adopted build's `+node+` block is retried on a new pod with an empty workspace. Files a later stage needs from such a pod must be carried with `+stash+`/`+unstash+` or archived, through an artifact manager.
 * *Builds nothing can resume* (freestyle, `+PERFORMANCE_OPTIMIZED+`, or a save point that cannot be found) are closed as ABORTED: a minimal record, with a console saying why, after what the build had printed (JEP-251). This also covers builds that were running when a backup was taken, after a restore.
-* *No takeovers right after an outage* (JEP-255a): a controller only takes others for gone after its own heartbeats have reached the store without a gap for longer than the member timeout.
+* *No takeovers right after an outage* (JEP-255): a controller only takes others for gone after its own heartbeats have reached the store without a gap for longer than the member timeout.
 
 ==== Restarts and handover
 
@@ -125,7 +125,7 @@ If nobody takes a handed-over build within a grace period (2 minutes), any contr
 
 A build often waits for something that happens elsewhere: a Pipeline's `+build+` step waits for its downstream build, which may start on, or be adopted by, another controller; and the waiting build itself may be adopted meanwhile.
 
-* A message to a running build is a mailbox entry `+_items/<uuid>/running/<N>.deliver-<id>+` (JEP-255a). The controller owning the build when it arrives consumes it; an adopter consumes those that arrived while the build had no owner. Delivery is retried while the build is starting, and handling is idempotent.
+* A message to a running build is a mailbox entry `+_items/<uuid>/running/<N>.deliver-<id>+` (JEP-255). The controller owning the build when it arrives consumes it; an adopter consumes those that arrived while the build had no owner. Delivery is retried while the build is starting, and handling is idempotent.
 * *Stop* reaches builds wherever they are (`+ExternalBuild.requestStop+`, a `+.stop+` entry): stopping an upstream build stops the downstream build it waits for, on any controller.
 * *pipeline-build-step* gains *`+BuildTriggerRelay+`* (extension point, `+@Restricted(Beta.class)+` in the plugin; no core dependency, so the plugin's baseline does not change):
 ** `+returnAddress(upstream, nodeId)+`: at scheduling, an opaque address at which this step can be reached from wherever the downstream runs, or null for local only. The trigger carries it in place of the upstream's name and number, with `+waitForStart+`.

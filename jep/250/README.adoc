@@ -63,7 +63,7 @@ The words MUST, MUST NOT, SHOULD and MAY are used as in RFC 2119. All new API is
 ** `+ConflictException(key, expectedVersion, actualVersion)+`, an `+IOException+`, reports a failed compare-and-set or precondition.
 * *`+PersistenceStoreProvider+`* is the extension point that creates the store. `+PersistenceStores.get()+` resolves the first provider that returns one, once extensions are augmented. Files read before that come from the local disk; see *Reasoning*.
 
-That is the whole SPI. Membership, leases, claims, a shared queue and blob storage are not part of it: the plugin that runs a cluster defines them for its own backends (JEP-255a).
+That is the whole SPI. Membership, leases, claims, a shared queue and blob storage are not part of it: the plugin that runs a cluster defines them for its own backends (JEP-255).
 
 === Store contract
 
@@ -101,7 +101,7 @@ A backend is written from this section.
 * *Raw reads* (REST `+config.xml+`, snapshots for `+getFile()+`) only look: they do not change the version seen.
 * *Errors.* A store that cannot be reached is an error, never an absence: `+exists()+` throws `+UncheckedIOException+`, and callers that would treat a missing file as deleted do not run.
 * *No-op writes* (content unchanged) write nothing.
-* *`+getFile()+`* makes a local, read-only copy for code that needs a `+java.io.File+`, read from the store at most once per version. Core does not write such copies back. It lists them (`+PersistenceStores.materializedCopies()+`: key, file, the content and version the copy was made from, and its modification time), so that a plugin can write back what code changed in them (the cluster plugin does, JEP-255a).
+* *`+getFile()+`* makes a local, read-only copy for code that needs a `+java.io.File+`, read from the store at most once per version. Core does not write such copies back. It lists them (`+PersistenceStores.materializedCopies()+`: key, file, the content and version the copy was made from, and its modification time), so that a plugin can write back what code changed in them (the cluster plugin does, JEP-255).
 
 === Conflicting saves
 
@@ -146,13 +146,13 @@ A backend is written from this section.
 * *A job deleted and made again* with the same name is a new item, with a new identity: it inherits nothing kept about the old one, as on one controller.
 * *Not unique across installations.* Two Jenkins instances can derive the same identity for items of the same name. An identity is unique within one installation (or one cluster).
 * *`+ItemUuids.get(uuid)+`* finds a loaded item by identity, if the caller can see it.
-* *Keys by identity.* Data kept about an item that is not its configuration (build records, running builds, plugin files) SHOULD be keyed by the item's identity under a reserved key (for example `+_items/<uuid>/…+`), not by its path. A rename then moves nothing but configuration, and nothing can follow the wrong item after a rename or a re-creation. JEP-255a gives the cluster plugin's layout.
+* *Keys by identity.* Data kept about an item that is not its configuration (build records, running builds, plugin files) SHOULD be keyed by the item's identity under a reserved key (for example `+_items/<uuid>/…+`), not by its path. A rename then moves nothing but configuration, and nothing can follow the wrong item after a rename or a re-creation. JEP-255 gives the cluster plugin's layout.
 
 === Keys created at runtime
 
 * `+secrets/*+` keys created at runtime are shared when the store `+storesConfidentialKeys()+`. The first controller to create one decides its value, with a create-only write. Each controller keeps a local copy of every shared key from startup.
 * A controller that needs a new key while the store cannot be reached makes a temporary one. If another controller creates the key meanwhile, data encrypted with the temporary key can be read only on the controller that made it.
-* The keys needed before plugins load (`+secret.key+`, `+secrets/master.key+`, `+identity.key.enc+`) stay local. They are seeded identically on every controller (JEP-255b).
+* The keys needed before plugins load (`+secret.key+`, `+secrets/master.key+`, `+identity.key.enc+`) stay local. They are seeded identically on every controller; how is in the cluster plugin's operations guide (link:https://github.com/timja/cluster-plugin/blob/main/docs/operating-a-cluster.md[docs/operating-a-cluster.md] in timja/cluster-plugin).
 
 === Without a provider
 
@@ -167,7 +167,7 @@ Nothing changes. Every path above is gated on `+PersistenceStores.get()+` return
 == Reasoning
 
 * *Routing at `+XmlFile+`* gives the widest coverage for the least change. A bytecode scan of every plugin in the update center found 42 that call `+XmlFile#getFile+`; they get read-only copies, and the cluster plugin writes back what they change.
-* *A plain key-value store.* Core reviewers review a key-value contract, not a coordination service, and the SPI can settle while what is built on it changes. An earlier version of this design had leases, membership, a queue and blob storage as optional facets of the store; they moved to the cluster plugin, which is the only code using them, behind interfaces its backends implement (JEP-255a).
+* *A plain key-value store.* Core reviewers review a key-value contract, not a coordination service, and the SPI can settle while what is built on it changes. An earlier version of this design had leases, membership, a queue and blob storage as optional facets of the store; they moved to the cluster plugin, which is the only code using them, behind interfaces its backends implement (JEP-255).
 * *Routing in core, not in the backend.* Which files are configuration is a property of Jenkins and its plugins, not of the database. One place decides it, from declarations next to the code that writes the files.
 * *Refuse rather than overwrite.* Silently keeping one side's change loses the other's. Refusing and reloading tells the person who saved, and a merge makes the common case (different parts changed) work. In an acceptance test, two controllers saved different global settings at the same moment, 30 times, and no change was lost; a test that changes the same list on both sides sees one save refused.
 * *Identities rather than paths for item data.* With data keyed by path, a rename had to move every build record and blob of the job, under the parent's lock, in steps that a crash could leave half done. Keyed by identity, a rename moves only configuration, in one store operation.
@@ -196,7 +196,7 @@ Nothing changes. Every path above is gated on `+PersistenceStores.get()+` return
 
 == Infrastructure Requirements
 
-There are no new infrastructure requirements for Jenkins core. The reference backend's tests run PostgreSQL in Docker (Testcontainers); see JEP-255b for where the plugins, the chart and the acceptance scripts are hosted.
+There are no new infrastructure requirements for Jenkins core. The reference backend's tests run PostgreSQL in Docker (Testcontainers); see JEP-255 for where the plugins, the chart and the acceptance scripts are hosted.
 
 == Open questions
 
@@ -229,14 +229,15 @@ None.
 | JEP | Title | Requires
 
 | link:README.adoc[250] | Pluggable persistence store for `+JENKINS_HOME+` configuration | none
-| link:../255a/README.adoc[255a] | Cluster coordination | 250
-| link:../251/README.adoc[251] | Shared build records, logs and history | 250, 255a
-| link:../252/README.adoc[252] | Ownership of running builds | 251, 255a
-| link:../253/README.adoc[253] | Cluster scheduling | 250, 252, 255a
-| link:../254/README.adoc[254] | Request routing and stateless sessions | 250, 252, 255a
-| link:../256/README.adoc[256] | Cluster-wide plugin management | 250, 255a
-| link:../257/README.adoc[257] | Cloud provisioning across controllers | 253, 255a
-| link:../255b/README.adoc[255b] | Operating a cluster (Informational) | 250–257
+| link:../255/README.adoc[255] | Cluster coordination | 250
+| link:../251/README.adoc[251] | Shared build records, logs and history | 250, 255
+| link:../252/README.adoc[252] | Ownership of running builds | 251, 255
+| link:../253/README.adoc[253] | Cluster scheduling | 250, 252, 255
+| link:../254/README.adoc[254] | Request routing and stateless sessions | 250, 252, 255
+| link:../256/README.adoc[256] | Cluster-wide plugin management | 250, 255
+| link:../257/README.adoc[257] | Cloud provisioning across controllers | 253, 255
 |===
++
+How to install, scale, upgrade, back up and restore a cluster is not a JEP: the operations guide lives with the cluster plugin (link:https://github.com/timja/cluster-plugin/blob/main/docs/operating-a-cluster.md[docs/operating-a-cluster.md] in timja/cluster-plugin).
 
 * The prototype's notes on the experiments summarised under Motivation are available on request.

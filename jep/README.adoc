@@ -303,12 +303,7 @@
 | TBD
 
 | :information_source:{nbsp}Not Submitted
-| link:255a/README.adoc[JEP-255a: Cluster coordination: membership, leases and the cluster store]
-| link:https://github.com/timja[Tim{nbsp}Jacomb]
-| TBD
-
-| :information_source:{nbsp}Not Submitted
-| link:255b/README.adoc[JEP-255b: Operating a cluster of Jenkins controllers]
+| link:255/README.adoc[JEP-255: Cluster coordination: membership, leases and the cluster store]
 | link:https://github.com/timja[Tim{nbsp}Jacomb]
 | TBD
 
