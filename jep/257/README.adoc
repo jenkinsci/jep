@@ -1,0 +1,103 @@
+= JEP-257: Cloud provisioning across controllers
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 257
+
+| Title
+| Cloud provisioning across controllers
+
+| Sponsor
+| link:https://github.com/timja[Tim Jacomb]
+
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2026-10-11
+
+| BDFL-Delegate
+| TBD
+
+| Requires
+| JEP-253, JEP-255
+|===
+
+== Abstract
+
+Several controllers provision agents from the same clouds (Kubernetes, and by extension EC2, Docker and others) without over-provisioning, exceeding cluster-wide caps, or killing each other's agents.
+
+* Demand is counted once, by the controller that will run the build.
+* Agents being provisioned are reserved for the item they are for.
+* Caps are enforced through counters in the store.
+* Cloud agents stay with the controller that provisioned them.
+
+Core's part is one method of JEP-253's `+QueueStartGate+`. The kubernetes plugin gains an extension point for shared caps; the `+cluster+` plugin implements both.
+
+== Specification
+
+* *Demand counted once.* `+NodeProvisioner+` counts a queue item's demand only where `+QueueStartGate.countsForProvisioning(item)+` (core, JEP-253) allows it; without a gate, everywhere, as now. The cluster plugin's gate allows it on the controller that will start the item: the one that requested it, or that claimed it in the shared queue. Mirrored items elsewhere do not provision. While the store cannot be reached, the gate allows it, so clouds other than kubernetes may over-provision then.
+* *Reservations.* An agent provisioned for a queue item reserves the item (`+queue/reserved/<id>+`). Other controllers wait for it instead of starting the item on an agent they would provision too.
+* *Caps* across the cluster, through counters in the store (`+Counters+`, JEP-255): each controller's share of a cloud's and template's cap. The kubernetes plugin gains *`+ClusterProvisioningLimits+`* (extension point, `+@Restricted(Beta.class)+` in the plugin; no core dependency): when one is installed, a new agent is admitted only if it fits both the local counts and the implementation's. It is asked outside the plugin's lock, so a slow store does not stall other registrations, and a refusal or an exception releases the local reservation (provisioning fails closed). Counts are keyed by cloud name and template *name* (a template's id is random per controller unless set). The cluster plugin implements it. Agents a controller still has after a restart with its home are counted again under its new origin when it starts. A dead controller's share lapses with its membership, and its counter rows are deleted. A counter back at zero is deleted too, so Pipelines declaring their own `+podTemplate+` (a template per build) leave no rows behind; an hourly pass prunes any left.
+* *Cloud agents are local.* Nodes that are `+AbstractCloudSlave+`s are not shared through the store (JEP-250 routing). Each controller manages and cleans up only its own. A cloud whose nodes are not `+AbstractCloudSlave+`s has them shared like static nodes, and needs to change for a cluster. Static nodes are shared; an outbound static node is connected by one controller, through a launch lease (JEP-254).
+* *Placement.* A Pipeline whose `+node+` label only another controller can serve is handed over to it (JEP-252). While an outbound static node's holder is live and has idle capacity for a label, other controllers do not provision cloud agents for it (JEP-254).
+* *Workspaces on pods.* An agent pod belongs to the controller that started it and goes with it. A build adopted after its controller died gets a new pod with an empty workspace, so files a later stage needs are carried with `+stash+`/`+unstash+` through an artifact manager keeping them in shared storage (JEP-202; the chart configures azure-artifact-manager).
+
+== Motivation
+
+* `+NodeProvisioner+` runs per JVM: with a mirrored queue, every controller would provision for the same item.
+* Orphan cleanup in cloud plugins deletes agents it does not know, so one controller kills another's.
+
+== Reasoning
+
+* *Counting demand where the build will start* keeps each controller's `+NodeProvisioner+` unchanged in spirit, with no global planner.
+* *Keeping cloud agents local* matches how they are connected (one JVM holds the channel) and avoids shared mutable node state for short-lived agents.
+
+== Backwards Compatibility
+
+* Without a store, nothing changes.
+* Clouds other than kubernetes need to consult the cluster caps to respect them, and their orphan cleanup must skip other controllers' agents.
+
+== Security
+
+Unchanged: clouds use their configured credentials on each controller. Counters and reservations in the store are trusted by every controller (JEP-250).
+
+== Infrastructure Requirements
+
+The infrastructure of JEP-255. The acceptance script runs the Helm chart on a Kubernetes cluster (kind).
+
+== Testing
+
+* *Core:* tests of `+countsForProvisioning+` with a fake gate (JEP-253).
+* *kubernetes:* `+ClusterProvisioningLimitsTest+` (caps across controllers with a test implementation; a refused agent is not counted; release makes room; caps by template name).
+* *Cluster plugins:* `+PostgresPersistenceStoreTest+` (caps across controllers), `+ClusterAgentLimitsTest+` (agents kept across a restart are counted again).
+* *Acceptance:* `+validation/experiments/ET9-kubernetes.sh+` in link:https://github.com/timja/cluster-plugin[timja/cluster-plugin] runs the Helm chart with two controllers on a local kind cluster and checks:
+** 6 Pipelines started at once through the Service with a cap of 4: at most 4 agent pods at once, one pod per build, each owned by the controller that ran the build
+** the controller running a build on a Kubernetes agent deleted: the build is adopted and retried on a new pod, and the old pod garbage-collected
+** Pipelines declaring their own `+podTemplate+`, under the cap and across a failover: the retried stage runs on a new pod and gets an earlier stage's files from its stash, and the cluster's counters are back to zero, with no rows left, once the pods are gone
+** no controller deleted another's pods
+
+== Prototype Implementation
+
+* *Core* (link:https://github.com/timja/jenkins[timja/jenkins]): branch `+cnj2/a4-queue-hooks+` (`+QueueStartGate+`).
+* *kubernetes plugin:* prototype branch `+cnj/t9-m2-cluster-cap+`.
+* *Cluster plugins* (link:https://github.com/timja/cluster-plugin[timja/cluster-plugin]): `+ClusterAgentLimits+`.
+* *Evidence:* the acceptance scripts named under Testing print the measurements quoted in this JEP. The prototype's write-ups of those runs are available on request.
+
+== References
+
+* The set of JEPs this one belongs to is listed in link:../250/README.adoc[JEP-250].

@@ -277,6 +277,46 @@
 | link:https://github.com/timja[Tim{nbsp}Jacomb]
 | _not{nbsp}delegated_
 
+| :information_source:{nbsp}Not Submitted
+| link:250/README.adoc[JEP-250: Pluggable persistence store for `+JENKINS_HOME+` configuration]
+| link:https://github.com/timja[Tim{nbsp}Jacomb]
+| TBD
+
+| :information_source:{nbsp}Not Submitted
+| link:251/README.adoc[JEP-251: Shared build records, logs and history]
+| link:https://github.com/timja[Tim{nbsp}Jacomb]
+| TBD
+
+| :information_source:{nbsp}Not Submitted
+| link:252/README.adoc[JEP-252: Ownership of running builds: leases, fencing, adoption]
+| link:https://github.com/timja[Tim{nbsp}Jacomb]
+| TBD
+
+| :information_source:{nbsp}Not Submitted
+| link:253/README.adoc[JEP-253: Cluster scheduling: triggers, a shared queue, cross-build coordination]
+| link:https://github.com/timja[Tim{nbsp}Jacomb]
+| TBD
+
+| :information_source:{nbsp}Not Submitted
+| link:254/README.adoc[JEP-254: Request routing and stateless sessions]
+| link:https://github.com/timja[Tim{nbsp}Jacomb]
+| TBD
+
+| :information_source:{nbsp}Not Submitted
+| link:255/README.adoc[JEP-255: Cluster coordination: membership, leases and the cluster store]
+| link:https://github.com/timja[Tim{nbsp}Jacomb]
+| TBD
+
+| :information_source:{nbsp}Not Submitted
+| link:256/README.adoc[JEP-256: Cluster-wide plugin management]
+| link:https://github.com/timja[Tim{nbsp}Jacomb]
+| TBD
+
+| :information_source:{nbsp}Not Submitted
+| link:257/README.adoc[JEP-257: Cloud provisioning across controllers]
+| link:https://github.com/timja[Tim{nbsp}Jacomb]
+| TBD
+
 | :hand:{nbsp}Withdrawn
 | link:300/README.adoc[JEP-300: Jenkins Evergreen]
 | link:https://github.com/rtyler[R.{nbsp}Tyler{nbsp}Croy]

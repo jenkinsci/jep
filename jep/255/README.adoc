@@ -1,0 +1,247 @@
+= JEP-255: Cluster coordination: membership, leases and the cluster store
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 255
+
+| Title
+| Cluster coordination: membership, leases and the cluster store
+
+| Sponsor
+| link:https://github.com/timja[Tim Jacomb]
+
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2026-10-11
+
+| BDFL-Delegate
+| TBD
+
+| Requires
+| JEP-250
+|===
+
+== Abstract
+
+Several controllers sharing one JEP-250 store need more than a key-value store: they need to know who is alive, to give each running build one owner, to claim work so it is done once, and to keep large data (build snapshots, logs) somewhere shared. This JEP specifies the interfaces the `+cluster+` plugin defines for that, which its backend plugins implement:
+
+* *membership and liveness*, judged by the store's clock, with readiness and protocol versions
+* *leases* with fenced writes, for running builds (JEP-252) and for outbound agents (JEP-254)
+* *claims*, *counters*, the *shared queue record* and *agent channels*
+* *blob storage* with fenced log appends
+* the *layout*: where the plugin keeps what, keyed by item identity (JEP-250)
+* *how a controller joins and leaves*, and how the cluster behaves when the store is unreachable
+
+None of this is in Jenkins core. Core provides the key-value SPI (JEP-250) and the extension points of JEP-251 to JEP-257; this JEP is the contract between the `+cluster+` plugin and its backends (`+cluster-postgresql+`, `+cluster-azure-blob+`, `+cluster-s3+`). How to install and operate a cluster is not specified here: the operations guide lives with the cluster plugin (link:https://github.com/timja/cluster-plugin/blob/main/docs/operating-a-cluster.md[docs/operating-a-cluster.md] in timja/cluster-plugin).
+
+== Specification
+
+The words MUST, MUST NOT, SHOULD and MAY are used as in RFC 2119.
+
+=== The cluster store (`+io.jenkins.plugins.cluster.spi+`)
+
+* *`+ClusterStore+`* extends JEP-250's `+PersistenceStore+` with the facets below: `+Membership+`, `+Claims+`, `+Channels+`, `+Counters+` and `+QueueMaintenance+`, and gives access to `+leases()+` (`+BuildLeases+`), `+queue()+` (`+ClusterQueue+`) and `+launchLeases()+` (`+LaunchLeases+`). `+ClusterStore.get()+` is the JEP-250 store, if it is a cluster store.
+* *`+ClusterBlobStore+`* (from a `+ClusterBlobStoreProvider+`) holds large data: `+put+`, `+get+`, `+download+`, `+delete(prefix)+`, `+list(prefix)+`, `+size+`, `+sizes(prefix)+`, and `+logs()+` (`+LogBlobs+`) for logs written while a build runs. Blobs are written once and never moved.
+* The store and the blob store come from different providers, so from different plugins: the reference store is `+cluster-postgresql+`, and blobs are in `+cluster-azure-blob+` or `+cluster-s3+`.
+
+=== Contract
+
+A backend is written from this section and JEP-250's store contract.
+
+* *Membership.*
+** Each controller MUST heartbeat into the store. `+aliveMembers()+` MUST answer from the store's own clock: a heartbeat is stamped with the store's time when written, and judged against the store's time when read. A controller's clock MUST NOT decide whether it or a peer is alive.
+** A controller MUST be able to tell when it may have looked gone to the others (`+mayHaveLapsed()+`, with `+lapseCount()+` increasing each time), and whether its own view of liveness can be trusted (`+canJudgeLiveness()+`: its own heartbeats have reached the store without a gap for longer than the member timeout). A controller MUST NOT take another for gone while it cannot judge liveness.
+** A member publishes whether it is *ready* (it has loaded its items). Work given out by hashing over members (trigger ticks, JEP-253) MUST go to ready members only.
+* *Build leases* (`+BuildLeases+`):
+** `+acquire(key)+` MUST return a new epoch, higher than any returned before for that key, and MUST succeed only if the lease is free, its holder is no longer alive, or this origin holds it already (then the epoch is unchanged). It returns 0 if another live origin holds it. Of two concurrent callers, at most one succeeds.
+** `+holds(key, epoch)+` MUST answer true while this origin holds the lease with that epoch. It MUST answer false only on evidence from the store that the lease is gone or taken. When the store cannot be reached or cannot tell, it MUST throw `+IOException+`: a false answer stops the build, and an outage of the whole store would then stop every running build in the cluster.
+** `+release(key, epoch)+` MUST release the lease only if it is held with that epoch.
+** `+writeIfHeld(leaseKey, epoch, key, content, expectedVersion)+` MUST check the lease and write in one atomic step, and throw `+LeaseLostException+` if the lease is not held with that epoch. A check followed by a separate write does not meet this contract: a controller paused in between would write over the new owner's record. There is no default implementation.
+** A lease lapses when its holder stops being alive as the store judges it, never by the holder's clock.
+* *Launch leases* (`+LaunchLeases+`): `+acquire(node)+` creates the lease, keeps it for its holder, or takes it over from a holder that is not alive, returning the epoch or 0; `+holder(node)+` and `+release(node, epoch)+`. They follow the build lease rules for epochs and lapse. They are not renewed; liveness is the holder's membership.
+* *Claims* (`+Claims+`): `+claim(item, trigger, tick)+` MUST return true for exactly one caller per `+(item, trigger, tick)+`. Ticks are absolute times (the epoch minute), so clock skew between controllers can make a tick be claimed early or late, never twice.
+* *Counters* (`+Counters+`): `+addWithinCaps(caps, delta)+` MUST add to every named counter, or to none if any would exceed its cap, atomically. A counter belongs to the controller that added to it; its share is dropped when that controller is gone, and a counter back at zero is deleted.
+* *Channels* (`+Channels+`): which controller holds the channel of which agent, and each controller's internal URL (`+urlOf+`, `+urlOfOrigin+`), for forwarding (JEP-254).
+* *Shared queue* (`+ClusterQueue+`):
+** ids from a cluster sequence (`+nextId+`, `+nextIds+`), never reused
+** `+Record(id, itemUuid, task, dedupKey, actions, dueAt, state, origin, pinnedTo, claimedBy, buildNumber)+`: the item is identified by its identity; `+task+` is its name, for display only
+** `+publish+`, `+update(…, pinTo)+` (a compare-and-set on the actions), `+cancel+`, `+get+`, `+pending+` and `+subscribe+`
+** `+claim(id, expectedPin)+` MUST be a compare-and-set on the pin the claimer read, and succeed for at most one controller
+** `+started(id, buildNumber)+` MUST record the start only while the item is claimed by this controller, as a compare-and-set, and MUST tell the caller when it was not: a controller that was paused after claiming may find the item reclaimed and built elsewhere, and must then stop its build before it does any work (JEP-253)
+** `+QueueMaintenance+`: reclaim items claimed by controllers that are gone (`+reclaimAndPrune+`), find items whose start was recorded by a gone controller, and cancel the started items of a deleted item (`+cancelStartedOf(itemUuid)+`)
+* *Blobs.* `+put+` of an existing key MUST replace it whole; a reader MUST never see part of a blob. `+delete(prefix)+` MUST delete every blob below the prefix.
+* *Logs* (`+LogBlobs+`): `+appendAt(log, bytes, position)+` MUST succeed only if the log is exactly `+position+` long, decided by the blob store as part of the write, not from a cache or a listing followed by a write. Of two appends at the same position, at most one MUST succeed. `+readFrom+` and `+download+` MUST be readable from every controller while the log is written. The JEP-251 log requirements are stated in terms of this.
+
+=== Layout
+
+The plugin builds every key in one class (`+Keys+`). Data about an item is kept under its identity (JEP-250), in the reserved `+_+` key space, so renames and moves change none of it:
+
+[cols="2,3"]
+|===
+| Data | Key
+
+| Build record | `+_items/<uuid>/builds/<N>/build.xml+`
+| Permalinks | `+_items/<uuid>/builds/permalinks+`
+| Next build number | `+_items/<uuid>/nextBuildNumber+`
+| Running build's placeholder | `+_items/<uuid>/running/<N>.xml+`
+| Stop request, delivery to a running build | `+_items/<uuid>/running/<N>.stop+`, `+_items/<uuid>/running/<N>.deliver-<id>+`
+| Build lease | `+_items/<uuid>/running/<N>+`
+| Plugin files in an item's or a user's directory | `+_items/<uuid>/files/<path>+`, `+_users/<id>/files/<path>+`
+| Locks (lockable-resources) | `+_locks/<resource>+`, `+_locks-meta/<name>+`
+| Launch lease of an outbound agent | `+_nodes/<name>/launch+`
+| Blobs: snapshot, log, plugin file | `+items/<uuid>/builds/<N>/files.tgz+`, `+items/<uuid>/builds/<N>/log+`, `+items/<uuid>/files/<path>+`
+|===
+
+The cluster plugin receives changes to these keys through core's `+RemoteChangeHandler+` (JEP-250).
+
+When an item is deleted, the controller where it was deleted deletes everything under `+_items/<uuid>+` and its blobs. A sweep, run on one controller, removes what a failed deletion left behind. A copy of an item, and an item made again with a deleted one's name, have new identities and start with nothing.
+
+=== Files the cluster plugin shares for others
+
+* *Copies made by `+getFile()+`* (JEP-250) that code changed with its own writer are written back to the store, merged against the content the copy was made from (through the same reconciler as conflicting saves), at the next `+getFile()+` and every minute.
+* *Plugin files in item and user directories.* Plugins that keep files next to an item's or a user's `+config.xml+` with their own file APIs (the avatar plugin keeps the user's image there) can have them shared, opt-in: every minute, each item's and user's directory is compared with what was last shared, and changed or removed files (up to 1 MiB each) are shared under the item's identity (above). Files declared local (each user's `+apiTokenStats.xml+`) are left out. The last writer of a file wins, and a plugin caching a file's content sees a change made elsewhere when it next reads the file. It is opt-in because it scans every item and user directory and the files' meaning is unknown to the cluster plugin.
+* *Files of plugins that do not declare them.* The cluster plugin declares `+SharedFiles+` and `+LocalFiles+` patterns (JEP-250) for plugins that need them and do not declare them yet, such as lockable-resources' manager file (local: its state is coordinated by `+LockCoordinator+`, JEP-253), so that those plugins keep their baselines.
+
+=== Protocol and layout versions
+
+* Each controller publishes the cluster protocol it speaks. `+minimumPeerProtocol+` makes a new version refuse to start while older peers are alive, for changes that cannot coexist.
+* A Contract step (below) records the protocol it needed as the cluster's floor, in the store. A controller speaking an older protocol then refuses to start, whatever its own minimum.
+* *Layout.* The layout above replaces an earlier one keyed by path. Nothing has been released with the old layout, so there is no migration: a controller refuses to join a store written in the old layout, and says to start from an empty store.
+
+=== Schema migrations
+
+Schema changes must not stop a running cluster, and old and new controllers run side by side during a rolling upgrade. Migrations go in three steps, tracked in the store and shown in the cluster view:
+
+* *Expand*, at startup, in the schema transaction: only changes that take no time, such as nullable columns. Indexes are built concurrently, outside the transaction, so writes go on.
+* *Backfill*, in the background: batches of rows, each in a transaction that also records a cursor. One controller does it at a time, and another takes over from the cursor if that one leaves. New code writes the new form itself, so the backfill only covers rows written before.
+* *Contract*, once the backfill is done and no live controller speaks an older protocol than the migration needs: in one transaction, it first converts the rows older controllers wrote in the old form after the backfill passed them, then enforces the new constraints. From then on that protocol is the cluster's floor. What this means for rolling back is described in the cluster plugin's operations guide.
+
+=== Joining and leaving
+
+There is no join step: no token, UI, CLI or API to add a controller. A controller is a member because it is configured for the cluster's stores, and it stops being one when it stops heartbeating. What a controller needs (the stores, the cluster's key material, a name and an internal URL, a compatible version) is listed in the cluster plugin's operations guide.
+
+On start, a controller:
+
+. waits for both stores (see Store outages below)
+. creates or migrates the schema, under a lock, if it is the first of a new version
+. checks that it has the cluster's key material: the first controller stores a check value encrypted with the cluster's key, and a controller that cannot decrypt it stops, saying why
+. registers itself with its first heartbeat, as not ready
+. refuses to start if a live peer speaks a protocol older than its `+minimumPeerProtocol+`, or if its own protocol is below the cluster's floor
+. catches up: items, global configuration, build history and the plugin set are read from the stores
+. is marked ready once its items are loaded, and starts serving
+
+A controller that fails any of these steps, or fails later during start, closes its connections to the store and its row expires, so a controller that refused to start does not stay a member.
+
+It leaves by stopping, cleanly (its row is deleted and the others are told at once) or not (its heartbeat expires). Its running builds are adopted (JEP-252) and its claimed queue items go back to waiting (JEP-253).
+
+Names SHOULD be unique among the live controllers; a duplicate name is not detected yet (see Open questions).
+
+=== Membership in the reference backend
+
+* *Heartbeats.* Each controller heartbeats every 2 s into a members table. A row holds its origin (a new one per start), name, internal URL, core and plugin version, protocol, applied plugin-set generation (JEP-256), whether it is ready, and a status document: busy and total executors, its share of the queue, plugin installs in progress or failed.
+* *Liveness.* A member is alive while its last heartbeat is younger than the member timeout (15 s), or, sooner, until its session lock is free:
+** Each controller holds a Postgres session advisory lock on a connection of its own. The database frees it as soon as the connection closes, so a controller whose process dies (a crash, `+SIGKILL+`, an OOM kill) is seen gone within three missed heartbeats (6 s), without waiting for the timeout. A paused or partitioned controller keeps its connection and its lock, so it is waited for until the timeout: nothing is taken from a controller that may still be working. Behind a pooler in transaction mode (PgBouncer) session locks are turned off (`+sessionLocks=false+`) and liveness is the heartbeat alone.
+** A controller that lost its own lock stops acting on its leases after 4 s.
+** Each controller watches the earliest deadline among its peers rather than checking on a fixed tick.
+** A cleanly stopped controller deletes its row and announces it (`+NOTIFY+`).
+** Rows dead for a day are pruned, with the counters they held.
+* *Measured:* the builds of a controller killed with `+SIGKILL+` were adopted 5.0–6.3 s later, and those of one stopped cleanly 6.5 s later. A controller paused for 12 s lost nothing.
+
+=== Clock skew
+
+Liveness uses the store's clock only, so skew between controllers cannot cause or prevent a takeover. Controller clocks matter for the minute a cron tick is labelled with (a controller ahead claims a tick early; one behind finds it claimed and skips it), for the expiry of remember-me cookies, and for the expiry of queue reservations. Controllers SHOULD keep their clocks within a few seconds of each other (NTP).
+
+=== Store outages
+
+* *Connections.* Two connection pools: one for ordinary work, and one for heartbeats, leases and membership, so a busy work pool never makes a controller look gone. Every connection has socket, connect, statement and lock timeouts and TCP keepalive. A call is retried on another connection only if the connection broke before the commit was sent, so no work is done twice.
+* *Fail fast.* While the database is unreachable, ordinary store calls fail at once for 5 s at a time instead of each waiting out the timeouts. The heartbeat keeps probing and closes the breaker when it gets through.
+* *What controllers do meanwhile:*
+** Pages answer, without data from the store.
+** Running builds carry on; their logs and save points wait. No lease is taken for lost on missing evidence (above).
+** Configuration saves fail with an error.
+** New builds wait in the queue. A queue item requested while the store is unreachable gets an id from a range disjoint from the cluster's; such an item is not shared, and starts only once the store answers.
+** Cron ticks are not run: a tick is claimed before it runs, and cannot be claimed. A tick missed this way is not caught up (JEP-253), so a ten-minute outage skips ten minutes of cron and polling.
+* *Recovery:*
+** Change events are delivered after reconnecting, including late-committed ones: a gap in event numbers is re-read for 60 s.
+** Completed builds whose publication failed are published, and builds whose start could not be recorded are registered.
+** Changes that failed to apply are retried.
+* *No takeovers after an outage.* Nobody takes another controller for gone until its own heartbeats have been steady for longer than the timeout. Right after an outage every heartbeat is stale, the live controllers' included.
+* *Blob storage* calls have bounded per-try and response timeouts. Logs and save points are shipped later, and a log's tail shipped after its record is republished.
+* *Boot.* A controller starting while the database or blob storage is unreachable waits, with backoff, for up to 10 minutes (configurable), and is not ready meanwhile.
+
+== Motivation
+
+* Every controller depends on the store. Before this work, an outage of more than 20 s aborted every running build in the cluster, and on recovery the controllers took over each other's work. This was found by reading the code, then shown by pausing the database in an acceptance test.
+* JEP-250 keeps core's SPI to a key-value store. The coordination the cluster needs is real, but only the cluster plugin uses it, so its contract belongs to the plugin and its backends.
+
+== Reasoning
+
+* *Membership follows from access to the stores* rather than from an explicit join. Controllers are started and stopped by the deployment (Kubernetes scales them, replaces failed pods and rolls upgrades), so a join step would be one more thing for it to do, and to get wrong.
+* *The store is the source of truth for liveness:* one table, no gossip and no consensus between controllers. Controllers judge liveness only while their own view of the store is trustworthy.
+* *Epoch-fenced leases* make the store the arbiter of ownership. The fence is the store's (an atomic `+writeIfHeld+`, a conditional append), never a controller's cache.
+* *Identity keys* make renames cheap and safe: nothing below an item's identity moves, so a build running during a rename keeps its placeholder, lease and mailbox.
+* *Fail fast rather than queue up.* A degraded UI that answers is better than one that hangs, and work that needs the store is retried or waits in the queue anyway.
+* *Waiting at boot rather than failing.* Kubernetes restarts would otherwise loop while the database starts.
+* *Ready members only* for hashed work: a controller that has just started has no triggers yet, and ticks given to it would be lost.
+
+== Backwards Compatibility
+
+* Without the cluster plugin, nothing changes.
+* The plugin's SPI is versioned with the plugin and its protocol number, not with Jenkins core.
+* *Known limitations:*
+** Liveness through session locks needs a direct database connection.
+** Two controllers of incompatible protocols started at the same moment can both pass the protocol checks before either has heartbeated; rolling upgrades start one at a time.
+** A store whose events cannot be totally ordered is not supported (JEP-250).
+
+== Security
+
+* *Trust model.* The controllers are one trust domain, and the stores are inside it: write access to the database or the blob store is code execution on every controller (JEP-250). Network access to the stores and to the controllers' internal URLs is limited to the controllers.
+* The store and blob credentials come from Secrets, and connections SHOULD use TLS (through the JDBC URL and the blob connection string).
+* Keys read from the store are turned into file names only after they are checked to name files (JEP-250); plugin names read from the store are checked to be plugin short names.
+* A security review of the cross-controller interfaces is pending, through a separate process.
+
+== Infrastructure Requirements
+
+The plugins (`+cluster+`, `+cluster-postgresql+`, `+cluster-azure-blob+`, `+cluster-s3+`) need repositories in the Jenkins organisation, and Docker in their CI: their tests run PostgreSQL, Azurite and an S3-compatible store in containers (Testcontainers). Where they will live is not decided. The Helm chart needs a home too (jenkinsci/helm-charts, or next to the plugins), and the acceptance scripts need a Kubernetes cluster (kind) and a decision on who runs them after acceptance and where they live (for example ATH, or a repository of their own).
+
+== Open questions
+
+* *Duplicate names.* Bound-object ids and forwarding (JEP-254) use a controller's name. Should a controller refuse to start while a live member has its name, or should ids carry the origin instead?
+* *When to contract.* Should Contract of a migration be started by an operator, or wait for a grace period after a roll, so that rolling back by image stays possible for a time?
+* *Coordination without Postgres.* The facets are written so that another backend (etcd, a log-backed store) can implement them; none exists yet.
+
+== Testing
+
+* *Cluster plugins:* `+PostgresPersistenceStoreTest+`: the JEP-250 contract, leases (no takeover before the controller is steady; a dead process gone soon, a paused one only after the timeout; a controller whose lock is gone stops acting for its leases first), claims, the queue (claims as compare-and-set, starts recorded only while claimed), counters, late-committed events, reconnects. `+SchemaMigrationsTest+`. `+ClusterBlobStoreContract+`, what every blob store must do (blobs and logs: a stale writer is refused, two writers at one position, one wins), run against an in-memory store, Azurite and Garage (an S3-compatible store). The in-memory `+ClusterStore+` in the plugin's test jar.
+* *Acceptance* (scripts in `+validation/experiments/+` of link:https://github.com/timja/cluster-plugin[timja/cluster-plugin]):
+** `+ET14-store-outage.sh+`: Postgres paused for 10 s and 60 s and restarted, Azurite stopped, a controller booting while Postgres is down; no aborts, takeovers, duplicates or lost logs, and pages answering
+** `+ET15-logs-api-failover.sh+`: failover times after `+SIGKILL+`, a clean stop and a pause
+** `+ET10-operations.sh+`: a refused older peer
+
+== Prototype Implementation
+
+* *Cluster plugins* (link:https://github.com/timja/cluster-plugin[timja/cluster-plugin]): the SPI in `+io.jenkins.plugins.cluster.spi+` (`+ClusterStore+`, `+BuildLeases+`, `+LaunchLeases+`, `+ClusterQueue+`, `+ClusterBlobStore+`, `+Keys+`), `+PostgresPersistenceStore+`, `+AzureBlobStore+`, `+S3BlobStore+`, `+PeerVersionCheck+`, `+KeyCheck+`, `+SchemaMigrations+`, `+MemberStatus+`.
+* *Core:* none beyond JEP-250.
+* *configuration-as-code:* prototype branch `+cnj/t15-keep-undeclared-nodes+` (`+keepUndeclaredNodes+`): every controller applies JCasC as it starts, through the shared store, so one controller applying its YAML must not delete the nodes the others hold.
+* *Evidence:* the acceptance scripts named under Testing print the measurements quoted in this JEP. The prototype's write-ups of those runs are available on request.
+
+== References
+
+* The set of JEPs this one belongs to is listed in link:../250/README.adoc[JEP-250].
+* How to install, upgrade, back up and restore a cluster is not a JEP: the operations guide lives with the cluster plugin (link:https://github.com/timja/cluster-plugin/blob/main/docs/operating-a-cluster.md[docs/operating-a-cluster.md] in timja/cluster-plugin).

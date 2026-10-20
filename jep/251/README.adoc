@@ -1,0 +1,186 @@
+= JEP-251: Shared build records, logs and history
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 251
+
+| Title
+| Shared build records, logs and history
+
+| Sponsor
+| link:https://github.com/timja[Tim Jacomb]
+
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2026-10-11
+
+| BDFL-Delegate
+| TBD
+
+| Requires
+| JEP-250, JEP-255
+|===
+
+== Abstract
+
+Completed builds are shared, so every controller shows the full history of every job, whichever controller ran each build, and build numbers are unique across controllers.
+
+Core gains one extension point, `+BuildRecordSource+`, through which a job's lazy build index learns of builds stored elsewhere, and a few hooks on the build index. Everything else uses extension points Jenkins already has. The `+cluster+` plugin implements them: when a build completes, its controller publishes
+
+* the build's record (`+build.xml+`) to the store, under the job's identity (JEP-250)
+* a snapshot of its directory to blob storage
+* a Pipeline's log, written while the build runs, through external log storage (JEP-210)
+
+Builds are materialised locally only when something reads them. Fingerprints, test results and build discarders work across controllers.
+
+== Specification
+
+The words MUST, MUST NOT, SHOULD and MAY are used as in RFC 2119.
+
+=== Core: build records from elsewhere
+
+*`+jenkins.model.lazy.BuildRecordSource+`* (extension point, `+@Restricted(Beta.class)+`):
+
+* `+Set<Integer> numbers(job)+`: the numbers of builds of the job stored elsewhere. They are added to the job's lazy index, and may have no local directory yet.
+* `+R retrieve(job, dir, load)+`: loads a build directory. It may first create the directory from the stored record, and it wraps the load, for example so that saves made while loading are not taken for changes. The default calls `+load+`.
+* `+boolean sharesNumbers(job)+`: whether the job's build numbers come from a sequence shared with others. `+RunMap.put+` then only checks that the number is unused.
+* `+BuildRecordSource.get()+` returns the first registered source, or null. At most one is consulted.
+
+Call sites: `+AbstractLazyLoadRunMap.loadIdOnDisk+` adds `+numbers()+` to the numbers found on disk; `+RunMap.retrieve+` keeps its check that the directory is the job's, then calls `+retrieve+`; `+RunMap.put+` asks `+sharesNumbers+`. Without a source: an empty set, a direct load, false. That is Jenkins as it is.
+
+*Hooks on the build index* (`+@Restricted(Beta.class)+`), for an implementation that learns of changes made elsewhere: `+AbstractLazyLoadRunMap.knows(n)+` (a number is in the index), `+unload(n)+` (drop the loaded build, so it is loaded again from the directory) and `+forget(n)+` (drop the number). `+Run.isPendingDelete()+` tells whether a build is being deleted.
+
+*Existing extension points the implementation uses:* `+Job.BuildNumberAssigner+` (numbers), `+PeepholePermalink.Cache+` (permalinks), `+LogStorageFactory+` (Pipeline logs), `+FingerprintStorage+`, `+RunListener+`, `+SaveableListener+` and `+ItemListener+`. Core's own `+ItemListener+`s that move a job's builds directory on a rename run before plugins', so that a plugin sees the build directory already moved.
+
+Why a new extension point: `+RunMap+` is final and has no hook for where builds come from. `+ArtifactManager+` and `+LogStorage+` cover only files under a build.
+
+=== Implemented by the cluster plugin
+
+==== Records and snapshots
+
+* *Publishing.* When a build is finalized, its controller publishes:
+** a snapshot of the build directory to blob storage (`+items/<uuid>/builds/<N>/files.tgz+`, JEP-255), first
+** then the record to the store (`+_items/<uuid>/builds/<N>/build.xml+`), fenced by the build's lease (`+writeIfHeld+`, JEP-255), so a controller that lost the build cannot publish over the new owner
+* *What the snapshot leaves out:* the record itself, the log (shipped separately, below), `+archive/**+` (an artifact manager keeps artifacts, JEP-252), temporary files, and state only needed while a build runs, which for Pipelines is `+program.dat+`, `+workflow/**+` and `+stashes/**+` (save points carry it, JEP-252). Plugins can exclude more through an extension point of the cluster plugin. None of this is named in core.
+* *The index.* A job's builds are the union of its local build directories and the store's records (`+BuildRecordSource.numbers+`). A build only in the store is materialised into the home (record and snapshot) when first loaded (`+retrieve+`).
+* *Changes from elsewhere* arrive through core's `+RemoteChangeHandler+` (JEP-250) as changes to `+_items/<uuid>/…+` keys:
+** a new record becomes a known number (`+knows+`)
+** a republished record drops the local copy (`+unload+`), which is materialised again
+** a deleted record removes the local copy without firing listeners (`+forget+`), because cleanup happened where it was deleted
+** a record stored elsewhere for a build still running here means another controller took the build: it is treated as lost (JEP-252), never written over
+* *Permalinks* (last successful, last failed, …) are cached in the store per job (`+_items/<uuid>/builds/permalinks+`) through `+PeepholePermalink.Cache+`, updated by the controller completing or deleting a build. A controller with a fresh home then resolves them without loading the job's builds: with 20,000 builds and none failed, a job page took 90 s cold before, 1.5 s now. A controller that has not seen a newer build yet never moves a permalink back.
+* *Republishing.*
+** A build is republished when its `+build.xml+` is saved again (a description, keep-forever).
+** It is also republished when files are added to, or changed in, its directory later without such a save (a plugin writing a report afterwards). Each snapshot carries a manifest of the files it holds (their names, sizes and times). A sweep compares builds against it every minute for an hour after completion, and every 10 minutes over every build loaded on the controller (at most 1,000 per run, carrying on in the next).
+** A local copy with files newer than the published snapshot is published, not replaced by it, when the record changes elsewhere.
+* *Builds nothing can resume* (their controller died, and they are not resumable Pipelines) are closed with an ABORTED record whose console has what the build had printed, then why it ended (JEP-252).
+* *Failed publication.* A build whose publication fails (the store was unreachable) stays running for the cluster, and publication is retried until it succeeds.
+* *Renames and moves* change nothing here: records, snapshots and logs are under the job's identity.
+* *Deletion.* Deleting a job deletes everything under its identity, records and blobs, on the controller where it was deleted (JEP-255). Deleting a build deletes its record and its blobs.
+
+==== Build numbers
+
+`+Job.BuildNumberAssigner+` is implemented by a compare-and-set increment of the job's stored counter (`+_items/<uuid>/nextBuildNumber+`), which only ever goes up. It takes the higher of the stored counter and the job's own `+nextBuildNumber+`, so `+updateNextBuildNumber+` on any controller still raises it. The local `+nextBuildNumber+` file stays local. `+sharesNumbers+` is then true for the job.
+
+Numbers continue across controllers, fresh controllers, renames and moves. A number is never used twice for one job (one identity). A job deleted and made again with the same name is a new job and numbers from 1, as on one controller. Data kept outside Jenkins keyed by job name and build number (junit-sql-storage, for example) SHOULD key by `+Item.getItemUuid()+` instead (JEP-250).
+
+=== Logs
+
+Pipeline logs use the external log storage API (JEP-210, `+LogStorageFactory+`), so any implementation can serve a cluster, for example blobs (the cluster plugin's) or CloudWatch Logs (pipeline-cloudwatch-logs). This JEP adds no log API. It states what an implementation must do for a cluster:
+
+* *Readable from every controller* (MUST), while the build runs and after, through `+LogStorageFactory.forBuild+` on any controller. The console of a running build is also forwarded to its owner (JEP-254).
+* *Keyed by the build, not by the controller* (MUST), so a controller adopting a build continues the same log. It SHOULD be keyed by the job's identity, so that a rename moves nothing; otherwise it MUST be moved with the job.
+* *Durable at save points* (MUST). Everything written before a Pipeline save point MUST be stored before the save point is (JEP-252). A controller resuming from it then continues the log where the save point left off, with no lines missing or repeated. An implementation that buffers asynchronously (CloudWatch batches) MUST flush there.
+* *Fenced by the log store* (MUST). An append states the length its writer knows the log to have, and the store MUST refuse it unless the log is exactly that length. The refusal MUST be decided by the store as part of the write, not from a controller's cache of where the log ends or a listing followed by a write: a controller that was paused and lost the build's lease could otherwise append at an offset the new owner has already used. Two appends at the same offset MUST NOT both succeed. A controller that may have lost the build's lease also stops writing (JEP-252), but that is the second line of defence.
+
+*The cluster plugin's log storage* (`+BlobLogStorage+`, over the blob store's `+LogBlobs+`, JEP-255):
+
+* The build writes its local `+log+` and `+log-index+`. A shipper appends what is new to the stored log: when 32 KiB is pending, 3 s after the last shipment, before each save point and at the end of the build. It pauses while this controller's membership may have lapsed. A new owner continues where the stored log ends.
+* *How a log is stored is up to the blob store plugin:*
+** *Azure Blob Storage* (`+cluster-azure-blob+`): append blobs. An append blob takes at most 50,000 blocks, so a log is stored as `+log+`, `+log.1+`, …, and readers concatenate them. Each block is appended on its own, conditionally, and which segment a block goes to depends only on that segment's block count, so two writers at one position always choose the same segment and only one append succeeds.
+** *S3* (`+cluster-s3+`), and any blob store without appendable blobs: each append is an object of its own. A writer that learns where a log ends from the store takes a higher epoch, records it next to the log, and names its chunks with it; an older writer is refused at its next append, and readers take the highest epoch at each offset. When the build completes the chunks are put together into `+log+`. A reader takes `+log+` if it is there, then the chunks beyond its end, so it reads the whole log whatever an interrupted compaction left.
+
+*Freestyle and other build logs* are written to the build's `+log+` file, as on one controller; core has no log SPI for them (`+Run.getLogFile+`). The cluster plugin ships them to the blob store while the build runs, so that a build whose controller dies keeps what it printed (closed as aborted, above), and the CLI can follow it from another controller (JEP-254). Once the build is published, its log travels in the snapshot and the shipped copy is deleted. While such a build runs, its console page is served by the controller running it (JEP-254).
+
+=== History at scale
+
+* *Fingerprints.* A `+FingerprintStorage+` in the store, keyed by MD5. Concurrent updates of usages are merged three-way against the version each controller last read.
+* *Test results.* junit-sql-storage, with its cache invalidated when a build's record changes elsewhere, so a report is right on another controller within about 0.2 s of completion. Its rows follow their job when it is renamed or moved.
+* *Other per-build reports* (coverage, static analysis and so on) are files in the build directory and travel in the snapshot, unchanged: the coverage plugin's summary, tree and source views are the same on every controller.
+* *Build discarders* apply to the whole history, whichever controller ran each build, on one controller (`+@ClusterSingleton+`, JEP-253). A build still running elsewhere is never discarded.
+* *A cluster view* (`+/manage/cluster+`) lists the controllers, running builds with their owners, agent channels with their holders, and plugin changes.
+
+== Motivation
+
+* An experiment replaced a controller and its home with a fresh one against the same external stores. All build history was lost, and junit-sql-storage, whose rows outlived the builds, showed a new build's tests together with an old build's of the same name and number.
+* In a cluster, each controller would otherwise show only the builds it ran.
+* An earlier version of this design put the publication engine in core, keyed by the job's path. Every rename then had to move all of a job's records and blobs, and core gained a large amount of code useful only in a cluster. With identity keys and one extension point, core stays small and a rename moves nothing.
+
+== Reasoning
+
+* *Snapshots* keep the build directory byte for byte, so plugins that store per-build files (junit file storage, coverage, badges and so on) keep working without changes.
+* *Pipeline logs ship continuously* (not only at completion), so a controller adopting a build after its owner died has the log up to the save point it resumes from.
+* *Lazy materialisation* keeps startup cost proportional to what is looked at, not to the size of the history.
+* *A live freestyle console needs a core log SPI* (`+Run.getLogFile+` hard-codes files; JEP-207 was deferred). Forwarding to the owner gives the same result without one.
+* *One source, not a list.* Two sources for one job's history would have to agree on numbers; nothing needs that.
+
+== Backwards Compatibility
+
+* Without a `+BuildRecordSource+`, nothing changes. The hooks on the build index are new methods.
+* With the cluster plugin, plugins reading the build directory see a complete directory once the build is loaded, apart from the exclusions above.
+* Plugins writing to a completed build's directory have their files republished, within a minute during the first hour after completion, and within 10 minutes later.
+* Plugins keeping data keyed by job *name* outside `+JENKINS_HOME+` can key it by `+Item.getItemUuid()+` instead (JEP-250).
+
+== Security
+
+* Snapshots and logs have the same content as the build directory. Blob storage access is equivalent to access to `+JENKINS_HOME/jobs+`.
+* A snapshot is unpacked only inside the build's directory: entries that would leave it, and links, are refused.
+* Read permission is checked by the controller serving the build, as before.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Open questions
+
+* *Snapshot fencing.* The record write is fenced by the build's lease; the snapshot upload before it is not. A controller that lost the build and was paused between uploading its snapshot and writing its record is refused at the record, but its upload can replace the new owner's snapshot of the same build. Naming each snapshot by the lease epoch, in the record, would make the record write the single commit point, at the cost of a format change.
+
+== Testing
+
+* *Core:* tests with a fake `+BuildRecordSource+` (numbers from elsewhere, retrieval, shared numbers) and for the hooks on the build index; the rename-listener ordering.
+* *Cluster plugins:* `+BuildRecordsTest+` (late files, a closed build keeping what it printed, a record stored elsewhere for a build running here), `+StoredPermalinksTest+`, `+StoredBuildNumberAssignerTest+`, `+RemoteBuildEventsTest+`, `+DeletedJobNumberingTest+` (a job made again starts afresh); `+ClusterBlobStoreContract+` against an in-memory store, Azurite and Garage (logs: a stale writer is refused, also interrupted compactions; listings past one page; multipart uploads); `+ClusterFingerprintStorageTest+`.
+* *Acceptance* (scripts in `+validation/experiments/+` of link:https://github.com/timja/cluster-plugin[timja/cluster-plugin]; each runs two controllers against one store):
+** `+ET3-build-records.sh+`: builds that ran on either controller are listed on both, with the same records, consoles and permalinks; deletion and renames carry over, and a fresh controller sees the whole history
+** `+ET2-scheduling.sh+`: unique numbers for 40 concurrent builds
+** `+ET8-history.sh+`: fingerprints, test results, coverage reports and build discarders work across controllers, and the cluster view lists both
+** `+ET12-remainder.sh+`: a file added to a completed build's directory later is republished
+** `+ET15-logs-api-failover.sh+`: a Pipeline log rolls over segments and stays whole across a failover and a rename; a freestyle build whose controller is killed keeps its output
+
+== Prototype Implementation
+
+* *Core* (link:https://github.com/timja/jenkins[timja/jenkins]): branches `+cnj2/c1-build-record-source+` (`+BuildRecordSource+`) and `+cnj2/a5-runmap-hooks+` (the build index hooks and the listener ordering).
+* *Cluster plugins* (link:https://github.com/timja/cluster-plugin[timja/cluster-plugin]): `+BuildRecords+`, `+StoredPermalinks+`, `+StoredBuildNumberAssigner+`, `+BlobLogStorage+`, `+ClusterFingerprintStorage+`, `+ClusterView+`.
+* *junit-sql-storage:* prototype branches `+cnj/t3-m5-remote-delete+` and `+cnj/t15-follow-renames+`.
+* *Evidence:* the acceptance scripts named under Testing print the measurements quoted in this JEP. The prototype's write-ups of those runs are available on request.
+
+== References
+
+* JEP-207 (external build logging), JEP-210 (external log storage for Pipeline), JEP-226 (external fingerprint storage)
+* link:https://plugins.jenkins.io/junit-sql-storage/[junit-sql-storage]
+* The set of JEPs this one belongs to is listed in link:../250/README.adoc[JEP-250].

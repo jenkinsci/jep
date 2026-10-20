@@ -1,0 +1,164 @@
+= JEP-254: Request routing and stateless sessions
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 254
+
+| Title
+| Request routing and stateless sessions
+
+| Sponsor
+| link:https://github.com/timja[Tim Jacomb]
+
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2026-10-11
+
+| BDFL-Delegate
+| TBD
+
+| Requires
+| JEP-250, JEP-252, JEP-255
+|===
+
+== Abstract
+
+Users and tools reach any controller through a load balancer with no stickiness. For that to work:
+
+* a browser stays signed in, and its forms keep working, on every controller
+* requests that only the owner of something can answer are forwarded to it: a running build's live console, `+input+`, stop and replay; an agent's pages, through the controller holding its channel; the UI fragments a page bound to objects in one controller's memory
+* builds running on another controller appear in every controller's UI and REST API
+* an outbound (SSH-launched) agent is connected by exactly one controller
+
+Core gains one hook, `+LoginRevocation+`, so that signing out ends a sign-in everywhere; Stapler gains an optional prefix for bound object ids. Forwarding, the crumb issuer and the launch lease are in the `+cluster+` plugin.
+
+== Specification
+
+=== Sessions and crumbs
+
+* *Sign-in.* A browser's sign-in is a signed cookie (Jenkins' remember-me token, with the user's seed), valid on every controller, instead of a server-side HTTP session. The chart sets `+TokenBasedRememberMeServices2.alwaysRemember+`, so every form sign-in issues the cookie, and the cookie is valid until its expiry (the remember-me validity) unless revoked.
+* *Signing out* ends the sign-in on every controller, the remember-me cookie included, and leaves the user's other browsers signed in. Core provides *`+jenkins.security.LoginRevocation+`* (extension point, `+@Restricted(Beta.class)+`):
+** a sign-in's *login id* is the Base64url SHA-256 of its remember-me cookie value; core records it in every HTTP session made from that cookie
+** on sign-out, core calls `+revoke(loginId, username, expiresAt)+`
+** core rejects a remember-me cookie whose login is revoked (`+isRevoked(loginId)+`, answered from memory), and invalidates sessions made from it
+** without an implementation, signing out does what it does today
+** *the cluster plugin's implementation* writes a revocation entry to the store, which every controller applies to its in-memory set, and removes it once the token would have expired anyway. A copied cookie is therefore dead on all controllers once the user has signed out. (Renewing the user's seed would also end the sign-in everywhere, but would sign the user out of all their browsers.)
+* *Changing the password* renews the user's seed, which invalidates every sign-in of that user on every controller.
+* *Crumbs.* A cluster crumb issuer (`+crumbIssuer: cluster+`) binds crumbs to the sign-in cookie, or, before sign-in, to a nonce cookie. Every controller validates them with the same salt.
+* *API tokens* are stored with the user (JEP-250), so they work everywhere.
+
+=== Bound objects
+
+* Stapler bound objects (`+renderOnDemand+`, progressive rendering, JavaScript proxies) live in one controller's memory. A standalone Stapler change lets their ids carry a prefix (`+org.kohsuke.stapler.bind.BoundObjectTable.idPrefix+`, checked against `+[A-Za-z0-9_.-]{1,64}+`); the chart sets it to the controller's name. `+BoundObjectTable.serverIdOf(id)+` returns the prefix of an id, as an untrusted routing hint only: lookup is unchanged, by exact id in the caller's own session.
+* A request for another controller's bound object is forwarded to it, cookies included. If that controller cannot be reached, the request gets 502 (Bad Gateway): the object exists nowhere else.
+
+=== Forwarding to the owner
+
+* *`+OwnerRoutingFilter+`* handles requests addressed to things another controller holds:
+** *build URLs* (`+/job/…/<N>/…+`) for a build running on another controller (an `+ExternalBuild+`, JEP-252), located by its placeholder's origin (not its name, which a replacement controller may share)
+** *agent URLs* (`+/computer/<name>/…+`) for a static agent connected to another controller, located through the channel table. A cloud agent belongs to one controller and is not known to the others (JEP-257), so its pages answer only there
+** *a job's SCM polling log* (`+/job/…/scmPollLog/…+`), to the controller that last polled it (from the trigger claims, JEP-253)
+** *plugin install progress* (`+pluginManager/updates/…+`, `+updateCenter/{body,installStatus,…}+`), to the controller running the install (JEP-256)
+* *How forwarding works.* It uses the target's internal URL from the membership table (JEP-255), waits at most 20 s for the response headers, and streams the body (live consoles). The owner's response headers replace any the forwarding controller had set. If the owner cannot be connected to, the request is served locally. A request whose answer does not come in time is served locally only if it is a GET or HEAD; any other gets 504 (Gateway Timeout), since the owner may have acted on it (a replay or an `+input+` answer run twice).
+* *WebSockets.* A WebSocket upgrade addressed to another controller's object is relayed: the forwarding controller accepts it, opens a WebSocket to the owner (with the client's credentials), and copies frames both ways until either side closes. Agents' WebSocket connections are not relayed; an agent connects to whichever controller answers it.
+* *`+input+`, stop and replay* of a running build therefore work from any controller. After an adoption (JEP-252), they reach the new owner.
+* *The CLI.* `+console -f+` and `+build -s+`/`+-f+`/`+-v+` follow a build running on, or started by, another controller through `+ExternalBuild.writeLogTo+` and the queue item's future (JEP-252, JEP-253), then report its result.
+* *Requests for an item not applied yet.* A request for an item that another controller has just created, and whose change this controller has not applied yet, waits up to 5 s for it.
+* Forwarding does not pass the `+Host+` header on, so a root URL MUST be configured.
+* *Permalinks.* `+/job/x/lastBuild/…+` redirects to the newest build when that build runs elsewhere, and the build URL is then forwarded.
+
+=== Agent channels
+
+* Each controller publishes which agents it holds a channel to (JEP-255).
+* Inbound agents connect to whichever controller answers them, and reconnect to a failover URL (the load balancer) when their controller dies, resuming within about 40 s, as measured in the acceptance tests. This requires the agent to be configured with the load balancer's URL, not a controller's.
+
+=== Outbound agents: the launch lease
+
+Static nodes are shared (JEP-250), so every controller has a `+Computer+` for each of them. For an outbound launcher (SSH), each would start its own Remoting JVM in the same remote root. So exactly one controller connects each such node:
+
+* *The lease.* A launch lease per node (`+_nodes/<name>/launch+`, JEP-255), acquired create-only, or taken over when its holder is not a live member. It is released when the agent goes offline here and when the node is deleted. It is not renewed; liveness is the holder's membership.
+* *The gate, with no core change.* The cluster plugin's `+ComputerListener.preLaunch+` applies to nodes that are not cloud agents and whose launcher is not inbound. While another live member holds the lease, it refuses the launch ("Connected on <controller>"), and the computer stays offline here. The node's retention strategy retries about every minute, and each retry checks the lease again: when the holder dies, its membership times out and the next retry anywhere acquires the lease and connects.
+* *Builds.* Controllers that do not hold the lease have no executors on the node, so a queue item for its label can only be claimed by the holder. While the holder is live and has idle capacity for those labels, other controllers' demand for them does not provision cloud agents (`+QueueStartGate.countsForProvisioning+`).
+* *Pages.* `+/computer/<name>/+` on another controller is forwarded to the holder, through the channel table (above). The node's configuration stays shared; an edit applies on the holder at its next connection, as on one controller.
+* *Fencing.* A holder that loses its heartbeat disconnects its outbound channels, so the overlap with a new holder is bounded by the member timeout. Within that window a second agent JVM may start against the same remote root; Remoting's work directory lock (`+-workDir+`) catches it where it is enabled.
+* Inbound and cloud agents are unchanged.
+
+=== Builds running elsewhere in the UI and REST
+
+See JEP-252: the job page, the build history and the job's icon show them (`+ExternalBuilds+`), and the REST API lists them in the job's `+buildsElsewhere+` property, contributed by the cluster plugin (`+builds+`, `+allBuilds+` and `+lastBuild+` keep their types and list local builds only).
+
+== Motivation
+
+* *Sessions.* In an experiment with two controllers behind a load balancer without stickiness, sessions were lost and crumbs failed across controllers, and an API token made on one controller gave `+401+` on another.
+* *Ownership.* The same experiment, and one that failed a controller over to another, showed that a running build and an agent belong to one JVM. Their pages must be answered by that JVM.
+
+== Reasoning
+
+* *Stateless sign-in* reuses Jenkins' own remember-me mechanism, so the session model needs no new security primitive.
+* *Forwarding* keeps every controller a full Jenkins, with no request-time knowledge in the load balancer. A sticky load balancer would only help the browser; agents, webhooks and API clients would still land anywhere.
+* *Placeholders are addressed by origin,* so a restarted pod with the same name never answers for its predecessor's builds.
+
+== Backwards Compatibility
+
+* Without a store, nothing changes.
+* `+LoginRevocation+` is new; without an implementation, sign-out is unchanged.
+* *Known limitations:*
+** *Password changes* sign out every browser of that user, including the one that made the change, as on one controller.
+** A client without cookies gets crumbs bound to its HTTP session, which only one controller has.
+** One launch-failed line per minute per outbound node is logged on each controller that does not hold its lease. If that proves too noisy, a small core hook (a launch gate giving a quiet offline cause) is the alternative.
+
+== Security
+
+* Forwarded requests carry the user's credentials (cookies, `+Authorization+`), and the owner authorizes them as if received directly.
+* Controllers reach each other on internal URLs, which must not be reachable from outside the cluster network.
+* *Trust model.* The controllers of a cluster are one trust domain (JEP-250). A forwarding controller can act as any user on any other controller, since it relays the user's cookie and `+Authorization+` header; a compromised controller is a compromised cluster.
+* *Internal traffic SHOULD use TLS.* Forwarded requests carry credentials, and the chart's example internal URL (`+http://$(POD_IP):8080/+`) is plain HTTP. TLS between controllers is a deployment concern (a service mesh, or `+JENKINS_CLUSTER_INTERNAL_URL=https://…+`).
+* The loop guard, the header `+X-Jenkins-Cluster-Forwarded-From+`, carries the forwarding controller's name, a time and an HMAC under a confidential key shared through the store. A request counts as forwarded only if the MAC is valid and under 5 minutes old; a client's own copy of the header is dropped, not passed on.
+* *Sessions.* In cluster mode a sign-in is a bearer token valid until it expires or is revoked by signing out (above), instead of a server session that expires when idle. Revocations are kept in the store, so a controller that cannot reach the store learns of a sign-out when it can again.
+* A security review of the cross-controller interfaces is pending, through a separate process.
+
+== Infrastructure Requirements
+
+A load balancer in front of the controllers, with no stickiness required, and the stores of JEP-255.
+
+== Testing
+
+* *Core:* `+StatelessSessionsTest+`, and tests of `+LoginRevocation+` with a fake implementation (a revoked cookie is refused, sessions made from it end, the user's other sign-ins stay).
+* *Stapler:* `+BoundObjectTableTest+` (prefixed ids round-trip, invalid prefixes ignored, `+serverIdOf+`).
+* *Cluster plugins:* `+OwnerRoutingTest+`, `+ForwardingTest+` (the signed loop guard, a forged client header not passed on), `+ClusterViewTest+`, tests of the login revocation entries and of the launch lease (one holder; takeover after the holder is gone; a cloud or inbound node is not gated).
+* *Acceptance* (scripts in `+validation/experiments/+` of link:https://github.com/timja/cluster-plugin[timja/cluster-plugin]; each runs two controllers against one store):
+** `+ET6-static-state.sh+`: a scripted browser signs in and works through a round-robin load balancer, including when a controller is lost
+** `+ET7-owner-routing.sh+`: from the controller that does not run a build, its console can be followed, and `+input+`, stop and replay work; agent pages answer; an agent reconnects after its controller dies; webhooks; `+input+` after a failover
+** `+ET15-logs-api-failover.sh+`: REST and `+lastBuild+` for builds running elsewhere
+** `+ET20-websocket-cli.sh+`: a WebSocket to the other controller's object is relayed; the CLI's `+console -f+` (over HTTP and over WebSocket) and `+build -s -v+` follow builds running on the other controller
+** `+ET21-browser.sh+`: Playwright tests in a real browser through the round-robin load balancer: a live console, a job configured in the browser, the cluster view with executors, the plugin manager's notice
+** `+ET2-scheduling.sh+`: the polling log is answered by the controller that polled
+** a sign-out on one controller ends the sign-in on the other, also for a copied cookie
+
+== Prototype Implementation
+
+* *Core* (link:https://github.com/timja/jenkins[timja/jenkins]): branches `+cnj2/b4-keys-sessions+` (stateless sign-in, `+LoginRevocation+`) and `+cnj2/c2-external-builds+` (CLI).
+* *Stapler:* prototype branch `+cnj/t6-m5-bound-id-prefix+`.
+* *Cluster plugins* (link:https://github.com/timja/cluster-plugin[timja/cluster-plugin]): `+OwnerRoutingFilter+`, `+Forwarding+`, `+WebSocketProxy+`, `+BoundRequestForwarder+`, `+ClusterCrumbIssuer+`, `+ChannelPublisher+`, the login revocation entries, and the launch lease (`+LaunchLeases+`).
+* *Evidence:* the acceptance scripts named under Testing print the measurements quoted in this JEP. The prototype's write-ups of those runs are available on request.
+
+== References
+
+* The prototype's notes on the experiments summarised under Motivation are available on request.
+* The set of JEPs this one belongs to is listed in link:../250/README.adoc[JEP-250].

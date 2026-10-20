@@ -1,0 +1,202 @@
+= JEP-252: Ownership of running builds: leases, fencing, adoption
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 252
+
+| Title
+| Ownership of running builds: leases, fencing, adoption
+
+| Sponsor
+| link:https://github.com/timja[Tim Jacomb]
+
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2026-10-11
+
+| BDFL-Delegate
+| TBD
+
+| Requires
+| JEP-251, JEP-255
+|===
+
+== Abstract
+
+Every running build has exactly one owner: the controller holding its lease. A Pipeline ships save points (its program state and flow nodes) to blob storage as it runs. When its owner dies, another controller takes the lease, with a higher epoch, and resumes the Pipeline from the latest save point, with no shared disk. An owner that lost its lease (after a pause or a partition) is fenced once it reaches the store again: it stops the build and never publishes it. Builds nothing can resume are closed as aborted rather than vanishing. Messages to a running build (a downstream build's result, a stop) reach it wherever it runs, also across an adoption.
+
+Core gains one extension point, `+ExternalBuilds+`, through which the job page, the build history, URLs, the job's icon and the CLI show builds running on other controllers. workflow-cps gains a listener for its save points, and pipeline-build-step an extension point to relay a downstream build's outcome. The `+cluster+` plugin implements the rest.
+
+== Specification
+
+The words MUST, MUST NOT, SHOULD and MAY are used as in RFC 2119.
+
+=== Core: builds running elsewhere
+
+*`+jenkins.model.ExternalBuilds+`* (extension point, `+@Restricted(Beta.class)+`):
+
+* `+List<? extends ExternalBuild> running(job)+`: running builds of the job held by other controllers, newest first
+* `+ExternalBuild get(job, number)+`: one of them, or null
+* `+boolean isBuilding(job)+`: whether the job counts as building because of builds elsewhere
+* `+ExternalBuilds.get()+` returns the first registered, or `+NONE+` (an empty list, null, false)
+* Implementations MUST NOT do remote I/O on the caller's thread: they are called under the queue's lock and for every job on a page. They answer from a cache refreshed in the background.
+
+*`+jenkins.model.ExternalBuild+`* (a Stapler `+ModelObject+`, whose views the implementation supplies): `+getNumber+`, `+getStartTimeInMillis+`, `+getEstimatedDuration+`, `+getLocation+` (the controller's display name), `+isBuilding+`, `+getResult+`, `+getUrl+` (relative, under the job), `+writeLogTo(offset, out)+` (copies the log from an offset, returns the new offset, or -1 once complete and fully copied) and `+requestStop(by)+` (the caller has checked `+Item.CANCEL+`).
+
+Call sites in core:
+
+* `+Job.isBuilding()+` is also true if `+isBuilding(job)+`, and `+Job.getIconColor()+` animates while `+running(job)+` is not empty
+* `+Job.getDynamic+`: a build number with no local build resolves to `+get(job, n)+`, so its URL answers (the implementation forwards it to the owner, JEP-254)
+* the build history widget lists `+running(job)+` above local builds, each rendered by its own `+historyEntry.jelly+`, so the markup belongs to the implementation
+* the CLI's `+console+` follows an external build with `+writeLogTo+`, and `+build -s -f -v+` waits on the queue item's future, following the log if the build started elsewhere and calling `+requestStop+` on interrupt (JEP-253)
+
+Why a new extension point: nothing upstream contributes to `+isBuilding+`, the icon, URL dispatch of a build number or the build history widget.
+
+Without an implementation, nothing changes: no field is added to the REST API, and every call site above takes its existing path.
+
+=== Pipeline save points (workflow-cps)
+
+`+ProgramSavedListener+` (workflow-cps, `+@Restricted(Beta.class)+`) is called after each save of a build's `+program.dat+`, with the build record saved first, when the files on disk form one consistent save point. Listeners run on the CPS VM thread and MUST return quickly. It is not called when the save is skipped (startup, shutdown), when the build cannot resume, or under `+PERFORMANCE_OPTIMIZED+`, which saves only on pause or shutdown. This is a standalone change, useful for any plugin that copies a running build's state elsewhere.
+
+=== Implemented by the cluster plugin
+
+==== Placeholders and leases
+
+* *Placeholders.* When a build starts, a placeholder `+_items/<uuid>/running/<N>.xml+` (JEP-255) records its owner's origin and name, the start time, the lease epoch, and properties such as the latest save point. It is removed after the build's record is published (JEP-251). Other controllers read placeholders for `+ExternalBuilds+`.
+* *Leases* are the cluster plugin's `+BuildLeases+` (JEP-255), keyed `+_items/<uuid>/running/<N>+`. They follow the job's identity, so renaming or moving a job while it builds changes nothing about who owns the build.
+* *Updates merge and are serialised per build.* An update adds its properties to those already recorded (a save point's commit keeps the result, and the other way round), and one build's updates are made one at a time, so the owner never mistakes its own write for an adoption.
+* *A finished build records its result in the placeholder* before its record is published. If its controller dies in between, the sweep closes the build with that result, not as ABORTED.
+* *Publication is fenced:* the record is written with `+writeIfHeld+`, so a controller that lost the build cannot write it over the new owner's.
+
+==== Fencing
+
+* Every placeholder update is a compare-and-set on the placeholder as the owner last wrote it, and fails if another controller adopted the build.
+* A controller checks its leases periodically, and whenever its membership may have lapsed. On evidence from the store that a lease is lost (`+holds+` false), it stops the build locally and never publishes it. A record stored elsewhere for a build running here is such evidence too.
+* *No fencing on missing evidence.* If the store cannot be reached, a lease's state is unknown (`+holds+` throws). The build carries on, while its log and save points wait until the store answers. This includes an owner that alone lost the database: after the member timeout another controller adopts its builds while it carries on. Until it reaches the store again and finds its lease lost, both run the build's steps; only publication is fenced. Steps with external side effects can therefore run twice, as after an adoption.
+
+==== Save points
+
+* On each `+ProgramSavedListener+` call, the plugin copies `+program.dat+`, `+build.xml+` and the flow nodes changed since the previous save point to blob storage, the nodes under a directory of that save point's own. An adopter applies the nodes of every save point up to the committed one, in order, and none of a later one, so an owner dying between uploading a save point and committing it never leaves nodes newer than the program that is resumed.
+* It makes the log durable up to that point (JEP-251), then commits the save point by recording its id in the placeholder. *Proposed* for other log storage: an optional flush on JEP-210's `+LogStorage+` (workflow-api), called before a save point commits; a buffering implementation (CloudWatch batches its events) sends its buffer there.
+* Commits are coalesced: about two placeholder writes per build for a 200-step test Pipeline.
+* *An artifact manager is required* (JEP-202), keeping artifacts and stashes in shared storage as they are made: save points carry only what CPS needs to resume, so what `+stash+` or `+archiveArtifacts+` leave in a build directory would otherwise be lost with its controller. A controller shows an administrative monitor, and logs an error at startup, while none is configured.
+* `+PERFORMANCE_OPTIMIZED+` Pipelines have no save points and are not adopted.
+
+==== Adoption
+
+* *A sweep looks for placeholders whose owner is not a live member.* It runs every 30 s, and at once when a controller is seen leaving (JEP-255).
+** It acquires the lease (only one controller wins).
+** It asks the plugin's adopters to prepare an adoption. The Pipeline adopter stages the save point and the log into the home, and resumes the build as owner with the new epoch.
+** A build of which a copy is still running here, or which was started here and never ran, is not taken for another's: the adoption is retried later.
+* *What else carries over:* a stop request made while the owner was gone is honoured; `+input+` steps, `+lock+`, `+milestone+` and the build's place in the shared queue carry over (JEP-253); messages that arrived while the build had no owner are consumed by the adopter (below).
+* *Workspaces.* A workspace is on the agent, so an adopted build finds what earlier stages left there as long as the agent survives: a static or inbound agent connects to whichever controller answers it (JEP-254), and the build is handed over to that controller, or its `+node+` step waits. A Kubernetes pod agent belongs to the controller that started it and goes with it; the adopted build's `+node+` block is retried on a new pod with an empty workspace. Files a later stage needs from such a pod must be carried with `+stash+`/`+unstash+` or archived, through an artifact manager.
+* *Builds nothing can resume* (freestyle, `+PERFORMANCE_OPTIMIZED+`, or a save point that cannot be found) are closed as ABORTED: a minimal record, with a console saying why, after what the build had printed (JEP-251). This also covers builds that were running when a backup was taken, after a restore.
+* *No takeovers right after an outage* (JEP-255): a controller only takes others for gone after its own heartbeats have reached the store without a gap for longer than the member timeout.
+
+==== Restarts and handover
+
+* *A controller restarted with its home* (for example by a safe restart to apply plugin changes) takes over the leases of the builds it was running *before* they are loaded and resumed, through `+RunListener.allowLoad+`. If another controller already adopted a build, the local copy is not loaded. That happens often: a dead process is seen gone within seconds, sooner than a restart completes.
+* *Handover by label.* A Pipeline waiting at `+node('label')+` for a label only another live controller has is handed over:
+. its save point is flushed
+. the placeholder is marked handed over, naming the target, and the lease is released
+. the target takes the build over and resumes it, where the `+node+` step gets an executor
++
+If nobody takes a handed-over build within a grace period (2 minutes), any controller's sweep adopts it, its sender's included, so a target that died or never received the request does not leave the build running for ever. A build is handed over only while it holds no other executor, so nested or parallel `+node+` blocks for labels on different controllers wait instead of moving back and forth; a build is handed over at most four times.
+
+* *Safe restarts* pause Pipelines at a save point (they resume afterwards, here or elsewhere) and wait for builds that cannot survive a restart, as on one controller.
+
+==== Messages to running builds
+
+A build often waits for something that happens elsewhere: a Pipeline's `+build+` step waits for its downstream build, which may start on, or be adopted by, another controller; and the waiting build itself may be adopted meanwhile.
+
+* A message to a running build is a mailbox entry `+_items/<uuid>/running/<N>.deliver-<id>+` (JEP-255). The controller owning the build when it arrives consumes it; an adopter consumes those that arrived while the build had no owner. Delivery is retried while the build is starting, and handling is idempotent.
+* *Stop* reaches builds wherever they are (`+ExternalBuild.requestStop+`, a `+.stop+` entry): stopping an upstream build stops the downstream build it waits for, on any controller.
+* *pipeline-build-step* gains *`+BuildTriggerRelay+`* (extension point, `+@Restricted(Beta.class)+` in the plugin; no core dependency, so the plugin's baseline does not change):
+** `+returnAddress(upstream, nodeId)+`: at scheduling, an opaque address at which this step can be reached from wherever the downstream runs, or null for local only. The trigger carries it in place of the upstream's name and number, with `+waitForStart+`.
+** `+relay(returnAddress, waitForStart, downstream, event)+`: on the downstream's controller, delivers `+STARTED+`, `+COMPLETED+` or `+DELETED+` if the upstream is not here; true means relayed, and the local path is skipped.
+** `+isTakenElsewhere(leftItem)+`, `+requestStop(job, number, by)+` and `+pinsToOrigin(item)+` (whether a queue item must start where it was scheduled, for `+waitForStart+`).
+** Inbound, `+BuildTriggerStepExecution.deliver(upstream, nodeId, event, downstreamId, result, waitForStart)+` completes the step: on `+STARTED+` with `+waitForStart+` it returns the downstream build, on `+COMPLETED+` its result (falling back to the result carried in the message if the downstream's record is not readable yet).
+** Without a relay, the step works as it does today. The cluster plugin implements it with the mailboxes above, encoding the upstream's identity and number.
+
+== Motivation
+
+* An experiment killed a controller running Pipelines and started another on the same home. The Pipelines survived, but only through the shared disk (`+program.dat+`, flow nodes, `+FlowExecutionList+`), plus a manual move of the agent's DNS name.
+* Nothing stops a partitioned or paused controller from carrying on. Two controllers can then run, and publish, the same build.
+* An earlier version of this design put leases, adoption and the "running elsewhere" views in core, and keyed them by the job's path: renaming a job while it built could stop a healthy build. Keyed by identity and moved into the plugin, a rename is harmless and core gains one extension point.
+
+== Reasoning
+
+* *Epoch-fenced leases* make the store the arbiter, so no consensus protocol is needed between controllers.
+* *Save points in blob storage at the moments Pipelines already persist* cost little: 849 ms against 253 ms with `+PERFORMANCE_OPTIMIZED+` for 200 `+echo+` steps, and most of that is `+MAX_SURVIVABILITY+`'s own local writes.
+* *Failover time* is the time to notice a dead owner plus the time to stage the save point. A dead process frees its database session lock at once, so its builds were adopted 5.0–6.3 s after a `+SIGKILL+` and 6.5 s after a clean stop. A paused or partitioned owner keeps its lock, so it is waited for until the member timeout (15 s): a controller paused for 12 s lost nothing. A lower timeout would be faster, but a GC pause or a slow store would then make others take over a healthy controller's builds.
+* *"Unknown is not lost"* keeps a database outage from aborting every running build in the cluster. Before this rule, an outage of more than 20 s did exactly that.
+* *Views of external builds, not `+Run+` objects.* A `+Run+` of a build that another JVM is writing would be stale or wrong as soon as it was loaded; a small read-only interface says what can be known.
+* *A relay in pipeline-build-step* rather than store code in it: the plugin keeps no dependency on the cluster SPI, and the cluster plugin's delivery can change with it.
+
+== Backwards Compatibility
+
+* Without the cluster plugin, nothing changes. `+ExternalBuilds+`, `+ProgramSavedListener+` and `+BuildTriggerRelay+` have no-op defaults.
+* Pipeline steps that are not idempotent (for example a `+sh+` step whose process died with its controller) run again from the last save point after an adoption, as after a restart on one controller.
+* In the REST API, builds running elsewhere are a separate property of the job, `+buildsElsewhere+`, contributed by the cluster plugin's action on the job; `+builds+`, `+allBuilds+` and `+lastBuild+` keep their types and list only local builds. Without the plugin the property is absent.
+* *Known limitations:*
+** Running only a `+node+` body on another controller's agent would need remote executors. Handover moves the whole build instead.
+** A controller that alone loses the database keeps running its builds while another adopts them (No fencing on missing evidence). *Future work:* a bounded self-fence, where a controller whose own heartbeats have failed for longer than the member timeout pauses its Pipelines at a save point. Until then, `+lock+` (JEP-253) can grant a resource to the adopter while the partitioned owner is still inside the locked block.
+** A message is removed once handled. If the owner dies after handling it and before its next save point commits, the adopter resumes from a save point at which the `+build+` step still waits, and the message is gone (see Open questions).
+
+== Security
+
+* Adoption runs the build as it was configured, with the same authorization (`+QueueItemAuthenticator+`) as on its original controller.
+* Save points have the same content as the build's `+program.dat+` and flow nodes.
+* An adopting controller trusts the placeholder, save point, messages and authentication it reads from the store; see the trust model in JEP-250. Messages are deserialised by every controller that owns the build, so write access to the store is code execution on every controller.
+
+== Infrastructure Requirements
+
+There are no new infrastructure requirements related to this proposal.
+
+== Open questions
+
+* *Messages and save points.* Keep a message until a save point after its handling has committed (exactly once, more store traffic), or have the `+build+` step derive the downstream's outcome on resume from its published record (no mailbox state)?
+* *Bounded self-fence:* in this version, or later?
+
+== Testing
+
+* *Core:* tests with a fake `+ExternalBuilds+` (history widget, icon, URL dispatch, CLI `+console+` and `+build -s -v+`), and that a job's page and REST API are unchanged without one.
+* *workflow-cps:* `+ProgramSavedListenerTest+` (consistent save points, a throwing listener).
+* *pipeline-build-step:* unit tests with a fake relay (started with `+waitForStart+`, completed, deleted, result from the message).
+* *Cluster plugins:* `+RunningBuildsTest+`, `+BuildLeasesTest+` (a record stored elsewhere for a build running here; a build still running here is not adopted over it; a handed-over build nobody takes is adopted after the grace period; rename and move while building), `+ClusterCoordinationTest+`, `+PostgresPersistenceStoreTest+` (leases).
+* *Acceptance* (scripts in `+validation/experiments/+` of link:https://github.com/timja/cluster-plugin[timja/cluster-plugin]; each runs two controllers against one store):
+** `+ET4-pipeline-failover.sh+`: a Pipeline survives its controller being killed during an agent `+sh+` step and at `+input+`; a later stage reads what an earlier stage left in the workspace, with the controller killed between them; a paused controller is fenced; a healthy controller's build is never adopted; a `+PERFORMANCE_OPTIMIZED+` build is closed; the cost of save points
+** `+ET3-build-records.sh+`, `+ET15-logs-api-failover.sh+`: builds running elsewhere on the job page, in the REST API and through `+lastBuild+`; failover times; a freestyle build closed as aborted keeps what it printed
+** `+ET12-remainder.sh+`: handover with parallel `+node+` blocks; after every controller is killed, fresh controllers adopt or close the builds that were running; `+build(wait: true)+` gets the result of a downstream build that ran on the other controller, also when the waiting build was adopted meanwhile
+** `+ET13-cluster-plugins.sh+`: a Pipeline survives rolling restarts of every controller
+** `+ET14-store-outage.sh+`: database and blob-store outages cause no aborts or takeovers
+** `+ET9-kubernetes.sh+`: a build whose controller's pod was deleted is retried on a new agent pod and gets an earlier stage's files from its stash
+
+== Prototype Implementation
+
+* *Core* (link:https://github.com/timja/jenkins[timja/jenkins]): branch `+cnj2/c2-external-builds+`.
+* *workflow-cps:* prototype branch `+cnj/t4-m1-program-saved-listener+`.
+* *pipeline-build-step:* prototype branch `+cnj2/build-trigger-relay+`.
+* *Cluster plugins* (link:https://github.com/timja/cluster-plugin[timja/cluster-plugin]): `+RunningBuilds+`, `+BuildLeases+`, `+SavePoints+`, `+PipelineAdopter+`, `+Handover+`, `+RunningElsewhereAction+`, the relay for pipeline-build-step.
+* *Evidence:* the acceptance scripts named under Testing print the measurements quoted in this JEP. The prototype's write-ups of those runs are available on request.
+
+== References
+
+* link:https://www.jenkins.io/doc/book/pipeline/scaling-pipeline/[Pipeline durability settings]
+* The set of JEPs this one belongs to is listed in link:../250/README.adoc[JEP-250].

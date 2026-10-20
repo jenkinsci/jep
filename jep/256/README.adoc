@@ -1,0 +1,149 @@
+= JEP-256: Cluster-wide plugin management
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 256
+
+| Title
+| Cluster-wide plugin management
+
+| Sponsor
+| link:https://github.com/timja[Tim Jacomb]
+
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2026-10-11
+
+| BDFL-Delegate
+| TBD
+
+| Requires
+| JEP-250, JEP-255
+|===
+
+== Abstract
+
+A plugin installed, upgraded, uninstalled, disabled or enabled on one controller is applied to every controller of the cluster, and to any controller that later starts with an empty home.
+
+* New plugins load live where they support it.
+* Other changes are applied by rolling safe restarts, one controller at a time. Pipelines pause at a save point and resume.
+
+The controller image defines the base plugin set. Runtime changes are an overlay on it.
+
+Core gains two small hooks, both useful on their own: `+PluginArchiveListener+`, told before and after a plugin archive is put in place outside the update center, and `+PluginManagerNotice+`, for a notice on the plugin manager's pages. The `+cluster+` plugin does the rest.
+
+== Specification
+
+=== The overlay
+
+* Store key `+cluster/plugins.json+` holds a generation and, per plugin, one of three states:
+** `+installed+`, with version, sha256 and blob
+** `+disabled+`, keeping the version, sha256 and blob of a plugin the cluster installed, so that enabling it again restores it anywhere (a disabled plugin is not fetched where it is missing)
+** `+uninstalled+`
+* Archives are the exact bytes the installing controller verified, stored under `+cluster-plugins/<name>/<sha256>.jpi+`, so no other controller needs the update center.
+* An installed entry applies only where the local version is missing or older. A newer image wins, and nothing is downgraded.
+* The cluster plugins themselves (`+cluster+` and its backends) cannot be installed, upgraded, disabled or uninstalled at runtime, on any path (the plugin manager's forms, an upload, a dependency, the CLI): the request is refused (409), or the install job fails with the reason. Changing them means a new image.
+
+=== Capture
+
+* *Installs and upgrades.* Every install and upgrade through the update center (from an update site or an upload, dependencies included) passes through `+UpdateCenter.UpdateCenterConfiguration.install()+`. A wrapper records the archive in the overlay.
+* *Uninstall, disable and enable* are recorded by a filter once the plugin manager has made the change.
+* *Refused:* downgrades, by any path: the plugin manager's downgrade button (it restores a backup only one controller has), an upload or CLI install of a version older than the newest the cluster knows; and upgrades of Jenkins itself (it comes with the image). To go back to an older version, uninstall the plugin, then install the older one.
+* *Archives put in place outside the update center.* The CLI's `+install-plugin+` from a file or URL, and the plugin manager's upload, bypass `+install()+`. Core's *`+jenkins.plugins.PluginArchiveListener+`* (extension point, `+@Restricted(Beta.class)+`) is told before (`+beforeInstall(shortName, file)+`, which may refuse with `+AbortException+`) and after (`+installed(shortName, file)+`) such an archive is put in place. The `+cluster+` plugin refuses what the plugin manager would refuse (changes to the cluster plugins, downgrades, any change in `+fixed+` mode), and records the others in the overlay. Without a listener, nothing changes.
+
+=== Through a load balancer
+
+* *The progress page.* Update-center jobs are in the memory of the controller running them, so requests for the install progress (`+pluginManager/updates/…+`, `+updateCenter/{body,installStatus,incompleteInstallStatus,api}+`) are forwarded to that controller (JEP-254): the one named by a cookie set when the install was requested, otherwise the member reporting installs in progress with its heartbeat (JEP-255).
+* *A notice on the plugin manager's pages.* Core's *`+jenkins.plugins.PluginManagerNotice+`* (extension point, `+@Restricted(Beta.class)+`) has `+isVisible()+` and a `+notice.jelly+` view, included on the plugin manager's pages (installed, available, updates, advanced, download progress) for each visible notice. The `+cluster+` plugin's says that changes apply to every controller, with each controller's status, refreshed every 5 s.
+
+=== Apply
+
+* *When.*
+** *At boot, on a fresh home* (no items, no saved queue), before anything is loaded (after `+PLUGINS_STARTED+`, before `+EXTENSIONS_AUGMENTED+`): the controller reads the overlay (the store plugin reads it without joining the cluster, since the store is set up only later) and fetches the plugins the cluster installed that its `+plugins/+` lacks or has older, verified. If it fetched any, it restarts once, so that global configuration, JCasC and jobs load with them, as with the image's plugins; loaded once up, they would be too late for those (jobs of their types would not load, and parts from them would be dropped and, once saved, removed for every controller). It is not ready until then. Where it cannot restart in place, or on a home that has loaded things before, they are applied once up.
+** *Once up,* every controller reconciles with the overlay when it changes, every minute, and once at the end of its start.
+* *How:*
+** Missing plugins are fetched from blob storage, verified, and loaded live (`+PluginManager.dynamicLoad+`).
+** Upgrades, uninstalls, disables and plugins that cannot load live are written to `+plugins/+` and applied by a restart.
+** Files the cluster wrote are marked, so the image's entrypoint does not overwrite them on a container restart.
+* *Rolling restarts.*
+** One controller at a time holds the restart lock in the store, safe-restarts, and releases the lock once it is back and up to date.
+** The lock is broken only when its holder is no longer a live member and 10 minutes have passed. A holder that is alive but stuck (its safe restart waiting for a long freestyle build) holds the lock until it restarts; the cluster view shows who holds it.
+** A controller never restarts twice for the same generation. It shows an administrative monitor instead.
+* *Restarts are the cluster's.* The single-controller restart (the progress page's "restart when done", `+safeRestart+` from the plugin manager) is refused and hidden in `+cluster+` mode, since it would restart one controller outside the one-at-a-time order.
+* *Status.* The cluster view shows each controller's state ("Up to date", "Applying 2 changes", "Restart pending", "Needs attention") and the list of changes: plugin, version, controller and time.
+* *Update-site metadata is shared.*
+** Each controller downloads update-site and tool-installer metadata into `+updates/+` at startup and then daily, as on one controller.
+** A controller whose copy is newer than the cluster's publishes it: `+cluster/updates.json+` holds each file's time and checksum, and blob storage holds the file.
+** The others take it with the same modification time and reload it. So "Check now" on one controller is what every controller shows: plugin manager requests take newer data first, and a check shares its result before it responds.
+** A fresh home takes the cluster's copy before periodic work starts, so the cluster fetches about once a day rather than once per controller.
+* *Modes.* `+-Dio.jenkins.plugins.cluster.ClusterPluginSet.mode+`:
+** `+cluster+`: the default
+** `+fixed+`: all changes refused; plugins only through the image
+** `+local+`: changes stay on the controller that made them
+
+== Motivation
+
+Found by hand on a cluster: a plugin installed from the Plugins page went to one controller only. Forms of its types then broke whenever their requests reached the other controller (fragments 404). Setting `+UpdateCenter.never+` does not stop installs.
+
+== Reasoning
+
+* *The update center's `+install()+` hook* sees every install, with the verified archive, without changing the update center.
+* *An overlay with "newer wins"* lets image updates and runtime changes coexist.
+* *Safe restarts*, which pause Pipelines, rather than waiting until idle. Busy controllers are never idle, and Pipelines are made to checkpoint and resume.
+** This needed a fix in JEP-252: a controller restarted with its home reclaims its builds' leases before resuming them. Otherwise another controller adopted them too.
+
+== Backwards Compatibility
+
+* Without a store, nothing changes.
+* With one, the Plugins page works as on one controller, apart from the refusals above.
+* *Mixed versions during a roll: limitation.* While controllers are being restarted one at a time, some run the old version of a plugin and some the new. Compatibility is guaranteed only for the store protocol and schema, not for the serialised shape of a plugin's data: an old controller that saves an object drops fields it does not know, and the new controller reloads it without them; renamed elements make both sides' saves look like changes. Configuration changes should not be made during a roll. The cluster plugin's operations guide describes this for operators.
+* *Rollback.* A plugin downgrade is refused, and the overlay never installs an older version over a newer one, so a plugin upgrade cannot be undone through the plugin manager. An administrator can uninstall or disable the plugin, which is itself a rolling change. Returning to the earlier version means restoring the store from a backup taken before the upgrade and starting an image with the earlier plugin set (the cluster plugin's operations guide, Rolling back), since data may already have been saved in the newer shape.
+
+== Security
+
+Plugin changes still need `+Overall/Administer+`. Archives are verified by checksum before being installed elsewhere.
+
+The overlay and the archives are in the store and blob storage, which every controller trusts (JEP-250): write access to them is code execution on every controller, because a controller loads the plugin archives it finds there. The checksum protects against a corrupt archive, not against a writer to the store, who also writes the checksum.
+
+== Infrastructure Requirements
+
+The infrastructure of JEP-255 (the stores, the plugin and chart repositories, Docker in CI). The acceptance scripts (ET13, ET19, ET21) also need a Kubernetes cluster (kind) and, for ET21, a browser (Playwright).
+
+== Testing
+
+* *Core:* `+PluginArchiveListenerTest+` (CLI and upload, a refusal), and a test that the notices render on each plugin manager page.
+* *Cluster plugins:* `+ClusterPluginsTest+` (version rule, newest known version, actions, restart decisions, status wording), `+ClusterPluginSetTest+` (refusals on every path), `+ClusterUpdateSitesTest+`, `+UpdateCenterRoutingTest+`.
+* *Acceptance:* `+validation/experiments/ET13-cluster-plugins.sh+` in link:https://github.com/timja/cluster-plugin[timja/cluster-plugin] runs the Helm chart with two controllers on a local kind cluster and checks:
+. a live install with a dependency
+. an upgrade by rolling restart, with a controller answering throughout and a Pipeline paused and resumed with its whole console
+. a fresh pod catching up
+. an uninstall
+. the guards: downgrade, a cluster plugin, corrupt archive
++
+`+validation/experiments/ET19-plugin-manager.sh+` checks the notice on every plugin manager page, an install's progress page through a load balancer without stickiness, a CLI install from a file, and the refused single-controller restart. `+ET21-browser.sh+` checks the notice in a real browser.
+
+== Prototype Implementation
+
+* *Cluster plugins* (link:https://github.com/timja/cluster-plugin[timja/cluster-plugin], branch `+main+`): `+ClusterPlugins+`, `+ClusterUpdateCenterConfiguration+`, `+ClusterPluginSet+`, `+ClusterUpdateSites+`, `+UpdateCenterRouting+`, `+ClusterPluginManagerNotice+`, `+ClusterCliPlugins+` and `+MemberStatus+`.
+* *Core* (link:https://github.com/timja/jenkins[timja/jenkins]): branch `+cnj2/a6-plugin-archive-listener+` (`+PluginArchiveListener+`, `+PluginManagerNotice+`). The restart reclaim is the cluster plugin's (JEP-252).
+* *Evidence:* the acceptance scripts named under Testing print the measurements quoted in this JEP. The prototype's write-ups of those runs are available on request.
+
+== References
+
+* The set of JEPs this one belongs to is listed in link:../250/README.adoc[JEP-250].

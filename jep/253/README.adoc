@@ -1,0 +1,166 @@
+= JEP-253: Cluster scheduling: triggers, a shared queue, cross-build coordination
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 253
+
+| Title
+| Cluster scheduling: triggers, a shared queue, cross-build coordination
+
+| Sponsor
+| link:https://github.com/timja[Tim Jacomb]
+
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Standards
+
+| Created
+| 2026-10-11
+
+| BDFL-Delegate
+| TBD
+
+| Requires
+| JEP-250, JEP-252, JEP-255
+|===
+
+== Abstract
+
+Several controllers schedule the same jobs. For that to work:
+
+* each trigger tick runs at most once across the cluster, and a tick missed because its controller was down is run by another (cron, SCM polling, branch indexing)
+* a shared queue gives every queue item one id on all controllers, lets exactly one controller start it, and keeps the requester's `+QueueTaskFuture+` working when another controller starts the build
+* quiet periods, folding, blocking, `+lock+` and `+milestone+` hold across controllers
+* periodic work that must run once is declared a cluster singleton
+
+Core gains small hooks for this: coordinators for triggers and periodic work, a start gate and a folding event on the queue, and a hand-off of a queue item to another controller. lockable-resources gains an extension point for coordinating its resources. The `+cluster+` plugin implements them. Build numbers are in JEP-251.
+
+== Specification
+
+The words MUST, MUST NOT, SHOULD and MAY are used as in RFC 2119. Core API is `+@Restricted(Beta.class)+`.
+
+=== Core
+
+* *`+jenkins.triggers.TriggerCoordinator+`*: `+shouldRun(item, trigger, tick)+` is asked before a cron trigger, SCM polling or periodic folder indexing runs a tick. If any coordinator answers false, or throws, the tick does not run here. Without one, every tick runs, as now.
+* *`+jenkins.util.PeriodicWorkCoordinator+`* and *`+@ClusterSingleton+`*: `+shouldRun(work, period)+` is asked before periodic work marked `+@ClusterSingleton+` runs. Core marks three: the global build discarder, fingerprint cleanup and telemetry. Unmarked periodic work runs on every controller, since much of it is legitimately per JVM.
+* *`+jenkins.model.queue.QueueStartGate+`*: `+mayStart(item)+` may hold a buildable item back with a cause of blockage, and `+countsForProvisioning(item)+` says whether its demand counts on this controller (JEP-257).
+* *`+QueueListener.onFolded(item, actions)+`*: a request folded into an existing item (same task and parameters, within the quiet period), with the actions it brought.
+* *Queue hand-off*, on `+Queue+`:
+** `+scheduleShared(task, quietPeriod, actions)+` and `+updateShared(id, due, actions)+` put in, or update, an item that another controller published, with its id
+** `+handOff(id)+` is called when another controller took the item. The item leaves this queue as a `+LeftItem+` that is not cancelled (`+isCancelled()+` false, `+isTakenElsewhere()+` true), and its `+QueueTaskFuture+` stays pending. The returned `+Queue.HandOff+` is told `+started(view)+`, which completes the start future, `+completed(run)+`, which completes the future, or `+cancelled()+`, only if the item is cancelled where it was taken. Each is once only and in order; `+completed+` also completes the start future if `+started+` was never called. `+QueueListener.onLeft+` fires as for any item leaving.
+** `+Queue.LOADED+` is attained once the queue has been loaded.
+* Without the cluster plugin none of these is called with anything but its default, and the queue behaves as it does now: `+getItem(id)+` looks only at the local queue.
+
+*The hand-off and `+QueueTaskFuture+`.* When the build starts on another controller, the start future's value is a `+Run+` if the build can be loaded here, otherwise a read-only view of it (an `+ExternalBuild+`, JEP-252, which is a `+Queue.Executable+` and cannot be run). When it completes, the future's value is the `+Run+` loaded from the shared record (JEP-251). Consumers such as the CLI's `+build -s+` and pipeline-build-step use this path and need no special case. A caller that casts the *start* value to `+Run+` gets a `+ClassCastException+`; this is listed among the compatibility notes.
+
+=== Implemented by the cluster plugin
+
+==== Triggers
+
+* *Claims.* Before running a tick, a controller claims `+(item, trigger, tick)+` in the store (JEP-255), and only the first claim runs it. A tick is never run twice.
+* *Affinity.* Each item's triggers belong to one controller, by hash over the *ready* members (JEP-255): a controller that has just started and has no triggers yet is not given ticks. A controller leaving moves its items to the others.
+* *Catching up.* A tick missed because the controller that owned it was down, or not ready, is run by another. When an owner is found gone, the controller that now owns an item runs each of its triggers whose tick was due and has not been claimed since, once however many ticks were missed (coalesced), if the tick is within a bounded window (15 minutes by default). A nightly job whose owner was being restarted at its time still runs once. The claim still prevents a second run.
+* *What can still be missed:* a tick while the store is unreachable (it cannot be claimed, and is not caught up), a tick while controllers disagree about its owner, and a tick older than the window. So a trigger runs *at most once per tick*, and in the common failures exactly once.
+* *Folder computations* (a multibranch project's branch indexing, an organization folder's scan) are not jobs and may be requested of any controller (a webhook, a user). They run on one controller at a time per folder, through a lease in the store: scans running at once would each find a new branch before any recorded its revision, and each would schedule its first build. While the store is unreachable the lease cannot be taken and scans may overlap. A scan schedules a branch's first build before it records the revision built; A standalone branch-api change makes a scan that finds no recorded revision take the revision of the branch's last build started by indexing or an event, so a scan interrupted in between does not build that revision again.
+* *Webhooks.* `+notifyCommit+` and SCM events may reach any controller, or several. They schedule through the shared queue, so they result in one build. Polling triggered by `+notifyCommit+` is not coordinated; its results fold in the queue.
+
+==== Periodic work
+
+`+PeriodicWorkCoordinator+` lets one controller run each `+@ClusterSingleton+` work per period window, by a claim. It is *at most once per window*, not mutual exclusion: a run that outlasts its period (a discarder going over 200,000 builds) can overlap the next window's run elsewhere.
+
+==== Shared queue
+
+* *Records.* Each item is a record in the store (`+ClusterQueue+`, JEP-255), identified by the item's identity, with its name for display only.
+* *Ids.* Queue item ids come from a cluster sequence (`+QueueIdStrategy+`), so an item has the same id everywhere. While the store is unreachable, an id from a disjoint local range is used; such an item is not shared, folded or cancellable elsewhere, waits until the store answers before it starts, and is lost with its controller.
+* *Mirroring.* An item entering a controller's queue is published as WAITING and mirrored into every controller's queue (`+scheduleShared+`), so `+queue/item/<id>+` and cancel work anywhere, from the local copy.
+* *Folding.* Duplicate requests fold across controllers, as on one controller (`+onFolded+`, `+updateShared+`).
+* *Claiming.* A buildable item is started by the controller that claims it, with a compare-and-set (JEP-255); the others get `+handOff+`:
+** the requesting controller goes first, for a grace period (10 s), since it may hold the agents the build needs
+** a label-bound item goes where an agent with the label is; an agent being provisioned is reserved for its item (JEP-257)
+** after that, any controller that can run it may claim it (`+QueueStartGate+`)
+** an item is pinned to its origin only where the waiting step must watch it start (pipeline-build-step's `+waitForStart+`, asked through `+BuildTriggerRelay.pinsToOrigin+`, JEP-252), or when it carries a file parameter, whose file is only on that controller; a pin to a controller that is gone lapses
+* *Recording starts.* A start is recorded only while this controller still has the item claimed, as a compare-and-set. If another controller reclaimed the item meanwhile (this one was paused), the build that started here is stopped before it does any work.
+* *An item that makes no build* (its task returns none, or throws) has its record cancelled, and lets go of its job's exclusive lease.
+* *Reclaim.* Items claimed by a controller that is gone go back to WAITING on the next maintenance pass (every 15 s), at once when a controller is seen leaving, and never right after a store outage (JEP-255).
+* *Blocking.*
+** A job that does not allow concurrent builds runs one build at a time across the cluster, through an exclusive lease on the job (`+BuildLeases+`, JEP-255). It is taken when an item of the job is claimed and when a build of it is adopted, and released when no build or claimed item of the job is left on the controller. Another controller's items of the job stay in the queue, blocked, while the lease is held. A controller holding the lease MUST check it with `+holds()+` before it claims the next item of the job.
+** Blocking on upstream and downstream builds running on other controllers uses `+ExternalBuilds+` (JEP-252).
+* *Deleting or renaming a job* cancels its started records; renaming changes nothing else, since records are keyed by identity.
+
+==== Cross-build coordination
+
+* *`+lock+`.* lockable-resources gains *`+LockCoordinator+`* (extension point, `+@Restricted(Beta.class)+` in the plugin; no core dependency, so its baseline does not change). Its call sites are where the plugin locks, releases, reserves, steals, unreserves, frees and edits resources:
+** `+tryLock(resources, build)+` and `+tryReserve(resources, user, reason)+`: all or none; false means a resource is held elsewhere, and the request stays queued and is retried
+** `+released+`, `+reservedForcibly+`, `+unreserved+`, `+freed+` (unlocked or reset from the resources page: freed everywhere), `+definitionChanged+`, `+definitionDeleted+`
+** `+isHeldElsewhere(resource)+` answers from memory, with no remote I/O, since it is called while rendering and under the manager's lock
+** without a coordinator, every call site does what it does today
+** *the cluster plugin's coordinator* keeps each resource's holder as a record (`+_locks/<resource>+`, a build named by its job's identity and number, or a user's reservation), so reserving, stealing, reassigning, resetting and unlocking from the resources page apply to the whole cluster, as do resources and notes made there. Releases are compare-and-set deletes, and a deletion seen from elsewhere is checked against the store before a local build's lock is let go, so a late event cannot free a lock taken again here. Locks held by builds that no longer run anywhere are freed by a sweep on one controller.
+* *`+milestone+`* ordering is kept in the store. While the store is unreachable, builds pass milestones without ordering.
+
+== Motivation
+
+* *Duplicate triggers.* In an experiment with two controllers sharing one home, a cron trigger fired 8 times in 3 minutes, and only the JENKINS-23152 directory check avoided a build number collision.
+* *Agents.* In an experiment with two controllers behind a load balancer, an inbound agent connected to one controller only, so where a build may start matters.
+* *Periodic work.* A bytecode scan of every plugin in the update center found 131 plugins (37 in the plugin BOM) that define periodic work, so blanket leader election would be wrong.
+* *Futures.* Plugins wait on `+QueueTaskFuture+` (the CLI, Parameterized Trigger, pipeline-build-step). Cancelling the local item when another controller starts the build would make every one of them fail or need a special case.
+
+== Reasoning
+
+* *Claims instead of leader election* for triggers. There is no failover gap when a controller dies, since the next tick's claim goes to another controller, and missed ticks are caught up.
+* *A mirrored queue,* not a single global scheduler. Every controller keeps Jenkins' own queue semantics (causes of blockage, the UI, `+QueueListener+`s), and the store arbitrates only who starts what.
+* *The requesting controller goes first,* which keeps label-bound and agent-affine work local without a global view of executors.
+* *Hooks in core, policy in the plugin.* Each core hook has a default that is today's behaviour and is useful to anything that coordinates Jenkins with something else; the shared queue itself (about 1,600 lines) lives in the plugin.
+* *An extension point in lockable-resources* rather than cluster code in it: the plugin keeps its baseline and its maintainers review a small seam.
+
+== Backwards Compatibility
+
+* Without the cluster plugin, nothing changes.
+* `+@ClusterSingleton+` is opt-in, and plugins with periodic work that must run once need to adopt it.
+* A `+LeftItem+` can now be taken elsewhere: not cancelled, with a pending future. Code that assumed a left item without an executable was cancelled should check `+isTakenElsewhere()+`.
+* The start value of a `+QueueTaskFuture+` may be a view rather than a `+Run+` when the build started elsewhere (above).
+* *Known limitation:* an `+upstream+` trigger that fires from a build completing on another controller is not covered (the acceptance tests do not exercise it).
+
+== Security
+
+Queue items keep their authentication (`+QueueItemAuthenticator+`), which is serialised with their actions and checked by the controller that starts them. The queue and its actions are read from the store by every controller, so the authentication a starting controller trusts came from the store: write access to the store is code execution on every controller (the trust model is in JEP-250). Secrets in parameters are compared for folding by HMAC, not in clear.
+
+== Infrastructure Requirements
+
+The stores of JEP-250 and JEP-255. Nothing else is new.
+
+== Testing
+
+* *Core:* `+TriggerCoordinatorTest+`, `+PeriodicWorkCoordinatorTest+`, tests for `+QueueStartGate+` and `+onFolded+`, and hand-off tests with a fake taker: the future stays pending, completes with the remote build, is cancelled only on cancellation; CLI `+build -s -v+` on a handed-off item.
+* *lockable-resources:* tests with a fake `+LockCoordinator+`.
+* *Cluster plugins:* `+ClusterTriggerCoordinatorTest+` and `+MissedTicksTest+` (readiness, a gone owner's ticks caught up once, ticks already claimed not run again), `+SharedQueueTest+` (a build started for an item taken since its claim is stopped; an item that makes no build is cancelled), `+ClusterCoordinationTest+`, `+ClusterLocksTest+` (reservations and holders across two controllers, a late deletion event after a local re-acquire), `+PostgresPersistenceStoreTest+` (claims, queue, counters).
+* *Acceptance* (scripts in `+validation/experiments/+` of link:https://github.com/timja/cluster-plugin[timja/cluster-plugin]; each runs two controllers against one store):
+** `+ET2-scheduling.sh+`: cron, polling and indexing fire once per tick, also across failover and rejoin
+** `+ET5-shared-queue.sh+`: one queue item for requests on both controllers, folding, cancel from either controller, blocking, `+lock+` and `+milestone+`
+** `+ET7-owner-routing.sh+`: a webhook sent to one or both controllers starts exactly one build
+** `+ET17-scale-3.sh+`: 30 multibranch projects scanned from three controllers at once, one killed meanwhile: every branch built, none twice
+
+== Prototype Implementation
+
+* *Core* (link:https://github.com/timja/jenkins[timja/jenkins]): branches `+cnj2/a2-trigger-coordinator+`, `+cnj2/a3-periodic-coordinator+`, `+cnj2/a4-queue-hooks+` and `+cnj2/c3-queue-handoff+`.
+* *lockable-resources:* prototype branch `+cnj2/lock-coordinator+`.
+* *branch-api:* prototype branch `+cnj/t15-first-build-revision+`.
+* *Cluster plugins* (link:https://github.com/timja/cluster-plugin[timja/cluster-plugin]): `+ClusterTriggerCoordinator+`, `+MissedTicks+`, `+SharedQueue+`, `+SharedQueueMaintenance+`, `+ClusterLocks+`, `+ClusterMilestoneStorage+`, `+ClusterComputations+`.
+* *Evidence:* the acceptance scripts named under Testing print the measurements quoted in this JEP. The prototype's write-ups of those runs are available on request.
+
+== References
+
+* `+Job.BuildNumberAssigner+` and `+QueueIdStrategy+` (existing Beta hooks)
+* The set of JEPs this one belongs to is listed in link:../250/README.adoc[JEP-250].
