@@ -140,8 +140,8 @@ A backend is written from this section.
 * *`+Item.getItemUuid()+`* is an identity that a rename or move does not change. The interface's default returns null; `+AbstractItem+` implements it.
 * *Pinned or derived.* An item whose identity has been *pinned* keeps it in its `+config.xml+` (`+<itemUuid>+`). An item that is not pinned returns a UUID derived from its full name: stable across restarts, not across renames. Without a store, nothing pins an item unless a plugin asks, so a plain installation's files are unchanged.
 * *When an item is pinned:*
-** while a store is in use, at construction, and before the first write of an item that is created, copied or imported; for configuration posted to `+createItem+` or a copy, the identity is put into the bytes that are written, so nothing is saved twice
-** when a plugin calls `+ItemUuids.pin(item)+`, which saves the item once and keeps the derived value, so the identity carries on
+** while a store is in use, at construction, and before the first write of an item that is created, copied or imported (configuration posted to `+createItem+`, and a copy, are written as before, then saved once more with their new identity)
+** when a plugin calls `+ItemUuids.pin(item)+`, which gives the item a new identity and saves it once. The value derived from the name is not kept: a later item of the same name, after this one is deleted or renamed, would derive it too. Data kept elsewhere about an item is keyed only by a pinned identity.
 * *A copy* gets a new identity. A posted configuration whose identity is already in use gets a new one.
 * *A job deleted and made again* with the same name is a new item, with a new identity: it inherits nothing kept about the old one, as on one controller.
 * *Not unique across installations.* Two Jenkins instances can derive the same identity for items of the same name. An identity is unique within one installation (or one cluster).
