@@ -1,0 +1,364 @@
+= JEP-0000: :bulb: Title :bulb:
+:toc: preamble
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="1h,1"]
+|===
+| JEP
+| 0000
+
+| Title
+| Decoupling Jenkins Docker image releases from Jenkins Core releases
+
+| Sponsor
+| link:https://github.com/lemeurherve[Hervé Le Meur], link:https://github.com/dduportal[Damien Duportal]
+
+// Use the script `set-jep-status <jep-number> <status>` to update the status.
+| Status
+| Not Submitted :information_source:
+
+| Type
+| Process
+
+| Created
+| 2026-11-08
+
+| BDFL-Delegate
+| TBD
+
+//
+//
+// Uncomment if there is an associated placeholder JIRA issue.
+//| JIRA
+//| :bulb: https://issues.jenkins-ci.org/browse/JENKINS-nnnnn[JENKINS-nnnnn] :bulb:
+//
+//
+// Uncomment if discussion will occur in forum other than jenkinsci-dev@ mailing list.
+//| Discussions-To
+//| :bulb: Link to where discussion and final status announcement will occur :bulb:
+//
+//
+// Uncomment if this JEP depends on one or more other JEPs.
+//| Requires
+//| :bulb: JEP-NUMBER, JEP-NUMBER... :bulb:
+//
+//
+// Uncomment and fill if this JEP is rendered obsolete by a later JEP
+//| Superseded-By
+//| :bulb: JEP-NUMBER :bulb:
+//
+//
+// Uncomment when this JEP status is set to Accepted, Rejected or Withdrawn.
+//| Resolution
+//| :bulb: Link to relevant post in the jenkinsci-dev@ mailing list archives :bulb:
+
+|===
+
+This JEP proposes decoupling the release lifecycle of the official Jenkins Docker controller images from the Jenkins Core release lifecycle.
+
+It introduces an image revision number in Docker image tags, allowing maintainers to publish updated images without having to wait a new Jenkins Core version.
+
+The proposal defines how image revisions are numbered and published across official image variants and architectures, and how floating and immutable tags behave.
+
+== Motivation
+
+The official Jenkins Docker controller images package Jenkins Core together with a runtime environment that includes an operating system base, a JDK, system packages, libraries, utilities, configuration, and startup scripts.
+
+These components have release and maintenance requirements independent of Jenkins Core. For example, maintainers may need to update the JDK, apply operating system security updates, update system utilities, fix startup scripts, or improve image performance.
+
+Such changes do not necessarily require a new Jenkins Core release. However, the current release model closely couples Docker image publication to Jenkins Core releases, making it difficult to distribute image-only updates independently.
+
+This coupling unnecessarily ties the maintenance of the Docker image environment to the Jenkins Core release schedule.
+
+Decoupling the two release lifecycles allows maintainers to publish updated Docker images while retaining the same Jenkins Core version and WAR file.
+
+== Reasoning
+
+The proposed model distinguishes between two versioning dimensions:
+
+* **Jenkins Core version** identifies the Jenkins version and WAR included in the image.
+* **Image revision** identifies a particular release of the Docker image environment for that Jenkins Core version.
+
+Each new Jenkins Core version starts a new image revision series at revision `1`. Subsequent image-only updates increment the revision number without changing the Jenkins Core version or WAR.
+
+For example:
+
+[source]
+----
+2.580.3-1    # Initial image revision for Jenkins Core 2.580.3
+2.580.3-2    # Subsequent image-only revision
+2.580.3-3    # Another image-only revision
+----
+
+This approach preserves the existing Jenkins Core version in the image tag, while making independently published image revisions explicit.
+
+The model also distinguishes between floating version-specific tags, which point to the latest image revision for a Core version (ex: `2.580.3``), and immutable revision tags, which identify a specific image release.
+
+A single revision number shared across all official variants and architectures provides a consistent identifier for each complete image release.
+
+=== Alternatives considered
+
+==== Continue tying image releases to Jenkins Core releases
+
+This preserves the existing model but retains the coupling that this proposal intends to remove. Image-level maintenance would continue to depend on Jenkins Core releases.
+
+==== Use an independent image version unrelated to Jenkins Core
+
+A completely independent image version would make it less obvious which Jenkins Core version an image contains. Retaining the Core version in the tag makes that relationship explicit.
+
+==== Use independent revision counters for each image variant
+
+Independent counters would allow variants to evolve separately, but would make it harder to identify a consistent release of the complete official image matrix.
+
+A single revision number shared across variants and architectures provides a simpler and more consistent release model.
+
+== Specification
+
+=== Image version and revision
+
+An official Jenkins Docker image tag includes the Jenkins Core version and an image revision number.
+
+The revision number is appended to the Jenkins Core version using a hyphen:
+
+[source]
+----
+<core-version>-<revision>[-<variant>]
+----
+
+The Jenkins Core version follows the existing Jenkins release conventions:
+
+* Weekly releases use a two-component version, such as `2.580`.
+* LTS releases use a three-component version, such as `2.580.3`.
+
+The image revision number is scoped to an exact Jenkins Core version. Each new Jenkins Core version starts at image revision `1`, regardless of the revision number used for any previous Core version.
+
+For example:
+
+[source]
+----
+2.580-1       # First image revision for weekly Core 2.580
+2.580-2       # Second image revision for weekly Core 2.580
+
+2.580.3-1     # First image revision for LTS Core 2.580.3
+2.580.3-2     # Second image revision for LTS Core 2.580.3
+
+2.580.4-1     # First image revision for LTS Core 2.580.4
+----
+
+A new Jenkins Core version always starts a new image revision series. An image-only revision MUST NOT introduce a different Jenkins WAR: it MUST retain the exact Jenkins WAR associated with the corresponding Jenkins Core version.
+
+=== Floating and immutable tags
+
+For every Jenkins Core version and published image variant, two types of version-specific tags are published:
+
+* **Immutable revision tags** identify a particular image revision. Once published, they MUST NOT be overwritten.
+* **Floating version tags** identify the latest published image revision for that Jenkins Core version and variant. They are updated when a new image revision is published.
+
+For the default image, the initial publication for Jenkins Core `2.580.3` produces:
+
+[source]
+----
+2.580.3       # Floating tag
+2.580.3-1     # Immutable image revision 1
+----
+
+When a subsequent image revision is published:
+
+[source]
+----
+2.580.3       # Now points to image revision 2
+2.580.3-1     # Still points to image revision 1
+2.580.3-2     # Immutable image revision 2
+----
+
+The floating tag MUST always resolve to the latest published image revision for its Jenkins Core version and variant. Immutable revision tags MUST NOT be moved or reused.
+
+=== Image variants and architectures
+
+The image revision number is global across all officially supported variants and architectures for a given Jenkins Core version.
+
+For example, a release containing the default, JDK 21, JDK 25, and Alpine variants uses the same revision number for all of them:
+
+[source]
+----
+2.580.3-1
+2.580.3-1-jdk21
+2.580.3-1-jdk25
+2.580.3-1-alpine
+----
+
+The corresponding floating tags are:
+
+[source]
+----
+2.580.3
+2.580.3-jdk21
+2.580.3-jdk25
+2.580.3-alpine
+----
+
+The revision number is also shared across all architectures published for each variant. Architectures are part of the same image release, not independently versioned releases.
+
+For a given Jenkins Core version and image revision, the set of officially published variants and architectures is fixed. Every image revision represents a complete rebuild of that set.
+
+Consequently:
+
+* Adding or removing an officially supported variant requires a new global image revision.
+* Adding or removing an officially supported architecture requires a new global image revision.
+* Every variant and architecture in the resulting matrix MUST be rebuilt and validated for that revision, even when a particular variant or architecture has no apparent content changes.
+
+A variant is considered officially supported when it is maintained and published as part of the official Jenkins Docker image family. Internal Dockerfiles, build stages, or other implementation details that are not independently published as official images do not constitute separate variants.
+
+Previously published immutable tags remain available indefinitely when a variant or architecture is removed. A removed variant or architecture is no longer included in subsequent revisions. Its floating tag is no longer updated and remains associated with its last published image. Historical tags MUST NOT be reused for a different image configuration.
+
+=== Release line aliases
+
+The existing aliases identify the latest image revision of their respective Jenkins Core release lines:
+
+* `latest` points to the latest image revision of the latest weekly Jenkins Core release.
+* `lts` points to the latest image revision of the currently selected LTS Jenkins Core release.
+
+These aliases are floating tags. They are updated as part of the publication of the corresponding image revision.
+
+For example, the first weekly release under this model may publish `2.580-1`, with `latest` pointing to that revision. A subsequent LTS publication may publish `2.580.3-1`, with `lts` pointing to that revision.
+
+=== Independent image revisions
+
+A new image revision MAY be published without a new Jenkins Core release.
+
+An image revision MUST retain the Jenkins WAR associated with its Jenkins Core version. It MUST NOT be used to introduce a different Jenkins Core version.
+
+Image-only revisions MAY be published for previously released Jenkins Core versions. This does not establish an obligation to maintain or release updates for every historical Jenkins Core version.
+
+The decision to publish a new image revision, including which image changes warrant a release, remains with the maintainers.
+
+=== Release source and release notes
+
+Each image revision has a corresponding immutable Git tag in the `jenkinsci/docker` repository. This Git tag identifies the exact source commit used to build the revision.
+
+Each independently published image revision MUST have corresponding release notes.
+
+The initial implementation reuses the existing process, publishing these notes as a GitHub Release in the `jenkinsci/docker` repository, using the image revision as the release tag. This mechanism may be revisited in the future if another publication mechanism better serves maintainers and users.
+
+The existing release preparation and publication process remains in place. Maintainers continue to create and push the Git tag when they decide to publish. The existing build and publication process produces the corresponding Docker image tags, including floating version tags and release line aliases where applicable.
+
+=== Publication failures
+
+The existing handling of incomplete or failed image publication remains unchanged.
+
+When publication fails for some image tags, maintainers may restart or replay the Jenkins build for only the failed image tags, using the same Git tag source.
+
+Such a retry does not allocate a new image revision. Successfully published immutable revision tags MUST NOT be overwritten.
+
+== Backwards Compatibility
+
+This proposal changes the meaning of version-specific Docker image tags for new Jenkins Core releases.
+
+For releases published under the new convention:
+
+* An unsuffixed version-specific tag, such as `2.580.3`, is floating and points to the latest image revision for that Core version.
+* A version-specific tag including an image revision, such as `2.580.3-1`, is immutable.
+
+Previously published tags are not modified as part of this proposal. Historical version-specific tags retain their existing behavior, and no revision tags are created retroactively.
+
+The `latest` and `lts` release line aliases continue to identify the latest image revision of their respective Jenkins Core release.
+
+Users referencing floating tags may receive a newer Docker image without a corresponding Jenkins Core version change. This is intentional and enables image-level maintenance and security updates to be distributed independently.
+
+Updating a registry tag does not automatically update running containers. Whether a deployment picks up a newer image depends on its image pull policy, caching behavior, and redeployment process.
+
+Users requiring a stable image reference SHOULD use an immutable image revision tag or pin an image digest. The official Docker image documentation MUST explain the distinction between floating tags, immutable revision tags, and digests.
+
+As a practical recommendation: friends don't let friends use `latest` :grin:
+
+Breaking changes to documented image behavior remain governed by existing release notes and review practices. This JEP does not introduce a new compatibility guarantee or mandatory deprecation period for image changes.
+
+== Migration
+
+The new tagging convention applies to new releases only. Previously published Docker image tags remain unchanged and retain their existing behavior. No retroactive revision tags will be created, and existing version-specific tags will not be repointed.
+
+The transition will take place at the first Jenkins Core release published under the new convention after this JEP is accepted. Releases already in preparation at the time of acceptance MAY continue using the existing convention; the first subsequent release uses the new convention.
+
+The `latest` and `lts` release line aliases adopt the new semantics as the corresponding new releases are published.
+
+The official Jenkins Docker image documentation MUST be updated to explain the new tag naming convention and the distinction between floating and immutable tags. The Jenkins Core release checklist MUST also be updated to account for the new image revision convention.
+
+The `jenkins-infra/release` Jenkins Core release checklist MUST be updated accordingly.
+
+The `jenkinsci/packaging` Jenkins Core packaging repository doesn't currently include anything related to the Docker controller image release and thus doesn't require any update.
+
+The `jenkinsci/helm-charts` official Jenkins Helm chart SHOULD be updated to track image revision instead of `lts` release line alias.
+
+The `jenkins-infra/jenkins.io` documentation website SHOULD also be updated. Its Docker and Kubernetes installation instructions, examples, and other documentation describing controller image tags and update behavior SHOULD be reviewed and adapted to explain the new convention.
+
+The Jenkins infrastructure repositories that build or deploy derived controller images MUST be adapted to the new tagging convention. This includes, but is not limited to:
+
+* https://github.com/jenkins-infra/docker-jenkins-infraci
+* https://github.com/jenkins-infra/docker-jenkins-weeklyci
+* https://github.com/jenkins-infra/docker-jenkins-lts
+* https://github.com/jenkins-infra/kubernetes-management
+
+Their Dockerfile base-image references, image version selection, deployment references, and related automation must be updated as applicable.
+
+The `latest` and `lts` release-line aliases adopt the new semantics as corresponding new releases are published.
+
+The official Jenkins Docker image documentation must be updated to explain the new tagging convention, including the distinction between floating version tags and immutable revision tags. The Jenkins Core release checklist must also be updated accordingly.
+
+== Security
+
+This proposal enables maintainers to distribute image-level security updates independently of Jenkins Core releases.
+
+It does not introduce new requirements for image signing, software bills of materials, vulnerability scanning, attestations, or other supply-chain security mechanisms. Existing security and supply-chain practices remain unchanged.
+
+The immutable Git tag associated with each image revision identifies the source commit used to build that revision.
+
+== Infrastructure Requirements
+
+The proposal does not require a redesign of the existing Jenkins Docker image build and publication infrastructure.
+
+The existing build and publication process is adapted to publish revisioned image tags, their corresponding floating version tags, and the existing release line aliases.
+
+The complete official image matrix for a revision MUST be built and validated before publication of that revision.
+
+The Jenkins Core release checklist is updated to account for the new Docker image tag convention. No substantial change to the Jenkins Core release process is expected: Core versioning, release cadence, and WAR publication remain unchanged.
+
+== Testing
+
+The complete official image matrix for an image revision MUST be built and validated before publication.
+
+The specific tests and validation criteria remain at the discretion of the maintainers. This JEP does not mandate a new test suite or compatibility test framework.
+
+Existing Jenkins Docker image build and validation processes continue to apply.
+
+== Prototype Implementation
+
+Pending.
+
+== Work Estimates
+
+The implementation is expected to require a moderate amount of work, primarily involving coordinated changes across the official Jenkins controller image repository, Jenkins infrastructure repositories, and documentation.
+
+The estimated work includes:
+
+* Updating the release process and tagging logic in `jenkinsci/docker` to support image revisions and floating tags
+* Updating the Jenkins Core release checklist in `jenkins-infra/release`
+* Updating the official Jenkins Helm chart in `jenkinsci/helm-charts` to track image revisions instead of the `lts` release-line alias
+* Reviewing and updating the relevant Docker and Kubernetes documentation in `jenkins-infra/jenkins.io`
+* Updating Dockerfile base-image references, image version selection, deployment references, and related automation in the affected Jenkins infrastructure repositories
+* Validating the new tagging convention during the first Jenkins Core release published under the new convention
+
+The work can be carried out incrementally across the affected repositories before the first release using the new convention. As existing Docker controller image tags reference will remain unchanged and as new releases will still include floating tags corresponding to them, publication of new releases with image revisions won't break any existing usage and consumer.
+
+Except the first two ones, all other tasks shouldn't require any advanced experience in the Jenkins project to be implemented, and could be picked up in parallel by any interested volunteers.
+
+== References
+
+link:https://matrix.to/#/!JlkqzpdEnsUUuVtjgE:matrix.org/$5qHjrf9cO3oDdNyIKs_nFUL6zFX6e1rHgJ1LdHI1JtM[Mention in `#jenkinsci/release` channel]
